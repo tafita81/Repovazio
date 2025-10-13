@@ -1,1 +1,57 @@
-
+name: Publish Payload to New GitHub Repo
+on:
+  workflow_dispatch:
+    inputs:
+      owner: { description: "GitHub owner (deixe vazio p/ autodetectar)", required: false, default: "" }
+      repo_name: { description: "Nome do novo repositório", required: false, default: "globalsupplements-broker" }
+      visibility:
+        type: choice
+        description: "Visibilidade do novo repo"
+        required: false
+        default: public
+        options: [public, private]
+      owner_is_org: { type: boolean, description: "Owner é organização?", required: false, default: false }
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: cfg
+        run: |
+          echo "owner=$(echo "${{ github.event.inputs.owner }}" | sed 's/^$/${{ github.repository_owner }}/')" >> $GITHUB_OUTPUT
+          echo "repo_name=$(echo "${{ github.event.inputs.repo_name }}" | sed 's/^$/globalsupplements-broker/')" >> $GITHUB_OUTPUT
+          echo "visibility=$(echo "${{ github.event.inputs.visibility }}" | sed 's/^$/public/')" >> $GITHUB_OUTPUT
+          echo "owner_is_org=$(echo "${{ github.event.inputs.owner_is_org }}" | sed 's/^$/false/')" >> $GITHUB_OUTPUT
+      - name: Create repository via API
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          OWNER: ${{ steps.cfg.outputs.owner }}
+          REPO: ${{ steps.cfg.outputs.repo_name }}
+          VIS: ${{ steps.cfg.outputs.visibility }}
+          IS_ORG: ${{ steps.cfg.outputs.owner_is_org }}
+        run: |
+          set -euo pipefail
+          if [ -z "$GH_PAT" ]; then echo "Falta o secret GH_PAT (escopo repo)"; exit 1; fi
+          if [ "$IS_ORG" = "true" ]; then API_URL="https://api.github.com/orgs/${OWNER}/repos"; else API_URL="https://api.github.com/user/repos"; fi
+          CODE=$(curl -s -o resp.json -w "%{http_code}" -H "Authorization: token ${GH_PAT}" -H "Accept: application/vnd.github+json" -X POST "${API_URL}" -d "{\"name\":\"${REPO}\",\"private\":$([ \"$VIS\" = \"private\" ] && echo true || echo false),\"auto_init\":false}")
+          echo "API status: $CODE"; cat resp.json; if [ "$CODE" != "201" ] && [ "$CODE" != "422" ]; then echo "Falha ao criar repo"; exit 1; fi
+      - name: Ensure unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
+      - name: Unzip payload
+        run: mkdir newrepo && unzip -q payload.zip -d newrepo
+      - name: Push code to new repo
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          OWNER: ${{ steps.cfg.outputs.owner }}
+          REPO: ${{ steps.cfg.outputs.repo_name }}
+        run: |
+          set -euo pipefail
+          cd newrepo
+          git init -b main
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Initial commit: payload"
+          git remote add origin "https://${GH_PAT}@github.com/${OWNER}/${REPO}.git"
+          git push -u origin main --force
+          echo ">> Repo publicado em: https://github.com/${OWNER}/${REPO}"
