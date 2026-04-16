@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
+import AgentPanel from "./AgentPanel";
 
 // ═══════════════════════════════════════════════════════════════════
 // PSICOLOGIA.DOC — CÉREBRO AUTÔNOMO v7
@@ -678,6 +679,7 @@ function PageDashboard({timeStr,dateStr,metrics,contents,ranking,dayNumber,isRun
         </div>
       </div>
       <div className="body">
+        <AgentPanel/>
         {/* Relógio */}
         <div style={{background:"linear-gradient(135deg,rgba(124,58,237,0.12),rgba(168,85,247,0.04))",border:"1px solid rgba(124,58,237,0.25)",borderRadius:18,padding:"18px 18px 14px",marginBottom:14}}>
           <div style={{fontSize:10,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}}>🕐 Relógio do Cérebro · psicologia.doc</div>
