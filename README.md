@@ -1,6 +1,6 @@
 # GitHub Bootstrap Publisher (Mobile-Friendly)
 
-Este pacote publica automaticamente o **payload.zip** (seu app final) em **um novo repositório** no GitHub.
+ Este pacote publica automaticamente o **payload.zip** (seu app final) em **um novo repositório** no GitHub.
 
 ## Passo a passo no iPhone (GitHub App ou Safari)
 1. **Crie um repositório vazio** (no app do GitHub: + → New repository).
