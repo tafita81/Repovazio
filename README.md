@@ -1,14 +1,1 @@
-# GitHub Bootstrap Publisher (Mobile-Friendly)
-
-Este pacote publica automaticamente o **payload.zip** (seu app final) em **um novo repositório** no GitHub.
-
-## Passo a passo no iPhone (GitHub App ou Safari)
-1. **Crie um repositório vazio** (no app do GitHub: + → New repository).
-2. Toque em **Add file → Upload files** e envie todo o conteúdo deste ZIP (incluindo `.github/workflows/...` e `payload.zip`).
-3. Vá em **Settings → Secrets and variables → Actions** e crie o secret **GH_PAT** (Personal Access Token com escopo `repo`).  
-   - No iPhone, abra `github.com/settings/tokens` no Safari para gerar o token e copie.
-4. Abra a aba **Actions** → **Publish Payload to New GitHub Repo** → **Run workflow**.
-   - Você pode **deixar os campos vazios**: o *owner* será autodetectado, o nome padrão será `globalsupplements-broker` e visibilidade `public`.
-5. Em ~1 min, o repositório final estará publicado (o link aparece no log da Action).
-
-> Depois, só conectar à **Render** (Deploy Hook + preDeploy) ou **Fly.io** conforme o `README-PROD.md` dentro do payload.
+IyBHaXRIdWIgQm9vdHN0cmFwIFB1Ymxpc2hlciAoTW9iaWxlLUZyaWVuZGx5KQoKRVNURSBQQUNPVEUgUFVCTElDQSBBVVRPTUFUSUNBTUVOVEUgTyAqKnBheWxvYWQuemlwKiogKHNldSBhcHAgZmluYWwpIGVtICoqdW0gbm92byByZXBvc2l0w7NyaW8qKiBubyBHaXRIdWIuCgojIyBQYXNzbyBhIHBhc3NvIG5vIGlQaG9uZSAoR2l0SHViIEFwcCBvdSBTYWZhcmkpCjEuICoqQ3JpZSB1bSByZXBvc2l0w7NyaW8gdmF6aW8qKiAobm8gYXBwIGRvIEdpdEh1YjogKyDigJMgTmV3IHJlcG9zaXRvcnkpLgoyLiBUb3F1ZSBlbSAqKkFkZCBmaWxlIOKAmSBVcGxvYWQgZmlsZXMqKiBlIGVudmllIHRvZG8gbyBjb250ZcO6ZG8gZGVzdGUgWklQIChpbmNsdWluZG8gYC5naXRodWIvd29ya2Zsb3dzLy4uLmAgZSBgcGF5bG9hZC56aXBgKS4KMy4gVsOhIGVtICoqU2V0dGluZ3Mg4oCUIFNlY3JldHMgYW5kIHZhcmlhYmxlcyDigJMgQWN0aW9ucyoqIGUgY3JpZSBvIHNlY3JldCAqKkdIX1BBVCoqIChQZXJzb25hbCBBY2Nlc3MgVG9rZW4gY29tIGVzY29wbyBgcmVwb2ApLiAgCjQuIEFibmEgbWEgYWJhICoqQWN0aW9ucyoqIOKAkyAqKlB1Ymxpc2ggUGF5bG9hZCB0byBOZXcgR2l0SHViIFJlcG8qKiDigJMgKipSdW4gd29ya2Zsb3cqKi4KNS4gRW0gfjEgbWluLCBvIHJlcG9zaXRvcm8gZmluYWwgZXN0YXLDoSBwdWJsaWNhZG8uCgojIyMgVHJpZ2dlciBkZXBsb3kgVmVyY2VsCi0gQ29tbWl0IGZlYXR1cmUgZHVtbXkgcGFyYSByZWRlcGxveQ==
