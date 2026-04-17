@@ -1,16 +1,24 @@
 {
-  "name": "next-netlify-app",
-  "version": "1.0.0",
+  "name": "psicologiadoc-cerebro-autonomo",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "next": "14.2.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "@supabase/supabase-js": "^2.39.0"
+    "next": "15.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "@supabase/supabase-js": "^2.49.4",
+    "@supabase/ssr": "^0.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
   }
 }
