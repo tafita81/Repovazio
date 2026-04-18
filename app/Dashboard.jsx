@@ -26,38 +26,47 @@ export default function Dashboard() {
   }, []);
 
   const totalViews = data.reduce((acc, i) => acc + (i.views || 0), 0);
+  const totalClicks = data.reduce((acc, i) => acc + (i.clicks || 0), 0);
   const avgCtr = data.length
     ? (data.reduce((acc, i) => acc + (i.ctr || 0), 0) / data.length) * 100
     : 0;
 
   return (
-    <div style={{ padding: 20, color: "white", background: "#0b0f1a", minHeight: "100vh" }}>
-      <h1>🧠 Autopilot Dashboard</h1>
+    <div style={{ padding: 30, color: "white", background: "#0b0f1a", minHeight: "100vh", fontFamily: "Arial" }}>
+      <h1 style={{ marginBottom: 20 }}>🧠 Autopilot Dashboard</h1>
 
-      {/* KPIs */}
-      <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
-        <div>👁 Views: {totalViews}</div>
-        <div>📈 CTR médio: {avgCtr.toFixed(1)}%</div>
-        <div>📦 Conteúdos: {data.length}</div>
+      {/* CARDS */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20, marginBottom: 30 }}>
+        <div style={{ background: "#111827", padding: 20, borderRadius: 10 }}>
+          <div>👁 Views</div>
+          <strong style={{ fontSize: 22 }}>{totalViews}</strong>
+        </div>
+
+        <div style={{ background: "#111827", padding: 20, borderRadius: 10 }}>
+          <div>🖱 Clicks</div>
+          <strong style={{ fontSize: 22 }}>{totalClicks}</strong>
+        </div>
+
+        <div style={{ background: "#111827", padding: 20, borderRadius: 10 }}>
+          <div>📈 CTR Médio</div>
+          <strong style={{ fontSize: 22 }}>{avgCtr.toFixed(1)}%</strong>
+        </div>
       </div>
 
-      {/* Ações */}
-      <div style={{ marginBottom: 20 }}>
-        <button onClick={runPipeline} disabled={loading}>
+      {/* ACTIONS */}
+      <div style={{ marginBottom: 30 }}>
+        <button onClick={runPipeline} disabled={loading} style={{ marginRight: 10 }}>
           {loading ? "Executando..." : "🚀 Rodar Pipeline"}
         </button>
-        <button onClick={load} style={{ marginLeft: 10 }}>
-          🔄 Atualizar
-        </button>
+        <button onClick={load}>🔄 Atualizar</button>
       </div>
 
-      {/* Tabela */}
+      {/* TABLE */}
       <h2>📊 Performance</h2>
-      {data.length === 0 && <p>Sem dados ainda...</p>}
 
-      <table style={{ width: "100%", marginBottom: 30 }}>
+      <table style={{ width: "100%", marginTop: 10, borderCollapse: "collapse" }}>
         <thead>
-          <tr>
+          <tr style={{ textAlign: "left", borderBottom: "1px solid #333" }}>
             <th>Views</th>
             <th>Clicks</th>
             <th>CTR</th>
@@ -65,24 +74,37 @@ export default function Dashboard() {
           </tr>
         </thead>
         <tbody>
+          {data.length === 0 && (
+            <tr>
+              <td colSpan={4} style={{ padding: 10, opacity: 0.6 }}>
+                Sem dados ainda...
+              </td>
+            </tr>
+          )}
+
           {data.map((item, i) => (
-            <tr key={i}>
-              <td>{item.views}</td>
-              <td>{item.clicks}</td>
+            <tr key={i} style={{ borderBottom: "1px solid #222" }}>
+              <td>{item.views || 0}</td>
+              <td>{item.clicks || 0}</td>
               <td>{((item.ctr || 0) * 100).toFixed(1)}%</td>
-              <td>{item.action}</td>
+              <td>{item.action || "-"}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Próximos conteúdos */}
-      <h2>🚀 Próximos Conteúdos</h2>
-      <ul>
-        {topics.map((t, i) => (
-          <li key={i}>{t}</li>
-        ))}
-      </ul>
+      {/* TOPICS */}
+      <h2 style={{ marginTop: 30 }}>🚀 Próximos Conteúdos</h2>
+
+      <div style={{ marginTop: 10 }}>
+        {topics.length === 0 && <p style={{ opacity: 0.6 }}>Nenhuma sugestão ainda...</p>}
+
+        <ul>
+          {topics.map((t, i) => (
+            <li key={i}>{t}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
