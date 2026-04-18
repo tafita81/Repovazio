@@ -1,10 +1,8 @@
 {
   "framework": "nextjs",
   "crons": [
-    {
-      "path": "/api/cron",
-      "schedule": "0 */2 * * *"
-    }
+    { "path": "/api/cerebro", "schedule": "*/15 * * * *" },
+    { "path": "/api/cerebro/aprender", "schedule": "0 * * * *" }
   ],
   "headers": [
     {
