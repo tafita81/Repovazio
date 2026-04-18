@@ -1,22 +1,11 @@
-import { supabase } from "@/lib/supabase";
-
 export async function GET() {
-  const { data } = await supabase
-    .from("config")
-    .select("data")
-    .limit(1)
-    .single();
-
-  return Response.json(data?.data || {});
+  return Response.json({
+    theme: { primaryColor: "#00ff88", background: "#0b0f1a" },
+    widgets: { clock: true },
+    texts: { title: "Dashboard" }
+  });
 }
 
-export async function POST(req) {
-  const body = await req.json();
-
-  await supabase.from("config").upsert({
-    id: "global",
-    data: body
-  });
-
+export async function POST() {
   return Response.json({ ok: true });
 }
