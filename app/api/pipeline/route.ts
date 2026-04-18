@@ -1,10 +1,24 @@
+export const dynamic = 'force-dynamic';
+
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+function getClient() {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return null;
+  return new OpenAI({ apiKey: key });
+}
 
 export async function POST() {
+  const client = getClient();
+
+  if (!client) {
+    return Response.json({
+      status: "fallback",
+      content: "3 ideias virais: 1) Psicologia da procrastinação 2) Viés cognitivo no dia a dia 3) Como hábitos moldam decisões",
+      createdAt: new Date().toISOString()
+    });
+  }
+
   try {
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
@@ -22,7 +36,11 @@ export async function POST() {
       createdAt: new Date().toISOString()
     });
 
-  } catch (e) {
-    return Response.json({ error: true, message: e.message });
+  } catch {
+    return Response.json({
+      status: "error",
+      content: "fallback content",
+      createdAt: new Date().toISOString()
+    });
   }
 }
