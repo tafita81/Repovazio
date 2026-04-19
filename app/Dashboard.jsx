@@ -9,7 +9,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // 2027: Daniela Coelho, psicóloga (NÃO "Dra." — apenas psicóloga)
 // ═══════════════════════════════════════════════════════════════════
 
-const RANK_INTERVAL = 4*60*60*1000;
+const RANK_INTERVAL = 60*1000;
 const PROD_INTERVAL = 30*60*1000;
 const FIRST_RANK    = 15*1000;
 const FIRST_PROD    = 60*1000;
@@ -400,16 +400,6 @@ async function runPipeline({day,setStep,setRunning,log,onContent,onMetrics,onRan
   await sleep(400);setStep(-1);setRunning(false);
 }
 
-async function sendIA(q,hist){
-  try{
-    const r=await fetch('/api/assistente',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pergunta:q,historico:hist})});
-    return await r.json();
-  }catch(e){return{erro:e.message};}
-}
-async function fetchTk(){
-  try{const r=await fetch('/api/tokens');return r.ok?await r.json():null;}catch{return null;}
-}
-
 function fmtCd(ms){if(ms<=0)return"agora";const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;if(h>0)return h+"h "+String(m).padStart(2,"0")+"m";return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");}
 
 
@@ -425,13 +415,6 @@ export default function App(){
   const[revealModal,setRevealModal]=useState(false);
   const[metrics,setMetrics]=useState({generated:0,published:0,viralReady:0,scoreAvg:0});
   const[contents,setContents]=useState([]);
-  const[tokenStats,setTokenStats]=useState(null);
-  const[tokenLoading,setTokenLoading]=useState(false);
-  const[iaQuery,setIaQuery]=useState("");
-  const[iaResp,setIaResp]=useState("");
-  const[iaLoading,setIaLoading]=useState(false);
-  const[iaHist,setIaHist]=useState([]);
-  const[showPend,setShowPend]=useState(false);
   const[logs,setLogs]=useState([{id:1,time:"--:--:--",type:"system",text:"🎬 psicologia.doc v7 — Dia 1: 15 abr 2026 · Revelação: ~1 jan 2027 · Cérebro iniciando..."}]);
   const[ranking,setRanking]=useState([]);
   const[cases,setCases]=useState(null);
@@ -484,7 +467,6 @@ export default function App(){
 
   const onRanking=useCallback(r=>{setRanking(r);stor("doc_ranking",r);},[]);
   const onCases=useCallback(c=>setCases(c),[]);
-  const refreshTk=useCallback(async()=>{setTokenLoading(true);const t=await fetchTk();if(t)setTokenStats(t);setTokenLoading(false);},[]);
 
   useEffect(()=>{
     if(initRef.current)return;initRef.current=true;
@@ -492,12 +474,10 @@ export default function App(){
     async function doRank(){if(rankRef.current)return;rankRef.current=true;setIsRanking(true);setNextRank(Date.now()+RANK_INTERVAL);const r=await fetchRanking(addLog);if(r)onRanking(r);setIsRanking(false);rankRef.current=false;}
     async function doProd(){if(runRef.current)return;runRef.current=true;setIsRunning(true);setNextProd(Date.now()+PROD_INTERVAL);await runPipeline({day:calcDay(),setStep,setRunning:(v)=>{setIsRunning(v);if(!v)runRef.current=false;},log:addLog,onContent,onMetrics,onRanking,onCases});runRef.current=false;}
     const t1=setTimeout(doRank,FIRST_RANK),t2=setTimeout(doProd,FIRST_PROD);
-    refreshTk();
-    const tkCron=setInterval(refreshTk,60*1000);
     const cron=setInterval(()=>{const n=Date.now();if(n-lastR>=RANK_INTERVAL){lastR=n;doRank();}if(n-lastP>=PROD_INTERVAL){lastP=n;doProd();}},10000);
     const onVis=()=>{if(document.visibilityState==="visible"){const n=Date.now();if(n-lastR>=RANK_INTERVAL){lastR=n;doRank();}}};
     document.addEventListener("visibilitychange",onVis);
-    return()=>{clearTimeout(t1);clearTimeout(t2);clearInterval(cron);clearInterval(tkCron);document.removeEventListener("visibilitychange",onVis);};
+    return()=>{clearTimeout(t1);clearTimeout(t2);clearInterval(cron);document.removeEventListener("visibilitychange",onVis);};
   },[addLog,onContent,onMetrics,onRanking,onCases]);
 
   const forceRun=useCallback(async()=>{
@@ -661,7 +641,7 @@ export default function App(){
 
         {/* MAIN */}
         <main className="main">
-          {page==="dashboard"&&<PageDashboard tokenStats={tokenStats} tokenLoading={tokenLoading} refreshTk={refreshTk} iaQuery={iaQuery} setIaQuery={setIaQuery} iaResp={iaResp} setIaResp={setIaResp} iaLoading={iaLoading} setIaLoading={setIaLoading} iaHist={iaHist} setIaHist={setIaHist} showPend={showPend} setShowPend={setShowPend} timeStr={timeStr} dateStr={dateStr} metrics={metrics} contents={contents} ranking={ranking} dayNumber={dayNumber} isRunning={isRunning} isRanking={isRanking} ph={ph} msToProd={msToProd} msToRank={msToRank} prodPct={prodPct} step={step} forceRun={forceRun} setPage={navTo} revealed={revealed} canReveal={canReveal} daysToReveal={daysToReveal} revealDate={revealDate} onRevealClick={()=>setRevealModal(true)} waGroups={waGroups} totalWA={totalWA}/>}
+          {page==="dashboard"&&<PageDashboard timeStr={timeStr} dateStr={dateStr} metrics={metrics} contents={contents} ranking={ranking} dayNumber={dayNumber} isRunning={isRunning} isRanking={isRanking} ph={ph} msToProd={msToProd} msToRank={msToRank} prodPct={prodPct} step={step} forceRun={forceRun} setPage={navTo} revealed={revealed} canReveal={canReveal} daysToReveal={daysToReveal} revealDate={revealDate} onRevealClick={()=>setRevealModal(true)} waGroups={waGroups} totalWA={totalWA}/>}
           {page==="cerebro"&&<PageCerebro timeStr={timeStr} dateStr={dateStr} step={step} isRunning={isRunning} isRanking={isRanking} logs={logs} logRef={logRef} dayNumber={dayNumber} ph={ph} msToProd={msToProd} msToRank={msToRank} ranking={ranking}/>}
           {page==="gerador"&&<PageGerador addLog={addLog} onContent={onContent} dayNumber={dayNumber}/>}
           {page==="variacoes"&&<PageVariacoes dayNumber={dayNumber} ranking={ranking} addLog={addLog} onContent={onContent} variations={variations} setVariations={setVariations}/>}
@@ -685,89 +665,12 @@ export default function App(){
 // ═══════════════════════════════════════════════════════════════════
 // PAGE: DASHBOARD
 // ═══════════════════════════════════════════════════════════════════
-function PageDashboard({tokenStats,tokenLoading,refreshTk,iaQuery,setIaQuery,iaResp,setIaResp,iaLoading,setIaLoading,iaHist,setIaHist,showPend,setShowPend,timeStr,dateStr,metrics,contents,ranking,dayNumber,isRunning,isRanking,ph,msToProd,msToRank,prodPct,step,forceRun,setPage,revealed,canReveal,daysToReveal,revealDate,onRevealClick,waGroups,totalWA}){
+function PageDashboard({timeStr,dateStr,metrics,contents,ranking,dayNumber,isRunning,isRanking,ph,msToProd,msToRank,prodPct,step,forceRun,setPage,revealed,canReveal,daysToReveal,revealDate,onRevealClick,waGroups,totalWA}){
   const activeSerie=SERIES_LIBRARY.find(s=>s.status==="active");
   const avgSafety=contents.length?Math.round(contents.reduce((s,c)=>(s+(c.safetyScore||92)),0)/contents.length):92;
   const booksContent=contents.filter(c=>c.books?.length).length;
-  const PEND_LIST=[
-    {n:1,txt:"ElevenLabs API Key — voz cinematográfica PT-BR",link:"https://elevenlabs.io/app",feito:false},
-    {n:2,txt:"HeyGen API Key — avatar IA vídeo 4K",link:"https://app.heygen.com",feito:false},
-    {n:3,txt:"YouTube OAuth Token — publicação automática",link:"https://console.cloud.google.com",feito:false},
-    {n:4,txt:"Instagram Access Token — publicação automática",link:"https://business.facebook.com",feito:false},
-    {n:5,txt:"TikTok Content API Token — publicação automática",link:"https://developers.tiktok.com",feito:false},
-    {n:6,txt:"Pinterest API Token — publicação automática",link:"https://developers.pinterest.com",feito:false},
-    {n:7,txt:"Publicar 1º vídeo no YouTube → Dia 1 ativado automaticamente",link:"https://studio.youtube.com",feito:false},
-    {n:8,txt:"Atingir 1.000 inscritos + 4.000h → solicitar AdSense",link:"https://youtube.com/account_monetization",feito:false},
-    {n:9,txt:"Conectar WhatsApp Business ao @psicologiadoc",link:"https://business.whatsapp.com",feito:false},
-    {n:10,txt:"Verificar conta Instagram → perfil profissional",link:"https://instagram.com/accounts/professional_account",feito:false},
-  ];
-  const pendFeit=PEND_LIST.filter(p=>p.feito).length;
   return(
     <>
-
-      {/* ══ MODAL PENDÊNCIAS ══ */}
-      {showPend&&<div onClick={()=>setShowPend(false)} style={{position:"fixed",inset:0,zIndex:500,background:"rgba(0,0,0,0.75)",backdropFilter:"blur(6px)",display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:64}}>
-        <div onClick={e=>e.stopPropagation()} style={{width:"min(460px,94vw)",background:"var(--surf)",borderRadius:20,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.6)",maxHeight:"82vh",display:"flex",flexDirection:"column"}}>
-          <div style={{background:"linear-gradient(135deg,#7c3aed,#a855f7)",padding:"16px 18px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div><div style={{fontWeight:800,fontSize:16,color:"white"}}>📋 Pendências — App 100%</div><div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:2}}>{pendFeit}/{PEND_LIST.length} concluídas</div></div>
-            <button onClick={()=>setShowPend(false)} style={{background:"rgba(255,255,255,0.15)",border:"none",color:"white",borderRadius:8,padding:"5px 11px",cursor:"pointer",fontSize:14,fontWeight:700}}>✕</button>
-          </div>
-          <div style={{overflowY:"auto",flex:1,padding:"10px 14px"}}>
-            {PEND_LIST.map(p=><a key={p.n} href={p.link} target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:10,padding:"9px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
-              <div style={{width:26,height:26,borderRadius:"50%",background:p.feito?"var(--gl)":"rgba(124,58,237,0.1)",border:"2px solid "+(p.feito?"var(--green)":"var(--purple)"),color:p.feito?"var(--green)":"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,flexShrink:0}}>{p.feito?"✓":p.n}</div>
-              <div style={{flex:1}}><div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>{p.txt}</div><div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Abrir ↗</div></div>
-            </a>)}
-          </div>
-        </div>
-      </div>}
-
-      {/* ══ IA ASSISTENTE ══ */}
-      <div style={{background:"linear-gradient(135deg,rgba(37,99,235,0.08),rgba(124,58,237,0.04))",border:"1px solid rgba(37,99,235,0.22)",borderRadius:16,padding:"13px 14px",marginBottom:14}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:9}}>
-          <span style={{fontSize:20}}>🤖</span>
-          <div style={{flex:1}}><div style={{fontWeight:700,fontSize:13,color:"var(--blue)"}}>Cérebro IA — Pergunte qualquer coisa</div><div style={{fontSize:10,color:"var(--muted)"}}>Estratégia · Código · APIs · Otimizações · Monetização · Tudo</div></div>
-          <button onClick={()=>setShowPend(true)} style={{background:"linear-gradient(135deg,#7c3aed,#a855f7)",border:"none",color:"white",borderRadius:9,padding:"6px 10px",cursor:"pointer",fontSize:10,fontWeight:700,flexShrink:0,display:"flex",alignItems:"center",gap:3}}>
-            📋<span style={{background:"rgba(255,255,255,0.2)",borderRadius:4,padding:"1px 5px",fontSize:9}}>{PEND_LIST.length-pendFeit}</span>
-          </button>
-        </div>
-        <textarea value={iaQuery} onChange={e=>setIaQuery(e.target.value)} onKeyDown={async e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&iaQuery.trim()&&!iaLoading){e.preventDefault();const q=iaQuery.trim();setIaQuery("");setIaLoading(true);setIaResp("⏳ Pensando...");const res=await sendIA(q,iaHist);const r=res.resposta||("❌ "+(res.erro||"erro"));setIaResp(r);setIaHist(h=>[...h.slice(-8),{role:"user",text:q},{role:"model",text:r}]);setIaLoading(false);}}} placeholder={"Faça qualquer pergunta sobre o app... (Ctrl+Enter envia)
-
-Ex: Como configurar YouTube? Qual estratégia usar? O que falta para monetizar?"} style={{width:"100%",minHeight:72,padding:"9px 12px",borderRadius:10,border:"1.5px solid rgba(37,99,235,0.25)",background:"rgba(0,0,0,0.15)",color:"var(--text)",fontSize:12,lineHeight:1.6,resize:"vertical",fontFamily:"var(--font)",outline:"none",boxSizing:"border-box"}}/>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:7}}>
-          <span style={{fontSize:10,color:"var(--muted)"}}>Ctrl+Enter · Gemini 2.0 Flash · 100% gratuito</span>
-          <button onClick={async()=>{if(!iaQuery.trim()||iaLoading)return;const q=iaQuery.trim();setIaQuery("");setIaLoading(true);setIaResp("⏳ Pensando...");const res=await sendIA(q,iaHist);const r=res.resposta||("❌ "+(res.erro||"erro"));setIaResp(r);setIaHist(h=>[...h.slice(-8),{role:"user",text:q},{role:"model",text:r}]);setIaLoading(false);}} disabled={!iaQuery.trim()||iaLoading} style={{padding:"7px 15px",borderRadius:9,border:"none",background:(!iaQuery.trim()||iaLoading)?"var(--surf2)":"linear-gradient(135deg,#2563eb,#3b82f6)",color:(!iaQuery.trim()||iaLoading)?"var(--muted)":"white",fontWeight:700,fontSize:12,cursor:(!iaQuery.trim()||iaLoading)?"not-allowed":"pointer",display:"flex",alignItems:"center",gap:5}}>
-            {iaLoading?<><div style={{width:11,height:11,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"white",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/>Pensando...</>:<>🚀 Enviar</>}
-          </button>
-        </div>
-        {iaResp&&<div style={{marginTop:9,background:"rgba(0,0,0,0.2)",borderRadius:10,padding:"11px 13px",maxHeight:280,overflowY:"auto",wordBreak:"break-word",whiteSpace:"pre-wrap",fontSize:12,lineHeight:1.7,color:"var(--text2)",border:"1px solid var(--border)"}}>{iaResp}</div>}
-        {iaHist.length>0&&<button onClick={()=>{setIaHist([]);setIaResp("");}} style={{marginTop:5,fontSize:10,color:"var(--muted)",background:"none",border:"none",cursor:"pointer"}}>🗑 Limpar ({Math.floor(iaHist.length/2)} perguntas)</button>}
-      </div>
-
-      {/* ══ QUOTA GEMINI ══ */}
-      <div style={{background:tokenStats?.saude==="critico"?"rgba(220,38,38,0.07)":tokenStats?.saude==="atencao"?"rgba(217,119,6,0.07)":"rgba(5,150,105,0.05)",border:"1px solid "+(tokenStats?.saude==="critico"?"rgba(220,38,38,0.3)":tokenStats?.saude==="atencao"?"rgba(217,119,6,0.3)":"rgba(5,150,105,0.18)"),borderRadius:14,padding:"11px 13px",marginBottom:14}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <div style={{display:"flex",alignItems:"center",gap:6}}><span>⚡</span><span style={{fontWeight:700,fontSize:12}}>Gemini 2.0 Flash — Quota Diária</span></div>
-          <button onClick={refreshTk} style={{background:"none",border:"1px solid var(--border)",cursor:"pointer",fontSize:11,color:"var(--muted)",padding:"3px 8px",borderRadius:7,display:"flex",alignItems:"center",gap:4}}>{tokenLoading?"🔄":"↻"} <span style={{fontSize:9}}>{tokenStats?new Date(tokenStats.timestamp).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"--:--"}</span></button>
-        </div>
-        {tokenStats?(<>
-          <div style={{marginBottom:7}}>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}><span style={{color:"var(--text2)"}}>🔤 Tokens usados hoje</span><span style={{fontWeight:800,color:tokenStats.saude==="critico"?"var(--red)":tokenStats.saude==="atencao"?"var(--amber)":"var(--green)"}}>{tokenStats.percentuais.tokens.toFixed(4)}%</span></div>
-            <div style={{height:9,background:"var(--surf2)",borderRadius:5,overflow:"hidden",border:"1px solid var(--border)"}}><div style={{height:"100%",borderRadius:5,background:tokenStats.saude==="critico"?"var(--red)":tokenStats.saude==="atencao"?"var(--amber)":"var(--green)",width:Math.max(0.4,tokenStats.percentuais.tokens)+"%",transition:"width 0.8s"}}/></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:"var(--muted)",marginTop:2}}><span>{(tokenStats.uso_hoje.tokens_estimados||0).toLocaleString("pt-BR")} usados</span><span>{(tokenStats.tokens_restantes||0).toLocaleString("pt-BR")} restantes / 1.000.000</span></div>
-          </div>
-          <div style={{marginBottom:8}}>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}><span style={{color:"var(--text2)"}}>📨 Requests hoje</span><span style={{fontWeight:800,color:"var(--blue)"}}>{tokenStats.percentuais.requests.toFixed(4)}%</span></div>
-            <div style={{height:6,background:"var(--surf2)",borderRadius:3,overflow:"hidden",border:"1px solid var(--border)"}}><div style={{height:"100%",borderRadius:3,background:"var(--blue)",width:Math.max(0.4,tokenStats.percentuais.requests)+"%",transition:"width 0.8s"}}/></div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:"var(--muted)",marginTop:2}}><span>{tokenStats.uso_hoje.requests_total} requests</span><span>{tokenStats.requests_restantes} restantes / 1.500</span></div>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
-            <div style={{background:"rgba(124,58,237,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}><div style={{fontSize:9,color:"var(--muted)"}}>Meta 85%</div><div style={{fontWeight:800,fontSize:13,color:"var(--purple)"}}>{(tokenStats.percentuais?.meta_85pct||0).toFixed(1)}%</div></div>
-            <div style={{background:"rgba(5,150,105,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}><div style={{fontSize:9,color:"var(--muted)"}}>Ciclos livres</div><div style={{fontWeight:800,fontSize:13,color:"var(--green)"}}>{tokenStats.ciclos_restantes_hoje||"—"}</div></div>
-            <div style={{background:tokenStats.saude==="saudavel"?"rgba(5,150,105,0.08)":tokenStats.saude==="atencao"?"rgba(217,119,6,0.08)":"rgba(220,38,38,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}><div style={{fontSize:9,color:"var(--muted)"}}>Status</div><div style={{fontWeight:800,fontSize:11,color:tokenStats.saude==="saudavel"?"var(--green)":tokenStats.saude==="atencao"?"var(--amber)":"var(--red)"}}>{tokenStats.saude?.toUpperCase()}</div></div>
-          </div>
-        </>):(<div style={{textAlign:"center",padding:"8px",color:"var(--muted)",fontSize:12}}>{tokenLoading?"🔄 Carregando...":"↻ Clique para atualizar"}</div>)}
-      </div>
-
       <div className="ph"><div><div className="pt">psicologia.doc</div><div className="ps">{ph.label} · {ph.period}</div></div>
         <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:20,background:"rgba(5,150,105,0.1)",border:"1px solid var(--gb)",flexShrink:0}}>
           <div style={{width:7,height:7,borderRadius:"50%",background:"var(--green)",animation:"pulse 1.5s infinite"}}/>
@@ -1377,7 +1280,7 @@ function PageRanking({ranking,isRanking}){
                 {v.hook&&<div style={{background:"var(--surf2)",borderRadius:8,padding:"6px 8px",fontSize:11,fontStyle:"italic"}}>"{v.hook?.slice(0,100)}"</div>}
                 {v.what_makes_viral&&<div style={{marginTop:5,fontSize:10,color:"var(--green)"}}>⚡ {v.what_makes_viral?.slice(0,80)}</div>}
               </div>
-              {v.url?.includes("watch?v=")&&<a href={v.url} target="_blank" rel="noopener noreferrer" style={{flexShrink:0,width:40,height:40,borderRadius:10,background:"#dc2626",color:"white",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:9,fontWeight:700,gap:1}}><span style={{fontSize:17,lineHeight:1}}>▶</span><span style={{fontSize:9}}>Assistir</span></a>}
+              {v.url?.includes("watch?v=")&&<a href={v.url} target="_blank" rel="noopener noreferrer" style={{flexShrink:0,width:40,height:40,borderRadius:10,background:"#dc2626",color:"white",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:9,fontWeight:700,gap:1}}><span style={{fontSize:16,lineHeight:1}}>▶</span><span>Ver</span></a>}
             </div>
           </div>
         ))}
