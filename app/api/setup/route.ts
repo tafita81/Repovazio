@@ -1,61 +1,43 @@
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const SU = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const SK = process.env.SUPABASE_SERVICE_KEY;
-  if (!SU || !SK) return Response.json({ error: 'env vars missing' }, { status: 500 });
+  const SU = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const SK = process.env.SUPABASE_SERVICE_KEY!;
 
-  const project = SU.replace('https://', '').replace('.supabase.co', '').replace('.supabase.co/', '');
+  // Tentar criar tabelas via INSERT com ON CONFLICT ignorado
+  // Como fallback, verificar se tabelas já existem
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SK,
+    'Authorization': `Bearer ${SK}`,
+    'Prefer': 'return=minimal'
+  };
 
-  const sql = `
-    CREATE TABLE IF NOT EXISTS registros (
-      id BIGSERIAL PRIMARY KEY, topic TEXT, script TEXT,
-      status TEXT DEFAULT 'gerado', canal TEXT DEFAULT 'psicologia.doc',
-      created_at TIMESTAMPTZ DEFAULT NOW(), plataforma TEXT,
-      score INTEGER DEFAULT 80, modelo TEXT, inovacao TEXT,
-      ciclo_id BIGINT, memoria_usada INTEGER DEFAULT 0,
-      views INTEGER DEFAULT 0, clicks INTEGER DEFAULT 0
-    );
-    CREATE TABLE IF NOT EXISTS cerebro_memoria (
-      id BIGSERIAL PRIMARY KEY, topic TEXT UNIQUE,
-      score INTEGER DEFAULT 80, vezes_gerado INTEGER DEFAULT 1,
-      estilo_vencedor TEXT, criado_em TIMESTAMPTZ DEFAULT NOW(),
-      ultimo_ciclo TIMESTAMPTZ DEFAULT NOW()
-    );
-    CREATE TABLE IF NOT EXISTS cerebro_aprendizado (
-      id BIGSERIAL PRIMARY KEY, data TIMESTAMPTZ DEFAULT NOW(),
-      total_ciclos_24h INTEGER DEFAULT 0, score_medio INTEGER DEFAULT 80,
-      padroes_virais JSONB DEFAULT '[]', padroes_ruins JSONB DEFAULT '[]',
-      proximos_topics JSONB DEFAULT '[]', tendencia TEXT DEFAULT 'estavel',
-      insight TEXT, ajuste_tom TEXT
-    );
-    CREATE INDEX IF NOT EXISTS idx_registros_created ON registros(created_at DESC);
-    CREATE INDEX IF NOT EXISTS idx_registros_score ON registros(score DESC);
-    CREATE INDEX IF NOT EXISTS idx_memoria_score ON cerebro_memoria(score DESC);
-  `;
+  const results: any[] = [];
 
-  // Usar pg-meta API do Supabase (server-side, sem CORS)
-  const resp = await fetch(`https://${project}.supabase.co/pg-meta/v1/query`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-supabase-token': SK
-    },
-    body: JSON.stringify({ query: sql })
-  });
+  // Verificar se registros existe
+  const checkR = await fetch(`${SU}/rest/v1/registros?limit=1`, { headers });
+  results.push({ table: 'registros', exists: checkR.status !== 404, status: checkR.status });
 
-  const result = await resp.json();
-  
-  // Verificar tabelas criadas
-  const checkResp = await fetch(`${SU}/rest/v1/registros?select=count&limit=1`, {
-    headers: { apikey: SK, Authorization: `Bearer ${SK}` }
-  });
+  const checkM = await fetch(`${SU}/rest/v1/cerebro_memoria?limit=1`, { headers });
+  results.push({ table: 'cerebro_memoria', exists: checkM.status !== 404, status: checkM.status });
 
-  return Response.json({
-    status: resp.ok ? 'tables_created' : 'error',
-    pg_meta_status: resp.status,
-    pg_meta_result: result,
-    registros_accessible: checkResp.status,
-    timestamp: new Date().toISOString()
-  });
+  const checkA = await fetch(`${SU}/rest/v1/cerebro_aprendizado?limit=1`, { headers });
+  results.push({ table: 'cerebro_aprendizado', exists: checkA.status !== 404, status: checkA.status });
+
+  const allExist = results.every(r => r.exists);
+
+  if (!allExist) {
+    // Tabelas não existem — tentar via pg-meta
+    const missing = results.filter(r => !r.exists).map(r => r.table);
+    return Response.json({ 
+      status: 'tables_missing', 
+      missing,
+      message: 'Execute o SUPABASE_SETUP.sql manualmente no SQL Editor do Supabase',
+      results,
+      sql_url: 'https://supabase.com/dashboard/project/tpjvalzwkqwttvmszvie/sql/new'
+    });
+  }
+
+  return Response.json({ status: 'all_tables_exist', results, timestamp: new Date().toISOString() });
 }
