@@ -9,7 +9,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // 2027: Daniela Coelho, psicóloga (NÃO "Dra." — apenas psicóloga)
 // ═══════════════════════════════════════════════════════════════════
 
-const RANK_INTERVAL = 60*1000;
+const RANK_INTERVAL = 4*60*60*1000; // 4h = 6x por dia
 const PROD_INTERVAL = 30*60*1000;
 const FIRST_RANK    = 15*1000;
 const FIRST_PROD    = 60*1000;
@@ -25,7 +25,13 @@ const CANAL = {
 const JORNADA_INICIO = new Date("2026-04-15T00:00:00");
 const DIA_REVELACAO  = 261; // ~1 jan 2027
 
-function calcDay() {
+function calcDay(publishedAt) {
+  // Dia 1 = quando primeiro vídeo foi publicado no YouTube
+  // Enquanto não publicado, mostra "PRÉ-LANÇAMENTO"
+  if (!publishedAt) return 0;
+  return Math.max(1, Math.floor((new Date() - new Date(publishedAt)) / 86400000) + 1);
+}
+function calcDayLegacy() {
   return Math.max(1, Math.floor((new Date()-JORNADA_INICIO)/86400000)+1);
 }
 function dayToDate(d) {
@@ -166,6 +172,17 @@ async function fetchRanking(log){
     if(m){const p=JSON.parse(m[0]);const vs=(p.videos||[]).filter(v=>v.url?.includes("watch?v="));if(vs.length){log("✅ Ranking: "+vs.length+" vídeos | #1: \""+vs[0].title_en?.slice(0,40)+"\" ("+vs[0].views+")","success");return vs;}}
   }catch(e){log("⚠️ Ranking: "+e.message,"warn");}
   return null;
+}
+
+async function sendIA(pergunta, historico) {
+  try {
+    const r = await fetch('/api/assistente', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ pergunta, historico })
+    });
+    return await r.json();
+  } catch(e) { return { erro: e.message }; }
 }
 
 async function fetchTokenStats(){try{const r=await fetch('/api/tokens');if(!r.ok)return null;return await r.json();}catch{return null;}}
@@ -417,7 +434,13 @@ export default function App(){
   const[revealModal,setRevealModal]=useState(false);
   const[metrics,setMetrics]=useState({generated:0,published:0,viralReady:0,scoreAvg:0});
 const[tokenStats,setTokenStats]=useState(null);
-const[tokenLoading,setTokenLoading]=useState(false);
+  const[tokenLoading,setTokenLoading]=useState(false);
+  const[iaQuery,setIaQuery]=useState("");
+  const[iaResponse,setIaResponse]=useState("");
+  const[iaLoading,setIaLoading]=useState(false);
+  const[iaHistorico,setIaHistorico]=useState([]);
+  const[pendenciasOpen,setPendenciasOpen]=useState(false);
+  const[firstPublish,setFirstPublish]=useState(()=>{try{return localStorage.getItem("doc_first_publish")||null;}catch{return null;}});
   const[contents,setContents]=useState([]);
   const[logs,setLogs]=useState([{id:1,time:"--:--:--",type:"system",text:"🎬 psicologia.doc v7 — Dia 1: 15 abr 2026 · Revelação: ~1 jan 2027 · Cérebro iniciando..."}]);
   const[ranking,setRanking]=useState([]);
@@ -480,7 +503,7 @@ const[tokenLoading,setTokenLoading]=useState(false);
     async function doProd(){if(runRef.current)return;runRef.current=true;setIsRunning(true);setNextProd(Date.now()+PROD_INTERVAL);await runPipeline({day:calcDay(),setStep,setRunning:(v)=>{setIsRunning(v);if(!v)runRef.current=false;},log:addLog,onContent,onMetrics,onRanking,onCases});runRef.current=false;}
     const t1=setTimeout(doRank,FIRST_RANK),t2=setTimeout(doProd,FIRST_PROD);
 refreshTokens();
-const tknCron=setInterval(refreshTokens,5*60*1000);
+const tknCron=setInterval(refreshTokens,60*1000); // 1 minuto
     const cron=setInterval(()=>{const n=Date.now();if(n-lastR>=RANK_INTERVAL){lastR=n;doRank();}if(n-lastP>=PROD_INTERVAL){lastP=n;doProd();}},10000);
     const onVis=()=>{if(document.visibilityState==="visible"){const n=Date.now();if(n-lastR>=RANK_INTERVAL){lastR=n;doRank();}}};
     document.addEventListener("visibilitychange",onVis);
@@ -648,7 +671,7 @@ const tknCron=setInterval(refreshTokens,5*60*1000);
 
         {/* MAIN */}
         <main className="main">
-          {page==="dashboard"&&<PageDashboard tokenStats={tokenStats} tokenLoading={tokenLoading} refreshTokens={refreshTokens} timeStr={timeStr} dateStr={dateStr} metrics={metrics} contents={contents} ranking={ranking} dayNumber={dayNumber} isRunning={isRunning} isRanking={isRanking} ph={ph} msToProd={msToProd} msToRank={msToRank} prodPct={prodPct} step={step} forceRun={forceRun} setPage={navTo} revealed={revealed} canReveal={canReveal} daysToReveal={daysToReveal} revealDate={revealDate} onRevealClick={()=>setRevealModal(true)} waGroups={waGroups} totalWA={totalWA}/>}
+          {page==="dashboard"&&<PageDashboard tokenStats={tokenStats} tokenLoading={tokenLoading} refreshTokens={refreshTokens} iaQuery={iaQuery} setIaQuery={setIaQuery} iaResponse={iaResponse} setIaResponse={setIaResponse} iaLoading={iaLoading} setIaLoading={setIaLoading} iaHistorico={iaHistorico} setIaHistorico={setIaHistorico} pendenciasOpen={pendenciasOpen} setPendenciasOpen={setPendenciasOpen} firstPublish={firstPublish} timeStr={timeStr} dateStr={dateStr} metrics={metrics} contents={contents} ranking={ranking} dayNumber={dayNumber} isRunning={isRunning} isRanking={isRanking} ph={ph} msToProd={msToProd} msToRank={msToRank} prodPct={prodPct} step={step} forceRun={forceRun} setPage={navTo} revealed={revealed} canReveal={canReveal} daysToReveal={daysToReveal} revealDate={revealDate} onRevealClick={()=>setRevealModal(true)} waGroups={waGroups} totalWA={totalWA}/>}
           {page==="cerebro"&&<PageCerebro timeStr={timeStr} dateStr={dateStr} step={step} isRunning={isRunning} isRanking={isRanking} logs={logs} logRef={logRef} dayNumber={dayNumber} ph={ph} msToProd={msToProd} msToRank={msToRank} ranking={ranking}/>}
           {page==="gerador"&&<PageGerador addLog={addLog} onContent={onContent} dayNumber={dayNumber}/>}
           {page==="variacoes"&&<PageVariacoes dayNumber={dayNumber} ranking={ranking} addLog={addLog} onContent={onContent} variations={variations} setVariations={setVariations}/>}
@@ -672,7 +695,7 @@ const tknCron=setInterval(refreshTokens,5*60*1000);
 // ═══════════════════════════════════════════════════════════════════
 // PAGE: DASHBOARD
 // ═══════════════════════════════════════════════════════════════════
-function PageDashboard({tokenStats,tokenLoading,refreshTokens,timeStr,dateStr,metrics,contents,ranking,dayNumber,isRunning,isRanking,ph,msToProd,msToRank,prodPct,step,forceRun,setPage,revealed,canReveal,daysToReveal,revealDate,onRevealClick,waGroups,totalWA}){
+function PageDashboard({tokenStats,tokenLoading,refreshTokens,iaQuery,setIaQuery,iaResponse,setIaResponse,iaLoading,setIaLoading,iaHistorico,setIaHistorico,pendenciasOpen,setPendenciasOpen,firstPublish,timeStr,dateStr,metrics,contents,ranking,dayNumber,isRunning,isRanking,ph,msToProd,msToRank,prodPct,step,forceRun,setPage,revealed,canReveal,daysToReveal,revealDate,onRevealClick,waGroups,totalWA}){
   const activeSerie=SERIES_LIBRARY.find(s=>s.status==="active");
   const avgSafety=contents.length?Math.round(contents.reduce((s,c)=>(s+(c.safetyScore||92)),0)/contents.length):92;
   const booksContent=contents.filter(c=>c.books?.length).length;
@@ -686,6 +709,163 @@ function PageDashboard({tokenStats,tokenLoading,refreshTokens,timeStr,dateStr,me
       </div>
       <div className="body">
         {/* Relógio */}
+        {/* ═══════════ ÍCONE PENDÊNCIAS ═══════════ */}
+        {pendenciasOpen&&(
+          <div style={{position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.7)",backdropFilter:"blur(6px)",display:"flex",alignItems:"flex-start",justifyContent:"center",paddingTop:70}} onClick={()=>setPendenciasOpen(false)}>
+            <div onClick={e=>e.stopPropagation()} style={{width:"min(480px,94vw)",background:"var(--surf)",borderRadius:20,overflow:"hidden",boxShadow:"0 20px 60px rgba(0,0,0,0.5)",maxHeight:"80vh",display:"flex",flexDirection:"column"}}>
+              <div style={{background:"linear-gradient(135deg,#7c3aed,#a855f7)",padding:"16px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div>
+                  <div style={{fontWeight:800,fontSize:16,color:"white"}}>📋 Pendências para App 100%</div>
+                  <div style={{fontSize:11,color:"rgba(255,255,255,0.8)",marginTop:2}}>Complete cada etapa para monetizar e publicar</div>
+                </div>
+                <button onClick={()=>setPendenciasOpen(false)} style={{background:"rgba(255,255,255,0.15)",border:"none",color:"white",borderRadius:8,padding:"4px 10px",cursor:"pointer",fontSize:13}}>✕</button>
+              </div>
+              <div style={{overflowY:"auto",flex:1,padding:"12px 16px"}}>
+                <a key={1} href="https://elevenlabs.io/app" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>1</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure ElevenLabs API Key → Configurações → ElevenLabs</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={2} href="https://app.heygen.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>2</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure HeyGen API Key → Configurações → HeyGen</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={3} href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>3</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure YouTube OAuth Token → Configurações → YouTube</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={4} href="https://business.facebook.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>4</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure Instagram Token → Configurações → Instagram</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={5} href="https://developers.tiktok.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>5</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure TikTok Token → Configurações → TikTok</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={6} href="https://developers.pinterest.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>6</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Configure Pinterest Token → Configurações → Pinterest</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={7} href="https://studio.youtube.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>7</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Aguardar primeiro vídeo publicado no YouTube → Dia 1 será ativado automaticamente</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={8} href="https://youtube.com/account_monetization" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>8</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Ativar monetização YouTube (1K subs + 4K horas assistidas)</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={9} href="https://business.whatsapp.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>9</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Conectar WhatsApp Business ao canal @psicologiadoc</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+                <a key={10} href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{display:"flex",gap:12,padding:"10px 0",borderBottom:"1px solid var(--border)",textDecoration:"none",alignItems:"flex-start"}}>
+                  <div style={{width:26,height:26,borderRadius:"50%",background:"rgba(124,58,237,0.1)",border:"2px solid var(--purple)",color:"var(--purple)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>10</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,color:"var(--text)",lineHeight:1.4}}>Verificar conta Instagram e ativar perfil profissional</div>
+                    <div style={{fontSize:10,color:"var(--purple)",marginTop:2}}>Clique para abrir ↗</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════ IA ASSISTENTE ═══════════ */}
+        <div style={{background:"linear-gradient(135deg,rgba(37,99,235,0.08),rgba(124,58,237,0.05))",border:"1px solid rgba(37,99,235,0.25)",borderRadius:16,padding:"14px 14px 12px",marginBottom:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+            <span style={{fontSize:18}}>🤖</span>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:13,color:"var(--blue)"}}>Cérebro IA — Assistente Completo</div>
+              <div style={{fontSize:10,color:"var(--muted)"}}>Pergunte qualquer coisa sobre o app, estratégia, código, APIs, otimizações...</div>
+            </div>
+            <button onClick={()=>setPendenciasOpen(true)} style={{background:"linear-gradient(135deg,#7c3aed,#a855f7)",border:"none",color:"white",borderRadius:10,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+              📋 <span style={{fontSize:9}}>Pendências</span>
+            </button>
+          </div>
+          <textarea
+            value={iaQuery}
+            onChange={e=>setIaQuery(e.target.value)}
+            onKeyDown={async e=>{
+              if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&iaQuery.trim()&&!iaLoading){
+                e.preventDefault();
+                setIaLoading(true);
+                setIaResponse("⏳ Processando...");
+                const pergunta=iaQuery.trim();
+                setIaQuery("");
+                const res=await sendIA(pergunta,iaHistorico);
+                if(res.resposta){
+                  setIaResponse(res.resposta);
+                  setIaHistorico(h=>[...h.slice(-10),{role:"user",text:pergunta},{role:"model",text:res.resposta}]);
+                }else{
+                  setIaResponse("❌ Erro: "+(res.erro||"Sem resposta"));
+                }
+                setIaLoading(false);
+              }
+            }}
+            placeholder="Digite sua pergunta aqui... (Ctrl+Enter para enviar)&#10;Ex: Como otimizar o ranking? Qual o melhor horário para publicar? Como configurar o YouTube? O que falta para monetizar?"
+            style={{width:"100%",minHeight:80,padding:"10px 12px",borderRadius:10,border:"1.5px solid rgba(37,99,235,0.3)",background:"rgba(0,0,0,0.2)",color:"var(--text)",fontSize:12,lineHeight:1.6,resize:"none",fontFamily:"var(--font)",outline:"none",boxSizing:"border-box",whiteSpace:"pre-wrap",wordBreak:"break-word"}}
+          />
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:8}}>
+            <span style={{fontSize:10,color:"var(--muted)"}}>Ctrl+Enter para enviar • Usa tokens Gemini gratuitos</span>
+            <button
+              onClick={async()=>{
+                if(!iaQuery.trim()||iaLoading)return;
+                setIaLoading(true);
+                setIaResponse("⏳ Processando...");
+                const pergunta=iaQuery.trim();
+                setIaQuery("");
+                const res=await sendIA(pergunta,iaHistorico);
+                if(res.resposta){
+                  setIaResponse(res.resposta);
+                  setIaHistorico(h=>[...h.slice(-10),{role:"user",text:pergunta},{role:"model",text:res.resposta}]);
+                }else{
+                  setIaResponse("❌ Erro: "+(res.erro||"Sem resposta"));
+                }
+                setIaLoading(false);
+              }}
+              disabled={!iaQuery.trim()||iaLoading}
+              style={{padding:"8px 16px",borderRadius:10,border:"none",background:(!iaQuery.trim()||iaLoading)?"var(--surf2)":"linear-gradient(135deg,var(--blue),#3b82f6)",color:(!iaQuery.trim()||iaLoading)?"var(--muted)":"white",fontWeight:700,fontSize:12,cursor:(!iaQuery.trim()||iaLoading)?"not-allowed":"pointer",display:"flex",alignItems:"center",gap:6}}
+            >
+              {iaLoading?<><div style={{width:12,height:12,border:"2px solid rgba(255,255,255,0.3)",borderTopColor:"white",borderRadius:"50%",animation:"spin 0.7s linear infinite"}}/>Pensando...</>:<>🚀 Enviar</>}
+            </button>
+          </div>
+          {iaResponse&&(
+            <div style={{marginTop:10,background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"12px 14px",maxHeight:320,overflowY:"auto",wordBreak:"break-word",whiteSpace:"pre-wrap",fontSize:12,lineHeight:1.7,color:"var(--text2)",border:"1px solid var(--border)"}}>
+              {iaResponse}
+            </div>
+          )}
+          {iaHistorico.length>0&&(
+            <button onClick={()=>{setIaHistorico([]);setIaResponse("");}} style={{marginTop:6,fontSize:10,color:"var(--muted)",background:"none",border:"none",cursor:"pointer"}}>
+              🗑 Limpar histórico ({Math.floor(iaHistorico.length/2)} perguntas)
+            </button>
+          )}
+        </div>
         <div style={{background:"linear-gradient(135deg,rgba(124,58,237,0.12),rgba(168,85,247,0.04))",border:"1px solid rgba(124,58,237,0.25)",borderRadius:18,padding:"18px 18px 14px",marginBottom:14}}>
           <div style={{fontSize:10,fontWeight:700,color:"var(--purple)",textTransform:"uppercase",letterSpacing:"1px",marginBottom:8}}>🕐 Relógio do Cérebro · psicologia.doc</div>
           <div style={{fontFamily:"monospace",fontSize:38,fontWeight:800,letterSpacing:"0.05em",lineHeight:1,marginBottom:6,color:"#FF69B4"}}>{timeStr}</div>
@@ -756,6 +936,21 @@ function PageDashboard({tokenStats,tokenLoading,refreshTokens,timeStr,dateStr,me
                 <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:"var(--muted)",marginTop:2}}>
                   <span>{tokenStats.uso_hoje.requests_total} requests hoje</span>
                   <span>{tokenStats.requests_restantes} restantes / 1.500</span>
+                </div>
+              </div>
+              <div style={{display:"flex",gap:6,marginTop:4}}>
+                <div style={{flex:1,background:"rgba(124,58,237,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:9,color:"var(--muted)"}}>Meta 85%</div>
+                  <div style={{fontWeight:800,fontSize:13,color:"var(--purple)"}}>{tokenStats.percentuais?.meta_85pct?.toFixed(1)||"0.0"}%</div>
+                </div>
+                <div style={{flex:1,background:"rgba(5,150,105,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:9,color:"var(--muted)"}}>Ciclos restantes</div>
+                  <div style={{fontWeight:800,fontSize:13,color:"var(--green)"}}>{tokenStats.ciclos_restantes_hoje||"—"}</div>
+                </div>
+                <div style={{flex:1,background:"rgba(37,99,235,0.08)",borderRadius:8,padding:"5px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:9,color:"var(--muted)"}}>Ranking/dia</div>
+                  <div style={{fontWeight:800,fontSize:13,color:"var(--blue)"}}>6×</div>
+                </div>
                 </div>
               </div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -1335,7 +1530,13 @@ function PageRanking({ranking,isRanking}){
                 {v.hook&&<div style={{background:"var(--surf2)",borderRadius:8,padding:"6px 8px",fontSize:11,fontStyle:"italic"}}>"{v.hook?.slice(0,100)}"</div>}
                 {v.what_makes_viral&&<div style={{marginTop:5,fontSize:10,color:"var(--green)"}}>⚡ {v.what_makes_viral?.slice(0,80)}</div>}
               </div>
-              {v.url?.includes("watch?v=")&&<a href={v.url} target="_blank" rel="noopener noreferrer" style={{flexShrink:0,width:40,height:40,borderRadius:10,background:"#dc2626",color:"white",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:9,fontWeight:700,gap:1}}><span style={{fontSize:16,lineHeight:1}}>▶</span><span>Ver</span></a>}
+              {v.url?.includes("watch?v=")&&(
+              <a href={v.url} target="_blank" rel="noopener noreferrer"
+                style={{flexShrink:0,width:44,height:44,borderRadius:10,background:"#dc2626",color:"white",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",textDecoration:"none",fontSize:9,fontWeight:700,gap:1,boxShadow:"0 2px 8px rgba(220,38,38,0.4)"}}>
+                <span style={{fontSize:18,lineHeight:1}}>▶</span>
+                <span>Assistir</span>
+              </a>
+            )}
             </div>
           </div>
         ))}
