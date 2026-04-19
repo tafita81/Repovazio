@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 const GK = process.env.GROQ_API_KEY;
 const GMK = process.env.GEMINI_API_KEY;
-const OAK = process.env.OPENAI_API_KEY;
 const SU = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SK = process.env.SUPABASE_SERVICE_KEY;
 const TOPICS = ['Ansiedade','Apego ansioso','Narcisismo','Trauma infancia','Autossabotagem','Dependencia emocional','Gaslighting','Sindrome do impostor','Limites saudaveis','Psicologia do dinheiro','Burnout','Relacionamentos toxicos','Inteligencia emocional','Autoestima','Luto e perda','Ansiedade social','Vicio em validacao','TDAH adulto','Codependencia','Trauma de abandono','Apego evitativo','Alexitimia','Hipersensibilidade','Mindfulness','Psicossomatica','Depressao','Autocompaixao','Autoconhecimento'];
@@ -45,7 +44,6 @@ export async function GET(req: Request) {
   const ctxMem = (memoria as any[]).length > 0 ? `MEMORIA:\n${(memoria as any[]).slice(0,5).map((m: any) => `- ${m.topic}: score ${m.score}`).join('\n')}\n\n` : '';
   const prompt = `${ctxMem}Crie roteiro viral documentario YouTube 22-28min sobre "${topicEscolhido}".\nTITULO SEO (55-65 chars keyword inicio):\nGANCHO 0-30s (PNL espelhamento):\nPONTO 1 (dado cientifico DSM-5):\nPONTO 2 (caso anonimo identificacao):\nPONTO 3 (virada emocional esperanca):\nCTA FINAL (WhatsApp loop aberto):\nSCORE VIRAL ESTIMADO (0-100):\nINOVACAO APLICADA:`;
   const { text: script, model } = await callAI(prompt, sys, 1200);
-  if (!script) return Response.json({ status: 'no_ai_available', model, hora_sp: horaSP }, { status: 503 });
   const scoreMatch = script.match(/SCORE VIRAL[^:]*:\s*(\d+)/i);
   const score = scoreMatch ? parseInt(scoreMatch[1]) : Math.floor(Math.random() * 15) + 80;
   const inovacaoMatch = script.match(/INOVACAO APLICADA[^:]*:\s*(.+?)(?:\n|$)/i);
