@@ -1,23 +1,67 @@
-export const dynamic='force-dynamic';
-import{createClient}from'@supabase/supabase-js';
-export async function GET(){
-  const sb=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.SUPABASE_SERVICE_KEY!);
-  const sqls=[
-    `CREATE TABLE IF NOT EXISTS whatsapp_mensagens(id BIGSERIAL PRIMARY KEY,timestamp TIMESTAMPTZ DEFAULT now(),remetente TEXT,remetente_nome TEXT,conteudo TEXT,tipo TEXT DEFAULT 'texto',grupo_id TEXT,respondido BOOLEAN DEFAULT false,sentimento TEXT,topico_detectado TEXT)`,
-    `CREATE TABLE IF NOT EXISTS whatsapp_respostas(id BIGSERIAL PRIMARY KEY,timestamp TIMESTAMPTZ DEFAULT now(),mensagem_id BIGINT,resposta TEXT NOT NULL,modelo_ia TEXT,enviado BOOLEAN DEFAULT false,horario_programado TIMESTAMPTZ,motivo TEXT)`,
-    `CREATE TABLE IF NOT EXISTS whatsapp_membros(id BIGSERIAL PRIMARY KEY,phone TEXT UNIQUE,nome TEXT,entrada TIMESTAMPTZ DEFAULT now(),engajamento INT DEFAULT 0,ultima_mensagem TIMESTAMPTZ,perfil_psicologico TEXT,nivel_interesse INT DEFAULT 1)`,
-    `CREATE TABLE IF NOT EXISTS planejamento_revelacao(id BIGSERIAL PRIMARY KEY,dia INT NOT NULL,data_prevista DATE,fase TEXT,acao TEXT,executado BOOLEAN DEFAULT false,resultado TEXT,criado_em TIMESTAMPTZ DEFAULT now())`,
-    `INSERT INTO planejamento_revelacao(dia,fase,acao) VALUES(1,'lancamento','Publicar 1o video YouTube — ativa Dia 1'),(30,'crescimento','Meta 500 subs — WhatsApp grupo ativo'),(60,'engajamento','Meta 1000 subs — solicitar AdSense'),(90,'monetizacao','Primeiros ganhos AdSense — afiliados'),(120,'expansao','Meta 5000 subs — TikTok Instagram ativos'),(180,'consolidacao','Meta 10000 subs — curso gratuito lead magnet'),(240,'pre-revelacao','Hints sobre Daniela Coelho nos videos'),(261,'revelacao','REVELAR Daniela Coelho Psicologa — agenda consultas online'),(270,'pos-revelacao','Converter WhatsApp em clientes consulta'),(365,'escala','Meta 100000 subs — canal EUA ingles') ON CONFLICT DO NOTHING`,
-  ];
-  const results=[];
-  for(const sql of sqls){
-    const{error}=await sb.rpc('exec_sql',{sql}).single().catch(()=>({error:'rpc_unavailable'}));
-    // fallback: tentar direto
-    if(error){
-      // usar fetch direto
-      const r=await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/exec_sql`,{method:'POST',headers:{'Content-Type':'application/json',apikey:process.env.SUPABASE_SERVICE_KEY!,Authorization:`Bearer ${process.env.SUPABASE_SERVICE_KEY}`},body:JSON.stringify({query:sql})});
-      results.push({sql:sql.slice(0,50),status:r.status});
-    } else {results.push({sql:sql.slice(0,50),ok:true});}
+export const dynamic = 'force-dynamic';
+const SU = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SK = process.env.SUPABASE_SERVICE_KEY;
+
+async function sql(query: string) {
+  if (!SU || !SK) return { error: 'env missing' };
+  const r = await fetch(`${SU}/rest/v1/`, {
+    method: 'HEAD', headers: { apikey: SK, Authorization: `Bearer ${SK}` }
+  });
+  // Usar o endpoint de query SQL do Supabase via REST
+  const r2 = await fetch(`${SU}/rest/v1/rpc/exec`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: SK, Authorization: `Bearer ${SK}` },
+    body: JSON.stringify({ sql: query })
+  });
+  return { status: r2.status, ok: r2.ok };
+}
+
+export async function GET() {
+  const results: string[] = [];
+
+  // Verificar tabelas existentes
+  const tables = ['registros', 'cerebro_memoria', 'cerebro_aprendizado', 'whatsapp_mensagens', 'whatsapp_respostas', 'whatsapp_membros', 'planejamento_revelacao'];
+  const checks = await Promise.all(tables.map(async (t) => {
+    if (!SU || !SK) return { table: t, ok: false };
+    const r = await fetch(`${SU}/rest/v1/${t}?limit=1`, {
+      headers: { apikey: SK, Authorization: `Bearer ${SK}` }
+    });
+    return { table: t, ok: r.ok, status: r.status };
+  }));
+
+  // Inserir plano se tabela existe mas vazia
+  const planoCheck = checks.find(c => c.table === 'planejamento_revelacao');
+  if (planoCheck?.ok) {
+    const existR = await fetch(`${SU}/rest/v1/planejamento_revelacao?select=count`, {
+      headers: { apikey: SK, Authorization: `Bearer ${SK}`, Prefer: 'count=exact' }
+    });
+    const count = parseInt(existR.headers.get('content-range')?.split('/')[1] || '0');
+    if (count === 0) {
+      const plano = [
+        { dia: 1, fase: 'lancamento', acao: 'Publicar 1o video YouTube — ativa Dia 1' },
+        { dia: 30, fase: 'crescimento', acao: 'Meta 500 subs — WhatsApp grupo ativo' },
+        { dia: 60, fase: 'engajamento', acao: 'Meta 1000 subs — solicitar AdSense' },
+        { dia: 90, fase: 'monetizacao', acao: 'Primeiros ganhos AdSense — adicionar afiliados' },
+        { dia: 120, fase: 'expansao', acao: 'Meta 5000 subs — TikTok e Instagram ativos' },
+        { dia: 180, fase: 'consolidacao', acao: 'Meta 10000 subs — curso gratuito lead magnet' },
+        { dia: 240, fase: 'pre-revelacao', acao: 'Hints sobre Daniela Coelho nos videos' },
+        { dia: 261, fase: 'revelacao', acao: 'REVELAR Daniela Coelho Psicologa — agenda consultas online' },
+        { dia: 270, fase: 'pos-revelacao', acao: 'Converter grupo WhatsApp em clientes consulta' },
+        { dia: 365, fase: 'escala', acao: 'Meta 100000 subs — canal EUA ingles' },
+      ];
+      await fetch(`${SU}/rest/v1/planejamento_revelacao`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SK, Authorization: `Bearer ${SK}`, Prefer: 'return=minimal' },
+        body: JSON.stringify(plano)
+      });
+      results.push('plano inserido');
+    }
   }
-  return Response.json({setup_done:true,results});
+
+  return Response.json({
+    setup_ok: true,
+    tabelas: checks,
+    results,
+    hora: new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+  });
 }
