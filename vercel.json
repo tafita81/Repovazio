@@ -3,11 +3,11 @@
   "crons": [
     {
       "path": "/api/cerebro",
-      "schedule": "0 8 * * *"
+      "schedule": "0 */2 * * *"
     },
     {
       "path": "/api/cerebro/aprender",
-      "schedule": "0 9 * * *"
+      "schedule": "0 3 * * *"
     }
   ],
   "headers": [
