@@ -496,7 +496,10 @@ export default function App(){
     addLog("📋 Atualize TikTok e Pinterest manualmente — bios disponíveis em Revelação","info");
   },[addLog]);
 
-  const navTo=p=>{setPage(p);setSidebar(false);setNotifOpen(false);};
+  const navTo=p=>{
+  if(p==="ia_page"||p==="pendencias"){window.open('/ia','_self');return;}
+  setPage(p);setSidebar(false);setNotifOpen(false);
+};
   const ph=getPhase(dayNumber,revealed);
   const msToProd=Math.max(0,nextProd-now.getTime());
   const msToRank=Math.max(0,nextRank-now.getTime());
@@ -524,6 +527,8 @@ export default function App(){
     {id:"monetizacao",icon:"💰",label:"Monetização"},
     {id:"configuracoes",icon:"⚙️",label:"Configurações"},
     {id:"logs",icon:"📋",label:"Logs"},
+    {id:"ia_page",icon:"🤖",label:"IA Assistente",badge:"NOVO"},
+    {id:"pendencias",icon:"📋",label:"Pendências App 100%",badge:10},
   ];
 
   return(
@@ -634,6 +639,7 @@ export default function App(){
           </div>
           <div style={{display:"flex",alignItems:"center",gap:8}}>
             <button onClick={()=>setDarkMode(v=>!v)} style={{width:34,height:34,borderRadius:"50%",border:"none",background:"var(--surf2)",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{darkMode?"☀️":"🌙"}</button>
+            <a href="/ia" style={{width:34,height:34,borderRadius:"50%",border:"none",background:"linear-gradient(135deg,#2563eb,#7c3aed)",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,textDecoration:"none"}} title="IA Assistente + Pendências">🤖</a>
             <div style={{fontSize:11,fontWeight:700,padding:"4px 9px",borderRadius:20,background:isRunning?"rgba(124,58,237,0.15)":"rgba(5,150,105,0.1)",color:isRunning?"var(--purple)":"var(--green)",whiteSpace:"nowrap"}}>{isRunning?"⚡ Gerando":"● Online"}</div>
             <button className="nb-btn" onClick={()=>{setNotifOpen(v=>!v);setNotifCount(0);}}>🔔{notifCount>0&&<span className="nb">{notifCount>9?"9+":notifCount}</span>}</button>
           </div>
