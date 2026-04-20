@@ -1,16 +1,5 @@
 {
   "crons": [
-    {
-      "path": "/api/cerebro",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cerebro/aprender",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/whatsapp",
-      "schedule": "* * * * *"
-    }
+    { "path": "/api/cron/auto", "schedule": "* * * * *" }
   ]
 }

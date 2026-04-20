@@ -1,0 +1,15 @@
+export const dynamic = 'force-dynamic';
+const SU = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SK = process.env.SUPABASE_SERVICE_KEY;
+async function db(path) {
+  if (!SU || !SK) return null;
+  try {
+    const r = await fetch(SU + '/rest/v1/' + path, { headers: { apikey: SK, Authorization: 'Bearer ' + SK } });
+    return r.ok ? r.json() : null;
+  } catch { return null; }
+}
+export async function GET() {
+  const videos = (await db('cerebro_memoria?select=topic,score&order=created_at.desc&limit=50')) || [];
+  const ranking = videos.sort((a,b) => (b.score || 0) - (a.score || 0)).slice(0,10);
+  return Response.json({ ranking, total: videos.length, updated_at: new Date().toISOString() });
+}
