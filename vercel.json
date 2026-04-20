@@ -1,28 +1,16 @@
 {
-  "framework": "nextjs",
   "crons": [
     {
       "path": "/api/cerebro",
-      "schedule": "0 8 * * *"
+      "schedule": "* * * * *"
     },
     {
       "path": "/api/cerebro/aprender",
-      "schedule": "0 9 * * *"
-    }
-  ],
-  "headers": [
+      "schedule": "* * * * *"
+    },
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        }
-      ]
+      "path": "/api/whatsapp",
+      "schedule": "* * * * *"
     }
   ]
 }
