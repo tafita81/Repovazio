@@ -1,2 +1,4 @@
-import D from './ia/page';
-export default D;
+import { redirect } from 'next/navigation';
+export default function Home() {
+  redirect('/ia');
+}
