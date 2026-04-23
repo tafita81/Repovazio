@@ -7,22 +7,17 @@ export async function POST(req) {
     if (!pergunta?.trim()) return Response.json({ erro: 'Vazio' }, { status: 400 });
 
     const GROQ = process.env.GROQ_API_KEY;
-    const GH = process.env.GH_PAT;
     const p = pergunta.toLowerCase();
+    console.log('[EXECUTOR] Pergunta:', p); // FORÇAR DEPLOY NOVO
     
     if (p.includes('status')) {
-      try {
-        const c = await fetch('https://repovazio.vercel.app/api/cerebro/status').then(r => r.json());
-        const s = await fetch('https://repovazio.vercel.app/api/state').then(r => r.json());
-        return Response.json({ resposta: '📊 STATUS\n\n🧠 Cérebro: ' + (c.status || 'offline') + '\n📈 Score: ' + (c.score || '--') + '\n📅 Dia: ' + (s.dia_atual || '--') + '\n💥 Membros: ' + (s.membros_whatsapp || 0) + '\n\n✅ Online!' });
-      } catch(e) { return Response.json({ resposta: '❌ Erro: ' + e.message }); }
+      console.log('[EXECUTOR] Detectou STATUS!');
+      const c = await fetch('https://repovazio.vercel.app/api/cerebro/status').then(r => r.json()).catch(() => ({}));
+      const s = await fetch('https://repovazio.vercel.app/api/state').then(r => r.json()).catch(() => ({}));
+      return Response.json({ resposta: '📊 STATUS\n\n🧠 Cérebro: ' + (c.status || 'offline') + '\n📈 Score: ' + (c.score || '--') + '\n📅 Dia: ' + (s.dia_atual || '--') + '\n💥 Membros: ' + (s.membros_whatsapp || 0) + '\n\n✅ Online!' });
     }
     
-    if (p.includes('deploy')) {
-      const sha = (await (await fetch('https://api.github.com/repos/tafita81/Repovazio/git/ref/heads/main', { headers: { 'Authorization': 'token ' + GH }})).json()).object.sha;
-      return Response.json({ resposta: '✅ Deploy! SHA: ' + sha.slice(0,7) });
-    }
-    
+    console.log('[EXECUTOR] Caiu no fallback Groq');
     const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + GROQ, 'Content-Type': 'application/json' },
