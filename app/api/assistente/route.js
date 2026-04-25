@@ -2,12 +2,28 @@ export const runtime = 'edge';
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';
 
-const VERSION = 'EXECUTOR-V3-OPUS47-' + '2026-04-23';
+const VERSION = 'EXECUTOR-V4-OPUS47-2026-04-23-includes';
 
-const RX_STATUS = /\\b(status|estado|situa[cç][aã]o|sa[uú]de|info|como.{0,5}(esta|t[aá])|monitor)\\b/i;
-const RX_DEPLOY = /\\b(deploy|publica[rt]?|atualizar|build|sha|commit)\\b/i;
-const RX_LIST   = /\\b(list[ae]r?|mostr[ae]|quais|files?|arquivos?|estrutura|tree)\\b/i;
-const RX_HELP   = /\\b(ajuda|help|comandos?|o que.{0,5}faz|capabilities)\\b/i;
+function detectIntent(p) {
+  // p já em lowercase
+  const KW = {
+    status: ['status','estado do sistema','situação','situacao','saúde','saude','como está','como esta','health','monitor'],
+    deploy: ['deploy','publicar','publicação','publicacao','build','sha','commit atual','último commit','ultimo commit','vercel'],
+    list:   ['listar arquivos','liste arquivos','mostrar arquivos','quais arquivos','arquivos do projeto','estrutura','tree do projeto','file tree'],
+    help:   ['ajuda','help','comandos','o que você faz','o que voce faz','capabilities','o que pode fazer']
+  };
+  for (const [intent, kws] of Object.entries(KW)) {
+    for (const kw of kws) {
+      if (p.includes(kw)) return intent;
+    }
+  }
+  // Fallback simples por palavra única
+  if (p.includes('status')) return 'status';
+  if (p.includes('deploy')) return 'deploy';
+  if (p.includes('listar') || p.includes('arquivos')) return 'list';
+  if (p.includes('ajuda') || p.includes('help')) return 'help';
+  return 'chat';
+}
 
 async function jget(u, h) {
   try {
@@ -27,24 +43,20 @@ async function getStatus() {
 export async function POST(req) {
   const t0 = Date.now();
   const debug = [VERSION];
-  
   try {
     const body = await req.json();
     const pergunta = body?.pergunta;
     if (!pergunta?.trim()) return Response.json({ erro: 'Pergunta vazia' }, { status: 400 });
-    
-    debug.push((Date.now()-t0) + 'ms recebido: ' + pergunta.substring(0, 80));
-    
+    debug.push((Date.now()-t0) + 'ms recebido');
     const GROQ = process.env.GROQ_API_KEY;
     const GH = process.env.GH_PAT;
     const p = pergunta.toLowerCase();
-    
-    // FAST PATH: STATUS
-    if (RX_STATUS.test(p)) {
-      debug.push((Date.now()-t0) + 'ms FAST_PATH=status');
+    const intent = detectIntent(p);
+    debug.push((Date.now()-t0) + 'ms intent=' + intent);
+
+    if (intent === 'status') {
       const { cerebro, state } = await getStatus();
       debug.push((Date.now()-t0) + 'ms apis ok');
-      
       const lines = [
         '📊 **STATUS DO SISTEMA**',
         '',
@@ -54,81 +66,58 @@ export async function POST(req) {
         '💥 Membros WhatsApp: ' + (state.membros_whatsapp ?? 0),
         '🎬 Vídeos hoje: ' + (cerebro.videos_hoje ?? 0),
         '',
-        '✅ Sistema ' + (cerebro.status === 'online' ? 'OPERACIONAL' : 'verificar logs'),
+        '✅ ' + (cerebro.status === 'online' ? 'Sistema OPERACIONAL' : 'Verificar logs'),
         '',
         '_v=' + VERSION + '_'
       ];
-      return Response.json({ resposta: lines.join('\\n'), _debug: debug, _fast: 'status' });
+      return Response.json({ resposta: lines.join('\n'), _debug: debug, _fast: 'status', _version: VERSION });
     }
-    
-    // FAST PATH: DEPLOY
-    if (RX_DEPLOY.test(p)) {
-      debug.push((Date.now()-t0) + 'ms FAST_PATH=deploy');
-      const ref = await jget('https://api.github.com/repos/' + 'tafita81/Repovazio' + '/git/ref/heads/main', { 'Authorization': 'token ' + GH });
+
+    if (intent === 'deploy') {
+      const ref = await jget('https://api.github.com/repos/tafita81/Repovazio/git/ref/heads/main', { 'Authorization': 'token ' + GH });
       const sha = ref?.object?.sha?.slice(0,7) || '???';
-      
       return Response.json({
-        resposta: '🚀 **DEPLOY STATUS**\\n\\nÚltimo commit: `' + sha + '`\\n\\nVercel detecta push automaticamente.\\n\\n[Ver deploys](https://vercel.com/tafita81s-projects/repovazio/deployments)',
-        _debug: debug,
-        _fast: 'deploy'
+        resposta: '🚀 **DEPLOY**\n\nÚltimo commit: `' + sha + '`\n\nVercel detecta push automaticamente.\n\n[Ver deploys](https://vercel.com/tafita81s-projects/repovazio/deployments)',
+        _debug: debug, _fast: 'deploy', _version: VERSION
       });
     }
-    
-    // FAST PATH: LIST FILES
-    if (RX_LIST.test(p)) {
-      debug.push((Date.now()-t0) + 'ms FAST_PATH=list');
+
+    if (intent === 'list') {
       const tree = await jget('https://api.github.com/repos/tafita81/Repovazio/git/trees/main?recursive=1', { 'Authorization': 'token ' + GH });
       const files = (tree.tree || []).filter(t => t.type === 'blob').slice(0, 50).map(t => '• ' + t.path);
       return Response.json({
-        resposta: '📁 **ARQUIVOS DO PROJETO** (top 50)\\n\\n' + files.join('\\n'),
-        _debug: debug,
-        _fast: 'list'
+        resposta: '📁 **ARQUIVOS** (top 50)\n\n' + files.join('\n'),
+        _debug: debug, _fast: 'list', _version: VERSION
       });
     }
-    
-    // FAST PATH: HELP
-    if (RX_HELP.test(p)) {
+
+    if (intent === 'help') {
       return Response.json({
-        resposta: '🤖 **COMANDOS DISPONÍVEIS**\\n\\n• `status` - status do sistema\\n• `deploy` - info do último deploy\\n• `listar arquivos` - listar arquivos\\n• Qualquer outra pergunta - chat com IA\\n\\n_v=' + VERSION + '_',
-        _debug: debug,
-        _fast: 'help'
+        resposta: '🤖 **COMANDOS**\n\n• `status` - status do sistema\n• `deploy` - info do último deploy\n• `listar arquivos` - listar arquivos\n• Qualquer outra pergunta - chat com IA contextualizada',
+        _debug: debug, _fast: 'help', _version: VERSION
       });
     }
-    
-    // SMART PATH: Groq com contexto
-    debug.push((Date.now()-t0) + 'ms SMART_PATH=groq');
-    if (!GROQ) {
-      return Response.json({ resposta: '❌ GROQ_API_KEY não configurada', _debug: debug });
-    }
-    
+
+    // CHAT com Groq + contexto
+    debug.push((Date.now()-t0) + 'ms groq');
+    if (!GROQ) return Response.json({ resposta: '❌ GROQ_API_KEY ausente', _debug: debug });
     const ctx = await getStatus();
-    const sysPrompt = 'Você é o assistente do psicologia.doc v7, projeto YouTube autônomo PT-BR. Stack: Next.js 14, Supabase, Groq, Vercel. Repo: tafita81/Repovazio. Status atual: cérebro=' + (ctx.cerebro.status || '?') + ', dia=' + (ctx.state.dia_atual ?? '?') + '. Responda direto e útil em português.';
-    
-    const groqR = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const sys = 'Você é o assistente do psicologia.doc v7, projeto YouTube autônomo PT-BR. Stack: Next.js 14, Supabase, Groq, Vercel. Repo: tafita81/Repovazio. Status atual: cérebro=' + (ctx.cerebro.status || '?') + ', dia=' + (ctx.state.dia_atual ?? '?') + ', score=' + (ctx.cerebro.score ?? '?') + '. Responda direto e útil em português brasileiro.';
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + GROQ, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: sysPrompt },
-          { role: 'user', content: pergunta }
-        ],
-        max_tokens: 1500,
-        temperature: 0.7
+        messages: [{ role: 'system', content: sys }, { role: 'user', content: pergunta }],
+        max_tokens: 1500, temperature: 0.7
       })
     });
-    const groqD = await groqR.json();
-    debug.push((Date.now()-t0) + 'ms groq respondeu');
-    
-    if (groqD.error) return Response.json({ resposta: '❌ Erro Groq: ' + groqD.error.message, _debug: debug });
-    
+    const d = await r.json();
+    if (d.error) return Response.json({ resposta: '❌ Erro Groq: ' + d.error.message, _debug: debug });
     return Response.json({
-      resposta: groqD.choices?.[0]?.message?.content || 'Sem resposta',
-      _debug: debug,
-      _model: 'groq-llama-3.3-70b',
-      _version: VERSION
+      resposta: d.choices?.[0]?.message?.content || 'Sem resposta',
+      _debug: debug, _model: 'groq-llama-3.3-70b', _version: VERSION
     });
-    
   } catch (error) {
     return Response.json({ erro: error.message, _debug: debug, stack: (error.stack || '').substring(0, 300) }, { status: 500 });
   }
