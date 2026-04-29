@@ -1,149 +1,107 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
+import React from 'react';
 
-export default function ChatIA() {
-  const { data: session } = useSession();
-  const [msgs, setMsgs] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [model, setModel] = useState('llama-3.3-70b-versatile');
-  const [showModels, setShowModels] = useState(false);
-  const [imgB64, setImgB64] = useState(null);
-  const [imgMime, setImgMime] = useState(null);
-  const [skills, setSkills] = useState([]);
-  const msgEndRef = useRef(null);
-  const fileRef = useRef(null);
-  const sessionId = useRef('s' + Date.now().toString(36));
-
-  const MODELS = [
-    { id: 'llama-3.3-70b-versatile', n: 'Llama 3.3 70B ⚪', g: 'groq' },
-    { id: 'llama-3.1-8b-instant', n: 'Llama 3.1 8B ➤', g: 'groq' },
-    { id: 'gemini-1.5-flash', n: 'Gemini 1.5 Flash <br/>(👂) visão', g: 'gemini' },
-    { id: 'meta-llama/Llama-3.3-70B-Instruct-Turbo-Free', n: 'Together.ai 128k 🖀', g: 'together' },
-  ];
-
-  useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [msgs]);
-
+function ArtifactRenderer({ html }) {
+  const iframeRef = useRef(null);
+  const [height, setHeight] = useState(300);
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
-    fetch('/api/skills?acao=listar').then(r => r.json()).then(d => {
-      if (d.skills) setSkills(d.skills.slice(0, 6));
-    }).catch(() => {});
-  }, []);
-
-  const handleFile = useCallback((e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const b64 = reader.result.split(',')[1];
-      setImgB64(b64); setImgMime(file.type);
-    };
-    reader.readAsDataURL(file);
-  }, []);
-
-  const send = useCallback(async () => {
-    if (!input.trim() && !imgB64) return;
-    const userMsg = { role: 'user', content: input, img: imgB64 ? `data:${imgMime};base64,${imgB64}` : null, ts: Date.now() };
-    setMsgs(m => [...m, userMsg]); setInput(''); setImgB64(null); setImgMime(null); setLoading(true);
-    if (fileRef.current) fileRef.current.value = '';
-    try {
-      const res = await fetch('/api/ia-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          mensagem: userMsg.content, historico: msgs.slice(-10).map(m => ({ role: m.role, content: m.content })),
-          modelo: model, max_tokens: 2048, usar_memoria: true,
-          session_id: sessionId.current,
-          imagem_b64: imgB64, imagem_mime: imgMime,
-        }),
-      });
-      const data = await res.json();
-      if (data.erro) throw new Error(data.erro);
-      const assistMsg = { role: 'assistant', content: data.resposta, kid: data.kid, provider: data.provider, ms: data.ms, ts: Date.now() };
-      setMsgs(m => [...m, assistMsg]);
-    } catch (e) {
-      setMsgs(m => [...m, { role: 'assistant', content: '❌ Erro: ' + e.message, ts: Date.now() }]);
-    } finally { setLoading(false); }
-  }, [input, imgB64, imgMime, model, msgs]);
-
-  const renderContent = (text) => {
-    if (!text) return null;
-    const htmlMatch = text.match(/```html\n([\s\S]*?)\n```/);
-    if (htmlMatch) {
-      return <div className="relative my-2">
-        <span className="text-xs text-green-400 font-mono">🏘 Artefato HTML</span>
-        <iframe srcDoc={htmlMatch[1]} className="w-full border-0 rounded bg-white" style={{height: '300px'}} sandbox="allow-scripts" />
-      </div>;
-    }
-    return <pre className="whitespace-pre-wrap font-sans text-sm">{text}</pre>;
-  };
-
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    const doc = iframe.contentDocument;
+    doc.open();
+    doc.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,sans-serif;background:#fff;color:#111;padding:12px}</style></head><body>${html}</body></html>`);
+    doc.close();
+    const resize = () => { try { setHeight(Math.min(doc.body.scrollHeight+24,expanded?800:400)); } catch {} };
+    iframe.onload = resize; setTimeout(resize,100);
+  }, [html,expanded]);
   return (
-    <div style={{fontFamily: 'monospace', background: '#050505', minHeight: '100vh', color: '#00ff88', display: 'flex', flexDirection: 'column' }}>
-
-      <div style={{padding: '8px 16px 4px', opacity: 0.6, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #1a1a1a'}}>
-        <span>🧢</span><span>IA Chat V7 Ultra</span>
-        <button onClick={() => setShowModels(s => !s)} style={{marginLeft: 'auto', background: '#111111', border: '1px solid #333333', color: '#00ff88', padding: '2px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px'}}>
-          {MODELS.find(m => m.id === model)?.n || model.split('/').pop()} ⁢
-        </button>
+    <div style={{border:'1px solid #00ff8833',borderRadius:8,overflow:'hidden',margin:'8px 0',background:'#050505'}}>
+      <div style={{display:'flex',alignItems:'center',padding:'6px 12px',background:'#0a1a0a',borderBottom:'1px solid #00ff8822',fontSize:10,fontFamily:'monospace',color:'#00ff88',gap:8}}>
+        <span>ꬡ</span><span style={{flex:1}}>ARTEFATO</span>
+        <button onClick={()=>setExpanded(e=>!e)} style={{background:'transparent',border:'1px solid #00ff8833',color:'#00ff88',padding:'2px 8px',borderRadius:"3px",model: cursor:'pointer',fontSize:9}}>{expanded?'\u269f compactar':'\u269E expandir'}</button>
       </div>
+      <iframe ref={iframeRef} style={{width:'100%',height,border:'none',display:'block',background:'#fff'}} sandbox="allow-scripts allow-same-origin" title="artefato" />
+    </div>
+  );
+}
 
-      {showModels && (
-        <div style={{padding: '8px 16px', display: 'flex', gap: '6px', flexWrap: 'wrap', background: '#0a0a0a', borderBottom: '1px solid #111111'}}>
-          {MODELS.map(m => (
-            <button key={m.id} onClick={() => { setModel(m.id); setShowModels(false); }}
-              style={{background: model === m.id ? '#00ff8822' : '#111', border: `1px solid ${model === m.id ? '#00ff88' : '#333'}`, color: '#eee', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '10px',-webkitUserSelect:'none'}}>
-              {m.n}
-            </button>
-          ))}
+function MsgContent({ text }) {
+  const parts = [];
+  const re = /<ARTIFACT[^>]*type="html"[^>]*>([\s\S]*?)<\/ARTIFACT>/gi;
+  let last=0,m;
+  while((m=re.exec(text))!==null){
+    if(m.index>last)parts.push({t:'text',c:text.slice(last,m.index)});
+    parts.push({t:'art',c:m[1].trim()});
+    last=m.index+m[0].length;
+  }
+  if(last<text.length)parts.push({t:'text',c:text.slice(last)});
+  function rT(t){
+    return t.replace(/```([\w]*)\n([\s\S]*?)```/g,'<pre style="background:#000;border:1px solid #1e1e1e;border-radius:6px;padding:12px;margin:8px 0;overflow-x:auto;line-height:1.6;font-size:11px;white-space:pre-wrap;font-family:monospace">$2</pre>').replace(/`([^`]+)`/g,'<code style="background:#1a1a1a;padding:2px 5px;border-radius:3px;font-size:11px;color:#00ff88;font-family:monospace">$1</code>').replace(/\**(.+?)\**/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^#{3}\s+(.+)$/gm,'<div style="font-size:14px;font-weight:700;color:#e0e0e0;margin:10px 0 4px">$1</div>').replace(/^#{2}\s+(.+)$/gm,'<div style="font-size:15px;font-weight:700;color:#e0e0e0;margin:12px 0 6px">$1</div>').replace(/^#\s+(.+)$/gm,'<div style="font-size:16px;font-weight:700;color:#00ff88;margin:12px 0 6px">$1</div>').replace(/^[-] (.+)$/gm,'<div style="padding-left:16px;margin:2px 0">• $1</div>').replace(/\n/g,'<br>');
+  }
+  return <div>{parts.map((p,i)=>p.t==='art'?<ArtifactRenderer key={i} html={p.c}/>:<div key={i} dangerouslySetInnerHTML={{__html:rT(p.c)}}/>)}</div>;
+}
+
+export default function ChatIA({ sessionId }) {
+  const [msgs, setMsgs] = useState([]);
+  const [inp, setInp] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [modelo, setModelo] = useState('llama-3.3-70b-versatile');
+  const [info, setInfo] = useState(null);
+  const [stats, setStats] = useState({n:0,tok:0});
+  const [image, setImage] = useState(null);
+  const [sid] = useState(sessionId||`s${Date.now()}`);
+  const chatRef = useRef(null);
+  const inpRef = useRef(null);
+  useEffect(()=>{fetch('/api/ia-chat').then(r=>r.json()).then(setInfo).catch(()=>{});inpRef.current?.focus();},[]);
+  useEffect(()=>{chatRef.current?.scrollTo({top:chatRef.current.scrollHeight,behavior:'smooth'});},[msgs,busy]);
+  const hist = msgs.filter(m=>!['e'].includes(m.r)).map(m=>({role:m.r==='u'?'user':'assistant',content:m.c}));
+  async function send(){
+    if(!inp.trim()||busy) return;
+    const msg=inp.trim(),mg=image;
+    setInp('');setImage(null);setBusy(true);
+    setMsgs(p=>[...p,{r:'u',c:msg,id:Date.now(),img:mg?.b64?`data:${mg.mime};base64,${mg.b64}`:null}]);
+    try{
+      const body={mensagem:msg,historico:hist.slice(-15),modelo,max_tokens:4096,session_id:sid,usar_memoria:true};
+      if(mg?.b64){body.imagem_base64=mg.b64;body.imagem_mime=mg.mime;}
+      const r=await fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d=await r.json();
+      if(d.resposta){setMsgs(p=>[...p,{r:'a',c:d.resposta,id:Date.now(),m:{k:d.kid,ms:d.ms,tok:d.uso?.total_tokens,prov:d.provider}}]);setStats(s=>({n:s.n+0,tok:s.tok+(d.uso?.total_tokens||0)}));}
+      else{setMsgs(p=>[...p,{r:'e',c:d.erro||'Erro''id',id:Date.now()}]);}
+    }catch(e){setMsgs(p=>[...p,{r:'e',c:'Falha: '+e.message,id:Date.now()}]);}finally{setBusy(false);inpRef.current?.focus();}
+  }
+  const MODELS=[{v:'llama-3.3-70b-versatile',l:'Llama 3.3 70B'},{v:'llama-3.1-8b-instant',l:'Llama 3.1 8B'}];
+  const SUGS=['status do sistema','ver commits recentes','listar arquivos app/api','criar página HTML'];
+  return(
+    <div style={{display:'flex',flexDirection:'column',minHeight:600,background:'#080808',borderRadius:10,border:'1px solid #1a1a1a'}}>
+      <div style={{padding:'6px 14px',background:'#0e0e0e',borderBottom:'1px solid #1a1a1a',fontSize:10,fontFamily:'monospace',color:'#555',display:'flex',gap:6,alignItems:'center'}}>
+        <span style={{width:6,height:6,borderRadius:'50%',background:'#00ff88',boxShadow:'0 0 5px #00ff88'}}/>
+        {info?.version||'IA Chat V7'}
+        {info/.providers?.together?.ok&&<span style={{color:'#ff6600'}}>Together 128k</span>}
+        <div style={{marginLeft:'auto'}}>
+          <select value={modelo} onChange={e=>setModelo(e.target.value)} style={{background:'#111',border:'1px solid #222',color:'#888',fontFamily:'monospace',fontSize:10,outline:'none',padding:'2px 5px'}}>
+            {MODELS.map(m=><option key={m.v} value={m.v}>{m.l}</option>)}
+          </select>
         </div>
-      )}
-
-      {skills.length > 0 && (
-        <div style={{padding: '6px 8px', display: 'flex', gap: '4px', overflowX: 'auto', borderBottom: '1px solid #111111'}}>
-          {skills.map(s => (
-            <span key={s.id} style={{padding: '2px 8px', background: '#0a0a0a', border: '1px solid #222', borderRadius: '10px', fontSize: '9px', color: '#666', whiteSpace: 'nowrap', cursor: 'default'}}>
-              {s.name} • {s.score}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div style={{flex: 1, overflowY: 'auto', padding: '12px 16px'}}>
-        {msgs.length === 0 && (
-          <div style={{textAlign: 'center', opacity: 0.3, marginTop: '40px', lineHeight: 2}}>
-            <div style={{fontSize: '32px'}}>🧢</div>
-            <div>IP Chat V7 Ultra</div>
-            <div style={{fontSize: '11px', marginTop: '8px'}}>Groq ⦜️ Gemini <span style={{color: '#4285f4'}}>👢</span> · Together.ai 128k</div>
-            <div style={{fontSize: '11px'}}>Skills eternas * Memória pgvector * Artefatos HTML</div>
-          </div>
-        )}
-        {msgs.map((msg, i) => (
-          <div key={i} style={{marginBottom: '12px', display: 'flex', flexDirection: msg.role === 'user' ? 'row-reverse' : 'row', gap: '8px'}}>
-            <div style={{maxWidth: '85%', padding: '8px 12px', borderRadius: '8px', background: msg.role === 'user' ? '#031a0b' : '#0a0a0a', border: '1px solid ' + (msg.role === 'user' ? '#00ff8828' : '#161616'), fontSize: '12px', lineHeight: 1.7}}>
-              {msg.img && <img src={msg.img} style={{maxHeight: '150px', maxWidth: '100%', borderRadius: '4px', marginBottom: '6px', display: 'block'}} alt="Upload" />}
-              {renderContent(msg.content)}
-              {msg.provider && <span style={{fontSize: '9px', opacity: 0.4, display: 'block', marginTop: '4px'}}>{msg.provider} ({msg.kid}) {msg.ms}ms</span>}
+      </div>
+      <div ref={chatRef} style={{flex:1,overflowY:'auto',padding:'14px 16px',display:'flex',flexDirection:'column',gap:12}}>
+        {msgs.length===0&&(
+          <div style={{margin:'auto',textAlign:'center',maxWidth:480,padding:28}}>
+            <div style={{fontSize:32,marginBottom:10}}>🤗</div>
+            <div style={{fontSize:14,fontWeight:700,color:'#00ff88',marginBottom:6,fontFamily:'monospace'}}>IA Chat V7 Ultra</div>
+            <div style={{fontSize:11,color:'#444',lineHeight:1.8,marginBottom:16}}>Groq · Gemini · Together 128k · Skills Eternas <br/>PgVector · Drive · Artefatos HTML</div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:5,textAlign:'center',justifyContent:'center'}}>
+              {SUGS.map(s=>(<button key={s} onClick={()=>{setInp(s);inpRef.current?.focus();}} style={{background:'transparent',border:'1px solid #1a1a1a',color:'#444',padding:'4px 8px',borderRadius:4,cursor:'pointer',fontFamily:'monospace',fontSize:9}}>{s}</button>))}
             </div>
           </div>
-        ))}
-        {loading && (
-          <div style={{display: 'flex', gap: '4px', alignItems: 'center'}}>
-            {[0,1,2].map(i => <span key={i} style={{width: '6px', height: '6px', background: '#00ff88', borderRadius: '50%', animation: `ciaD 0.8s ${i*0.2}s infinite`}} />)}
-          </div>
         )}
-        <div id="end" ref={msgEndRef} />
-      </div>
-
-      <div style={{padding: '8px 12px', borderTop: '1px solid #111111', display: 'flex', gap: '8px', alignItems: 'flex-end'}}>
-        {imgB64 && <img src={data:${imgMime};base64,${imgB64}} style={{height: '40px', width: '40px', objectFit: 'cover', borderRadius: '4px'}} alt="" />}
-        <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display: 'none'}} />
-        <button onClick={() => fileRef.current?.click()} style={{background: 'none', border: '1px solid #222', color: '#444', padding: '6px' , borderRadius: '6px', cursor: 'pointer', fontSize: '14px'}}>
-          👂
-        </button>
-        <textarea value={input} onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder="Mensagem... (Shift+Enter para quebra)"
-          style={{flex: 1, background: '#0a0a0a', border: '1px solid #222', color: '#eee', padding: '8px 8px', borderRadius: '6px', resize: 'none', fontSize: '12px', minHeight: '38px', maxHeight: '100px', fontFamily: 'monospace'}}
-          rows={1}
-        
+        {msgs.map(m=>(
+          <div key={m.id} style={{maxWidth:'90%',display:'flex',flexDirection:'column',alignSelf:m.r==='u'?'flex-end':'flex-start'}}>
+            <div style={{padding:'10px 14px',borderRadius:m.r==='u'?'14px 14px 14px 2px':'14px 14px 2px 14px',fontSize:13,lineHeight:1.65,wordBreak:'wrap',background:m.r==='u'?'#4c35d4':m.r==='e'?'#150808':'#111',color:m.r==='u'?'#fff':m.r==='e'?'#ff3355':'#ddd',borderLeft:m.r==='a'?'2px solid #00ff88':undefined}}>
+              {m.r==='u'?<span dangerouslySetInnerHTML=r{__html:m.c.replace(/\n/g,'<br>')}}/>:<MsgContent text={m.c}/>}
+            </div>
+            {m.m&&<div style={{fontSize:9,fontFamily:'monospace',color:'#2a2a2a',marginTop:3}}>{m.m.k}|ms{m.m.ms}|{{m.m.tok &&` ${m.m.tok}tok`}}</div>}
+          </div>
+        ))}
+        {busy&&<div style={{alignSelf:'flex-start',padding:'10px 14px',borderRadius:'14px 14px 14px 2px',backgr
