@@ -61,7 +61,7 @@ function MsgContent({ text }) {
       .replace(/\*(.+?)\*/g, '<em style="color:#aaa">$1</em>')
       .replace(/^#{3}\s+(.+)$/gm, '<div style="font-size:14px;font-weight:700;color:#e0e0e0;margin:10px 0 4px">$1</div>')
       .replace(/^#{2}\s+(.+)$/gm, '<div style="font-size:15px;font-weight:700;color:#e0e0e0;margin:12px 0 6px">$1</div>')
-      .replace(/^!{1}\s+(.+)$/gm, '<div style="font-size:16px;font-weight:700;color:#00ff88;margin:12px 0 6px">$1</div>')
+      .replace(/^#{1}\s+(.+)$/gm, '<div style="font-size:16px;font-weight:700;color:#00ff88;margin:12px 0 6px">$1</div>')
       .replace(/^[-•]\s+(.+)$/gm, '<div style="padding-left:16px;margin:2px 0">• $1</div>')
       .replace(/^\d+\.\s+(.+)$/gm, '<div style="padding-left:16px;margin:2px 0">$1</div>')
       .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" style="color:#5599ff;text-decoration:underline">$1</a>')
@@ -237,24 +237,55 @@ export default function ChatIA({ sessionId }) {
       </div>
 
       {/* Messages */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div ref={chatRef} style={{ flex: 1, overflowY: 'auto', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {msgs.length === 0 && (
+          <div style={{ margin: 'auto', textAlign: 'center', maxWidth: 480, padding: 28 }}>
+            <div style={{ fontSize: 32, marginBottom: 10, filter: 'drop-shadow(0 0 12px #00ff88)' }}>🤖</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#00ff88', marginBottom: 6, fontFamily: 'monospace' }}>IA Chat V5 — Ultra</div>
+            <div style={{ fontSize: 11, color: '#444', lineHeight: 1.8, marginBottom: 16 }}>
+              Visão · Artefatos HTML · Contexto 128k · Memória semântica<br />
+              Notion · Slack · Drive · Browser · GitHub · Supabase
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: 'center' }}>
+              {SUGS.map(s => (
+                <button key={s} onClick={() => { setInp(s); inpRef.current?.focus(); }}
+                  style={{ background: 'transparent', border: '1px solid #1a1a1a', color: '#444', padding: '4px 8px', borderRadius: 4, cursor: 'pointer', fontFamily: 'monospace', fontSize: 9, transition: 'all .15s' }}
+                  onMouseOver={e => { e.target.style.borderColor = '#00ff88'; e.target.style.color = '#00ff88'; }}
+                  onMouseOut={e => { e.target.style.borderColor = '#1a1a1a'; e.target.style.color = '#444'; }}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {msgs.map(m => (
           <div key={m.id} style={{ maxWidth: '90%', display: 'flex', flexDirection: 'column', alignSelf: m.r === 'u' ? 'flex-end' : 'flex-start' }}>
+            {/* Imagem anexada */}
+            {m.img && (
+              <div style={{ alignSelf: 'flex-end', marginBottom: 4 }}>
+                <img src={m.img} alt="anexo" style={{ maxWidth: 200, maxHeight: 150, borderRadius: 6, border: '1px solid #333', objectFit: 'cover' }} />
+              </div>
+            )}
             <div style={{
-              padding: '10px 14px', borderRadius: m.r === 'u' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+              padding: '10px 14px',
+              borderRadius: m.r === 'u' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
               fontSize: 13, lineHeight: 1.65, wordBreak: 'break-word',
               background: m.r === 'u' ? '#4c35d4' : m.r === 'e' ? '#150808' : '#111',
               color: m.r === 'u' ? '#fff' : m.r === 'e' ? '#ff3355' : '#ddd',
               border: m.r === 'a' ? '1px solid #1e1e1e' : m.r === 'e' ? '1px solid #ff3355' : 'none',
-              borderLeft: m.r === 'a' ? '2px solid '#00ff88' : undefined
+              borderLeft: m.r === 'a' ? '2px solid #00ff88' : undefined
             }}>
               {m.r === 'u' ? <div dangerouslySetInnerHTML={{ __html: m.c.replace(/\n/g, '<br>') }} /> : <MsgContent text={m.c} />}
             </div>
             {m.m && (
-              <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#2a2a2a', marginTop: 3 }}>
-                {m.m.k && <span style={{ background: `${provColor[m.m.prov] || '#888'}15`, color: provColor[m.m.prov] || '#888', border: `1px solid ${provColor[m.m.prov] || '#888'}25`, padding: '1px 5px', borderRadius: 3 }}>{m.m.img ? '👁 ' : ''}{m.m.k}</span>}
+              <div style={{ fontFamily: 'monospace', fontSize: 9, color: '#2a2a2a', marginTop: 3, padding: '0 3px', display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: m.r === 'u' ? 'flex-end' : 'flex-start' }}>
+                {m.m.k && <span style={{ background: `${provColor[m.m.prov] || '#888'}15`, color: provColor[m.m.prov] || '#888', border: `1px solid ${provColor[m.m.prov] || '#888'}25`, padding: '1px 5px', borderRadius: 3 }}>
+                  {m.m.img ? '👁 ' : ''}{m.m.k}
+                  </span>}
                 {m.m.ms && <span>{m.m.ms}ms</span>}
                 {m.m.tok && <span>{m.m.tok}tok</span>}
+                {m.m.tools?.length > 0 && <span style={{ color: '#4488ff' }}>🔧 {m.m.tools.join(', ')}</span>}
               </div>
             )}
           </div>
@@ -266,6 +297,13 @@ export default function ChatIA({ sessionId }) {
           </div>
         )}
       </div>
+
+      {/* Stats */}
+      {stats.n > 0 && (
+        <div style={{ padding: '3px 14px', fontFamily: 'monospace', fontSize: 9, color: '#1e1e1e', borderTop: '1px solid #0e0e0e', background: '#0a0a0a' }}>
+          {stats.n} msgs · {stats.tok.toLocaleString('pt-BR')} tokens · sessão: {sid.substring(0, 14)}
+        </div>
+      )}
 
       {/* Input */}
       <div style={{ borderTop: '1px solid #1a1a1a', padding: '10px 12px', background: '#0e0e0e' }}>
@@ -283,12 +321,12 @@ export default function ChatIA({ sessionId }) {
           />
           <button onClick={send} disabled={busy || !inp.trim()}
             style={{ width: 40, height: 40, background: busy || !inp.trim() ? '#1a1a1a' : '#00ff88', border: 'none', borderRadius: 8, cursor: busy || !inp.trim() ? 'not-allowed' : 'pointer', fontSize: 17, fontWeight: 700, color: busy || !inp.trim() ? '#333' : '#000', flexShrink: 0 }}>
-            {busy ? '⏳t : '↑'}
+            {busy ? '⏳' : '↑'}
           </button>
         </div>
       </div>
 
-      <style>{`@keyframes ciaD{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}`}</style>
+      <style>{`@keyframes ciaD{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}`}</style>
     </div>
   );
 }
