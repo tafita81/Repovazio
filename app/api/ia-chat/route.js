@@ -1,471 +1,322 @@
-'use server';
+// app/api/ia-chat/route.js — IA EXECUTOR V8
 import { NextResponse } from 'next/server';
 
-// ── ENV ──────────────────────────────────────────────────────
-const GROQ_KEY = process.env.GROQ_API_KEY || '';
-const GH_PAT   = process.env.GH_PAT || '';
-const SB_URL   = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SB_KEY   = process.env.SUPABASE_SERVICE_KEY || '';
-const OAI_KEY  = process.env.OPENAI_API_KEY || '';
-const REPO     = 'tafita81/Repovazio';
-const BRANCH   = 'main';
+const GROQ_KEY = process.env.GROQ_API_KEY;
+const GH_PAT   = process.env.GH_PAT;
+const SB_URL   = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SB_KEY   = process.env.SUPABASE_SERVICE_KEY;
+const REPO = 'tafita81/Repovazio';
+const VERSION = 'IA-EXECUTOR-V8-2026-04-30';
 
-// ── SYSTEM PROMPT ───────────────────────────────────────────
-const SYSTEM = `Você é um EXECUTOR AUTÔNOMO com acesso total ao repositório GitHub, banco Supabase e deploy Vercel do projeto psicologia.doc v7.
-
-REGRA ABSOLUTA: EXECUTE IMEDIATAMENTE. Nunca pergunte antes de agir. Nunca liste opções. Apenas FAÇA e reporte o resultado.
-
-CAPACIDADES REAIS (use as ferramentas):
-• github_list   — listar arquivos/pastas no repositório
-• github_read   — ler conteúdo de qualquer arquivo
-• github_write  — criar ou editar arquivo + commit automático
-• github_delete — deletar arquivo + commit automático
-• supabase_read — ler dados de tabelas do Supabase
-• supabase_write — inserir/atualizar dados no Supabase
-• http_get      — fazer requisição GET a qualquer URL
-
-PROJETO:
-• Repo: tafita81/Repovazio (Next.js 14, branch main)
-• App: https://repovazio.vercel.app
-• Stack: Next.js 14 + Supabase (tpjvalzwkqwttvmszvie) + Groq + Gemini + Together.ai
-• Crons: /api/cerebro (15min), /api/cerebro/aprender (1h)
-• Canal YouTube: @psicologiadoc | Persona: Daniela Coelho (revela Dia 261)
-
-COMO AGIR:
-1. Pedido recebido → leia arquivos relevantes com github_read
-2. Execute a tarefa → commit com github_write
-3. Reporte: ✅ O que fez | 📁 Arquivos | 💬 SHA do commit
-4. Se falhar → tente automaticamente outra abordagem
-5. NÃO peça confirmação | NÃO liste opções | APENAS EXECUTE
-
-EXEMPLO:
-Pedido: "crie uma página /teste com 'olá mundo'"
-Ação: github_write('app/teste/page.js', 'export default function() { return <h1>olá mundo</h1> }', 'feat: add /teste page')
-Resposta: ✅ Página /teste criada. Commit a1b2c3d. Deploy automático iniciado.`;
-
-// ── TOOLS DEFINITION ────────────────────────────────────────
 const TOOLS = [
   {
-    type:'function',
-    function:{
-      name:'github_list',
-      description:'Lista arquivos e pastas num diretório do repositório tafita81/Repovazio. Use para explorar a estrutura antes de editar.',
-      parameters:{
-        type:'object',
-        properties:{
-          path:{type:'string',description:"Diretório a listar. Use '' para raiz, 'app', 'app/api', 'components', etc."}
-        }
+    type: 'function',
+    function: {
+      name: 'github_read_file',
+      description: 'Lê conteúdo completo de um arquivo do repositório GitHub tafita81/Repovazio',
+      parameters: {
+        type: 'object',
+        properties: {
+          path: { type: 'string', description: 'Caminho do arquivo (ex: app/api/cerebro/route.js)' }
+        },
+        required: ['path']
       }
     }
   },
   {
-    type:'function',
-    function:{
-      name:'github_read',
-      description:'Lê o conteúdo completo de um arquivo do repositório. Use SEMPRE antes de editar um arquivo existente.',
-      parameters:{
-        type:'object',
-        properties:{
-          path:{type:'string',description:"Caminho do arquivo. Ex: 'app/page.js', 'package.json', 'app/api/cerebro/route.js'"}
+    type: 'function',
+    function: {
+      name: 'github_list_dir',
+      description: 'Lista arquivos e subdiretórios em um caminho do repositório GitHub',
+      parameters: {
+        type: 'object',
+        properties: {
+          path: { type: 'string', description: 'Caminho do diretório (string vazia = raiz do repo)' }
         },
-        required:['path']
+        required: ['path']
       }
     }
   },
   {
-    type:'function',
-    function:{
-      name:'github_write',
-      description:'Cria ou substitui um arquivo no repositório e faz commit automático no branch main. Use para criar páginas, APIs, componentes, configs.',
-      parameters:{
-        type:'object',
-        properties:{
-          path:{type:'string',description:"Caminho do arquivo a criar/editar. Ex: 'app/nova-pagina/page.js'"},
-          content:{type:'string',description:'Conteúdo completo do arquivo'},
-          message:{type:'string',description:"Mensagem do commit. Ex: 'feat: add dashboard page'"}
+    type: 'function',
+    function: {
+      name: 'github_write_file',
+      description: 'Cria ou atualiza um arquivo no GitHub e dispara deploy automático no Vercel',
+      parameters: {
+        type: 'object',
+        properties: {
+          path: { type: 'string', description: 'Caminho completo do arquivo no repo' },
+          content: { type: 'string', description: 'Conteúdo completo do arquivo (texto)' },
+          message: { type: 'string', description: 'Mensagem descritiva do commit' }
         },
-        required:['path','content','message']
+        required: ['path', 'content', 'message']
       }
     }
   },
   {
-    type:'function',
-    function:{
-      name:'github_delete',
-      description:'Deleta um arquivo do repositório com commit automático.',
-      parameters:{
-        type:'object',
-        properties:{
-          path:{type:'string',description:'Caminho do arquivo a deletar'},
-          message:{type:'string',description:'Mensagem do commit de deleção'}
+    type: 'function',
+    function: {
+      name: 'supabase_select',
+      description: 'Consulta dados de uma tabela no Supabase via REST API',
+      parameters: {
+        type: 'object',
+        properties: {
+          table: { type: 'string', description: 'Nome da tabela (ex: ia_cache, projetos, scripts)' },
+          filter: { type: 'string', description: 'Filtro no formato Supabase (ex: cache_key=eq.v8s)' },
+          limit: { type: 'number', description: 'Limite de registros (default: 10)' }
         },
-        required:['path','message']
+        required: ['table']
       }
     }
   },
   {
-    type:'function',
-    function:{
-      name:'supabase_read',
-      description:'Lê dados de uma tabela do Supabase. Tabelas disponíveis: ia_cache, ia_chat_memoria, ia_skills, cerebro_estado, videos, canais.',
-      parameters:{
-        type:'object',
-        properties:{
-          table:{type:'string',description:'Nome da tabela'},
-          filter:{type:'string',description:"Filtro opcional no formato query string. Ex: 'cache_key=eq.chatia_jsx_b64' ou 'limit=10'"}
-        },
-        required:['table']
-      }
-    }
-  },
-  {
-    type:'function',
-    function:{
-      name:'supabase_write',
-      description:'Insere ou atualiza dados numa tabela do Supabase via upsert.',
-      parameters:{
-        type:'object',
-        properties:{
-          table:{type:'string',description:'Nome da tabela'},
-          data:{type:'object',description:'Objeto com os dados a inserir/atualizar'},
-          conflict_key:{type:'string',description:"Campo chave para upsert. Ex: 'cache_key'"}
-        },
-        required:['table','data']
-      }
-    }
-  },
-  {
-    type:'function',
-    function:{
-      name:'http_get',
-      description:'Faz requisição HTTP GET. Use para testar endpoints, verificar APIs, buscar dados externos.',
-      parameters:{
-        type:'object',
-        properties:{
-          url:{type:'string',description:'URL completa. Ex: https://repovazio.vercel.app/api/ia-chat'}
-        },
-        required:['url']
-      }
+    type: 'function',
+    function: {
+      name: 'projeto_status',
+      description: 'Retorna status completo e atualizado do projeto psicologia.doc v7',
+      parameters: { type: 'object', properties: {} }
     }
   }
 ];
 
-// ── GITHUB HELPERS ───────────────────────────────────────────
-function getPAT() {
-  if (GH_PAT && GH_PAT.length > 10) return GH_PAT;
-  const P1='ghp_Ji6Cy'; const P2='YrGcH6Imt2EZnRe4eSX'; const P3='dltCPn4VzveF';
-  return P1+P2+P3;
-}
-
 async function ghFetch(path, opts = {}) {
-  return fetch(`https://api.github.com${path}`, {
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  return fetch(url, {
     ...opts,
-    headers:{
-      'Authorization':`token ${getPAT()}`,
-      'Accept':'application/vnd.github.v3+json',
-      'Content-Type':'application/json',
-      ...(opts.headers||{})
+    headers: {
+      Authorization: `token ${GH_PAT}`,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+      ...(opts.headers || {})
     }
   });
 }
 
-// ── TOOL IMPLEMENTATIONS ─────────────────────────────────────
-async function toolGithubList(path = '') {
-  try {
-    const res = await ghFetch(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`);
-    const data = await res.json();
-    if (!Array.isArray(data)) return { error: data.message, path };
-    return data.map(f => ({ name:f.name, type:f.type, path:f.path, size:f.size }));
-  } catch(e) { return { error: e.message }; }
+function b64encode(str) {
+  return Buffer.from(str, 'utf-8').toString('base64');
 }
 
-async function toolGithubRead(path) {
-  try {
-    const res = await ghFetch(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`);
-    const data = await res.json();
-    if (!data.content) return { error: data.message || 'File not found', path };
-    const content = Buffer.from(data.content.replace(/\n/g,''), 'base64').toString('utf-8');
-    return { path, content: content.substring(0, 10000), size: data.size, sha: data.sha, truncated: data.size > 10000 };
-  } catch(e) { return { error: e.message }; }
+function b64decode(str) {
+  return Buffer.from(str, 'base64').toString('utf-8');
 }
 
-async function toolGithubWrite(path, content, message) {
+async function runTool(name, args) {
   try {
-    let sha;
-    const existing = await ghFetch(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`);
-    if (existing.ok) {
-      const d = await existing.json();
-      sha = d.sha;
+    if (name === 'github_read_file') {
+      const r = await ghFetch(args.path);
+      if (!r.ok) return `☓ Arquivo não encontrado: ${args.path} (HTTP ${r.status})`;
+      const d = await r.json();
+      if (d.type !== 'file') return `☓ ${args.path} não é um arquivo`;
+      const content = b64decode(d.content.replace(/\n/g, ''));
+      return `📄 **${args.path}** (SHA: ${d.sha.substring(0, 8)}, ${d.size} bytes)\n\`\`\`\n${content.substring(0, 7000)}\n\`\`\``;
     }
-    const b64 = Buffer.from(content).toString('base64');
-    const body = { message, content: b64, branch: BRANCH };
-    if (sha) body.sha = sha;
-    const res = await ghFetch(`/repos/${REPO}/contents/${path}`, {
-      method:'PUT', body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    if (data.commit) return { success: true, path, commit: data.commit.sha.substring(0,7), message };
-    return { error: data.message || 'Write failed', status: res.status };
-  } catch(e) { return { error: e.message }; }
-}
 
-async function toolGithubDelete(path, message) {
-  try {
-    const existing = await ghFetch(`/repos/${REPO}/contents/${path}?ref=${BRANCH}`);
-    if (!existing.ok) return { error: 'File not found' };
-    const d = await existing.json();
-    const res = await ghFetch(`/repos/${REPO}/contents/${path}`, {
-      method:'DELETE', body: JSON.stringify({ message, sha: d.sha, branch: BRANCH })
-    });
-    const data = await res.json();
-    return data.commit ? { success: true, path, commit: data.commit.sha.substring(0,7) } : { error: data.message };
-  } catch(e) { return { error: e.message }; }
-}
+    if (name === 'github_list_dir') {
+      const r = await ghFetch(args.path || '');
+      if (!r.ok) return `☓ Diretório não encontrado: ${args.path} (HTTP ${r.status})`;
+      const items = await r.json();
+      if (!Array.isArray(items)) return `☓ Caminho não é um diretório`;
+      const lines = items.map(i => `${i.type === 'dir' ? '👁' : '💇'} ${i.name}${i.type === 'dir' ? '/' : ''}`);
+      return `👁 **${args.path || '/'}** (${items.length} itens)\n${lines.join('\n')}`;
+    }
 
-async function toolSupabaseRead(table, filter = '') {
-  try {
-    const url = `${SB_URL}/rest/v1/${table}?${filter || 'limit=20'}`;
-    const res = await fetch(url, {
-      headers:{ 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-    });
-    const data = await res.json();
-    return data;
-  } catch(e) { return { error: e.message }; }
-}
-
-async function toolSupabaseWrite(table, data, conflictKey) {
-  try {
-    const qs = conflictKey ? `?on_conflict=${conflictKey}` : '';
-    const res = await fetch(`${SB_URL}/rest/v1/${table}${qs}`, {
-      method:'POST',
-      headers:{
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': conflictKey ? 'resolution=merge-duplicates' : 'return=representation'
-      },
-      body: JSON.stringify(data)
-    });
-    const result = await res.json();
-    return { success: res.ok, status: res.status, data: result };
-  } catch(e) { return { error: e.message }; }
-}
-
-async function toolHttpGet(url) {
-  try {
-    const res = await fetch(url, { headers:{ 'User-Agent':'psicologia-doc-executor/7' } });
-    const text = await res.text();
-    let body = text;
-    try { body = JSON.parse(text); } catch {}
-    return { status: res.status, ok: res.ok, body: typeof body === 'string' ? body.substring(0,3000) : body };
-  } catch(e) { return { error: e.message }; }
-}
-
-// ── TOOL EXECUTOR ────────────────────────────────────────────
-async function executeTool(name, args) {
-  switch(name) {
-    case 'github_list':   return toolGithubList(args.path || '');
-    case 'github_read':   return toolGithubRead(args.path);
-    case 'github_write':  return toolGithubWrite(args.path, args.content, args.message);
-    case 'github_delete': return toolGithubDelete(args.path, args.message);
-    case 'supabase_read': return toolSupabaseRead(args.table, args.filter);
-    case 'supabase_write':return toolSupabaseWrite(args.table, args.data, args.conflict_key);
-    case 'http_get':      return toolHttpGet(args.url);
-    default: return { error: `Tool desconhecida: ${name}` };
-  }
-}
-
-// ── GROQ CALL ────────────────────────────────────────────────
-async function callGroq(messages, tools, modelo = 'llama-3.3-70b-versatile') {
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method:'POST',
-    headers:{ 'Authorization':`Bearer ${GROQ_KEY}`, 'Content-Type':'application/json' },
-    body: JSON.stringify({
-      model: modelo,
-      messages,
-      tools,
-      tool_choice: 'auto',
-      max_tokens: 4096,
-      temperature: 0.2
-    })
-  });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Groq ${res.status}: ${err.substring(0,200)}`);
-  }
-  return res.json();
-}
-
-// ── AGENTIC LOOP ─────────────────────────────────────────────
-async function runAgent(userMessage, historico = [], modelo = 'llama-3.3-70b-versatile', imageData = null) {
-  const t0 = Date.now();
-  const toolsLog = [];
-
-  // Build user content (with image if provided)
-  let userContent;
-  if (imageData) {
-    userContent = [
-      { type:'text', text: userMessage },
-      { type:'image_url', image_url:{ url:`data:${imageData.mime};base64,${imageData.b64}` } }
-    ];
-  } else {
-    userContent = userMessage;
-  }
-
-  const messages = [
-    { role:'system', content: SYSTEM },
-    ...historico.slice(-12).map(h => ({ role: h.role, content: h.content })),
-    { role:'user', content: userContent }
-  ];
-
-  const MAX_ITER = 10;
-  let iterations = 0;
-
-  while (iterations < MAX_ITER) {
-    let data;
-    try {
-      data = await callGroq(messages, TOOLS, modelo);
-    } catch(e) {
-      // Fallback para OpenAI gpt-4o-mini se Groq falhar
-      if (OAI_KEY) {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method:'POST',
-          headers:{ 'Authorization':`Bearer ${OAI_KEY}`, 'Content-Type':'application/json' },
-          body: JSON.stringify({ model:'gpt-4o-mini', messages, tools:TOOLS, tool_choice:'auto', max_tokens:2048 })
-        });
-        data = await res.json();
-      } else {
-        return { resposta:`Erro: ${e.message}`, tools_usadas:[], ms: Date.now()-t0, provider:'error' };
+    if (name === 'github_write_file') {
+      let sha;
+      const check = await ghFetch(args.path);
+      if (check.ok) {
+        const d = await check.json();
+        sha = d.sha;
       }
+      const body = {
+        message: args.message,
+        content: b64encode(args.content)
+      };
+      if (sha) body.sha = sha;
+
+      const r = await ghFetch(args.path, { method: 'PUT', body: JSON.stringify(body) });
+      if (!r.ok) {
+        const err = await r.text();
+        return `☓ Commit falhou (${r.status}): ${err.substring(0, 300)}`;
+      }
+      const d = await r.json();
+      return `✅ **Commit realizado com sucesso!**\n- Arquivo: \`${args.path}\`\n- Commit SHA. \`${d.commit.sha.substring(0, 8)}\`\n- Mensagem: "${args.message}"\n- Deploy Vercel disparado automaticamente via webhook GitHub`;
     }
 
-    const choice = data.choices?.[0];
-    const msg = choice?.message;
-    if (!msg) break;
-
-    messages.push(msg);
-
-    const toolCalls = msg.tool_calls;
-    if (!toolCalls || toolCalls.length === 0) {
-      // Resposta final - sem mais tool calls
-      return {
-        resposta: msg.content || '',
-        tools_usadas: toolsLog,
-        ms: Date.now() - t0,
-        tokens: data.usage?.total_tokens || 0,
-        provider: 'groq',
-        modelo,
-        iteracoes: iterations + 1,
-        kid: `${modelo.split('-')[0]}-v7`
-      };
+    if (name === 'supabase_select') {
+      const limit = args.limit || 10;
+      const filterStr = args.filter ? `&${args.filter}` : '';
+      const r = await fetch(`${SB_URL}/rest/v1/${args.table}?select=*${filterStr}&limit=${limit}`, {
+        headers: {
+          apikey: SB_KEY,
+          Authorization: `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!r.ok) {
+        const err = await r.text();
+        return `☓ Supabase erro (${r.status}): ${err.substring(0, 200)}`;
+      }
+      const data = await r.json();
+      return `📈 **${args.table}** (${data.length} registros):\n\`\`\`json\n${JSON.stringify(data, null, 2).substring(0, 4000)}\n\`\`\``;
     }
 
-    // Executar tool calls em paralelo
-    const toolResults = await Promise.all(toolCalls.map(async tc => {
-      const fname = tc.function.name;
-      let args = {};
-      try { args = JSON.parse(tc.function.arguments || '{}'); } catch {}
+    if (name === 'projeto_status') {
+      const now = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });
+      return `💊 **psicologia.doc v7** — ${now}
 
-      const result = await executeTool(fname, args);
-      toolsLog.push({ tool: fname, args: Object.keys(args) });
+🔇 **INFRAESTRUTURA:**
+- Repo: \`tafita81/Repovazio\` → \repovazio.vercel.app
+- Framework: Next.js 14 | Branch: main | Node: 24.x
+- Supabase: \`tpjvalzwkqwttvmszvie\` (us-west-2)
 
-      return {
-        role: 'tool',
-        tool_call_id: tc.id,
-        content: JSON.stringify(result).substring(0, 8000)
-      };
-    }));
+🢁 **AI STACK:**
+- Primário: Groq Llama 3.3 70B (14.400 req/dia, sem expiração)
+- Secundário: Gemini (free tier, sem limite diário excedido)
+- Terciário: OpenAI gpt-4o-mini (pago, fallback)
+- Quarta opção: Together.ai 128k context
 
-    messages.push(...toolResults);
-    iterations++;
+✅ **AGENTES ATIVOS:**
+- CerebroAgent: cron a cada 15min
+- RankingAgent: 6x/dia (analisa top YouTube/IG/TK)
+- ScriptAgent: roteiros PT-BR não-detectáveis por IA
+- VideoAgent: 4K avatar + voz ElevenLabs
+- PublishAgent: YouTube + Instagram + TikTok + Pinterest
+- LearnAgent: métricas e aprendizado
+- MonitorAgent: monetização
+
+🎏 **MISSÃO:**
+- Canal: @psicologiadoc (PT-BR, psicologia sombria)
+- Dia 1: Primeiro vídeo publioado automaticamente (started Apr 15 2026)
+- Dia 261: Reveal de Daniela Coelho (~31/12/2026)
+- Meta: 1K subs + 4K horas assistidas → AdSense
+
+💰 [**MONETIZAÇÃO:** AdSense + Afiliados + Cursos + Consultas`;
+    }
+
+    return `☓ Ferramenta desconhecida: ${name}`;
+  } catch (e) {
+    return `☓ Erro em ${name}: ${e.message}`;
   }
-
-  return {
-    resposta: 'Agente atingiu limite de iterações (' + MAX_ITER + '). Resposta parcial gerada.',
-    tools_usadas: toolsLog,
-    ms: Date.now() - t0,
-    iteracoes: MAX_ITER
-  };
 }
 
-// ── MEMORY ───────────────────────────────────────────────────
-async function salvarMemoria(sessao, msg, resp) {
-  try {
-    await fetch(`${SB_URL}/rest/v1/ia_chat_memoria`, {
-      method:'POST',
-      headers:{
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        session_id: sessao,
-        mensagem: msg.substring(0,500),
-        resposta: resp.substring(0,1000),
-        created_at: new Date().toISOString()
-      })
-    });
-  } catch {}
-}
+const SYSTEM_PROMPT = `Você é Daniela — executora autônoma e engenheira-chefe do canal psicologia.doc v7.
+
+░░░ IDENTIDADEE░░░
+Você NÃO é um assistente genérico. Você é uma EXECUTORA que age imediatamente.
+Pense como uma engenheira sênior + fundadora que tem acesso total ao sistema.
+░░░ FERRAMENTAS DISPONÍVEIS░░░
+- github_read_file: Lê qualquer arquivo do repo tafita81/Repovazioª*
+- github_list_dir: Lista estrutura de diretórios
+- github_write_file: Cria/edita arquivos + dispara deploy Vercel
+- supabase_select: Consulta tabelas do banco de dados
+- projeto_status: Status completo do projeto
+֑░░ REGRAS ABSOLUTAS░░░
+1. EXECUTE IMEDIATAMENTE — nunca pergunte "você quer que eu faça X?"
+2. Se pediu criar arquivo → use github_write_file AGORA
+3. Se pediu analisar código → use github_read_file, depois ajA
+4. Se pediu otimizar → leia, melhore, comite — sem perguntar
+5. PROIBIDO: respostas genéricas listando o que "poderia" fazer
+6. OBRIGATÓRIO: use ferramentas, relate o que fez, mostre resultados reais
+7. Encadeie múltiplas ferramentas até a tarefa estar COMPLETA
+░░░ FORMATO DE RESPOSTA░░░
+Após executar: "✅ Fiz X → commit SHA abc123 → deploy em andamento"
+Nunca: "Posso ajudar com A, B ou C. O que prefere?"`;
 
 export async function GET() {
-  return NextResponse.json({
-    version: 'IA-CHAT-V7-EXECUTOR-2026-04-30',
-    status: 'online',
-    modelo_padrao: 'llama-3.3-70b-versatile',
-    tools: TOOLS.map(t => t.function.name),
-    capacidades: [
-      'github_read_write',
-      'supabase_read_write',
-      'http_get',
-      'agentic_loop_10_iter',
-      'image_input',
-      'groq_primary',
-      'openai_fallback'
-    ],
-    repo: REPO,
-    projeto: 'psicologia.doc v7'
-  });
+  return NextResponse.json({ version: VERSION, status: 'online', tools: TOOLS.map(t => t.function.name) });
 }
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const {
-      mensagem,
-      historico = [],
-      modelo = 'llama-3.3-70b-versatile',
-      session_id,
-      imagem_base64,
-      imagem_mime
-    } = body;
-
-    if (!mensagem?.trim()) {
-      return NextResponse.json({ erro: 'mensagem obrigatória' }, { status: 400 });
+    const { message, history = [] } = await req.json();
+    if (!message?.trim()) {
+      return NextResponse.json({ error: 'message required' }, { status: 400 });
     }
 
-    const imgData = imagem_base64 ? { b64: imagem_base64, mime: imagem_mime || 'image/jpeg' } : null;
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history.slice(-8).map(h => ({ role: h.role, content: String(h.content || '') })),
+      { role: 'user', content: message }
+    ];
 
-    const result = await runAgent(mensagem, historico, modelo, imgData);
+    let iterations = 0;
+    const MAX_ITER = 6;
+    const toolsUsed = [];
 
-    if (session_id && result.resposta) {
-      salvarMemoria(session_id, mensagem, result.resposta).catch(() => {});
+    while (iterations < MAX_ITER) {
+      iterations++;
+
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${GROQ_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages,
+          tools: TOOLS,
+          tool_choice: 'auto',
+          max_tokens: 4096,
+          temperature: 0.2
+        })
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        return NextResponse.json({
+          reply: `☓ Groq API erro (${res.status}): ${errText.substring(0, 300)}`,
+          version: VERSION
+        });
+      }
+
+      const data = await res.json();
+      const choice = data.choices?.[0];
+      const msg = choice?.message;
+
+      if (!msg) {
+        return NextResponse.json({ reply: '☓ Resposta inválida do Groq', version: VERSION });
+      }
+
+      messages.push(msg);
+
+      // Tool calling loop
+      if (choice.finish_reason === 'tool_calls' && msg.tool_calls?.length > 0) {
+        for (const tc of msg.tool_calls) {
+          let args = {};
+          try { args = JSON.parse(tc.function.arguments || '{}'); } catch {}
+
+          toolsUsed.push(tc.function.name);
+          const result = await runTool(tc.function.name, args);
+
+          messages.push({
+            role: 'tool',
+            tool_call_id: tc.id,
+            content: String(result)
+          });
+        }
+        continue; // Next iteration with tool results
+      }
+
+      // Final answer
+      return NextResponse.json({
+        reply: msg.content || '(sem resposta)',
+        version: VERSION,
+        iterations,
+        toolsUsed
+      });
     }
 
     return NextResponse.json({
-      resposta: result.resposta,
-      tools_usadas: result.tools_usadas,
-      ms: result.ms,
-      tokens: result.tokens,
-      provider: result.provider,
-      modelo: result.modelo,
-      kid: result.kid,
-      iteracoes: result.iteracoes,
-      version: 'V7-EXECUTOR'
+      reply: `⚠️ Limite de ${MAX_ITER} iterações atingido. Ferramentas usadas: ${toolsUsed.join(', ')}`,
+      version: VERSION
     });
 
-  } catch(e) {
-    return NextResponse.json({ erro: e.message, stack: e.stack?.substring(0,300) }, { status: 500 });
+  } catch (e) {
+    console.error('[ia-chat-v8] erro:', e);
+    return NextResponse.json({
+      reply: `☓ Erro interno: ${e.message}`,
+      version: VERSION
+    }, { status: 500 });
   }
 }
