@@ -1,6 +1,4 @@
-import{NextResponse}from"next/server";
-const G=process.env.GROQ_API_KEY,T=process.env.TOGETHER_API_KEY,S=process.env.NEXT_PUBLIC_SUPABASE_URL,K=process.env.SUPABASE_SERVICE_KEY;
-async function cG(){try{const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{Authorization:`Bearer ${G}`,"Content-Type":"application/json"},body:JSON.stringify({model:"llama-3.3-70b-versatile",messages:[{role:"user",content:"1"}],max_tokens:1})});const tl=parseInt(r.headers.get("x-ratelimit-limit-tokens")||12000);const tr=parseInt(r.headers.get("x-ratelimit-remaining-tokens")||tl);const d=await r.json();return{ok:r.ok&&r.status!==429,status:.status,tpm_limit:tl,tpm_remaining:tr,tpm_pct:Math.round((1-tr/tl)*100),tokens:dk.usage?.total_tokens||0,healthy:r.ok&&r.status!==429};}catch(e){return{ok:false,healthy:false,error:e.message};}}
-async function cT(){try{const r=await fetch("https://api.together.xyz/v1/models",{headers:{Authorization:`Bearer ${T}`}});return{ok:r.ok,status:.status,healthy:r.ok};}catch(e){return{ok:false,healthy:false};}}
-async function cS(){try{const r=await fetch(`${S}/functions/v1/exec-sql`,{method:"POST",headers:{Authorization:`Bearer ${K}`,"Content-Type":"application/json"},body:JSON.stringify({sql:"SELECT pg_size_pretty(pg_database_size(current_database())) db"})});const d=await r.json();return{ok:true,db:d.data?.[0]?.db||"?",healthy:true};}catch(e){return{ok:false,healthy:false};}}
-export async function GET(){const[g,t,s]=await Promise.all([cG(),cT(),cS()]);let ai="groq",why="OK";if(!g.healthy||g.tpm_pct>85){ai=t.healthy?"together":"genini";why=g.status===429?"Groq 429":"Groq "+g.tpm_pct+"%";}return NextResponse.json({ts:new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}),recommended_ai:ai,reason:why,groq:g,together:t,supabase:s});}
+import{NextResponse}from'next/server';
+export async function GET(){
+  return NextResponse.json({version:'MONITOR-V2',status:'ok',ts:new Date().toISOString()});
+}
