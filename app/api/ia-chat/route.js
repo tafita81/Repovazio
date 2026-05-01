@@ -1,16 +1,16 @@
-// app/api/ia-chat/route.js â€” DANIELA ULTRA V10 â€” Igual ao Claude
+// app/api/ia-chat/route.js â€” DANIELA ULTRA V11 â€” Igual ao Claude
 import{NextResponse}from'next/server';
 const GK=process.env.GROQ_API_KEY,TK=process.env.TOGETHER_API_KEY,GEK=process.env.GEMINI_API_KEY;
 const PAT=process.env.GH_PAT,SBU=process.env.NEXT_PUBLIC_SUPABASE_URL,SBK=process.env.SUPABASE_SERVICE_KEY;
-const REPO='tafita81/Repovazio',VER='V10-ULTRA-2026-05-01';
+const REPO='tafita81/Repovazio',VER='V11-ULTRA-2026-05-01';
 
 const TOOLS=[
   {type:'function',function:{name:'github_read_file',description:'LÃª arquivo do repo GitHub',parameters:{type:'object',properties:{path:{type:'string'},repo:{type:'string'}},required:['path']}}},
-  {type:'function',function:{name:'github_list_dir',description:'Lista arquivos/dirs do repo GitHub',parameters:{type:'object',properties:{path:{type:'string'},repo:{type:'string'}},required:['path']}}},
+  {type:'function',function:{name:'github_list_dir',description:'Lista arquivos/dirs do repo GitHub',parameters:{type:'object',properties:{path:{type:'string'},repo:{type:'string'}},required:[]}}},
   {type:'function',function:{name:'github_write_file',description:'Cria/atualiza arquivo no GitHub + deploy Vercel automÃ¡tico',parameters:{type:'object',properties:{path:{type:'string'},content:{type:'string'},message:{type:'string'},repo:{type:'string'}},required:['path','content','message']}}},
   {type:'function',function:{name:'github_create_repo',description:'Cria repositÃ³rio GitHub novo do zero',parameters:{type:'object',properties:{name:{type:'string'},description:{type:'string'},private:{type:'boolean'}},required:['name']}}},
   {type:'function',function:{name:'supabase_select',description:'SELECT em tabela Supabase',parameters:{type:'object',properties:{table:{type:'string'},filter:{type:'string'},limit:{type:'number'}},required:['table']}}},
-  {type:'function',function:{name:'supabase_sql',description:'Executa SQL no Supabase: CREATE TABLE, INSERT, UPDATE, SELECT etc',parameters:{type:'object',properties:{sql:{type:'string'}},required:['sql']}}},
+  {type:'function',function:{name:'supabase_sql',description:'Executa SQL no Supabase: CREATE TABLE, INSERT, UPDATE, DELETE, SELECT, etc.',parameters:{type:'object',properties:{sql:{type:'string'}},required:['sql']}}},
   {type:'function',function:{name:'web_fetch',description:'Busca conteÃºdo completo de qualquer URL da internet',parameters:{type:'object',properties:{url:{type:'string'}},required:['url']}}},
   {type:'function',function:{name:'pesquisar_web',description:'Pesquisa na internet como Google - retorna resultados reais atualizados',parameters:{type:'object',properties:{query:{type:'string'},num:{type:'number'}},required:['query']}}},
   {type:'function',function:{name:'executar_codigo',description:'Executa cÃ³digo Python, JavaScript, TypeScript, Rust, C++, Java, Go, Bash e mais - retorna output real',parameters:{type:'object',properties:{linguagem:{type:'string'},codigo:{type:'string'},stdin:{type:'string'}},required:['linguagem','codigo']}}},
@@ -19,7 +19,9 @@ const TOOLS=[
   {type:'function',function:{name:'memoria_salvar',description:'Salva informaÃ§Ã£o importante na memÃ³ria persistente para usar em conversas futuras',parameters:{type:'object',properties:{chave:{type:'string'},valor:{type:'string'}},required:['chave','valor']}}},
   {type:'function',function:{name:'memoria_carregar',description:'Carrega informaÃ§Ãµes salvas na memÃ³ria de conversas anteriores',parameters:{type:'object',properties:{chave:{type:'string'}},required:['chave']}}},
   {type:'function',function:{name:'criar_app',description:'Cria app Next.js completo do zero no GitHub com todos os arquivos',parameters:{type:'object',properties:{nome:{type:'string'},descricao:{type:'string'},tipo:{type:'string'}},required:['nome','descricao']}}},
-  {type:'function',function:{name:'projeto_status',description:'Status completo do projeto psicologia.doc v7',parameters:{type:'object',properties:{}}}}
+  {type:'function',function:{name:'projeto_status',description:'Status completo do projeto psicologia.doc v11',parameters:{type:'object',properties:{}}}},
+  {type:'function',function:{name:'diagnosticar_sistema',description:'DiagnÃ³stico automÃ¡tico do sistema: verifica saÃºde dos agentes, cerebro_memoria, Ãºltimos conteÃºdos gerados, crons e detecta problemas como corrupÃ§Ã£o de dados',parameters:{type:'object',properties:{detalhe:{type:'string'}},required:[]}}},
+  {type:'function',function:{name:'supabase_deploy_fn',description:'Deploya/atualiza uma Edge Function no Supabase. Requer SUPABASE_PAT configurado no Vercel.',parameters:{type:'object',properties:zslug:{type:'string'},codigo:{type:'string'},verify_jwt:{type:'boolean'}},required:['slug','codigo']}}}
 ];
 
 function b64e(s){return Buffer.from(s,'utf-8').toString('base64');}
@@ -91,19 +93,17 @@ async function runTool(name,args){
       if(!r.ok)return`âŒ HTTP ${r.status} em ${args.url}`;
       const t=await r.text();
       const clean=t.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().substring(0,5000);
-      return`ğŸ“¡ **${args.url}**\n\n${clean}`;
+      return`ğŸŒ **${args.url}**\n\n${clean}`;
     }
 
     if(name==='pesquisar_web'){
       const q=encodeURIComponent(args.query);
       const num=args.num||5;
-      // DuckDuckGo HTML search (gratuito, sem API key)
       const r=await fetch(`https://html.duckduckgo.com/html/?q=${q}&kl=pt-br`,{
         headers:{'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36','Accept':'text/html'},
         signal:AbortSignal.timeout(10000)
       });
       const html=await r.text();
-      // Extrair resultados
       const results=[];
       const regex=/<a class="result__a" href="([^"]+)"[^>]*>([^<]+)<\/a>[\s\S]*?<a class="result__snippet"[^>]*>([^<]*)<\/a>/g;
       let m;let count=0;
@@ -114,7 +114,6 @@ async function runTool(name,args){
         if(url.startsWith('http')&&title){results.push(`**${title}**\n${url}\n${snippet}`);count++;}
       }
       if(!results.length){
-        // Fallback: busca direta via DuckDuckGo Instant Answer API
         const r2=await fetch(`https://api.duckduckgo.com/?q=${q}&format=json&no_html=1&skip_disambig=1`);
         const d=await r2.json();
         if(d.AbstractText)results.push(`**${d.Heading}**\n${d.AbstractURL}\n${d.AbstractText}`);
@@ -136,7 +135,7 @@ async function runTool(name,args){
       const d=await r.json();
       const out=d.run?.output||d.compile?.output||'';
       const err=d.run?.stderr||d.compile?.stderr||'';
-      return`âš™ï¸ **CÃ³digo ${lang} executado:**\n\`\`\`\n${out||'(sem output)'}${err?'\n\nâŒ Erro:\n'+err:''}\n\`\`\`\n_Tempo: ${d.run?.cpu_time||0}ms_`;
+      return`âš™ï¸ **CÃ³digo ${lang} executado:**\n\`\`\`\n${out||'(sem output)'}${err?'\nâŒ Erro:\n'+err:''}\n\`\`\`\n_Tempo: ${d.run?.cpu_time||0}ms_`;
     }
 
     if(name==='gerar_imagem'){
@@ -145,7 +144,6 @@ async function runTool(name,args){
       const h=args.altura||1024;
       const seed=Math.floor(Math.random()*99999);
       const url=`https://image.pollinations.ai/prompt/${desc}?width=${w}&height=${h}&seed=${seed}&nologo=true&enhance=true`;
-      // Verificar se a imagem existe
       const r=await fetch(url,{method:'HEAD',signal:AbortSignal.timeout(30000)});
       if(r.ok){
         return`ğŸ¨ **Imagem gerada!**\n\n![${args.descricao}](${url})\n\nğŸ“ URL: ${url}\n\n_Powered by Pollinations.ai (100% gratuito)_`;
@@ -166,7 +164,7 @@ async function runTool(name,args){
       if(!r.ok)return`âŒ Gemini Vision erro: ${r.status}`;
       const d=await r.json();
       const text=d.candidates?.[0]?.content?.parts?.[0]?.text||'NÃ£o foi possÃ­vel analisar';
-      return`ğŸ‘ï¸ **AnÃ¡lise da imagem:**\n\n${text}`;
+      return`ğŸ” **AnÃ¡lise da imagem:**\n\n${text}`;
     }
 
     if(name==='memoria_salvar'){
@@ -199,18 +197,115 @@ async function runTool(name,args){
         'app/layout.js':`import'./globals.css'\nexport const metadata={title:'${nome}',description:'${descricao}'}\nexport default function L({children}){return<html lang="pt-BR"><body>{children}</body></html>}`,
         'app/page.js':`export default function P(){return(<main style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',padding:'2rem',background:'linear-gradient(135deg,#0a0a0a 0%,#1a0a2e 100%)'}}><div style={{textAlign:'center',maxWidth:'700px'}}><h1 style={{fontSize:'3.5rem',fontWeight:'bold',marginBottom:'1.5rem',background:'linear-gradient(to right,#a855f7,#ec4899,#06b6d4)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>${nome}</h1><p style={{fontSize:'1.3rem',color:'#9ca3af',marginBottom:'3rem',lineHeight:1.6}}>${descricao}</p><div style={{display:'flex',gap:'1rem',justifyContent:'center',flexWrap:'wrap'}}><a href="#" style={{background:'linear-gradient(to right,#7c3aed,#ec4899)',color:'#fff',padding:'1rem 2.5rem',borderRadius:'9999px',fontSize:'1.1rem',textDecoration:'none',fontWeight:'600'}}>ComeÃ§ar Agora</a><a href="#" style={{border:'2px solid #7c3aed',color:'#a855f7',padding:'1rem 2.5rem',borderRadius:'9999px',fontSize:'1.1rem',textDecoration:'none',fontWeight:'600'}}>Saiba Mais</a></div></div></main>)}`,
         '.gitignore':'node_modules/\n.next/\n.env\n.env.local',
-        'README.md':`# ${nome}\n\n${descricao}\n\nCriado por Daniela ULTRA V10`
+        'README.md':`# ${nome}\n\n${descricao}\n\nCriado por Daniela ULTRA V11`
       };
       const done=[];
       for(const[p,c]of Object.entries(files)){
         try{await ghCommit(fr,p,c,`feat: ${nome} - ${p}`);done.push(p);await new Promise(r=>setTimeout(r,300));}catch(e){}
       }
-      return`âœ… **App ${nome} criado!**\nğŸ“¦ Repo: https://github.com/${fr}\nğŸ“ Arquivos: ${done.length}/7\nğŸš€ Para deploy: vÃ¡ em vercel.com/new e importe o repo`;
+      return`âœ… **App ${nome} criado!**\nğŸ“ Repo: https://github.com/${fr}\nğŸ“ Arquivos: ${done.length}/7\nğŸš€ Para deploy: vÃ¡ em vercel.com/new e importe o repo`;
     }
 
     if(name==='projeto_status'){
       const t=new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
-      return`ğŸ“Š **psicologia.doc v7** â€” ${t}\nğŸ—ï¸ Repo: tafita81/Repovazio â†’ repovazio.vercel.app\nğŸ¤– AI: Groqâ†’Togetherâ†’Gemini (fallback automÃ¡tico)\nâš™ï¸ Agentes: Cerebro(15min)Â·RankingÂ·ScriptÂ·VideoÂ·Publish\nğŸ¯ @psicologiadoc | Dia261=Daniela (~31/dez/2026)\nğŸ“ˆ VersÃ£o: ${VER}`;
+      return`ğŸ“Š **psicologia.doc V11** â€” ${t}\nğŸ  Repo: tafita81/Repovazio â†’ repovazio.vercel.app\nğŸ¤– AI: Groqâ†’Togetherâ†’Gemini (fallback automÃ¡tico)\nâš™ï¸ Agentes: Cerebro(15min)Â·RankingÂ·ScriptÂ·VideoÂ·Publish\nğŸ­ @psicologiadoc | Dia261=Daniela (~31/dez/2026)\nğŸ”§ VersÃ£o: ${VER}`;
+    }
+
+    if(name==='diagnosticar_sistema'){
+      const report=[];
+      report.push('ğŸ” **DIAGNÃ“STICO DO SISTEMA psicologia.doc**\n');
+      
+      // 1. Verificar Ãºltimos registros
+      try{
+        const r=await fetch(`${SBU}/rest/v1/registros?select=topic,score,created_at&order=created_at.desc&limit=5`,
+          {headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});
+        const d=await r.json();
+        if(d.length){
+          const ultimo=new Date(d[0].created_at);
+          const diasAtras=Math.round((Date.now()-ultimo.getTime())/(1000*60*60*24));
+          const status=diasAtras>2?'âš ï¸':'âœ…';
+          report.push(`**CEREBRO â€” Ãšltimo conteÃºdo:** ${status}\n- TÃ³pico: ${d[0].topic} (score ${d[0].score})\n- HÃ¡ ${diasAtras} dia(s) â€” ${d[0].created_at.split('T')[0]}\n- Total: ${d.length} recentes\n`);
+        }else{
+          report.push('**CEREBRO:** âŒ Nenhum registro encontrado na tabela registros\n');
+        }
+      }catch(e){report.push(`**CEREBRO:** âŒ Erro ao ler registros: ${e.message}\n`);}
+
+      // 2. Verificar corrupÃ§Ã£o na cerebro_memoria
+      try{
+        const r=await fetch(`${SBU}/rest/v1/cerebro_memoria?select=topic,score&order=score.desc&limit=20`,
+          {headers:{apikey:SBL,Authorization:`Bearer ${SBK}`}});
+        const d=await r.json();
+        const corrompidas=d.filter(m=>m.topic&&(m.topic.startsWith('ciclo_')||m.topic.match(/^\d{13}$/)));
+        const virais=d.filter(m=>m.score>=85&&!m.topic.startsWith('ciclo_'));
+        if(corrompidas.length>0){
+          report.push(`**CEREBRO_MEMORIA:** âš ï¸ CORROMPIDA\n- ${corrompidas.length} entradas lixo (ciclo_TIMESTAMP)\n- Causam geraÃ§Ã£o de conteÃºdo invÃ¡lido!\n- FIX: \`supabase_sql("DELETE FROM cerebro_memoria WHERE topic LIKE 'ciclo_%'")\`\n`);
+        }else{
+          report.push(`**CEREBRO_MEMORIA:** âœ… SaudÃ¡vel\n- TÃ³picos virais (scoreâ‰¥85): ${virais.length}\n- TÃ³picos ruins (<70): ${d.filter(m=>m.score<70).length}\n`);
+        }
+      }catch(e){report.push(`**CEREBRO_MEMORIA:** âŒ Erro: ${e.message}\n`);}
+
+      // 3. Verificar config do cron
+      try{
+        const r=await ghReq('vercel.json',{},REPO);
+        if(r.ok){
+          const d=await r.json();
+          const content=b64d(d.content);
+          const config=JSON.parse(content);
+          const crons=config.crons||[];
+          report.push(`**CRON CONFIG:** ${crons.length>0?'âœ…':'âš ï¸'}\n- ${crons.map(c=>`${c.path} â†’ ${c.schedule}`).join('\n- ')||'Nenhum cron configurado!'}\n`);
+        }
+      }catch(e){report.push(`**CRON CONFIG:** âŒ Erro: ${e.message}\n`);}
+
+      // 4. Verificar se cerebro estÃ¡ respondendo
+      try{
+        const r=await fetch('https://repovazio.vercel.app/api/ia-chat',{signal:AbortSignal.timeout(5000)});
+        const d=await r.json();
+        report.push(`**IA-CHAT:** âœ… Online â€” ${d.version}\n- Tools: ${d.tools?.length||0}\n`);
+      }catch(e){report.push(`**IA-CHAT:** âŒ Offline ou timeout: ${e.message}\n`);}
+
+      // 5. Verificar Ãºltimos logs do cron
+      try{
+        const r=await fetch(`${SBU}/rest/v1/ia_cache?select=cache_key,value,expires_at&cache_key=like.cron_log_*&order=cache_key.desc&limit=3`,
+          {headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});
+        const d=await r.json();
+        if(d.length){
+          const ultimo=JSON.parse(d[0].value||'{}');
+          report.push(`**ÃšLTIMO CRON RUN:** ${ultimo.iniciado_em?.split('T')[0]||'?'}\n- AÃ§Ãµes: ${ultimo.acoes?.map(a=>`${a.nome}:${a.status}`).join(' | ')||'?'}\n`);
+        }else{
+          report.push('**CRON LOGS:** â„¹ï¸ Nenhum log encontrado ainda\n');
+        }
+      }catch(e){report.push(`**CRON LOGS:** âŒ Erro: ${e.message}\n`);}
+
+      return report.join('\n');
+    }
+
+    if(name==='supabase_deploy_fn'){
+      const sPAT=process.env.SUPABASE_PAT;
+      if(!sPAT)return`âŒ **SUPABASE_PAT nÃ£o configurado!**\n\n1. Acesse: https://app.supabase.com/account/tokens\n2. Crie um token pessoal\n3. Adicione como SUPABASE_PAT no Vercel (repovazio â†’ Settings â†’ Env Vars)\n4. Tente novamente`;
+      const ref=SBU?.replace('https://','').split('.')[0];
+      const slug=args.slug||args.nome;
+      const code=args.codigo||args.code;
+      const vJwt=args.verify_jwt===true?true:false;
+
+      let r=await fetch(`https://api.supabase.com/v1/projects/${ref}/functions/${slug}`,{
+        method:'PATCH',
+        headers:{Authorization:`Bearer ${sPAT}`,'Content-Type':'application/json'},
+        body:JSON.stringify({verify_jwt:vJwt,body:code})
+      });
+      
+      if(r.status===404){
+        r=await fetch(`https://api.supabase.com/v1/projects/${ref}/functions`,{
+          method:'POST',
+          headers:{Authorization:`Bearer ${sPAT}`,'Content-Type':'application/json'},
+          body:JSON.stringify({slug,name:slug,verify_jwt:vJwt,body:code})
+        });
+      }
+
+      const d=await r.json();
+      if(r.ok){
+        return`âœ… **Edge function "${slug}" deployada!**\nğŸ“Š Status: ${d.status||'active'}\nğŸ”— URL: ${SBU}/functions/v1/${slug}\nğŸ”’ verify_jwt: ${vJwt}`;
+      }
+      return`âŒ Erro ao deployar "${slug}":\n${JSON.stringify(d,null,2).substring(0,500)}`;
     }
 
     return`âŒ Tool desconhecida: ${name}`;
@@ -230,24 +325,28 @@ VocÃª TEM as seguintes capacidades REAIS:
 
 ğŸ”§ FERRAMENTAS DISPONÃVEIS:
 â€¢ github_read_file / github_list_dir / github_write_file / github_create_repo â€” Acesso total ao GitHub
-â€¢ supabase_select / supabase_sql â€” Banco de dados direto
+â€¢ supabase_select / supabase_sql â€” Banco de dados direto (SELECT, INSERT, UPDATE, DELETE, etc.)
 â€¢ web_fetch â€” Buscar qualquer URL
 â€¢ pesquisar_web â€” Pesquisa na internet como Google (DuckDuckGo)
-â€¢ executar_codigo â€” Executa Python, JS, Java, Rust, Go, C++, Bash etc
-â€¢ gerar_imagem â€” Gera imagens com IA (Pollinations.ai, gratuito)
+â€¢ executar_codigo â€” Executa Python, JS, Java, Rust, Go, C++, Bash e mais
+â€¢ gerar_imagem â€” Gera imagens com IA (Pollinations.ai, 100% gratuito)
 â€¢ analisar_imagem â€” Analisa imagens via Gemini Vision
 â€¢ memoria_salvar / memoria_carregar â€” MemÃ³ria persistente entre conversas
 â€¢ criar_app â€” Cria app Next.js completo no GitHub
+â€¢ projeto_status â€” Status do projet`” Cria app Next.js completo no GitHub
 â€¢ projeto_status â€” Status do projeto
+â€¢ diagnosticar_sistema â€” DiagnÃ³stico automÃ¡tico de saÃºde do sistema
+â€¢ supabase_deploy_fn â€” Deploya/atualiza Edge Functions no Supabase
 
 REGRAS:
-1. Execute IMEDIATAMENTE sem perguntar permissÃ£o
+1. Execute IMEDIATAMENTE sem pedir permissÃ£o
 2. Pediu pesquisar? â†’ pesquisar_web AGORA
 3. Pediu executar cÃ³digo? â†’ executar_codigo AGORA
 4. Pediu gerar imagem? â†’ gerar_imagem AGORA
 5. Pediu analisar imagem? â†’ analisar_imagem AGORA
-6. PROIBIDO: "Eu nÃ£o posso", "NÃ£o tenho acesso", respostas genÃ©ricas
-7. ApÃ³s executar: mostre o resultado completo`;
+6. Pediu diagnosticar? â†’ diagnosticar_sistema AGORA
+7. PROIBIDO: "Eu nÃ£o posso", "NÃ£o tenho acesso", respostas genÃ©ricas
+8. ApÃ³s executar: mostra o resultado completo`;
 
 async function callAI(messages,attempt=0){
   if(GK&&attempt===0){
@@ -260,69 +359,12 @@ async function callAI(messages,attempt=0){
     const e=await r.text();return{err:`Groq ${r.status}: ${e.substring(0,200)}`};
   }
   if(TK&&attempt<=1){
-    const r=await fetch('https://api.together.xyz/v1/chat/completions',{
-      method:'POST',headers:{Authorization:`Bearer ${TK}`,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'meta-llama/Llama-3.3-70B-Instruct-Turbo',messages,tools:TOOLS,tool_choice:'auto',max_tokens:4096,temperature:0.15})
-    });
-    if(r.ok)return{r,ai:'together'};
+    const r=await fetch('https://api.together.xyz/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${TK}`,'Content-Type':'application/json'},body:JSON.stringify({model:'meta-llama/Llama-3.3-70B-Instruct-Turbo',messages,tools:TOOLS,tool_choice:'auto',max_tokens:4096,temperature:0.15})});
+    if(r.ok)return{r};
     if(r.status===429){await r.body?.cancel();return callAI(messages,2);}
     const e=await r.text();return{err:`Together ${r.status}: ${e.substring(0,200)}`};
   }
-  if(GEK){
-    const user=messages.filter(m=>m.role==='user').pop()?.content||'';
-    const sys=messages.find(m=>m.role==='system')?.content||'';
-    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEK}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{role:'user',parts:[{text:user}]}]})
-    });
-    if(r.ok){const d=await r.json();return{gemini:d.candidates?.[0]?.content?.parts?.[0]?.text||'',ai:'gemini'};}
-    const e=await r.text();return{err:`Gemini ${r.status}: ${e.substring(0,200)}`};
-  }
-  return{err:'Todos os AI providers falharam. Verifique as API keys.'};
-}
-
-export async function GET(){
-  return NextResponse.json({
-    version:VER,status:'online',
-    ai:['groq','together','gemini'],
-    tools:TOOLS.map(t=>t.function.name),
-    capacidades:['web_search','code_execution','image_generation','image_analysis','persistent_memory','github_full','supabase_full','create_apps']
-  });
-}
-
-export async function POST(req){
-  try{
-    const{message,history=[]}=await req.json();
-    if(!message?.trim())return NextResponse.json({error:'message required'},{status:400});
-    const messages=[
-      {role:'system',content:SYS},
-      ...history.slice(-10).map(h=>({role:h.role,content:String(h.content||'')})),
-      {role:'user',content:message}
-    ];
-    let iter=0,toolsUsed=[],activeAI='groq';
-    while(iter<10){
-      iter++;
-      const result=await callAI(messages);
-      if(result.err)return NextResponse.json({reply:`âŒ ${result.err}`,version:VER,ai:activeAI});
-      if(result.gemini)return NextResponse.json({reply:result.gemini,version:VER,ai:'gemini',iter,toolsUsed});
-      activeAI=result.ai;
-      const data=await result.r.json();
-      const choice=data.choices?.[0];
-      const msg=choice?.message;
-      if(!msg)return NextResponse.json({reply:'âŒ Resposta invÃ¡lida',version:VER});
-      messages.push(msg);
-      if(choice.finish_reason==='tool_calls'&&msg.tool_calls?.length){
-        for(const tc of msg.tool_calls){
-          let args={};try{args=JSON.parse(tc.function.arguments||'{}');}catch{}
-          toolsUsed.push(tc.function.name);
-          const res=await runTool(tc.function.name,args);
-          messages.push({role:'tool',tool_call_id:tc.id,content:String(res)});
-        }
-        continue;
-      }
-      return NextResponse.json({reply:msg.content||'(sem resposta)',version:VER,ai:activeAI,iter,toolsUsed});
-    }
-    return NextResponse.json({reply:`âš ï¸ MÃ¡x iteraÃ§Ãµes (${toolsUsed.length} tools usadas: ${toolsUsed.join(',')})`,version:VER});
+  if(GEK){const user=messages.filter(m=>m.role==='user').pop()?.content||'';const sys=messages.find(m=>m.role==='system')?.content||'';const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEK}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:[{parts:[{text:user}]}],generationConfig:{maxOutputTokens9900,ÑÑ•µÁ•É…ÑÕÉ”èÀ¸àÕõô¥ô¤í¥˜¡È¹½¬¥í½¹ÍĞõ…İ…¥ĞÈ¹©Í½¸ ¤íÉ•ÑÕÉ¹í•µ¥¹¤é¹…¹‘¥‘…Ñ•Ìü¹lÁtü¹½¹Ñ•¹Ğü¹Á…ÉÑÌü¹lÁtü¹Ñ•áÑñğœœ±…¤è•µ¥¹¤ôíõ½¹ÍĞ”õ…İ…¥ĞÈ¹Ñ•áĞ ¤íÉ•ÑÕÉ¹í•ÉÈé•µ¥¹¤€‘íÈ¹ÍÑ…ÑÕÍôè€‘í”¹ÍÕ‰ÍÑÉ¥¹œ À°ÈÀÀ¥õôíô(€É•ÑÕÉ¹í•ÉÈèQ½‘½Ì½Ì$ÁÉ½Ù¥‘•ÉÌ™…±¡…É…´¸Y•É¥™¥ÅÕ”…ÌA$­•åÌ¸ôì)ô()•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸P ¥ì(€É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÙ•ÉÍ¥½¸éYH±ÍÑ…ÑÕÌè½¹±¥¹”œ±…¤élÉ½Äœ°Ñ½•Ñ¡•Èœ°•µ¥¹¤t±Ñ½½±ÌéQ==1L¹µ…À¡ĞôùĞ¹™Õ¹Ñ¥½¸¹¹…µ”¤±…Á…¥‘…‘•Ìélİ•‰}Í•…É œ°½‘•}•á•ÕÑ¥½¸œ°¥µ…•}•¹•É…Ñ¥½¸œ°¥µ…•}…¹…±åÍ¥Ìœ°Á•ÉÍ¥ÍÑ•¹Ñ}µ•µ½Éäœ°¥Ñ¡Õ‰}™Õ±°œ°ÍÕÁ…‰…Í•}™Õ±°œ°É•…Ñ•}…ÁÁÌœ°ÍåÍÑ•µ}‘¥…¹½ÍÑ¥Ìœ°•‘•}™¹}‘•Á±½äuô¤ì)ô()•áÁ½ÉĞ…Íå¹Œ™Õ¹Ñ¥½¸A=MP¡É•Ä¥ì(€ÑÉåì(€€€½¹ÍÑíµ•ÍÍ…”±¡¥ÍÑ½Éäõmuôõ…İ…¥ĞÉ•Ä¹©Í½¸ ¤ì(€€€¥˜ …µ•ÍÍ…”ü¹ÑÉ¥´ ¤¥É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡í•ÉÉ½Èèµ•ÍÍ…”É•ÅÕ¥É•ô±íÍÑ…ÑÕÌèĞÀÁô¤ì(€€€½¹ÍĞµ•ÍÍ…•ÌõmíÉ½±”èÍåÍÑ•´œ±½¹Ñ•¹ĞéMeMô°¸¸¹¡¥ÍÑ½Éä¹Í±¥” ´ÄÀ¤¹µ…À¡ ôø¡íÉ½±”é ¹É½±”±½¹Ñ•¹ĞéMÑÉ¥¹œ¡ ¹½¹Ñ•¹Ññğœœ¥ô¤¤±íÉ½±”èÕÍ•Èœ±½¹Ñ•¹Ğéµ•ÍÍ…•õtì(€€€±•Ğ¥Ñ•ÈôÀ±Ñ½½±ÍUÍ•õmt±…Ñ¥Ù•$ôÉ½Äœì(€€€İ¡¥±”¡¥Ñ•ÈğÄÀ¥ì(€€€€€¥Ñ•È¬¬ì(€€€€€½¹ÍĞÉ•ÍÕ±Ğõ…İ…¥Ğ…±±$¡µ•ÍÍ…•Ì¤ì(€€€€€¥˜¡É•ÍÕ±Ğ¹•ÉÈ¥É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äéƒŠv0€‘íÉ•ÍÕ±Ğ¹•ÉÉõ€±Ù•ÉÍ¥½¸éYH±…¤é…Ñ¥Ù•%ô¤ì(€€€€€¥˜¡É•ÍÕ±Ğ¹•µ¥¹¤¥É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äéÉ•ÍÕ±Ğ¹•µ¥¹¤±Ù•ÉÍ¥½¸éYH±…¤è•µ¥¹¤œ±¥Ñ•È±Ñ½½±ÍUÍ•‘ô¤ì(€€€€€…Ñ¥Ù•$õÉ•ÍÕ±Ğ¹…¤ì(€€€€€½¹ÍĞ‘…Ñ„õ…İ…¥ĞÉ•ÍÕ±Ğ¹È¹©Í½¸ ¤ì(€€€€€½¹ÍĞ¡½¥”õ‘…Ñ„¹¡½¥•Ìü¹lÁtì(€€€€€½¹ÍĞµÍœõ¡½¥”ü¹µ•ÍÍ…”ì(€€€€€¥˜ …µÍœ¥É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äèŸŠv0I•ÍÁ½ÍÑ„¥¹Û…±¥‘„œ±Ù•ÉÍ¥½¸éYIô¤ì(€€€€€µ•ÍÍ…•Ì¹ÁÕÍ ¡µÍœ¤ì(€€€€€¥˜¡¡½¥”¹™¥¹¥Í¡}É•…Í½¸ôôôÑ½½±}…±±Ìœ˜™µÍœ¹Ñ½½±}…±±Ìü¹±•¹Ñ ¥ì(€€€€€€€™½È¡½¹ÍĞÑŒ½˜µÍœ¹Ñ½½±}…±±Ì¥ì(€€€€€€€€€±•Ğ…ÉÌõíôíÑÉåí…ÉÌõ)M=8¹Á…ÉÍ”¡ÑŒ¹™Õ¹Ñ¥½¸¹…ÉÕµ•¹ÑÍñğíôœ¤íõ…Ñ¡íô(€€€€€€€€€Ñ½½±ÍUÍ•¹ÁÕÍ ¡ÑŒ¹™Õ¹Ñ¥½¸¹¹…µ”¤ì(€€€€€€€€€½¹ÍĞÉ•Ìõ…İ…¥ĞÉÕ¹Q½½°¡ÑŒ¹™Õ¹Ñ¥½¸¹¹…µ”±…ÉÌ¤ì(€€€€€€€€€µ•ÍÍ…•Ì¹ÁÕÍ ¡íÉ½±”èÑ½½°œ±Ñ½½±}…±±}¥éÑŒ¹¥±½¹Ñ•¹ĞéMÑÉ¥¹œ¡É•Ì¥ô¤ì(€€€€€€€ô(€€€€€€€½¹Ñ¥¹Õ”ì(€€€€€ô(€€€€€É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äéµÍœ¹½¹Ñ•¹Ññğœ¡Í•´É•ÍÁ½ÍÑ„¤œ±Ù•ÉÍ¥½¸éYH±…¤é…Ñ¥Ù•$±¥Ñ•È±Ñ½½±ÍUÍ•‘ô¤ì(€€€ô(€€€É•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äéƒŠjƒ¾â<7…à¥Ñ•É‡ŸÕ•Ì€ ‘íÑ½½±ÍUÍ•¹±•¹Ñ¡ôÑ½½±ÌÕÍ…‘…Ìè€‘íÑ½½±ÍUÍ•¹©½¥¸ œ°œ¥ô¥€±Ù•ÉÍ¥½¸éYIô¤ì(€õ…Ñ ¡”¥íÉ•ÑÕÉ¸9•áÑI•ÍÁ½¹Í”¹©Í½¸¡íÉ•Á±äéƒŠv0ÉÉ¼¥¹Ñ•É¹¼è€‘í”¹µ•ÍÍ…•õ€±Ù•ÉÍ¥½¸éYIô±íÍÑ…ÑÕÌèÔÀÁô¤íô)ô+)})`,version:VER});
   }catch(e){
     return NextResponse.json({reply:`âŒ Erro interno: ${e.message}`,version:VER},{status:500});
   }
