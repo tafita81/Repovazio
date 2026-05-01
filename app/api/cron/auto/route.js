@@ -1,64 +1,68 @@
-// app/api/cron/auto/route.js - CORRIGIDO v2
-// Remove o bug que envenenava cerebro_memoria com ciclo_TIMESTAMP
-export const dynamic='force-dynamic';
+import{NextResponse}from'next/server';
+const SBU=process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SBK=process.env.SUPABASE_SERVICE_KEY;
+const GK=process.env.GROQ_API_KEY;
 export const maxDuration=60;
-
-const SU=process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SK=process.env.SUPABASE_SERVICE_KEY;
-
-async function db(p,m,b){
-  if(!SU||!SK)return null;
-  try{
-    const r=await fetch(SU+'/rest/v1/'+p,{
-      method:m||'GET',
-      headers:{'Content-Type':'application/json',apikey:SK,Authorization:'Bearer '+SK,
-        Prefer:m==='POST'?'return=representation':'''},
-      body:b?JSON.stringify(b):undefined
-    });
-    return r.ok?r.json():null;
-  }catch{return null}
-}
-
+export const dynamic='force-dynamic';
 export async function GET(){
-  const ini=Date.now();
-  const horaSP=new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
-  const res={iniciado_em:new Date().toISOString(),hora_sp:horaSP,acoes:[]};
-  const base='https://repovazio.vercel.app';
-
+  const inicio=new Date().toISOString();
+  const acoes=[];
   try{
-    const r=await fetch(base+'/api/cerebro',{signal:AbortSignal.timeout(50000)});
-    const d=await r.json();
-    res.acoes.push({nome:'cerebro',status:r.ok?'ok':'falha',score:d.score,topic:d.topic,model:d.model});
-  }catch(e){
-    res.acoes.push({nome:'cerebro',status:'erro',erro:e.message});
-  }
-
-  try{
-    const r=await fetch(base+'/api/cerebro/aprender',{signal:AbortSignal.timeout(15000)});
-    res.acoes.push({nome:'aprender',status:r.ok?'ok':'falha'});
-  }catch{
-    res.acoes.push({nome:'aprender',status:'erro'});
-  }
-
-  const h=parseInt(new Date().toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit'}).slice(0,2));
-  if(h>=8&&h<22){
-    try{
-      const r=await fetch(base+'/api/ranking',{signal:AbortSignal.timeout(15000)});
-      const d=await r.json();
-      res.acoes.push({nome:'ranking',status:r.ok?'ok':'falha',total:d.total});
-    }catch{
-      res.acoes.push({nome:'ranking',status:'erro'});
+    if(!GK||!SBU||!SBK){
+      return NextResponse.json({ok:false,erro:'Env vars nao configuradas'},{status:500});
     }
+    // Buscar topico com maior score da cerebro_memoria
+    let topico='Psicologia e autoconhecimento';
+    try{
+      const r=await fetch(SBU+'/rest/v1/cerebro_memoria?select=topic,score&order=score.desc&limit=1',{
+        headers:{apikey:SBK,Authorization:'Bearer '+SBK}
+      });
+      if(r.ok){
+        const d=await r.json();
+        if(d[0]&&d[0].topic&&!d[0].topic.match(/^d{13}$/)&&!d[0].topic.startsWith('ciclo_')){
+          topico=d[0].topic;
+        }
+      }
+    }catch(e){acoes.push({nome:'buscar_topico',status:'erro'});}
+    // Gerar roteiro via Groq
+    let roteiro=null;
+    try{
+      const prompt='Crie um roteiro PT-BR para video YouTube sobre: '+topico+'. Titulo, 3 pontos principais, conclusao. Maximo 300 palavras.';
+      const gr=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+GK,'Content-Type':'application/json'},
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'user',content:prompt}],max_tokens:400,temperature:0.7})
+      });
+      if(gr.ok){
+        const gd=await gr.json();
+        roteiro=gd.choices?.[0]?.message?.content||null;
+        acoes.push({nome:'gerar_roteiro',status:'ok'});
+      }else{
+        acoes.push({nome:'gerar_roteiro',status:'erro_'+gr.status});
+      }
+    }catch(e){acoes.push({nome:'gerar_roteiro',status:'excecao'});}
+    // Salvar na tabela registros
+    if(roteiro){
+      try{
+        const ir=await fetch(SBU+'/rest/v1/registros',{
+          method:'POST',
+          headers:{apikey:SBK,Authorization:'Bearer '+SBK,'Content-Type':'application/json',Prefer:'return=minimal'},
+          body:JSON.stringify({topic:topico,script:roteiro,score:75,status:'gerado'})
+        });
+        acoes.push({nome:'salvar_registro',status:ir.ok?'ok':'erro_'+ir.status});
+      }catch(e){acoes.push({nome:'salvar_registro',status:'excecao'});}
+    }
+    // Log na ia_cache
+    const logKey='cron_log_'+new Date().toISOString().slice(0,13).replace(':','').replace('T','_');
+    try{
+      await fetch(SBU+'/rest/v1/ia_cache',{
+        method:'POST',
+        headers:{apikey:SBK,Authorization:'Bearer '+SBK,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
+        body:JSON.stringify({cache_key:logKey,value:JSON.stringify({iniciado_em:inicio,topico,acoes,roteiro_len:roteiro?.length||0}),expires_at:new Date(Date.now()+7*24*3600000).toISOString()})
+      });
+    }catch(e){}
+    return NextResponse.json({ok:true,topico,acoes,roteiro_len:roteiro?.length||0});
+  }catch(e){
+    return NextResponse.json({ok:false,erro:e.message},{status:500});
   }
-
-  const ok=res.acoes.filter(a=>a.status==='ok').length;
-  await db('ia_cache','POST',{
-    cache_key:'cron_log_'+Date.now(),
-    value:JSON.stringify({...res,ok_count:ok}),
-    expires_at:new Date(Date.now()+7*24*60*60*1000).toISOString()
-  });
-
-  res.duracao_ms=Date.now()-ini;
-  res.ok_count=ok;
-  return Response.json(res);
 }
