@@ -325,61 +325,61 @@ async function runTool(name,args){
 
 
     if(name==='youtube_upload'){
-      if(!YTT)return\`❌ YOUTUBE_OAUTH_TOKEN não configurado.\n\nPara configurar:\n1. Acesse console.cloud.google.com\n2. Crie OAuth 2.0 credentials\n3. Configure redirect para repovazio.vercel.app/api/youtube/callback\n4. Adicione YOUTUBE_OAUTH_TOKEN no Vercel\`;
+      if(!YTT)return`❌ YOUTUBE_OAUTH_TOKEN não configurado.\n\nPara configurar:\n1. Acesse console.cloud.google.com\n2. Crie OAuth 2.0 credentials\n3. Configure redirect para repovazio.vercel.app/api/youtube/callback\n4. Adicione YOUTUBE_OAUTH_TOKEN no Vercel`;
       // Upload em 2 etapas: 1) iniciar upload, 2) enviar bytes via URL
       try{
         const meta={snippet:{title:args.titulo,description:args.descricao,tags:args.tags||['psicologia','dark psychology','autoconhecimento'],categoryId:'22'},status:{privacyStatus:'public',selfDeclaredMadeForKids:false}};
         const init=await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status',{
-          method:'POST',headers:{Authorization:\`Bearer \${YTT}\`,'Content-Type':'application/json','X-Upload-Content-Type':'video/*'},
+          method:'POST',headers:{Authorization:`Bearer ${YTT}`,'Content-Type':'application/json','X-Upload-Content-Type':'video/*'},
           body:JSON.stringify(meta)
         });
-        if(!init.ok){const e=await init.text();return\`❌ YouTube init erro \${init.status}: \${e.substring(0,300)}\`;}
+        if(!init.ok){const e=await init.text();return`❌ YouTube init erro ${init.status}: ${e.substring(0,300)}`;}
         const uploadUrl=init.headers.get('Location');
         // Se video_url for uma URL, buscar bytes e fazer upload
         const vr=await fetch(args.video_url,{signal:AbortSignal.timeout(60000)});
-        if(!vr.ok)return\`❌ Não consegui baixar vídeo de: \${args.video_url}\`;
+        if(!vr.ok)return`❌ Não consegui baixar vídeo de: ${args.video_url}`;
         const vbuf=await vr.arrayBuffer();
         const up=await fetch(uploadUrl,{method:'PUT',headers:{'Content-Type':'video/*','Content-Length':String(vbuf.byteLength)},body:vbuf});
-        if(!up.ok){const e=await up.text();return\`❌ YouTube upload erro \${up.status}: \${e.substring(0,300)}\`;}
+        if(!up.ok){const e=await up.text();return`❌ YouTube upload erro ${up.status}: ${e.substring(0,300)}`;}
         const d=await up.json();
-        return\`✅ **Vídeo publicado no YouTube!**\n📹 ID: \${d.id}\n🔗 URL: https://youtube.com/watch?v=\${d.id}\n📊 Título: \${d.snippet?.title}\n🔒 Status: \${d.status?.uploadStatus}\`;
-      }catch(e){return\`❌ YouTube upload: \${e.message}\`;}
+        return`✅ **Vídeo publicado no YouTube!**\n📹 ID: ${d.id}\n🔗 URL: https://youtube.com/watch?v=${d.id}\n📊 Título: ${d.snippet?.title}\n🔒 Status: ${d.status?.uploadStatus}`;
+      }catch(e){return`❌ YouTube upload: ${e.message}`;}
     }
 
     if(name==='youtube_status'){
-      if(!YTT)return\`❌ YOUTUBE_OAUTH_TOKEN não configurado\`;
+      if(!YTT)return`❌ YOUTUBE_OAUTH_TOKEN não configurado`;
       try{
         const r=await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true',{
-          headers:{Authorization:\`Bearer \${YTT}\`}
+          headers:{Authorization:`Bearer ${YTT}`}
         });
-        if(!r.ok){const e=await r.text();return\`❌ YouTube API \${r.status}: \${e.substring(0,200)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ YouTube API ${r.status}: ${e.substring(0,200)}`;}
         const d=await r.json();
         const ch=d.items?.[0];
-        if(!ch)return\`❌ Nenhum canal encontrado para este token\`;
+        if(!ch)return`❌ Nenhum canal encontrado para este token`;
         const s=ch.statistics;
-        return\`📺 **Canal @psicologiadoc**\n👥 Inscritos: \${Number(s.subscriberCount||0).toLocaleString('pt-BR')}\n👁️ Views totais: \${Number(s.viewCount||0).toLocaleString('pt-BR')}\n🎬 Vídeos: \${s.videoCount||0}\n🌐 URL: https://youtube.com/\${ch.snippet?.customUrl||'@psicologiadoc'}\n\n⚠️ Meta: 1.000 inscritos + 4.000h watch → Monetização\`;
-      }catch(e){return\`❌ YouTube status: \${e.message}\`;}
+        return`📺 **Canal @psicologiadoc**\n👥 Inscritos: ${Number(s.subscriberCount||0).toLocaleString('pt-BR')}\n👁️ Views totais: ${Number(s.viewCount||0).toLocaleString('pt-BR')}\n🎬 Vídeos: ${s.videoCount||0}\n🌐 URL: https://youtube.com/${ch.snippet?.customUrl||'@psicologiadoc'}\n\n⚠️ Meta: 1.000 inscritos + 4.000h watch → Monetização`;
+      }catch(e){return`❌ YouTube status: ${e.message}`;}
     }
 
     if(name==='elevenlabs_voz'){
-      if(!ELK)return\`❌ ELEVENLABS_API_KEY não configurado.\n\nPara configurar:\n1. Crie conta em elevenlabs.io (plano gratuito: 10k chars/mês)\n2. Obtenha a API key em Profile Settings\n3. Adicione ELEVENLABS_API_KEY no Vercel\n4. Opcionalmente configure ELEVENLABS_VOICE_ID\`;
+      if(!ELK)return`❌ ELEVENLABS_API_KEY não configurado.\n\nPara configurar:\n1. Crie conta em elevenlabs.io (plano gratuito: 10k chars/mês)\n2. Obtenha a API key em Profile Settings\n3. Adicione ELEVENLABS_API_KEY no Vercel\n4. Opcionalmente configure ELEVENLABS_VOICE_ID`;
       try{
-        const r=await fetch(\`https://api.elevenlabs.io/v1/text-to-speech/\${EL_VOICE}\`,{
+        const r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE}`,{
           method:'POST',
           headers:{'xi-api-key':ELK,'Content-Type':'application/json','Accept':'audio/mpeg'},
           body:JSON.stringify({text:args.texto,model_id:'eleven_multilingual_v2',voice_settings:{stability:args.stability||0.5,similarity_boost:args.similarity||0.75}})
         });
-        if(!r.ok){const e=await r.text();return\`❌ ElevenLabs \${r.status}: \${e.substring(0,200)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ ElevenLabs ${r.status}: ${e.substring(0,200)}`;}
         const buf=await r.arrayBuffer();
         const b64=Buffer.from(buf).toString('base64');
         // Salvar no Supabase Storage ou retornar como data URL
         const chars=args.texto.length;
-        return\`🎙️ **Áudio gerado pela Daniela!**\n📝 Texto: \${chars} chars\n🔊 Formato: MP3\n💾 Tamanho: \${Math.round(buf.byteLength/1024)}KB\n⚡ Voice ID: \${EL_VOICE}\n\n📌 Para usar: decodifique o base64 abaixo e salve como .mp3\n\\`\\`\\`\n\${b64.substring(0,200)}...\n\\`\\`\\`\`;
-      }catch(e){return\`❌ ElevenLabs: \${e.message}\`;}
+        return`🎙️ **Áudio gerado pela Daniela!**\n📝 Texto: ${chars} chars\n🔊 Formato: MP3\n💾 Tamanho: ${Math.round(buf.byteLength/1024)}KB\n⚡ Voice ID: ${EL_VOICE}\n\n📌 Para usar: decodifique o base64 abaixo e salve como .mp3\n\`\`\`\n${b64.substring(0,200)}...\n\`\`\``;
+      }catch(e){return`❌ ElevenLabs: ${e.message}`;}
     }
 
     if(name==='heygen_video'){
-      if(!HGK)return\`❌ HEYGEN_API_KEY não configurado.\n\nPara configurar:\n1. Crie conta em heygen.com\n2. Obtenha API key em Settings → API\n3. Adicione HEYGEN_API_KEY no Vercel\n4. Opcionalmente configure avatar_id da Daniela\`;
+      if(!HGK)return`❌ HEYGEN_API_KEY não configurado.\n\nPara configurar:\n1. Crie conta em heygen.com\n2. Obtenha API key em Settings → API\n3. Adicione HEYGEN_API_KEY no Vercel\n4. Opcionalmente configure avatar_id da Daniela`;
       try{
         const avatarId=args.avatar_id||process.env.HEYGEN_AVATAR_ID||'Angela-inblackskirt-20220820';
         const voiceId=args.voice_id||process.env.HEYGEN_VOICE_ID||'1bd001e7e50f421d891986aad5158bc8';
@@ -388,82 +388,82 @@ async function runTool(name,args){
           headers:{'X-Api-Key':HGK,'Content-Type':'application/json'},
           body:JSON.stringify({video_inputs:[{character:{type:'avatar',avatar_id:avatarId,avatar_style:'normal'},voice:{type:'text',input_text:args.script,voice_id:voiceId,speed:1.0},background:{type:'color',value:'#1a0a2e'}}],dimension:{width:1920,height:1080},aspect_ratio:'16:9'})
         });
-        if(!r.ok){const e=await r.text();return\`❌ HeyGen \${r.status}: \${e.substring(0,300)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ HeyGen ${r.status}: ${e.substring(0,300)}`;}
         const d=await r.json();
         const vid=d.data?.video_id||d.video_id;
-        return\`🎬 **Vídeo HeyGen em processamento!**\n🆔 Video ID: \${vid}\n⏳ Status: processando (geralmente 3-10 min)\n\nVerifique o status:\n\\`heygen_status(video_id="\${vid}")\\`\n🔗 Dashboard: https://app.heygen.com/videos\`;
-      }catch(e){return\`❌ HeyGen: \${e.message}\`;}
+        return`🎬 **Vídeo HeyGen em processamento!**\n🆔 Video ID: ${vid}\n⏳ Status: processando (geralmente 3-10 min)\n\nVerifique o status:\n\`heygen_status(video_id="${vid}")\`\n🔗 Dashboard: https://app.heygen.com/videos`;
+      }catch(e){return`❌ HeyGen: ${e.message}`;}
     }
 
     if(name==='whatsapp_enviar'){
-      if(!WAT||!WAP)return\`❌ WHATSAPP_TOKEN ou WHATSAPP_PHONE_ID não configurados.\n\nPara configurar:\n1. Acesse developers.facebook.com\n2. Crie app WhatsApp Business\n3. Obtenha Phone Number ID e Access Token\n4. Adicione WHATSAPP_TOKEN e WHATSAPP_PHONE_ID no Vercel\`;
+      if(!WAT||!WAP)return`❌ WHATSAPP_TOKEN ou WHATSAPP_PHONE_ID não configurados.\n\nPara configurar:\n1. Acesse developers.facebook.com\n2. Crie app WhatsApp Business\n3. Obtenha Phone Number ID e Access Token\n4. Adicione WHATSAPP_TOKEN e WHATSAPP_PHONE_ID no Vercel`;
       try{
         const to=args.grupo_id||WAG;
-        if(!to)return\`❌ WHATSAPP_GROUP_ID não configurado. Passe grupo_id como argumento.\`;
-        const r=await fetch(\`https://graph.facebook.com/v18.0/\${WAP}/messages\`,{
+        if(!to)return`❌ WHATSAPP_GROUP_ID não configurado. Passe grupo_id como argumento.`;
+        const r=await fetch(`https://graph.facebook.com/v18.0/${WAP}/messages`,{
           method:'POST',
-          headers:{Authorization:\`Bearer \${WAT}\`,'Content-Type':'application/json'},
+          headers:{Authorization:`Bearer ${WAT}`,'Content-Type':'application/json'},
           body:JSON.stringify({messaging_product:'whatsapp',to,type:'text',text:{body:args.mensagem}})
         });
-        if(!r.ok){const e=await r.text();return\`❌ WhatsApp \${r.status}: \${e.substring(0,200)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ WhatsApp ${r.status}: ${e.substring(0,200)}`;}
         const d=await r.json();
-        return\`✅ **Mensagem enviada no WhatsApp!**\n📱 Para: \${to}\n📝 Mensagem: \${args.mensagem.substring(0,100)}\n🆔 Message ID: \${d.messages?.[0]?.id}\`;
-      }catch(e){return\`❌ WhatsApp: \${e.message}\`;}
+        return`✅ **Mensagem enviada no WhatsApp!**\n📱 Para: ${to}\n📝 Mensagem: ${args.mensagem.substring(0,100)}\n🆔 Message ID: ${d.messages?.[0]?.id}`;
+      }catch(e){return`❌ WhatsApp: ${e.message}`;}
     }
 
     if(name==='instagram_publicar'){
-      if(!IGT||!IGA)return\`❌ INSTAGRAM_TOKEN ou INSTAGRAM_ACCOUNT_ID não configurados.\n\nPara configurar:\n1. Crie app no developers.facebook.com\n2. Configure Instagram Basic Display API\n3. Obtenha Access Token e Account ID\n4. Adicione INSTAGRAM_TOKEN e INSTAGRAM_ACCOUNT_ID no Vercel\`;
+      if(!IGT||!IGA)return`❌ INSTAGRAM_TOKEN ou INSTAGRAM_ACCOUNT_ID não configurados.\n\nPara configurar:\n1. Crie app no developers.facebook.com\n2. Configure Instagram Basic Display API\n3. Obtenha Access Token e Account ID\n4. Adicione INSTAGRAM_TOKEN e INSTAGRAM_ACCOUNT_ID no Vercel`;
       try{
         // 1. Criar container de mídia
         const tipo=args.tipo||'IMAGE';
         const cParams=new URLSearchParams({image_url:args.imagem_url,caption:args.legenda,access_token:IGT});
         if(tipo==='REELS')cParams.set('media_type','REELS');
-        const c=await fetch(\`https://graph.facebook.com/v18.0/\${IGA}/media\`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cParams});
-        if(!c.ok){const e=await c.text();return\`❌ Instagram container \${c.status}: \${e.substring(0,200)}\`;}
+        const c=await fetch(`https://graph.facebook.com/v18.0/${IGA}/media`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cParams});
+        if(!c.ok){const e=await c.text();return`❌ Instagram container ${c.status}: ${e.substring(0,200)}`;}
         const cd=await c.json();
         const containerId=cd.id;
         // 2. Publicar container
-        const p=await fetch(\`https://graph.facebook.com/v18.0/\${IGA}/media_publish\`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({creation_id:containerId,access_token:IGT})});
-        if(!p.ok){const e=await p.text();return\`❌ Instagram publish \${p.status}: \${e.substring(0,200)}\`;}
+        const p=await fetch(`https://graph.facebook.com/v18.0/${IGA}/media_publish`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({creation_id:containerId,access_token:IGT})});
+        if(!p.ok){const e=await p.text();return`❌ Instagram publish ${p.status}: ${e.substring(0,200)}`;}
         const pd=await p.json();
-        return\`✅ **Publicado no Instagram!**\n🖼️ Post ID: \${pd.id}\n📝 Legenda: \${args.legenda.substring(0,100)}\n🔗 Ver em: https://instagram.com/psicologiadoc\`;
-      }catch(e){return\`❌ Instagram: \${e.message}\`;}
+        return`✅ **Publicado no Instagram!**\n🖼️ Post ID: ${pd.id}\n📝 Legenda: ${args.legenda.substring(0,100)}\n🔗 Ver em: https://instagram.com/psicologiadoc`;
+      }catch(e){return`❌ Instagram: ${e.message}`;}
     }
 
     if(name==='tiktok_publicar'){
-      if(!TKT)return\`❌ TIKTOK_TOKEN não configurado.\n\nPara configurar:\n1. Acesse developers.tiktok.com\n2. Crie app e obtenha Access Token\n3. Configure permissão video.upload\n4. Adicione TIKTOK_TOKEN no Vercel\`;
+      if(!TKT)return`❌ TIKTOK_TOKEN não configurado.\n\nPara configurar:\n1. Acesse developers.tiktok.com\n2. Crie app e obtenha Access Token\n3. Configure permissão video.upload\n4. Adicione TIKTOK_TOKEN no Vercel`;
       try{
-        const hashtags=(args.hashtags||['psicologia','autoconhecimento','darkpsychology']).map(h=>\`#\${h}\`).join(' ');
-        const caption=\`\${args.descricao} \${hashtags}\`.substring(0,2200);
+        const hashtags=(args.hashtags||['psicologia','autoconhecimento','darkpsychology']).map(h=>`#${h}`).join(' ');
+        const caption=`${args.descricao} ${hashtags}`.substring(0,2200);
         // TikTok Content Posting API v2
         const r=await fetch('https://open.tiktokapis.com/v2/post/publish/video/init/',{
           method:'POST',
-          headers:{Authorization:\`Bearer \${TKT}\`,'Content-Type':'application/json; charset=UTF-8'},
+          headers:{Authorization:`Bearer ${TKT}`,'Content-Type':'application/json; charset=UTF-8'},
           body:JSON.stringify({post_info:{title:caption,privacy_level:'PUBLIC_TO_EVERYONE',disable_duet:false,disable_comment:false,disable_stitch:false},source_info:{source:'PULL_FROM_URL',video_url:args.video_url}})
         });
-        if(!r.ok){const e=await r.text();return\`❌ TikTok \${r.status}: \${e.substring(0,300)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ TikTok ${r.status}: ${e.substring(0,300)}`;}
         const d=await r.json();
-        return\`✅ **Upload iniciado no TikTok!**\n🎵 Publish ID: \${d.data?.publish_id}\n📝 Caption: \${caption.substring(0,100)}\n⏳ Processando...\n🔗 Verificar: https://tiktok.com/@psicologiadoc\`;
-      }catch(e){return\`❌ TikTok: \${e.message}\`;}
+        return`✅ **Upload iniciado no TikTok!**\n🎵 Publish ID: ${d.data?.publish_id}\n📝 Caption: ${caption.substring(0,100)}\n⏳ Processando...\n🔗 Verificar: https://tiktok.com/@psicologiadoc`;
+      }catch(e){return`❌ TikTok: ${e.message}`;}
     }
 
     if(name==='pinterest_publicar'){
-      if(!PTT)return\`❌ PINTEREST_TOKEN não configurado.\n\nPara configurar:\n1. Acesse developers.pinterest.com\n2. Crie app e obtenha Access Token\n3. Configure permissão pins:write boards:read\n4. Adicione PINTEREST_TOKEN no Vercel\`;
+      if(!PTT)return`❌ PINTEREST_TOKEN não configurado.\n\nPara configurar:\n1. Acesse developers.pinterest.com\n2. Crie app e obtenha Access Token\n3. Configure permissão pins:write boards:read\n4. Adicione PINTEREST_TOKEN no Vercel`;
       try{
         // Buscar board ID primeiro
-        const br=await fetch('https://api.pinterest.com/v5/boards?page_size=10',{headers:{Authorization:\`Bearer \${PTT}\`}});
+        const br=await fetch('https://api.pinterest.com/v5/boards?page_size=10',{headers:{Authorization:`Bearer ${PTT}`}});
         let boardId=process.env.PINTEREST_BOARD_ID;
         if(!boardId&&br.ok){const bd=await br.json();boardId=bd.items?.[0]?.id;}
-        if(!boardId)return\`❌ Nenhum board encontrado. Configure PINTEREST_BOARD_ID no Vercel.\`;
+        if(!boardId)return`❌ Nenhum board encontrado. Configure PINTEREST_BOARD_ID no Vercel.`;
         const r=await fetch('https://api.pinterest.com/v5/pins',{
           method:'POST',
-          headers:{Authorization:\`Bearer \${PTT}\`,'Content-Type':'application/json'},
+          headers:{Authorization:`Bearer ${PTT}`,'Content-Type':'application/json'},
           body:JSON.stringify({board_id:boardId,title:args.titulo,description:args.descricao||args.titulo,link:args.link||'https://youtube.com/@psicologiadoc',media_source:{source_type:'image_url',url:args.imagem_url}})
         });
-        if(!r.ok){const e=await r.text();return\`❌ Pinterest \${r.status}: \${e.substring(0,200)}\`;}
+        if(!r.ok){const e=await r.text();return`❌ Pinterest ${r.status}: ${e.substring(0,200)}`;}
         const d=await r.json();
-        return\`✅ **Pin publicado no Pinterest!**\n📌 Pin ID: \${d.id}\n📝 Título: \${args.titulo}\n🔗 Ver em: https://pinterest.com/pin/\${d.id}\`;
-      }catch(e){return\`❌ Pinterest: \${e.message}\`;}
+        return`✅ **Pin publicado no Pinterest!**\n📌 Pin ID: ${d.id}\n📝 Título: ${args.titulo}\n🔗 Ver em: https://pinterest.com/pin/${d.id}`;
+      }catch(e){return`❌ Pinterest: ${e.message}`;}
     }
 
     return`❌ Tool desconhecida: ${name}`;
