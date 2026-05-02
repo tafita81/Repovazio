@@ -365,7 +365,7 @@ async function callAI(messages,attempt=0){
       body:JSON.stringify({model:'meta-llama/Llama-3.3-70B-Instruct-Turbo',messages,tools:TOOLS,tool_choice:'auto',max_tokens:4096,temperature:0.15})
     });
     if(r.ok)return{r,ai:'together'};
-    if(r.status===429){await r.body?.cancel();return callAI(messages,2);}
+    if(r.status===429||r.status===402){await r.body?.cancel();return callAI(messages,2);}
     const e=await r.text();return{err:`Together ${r.status}: ${e.substring(0,200)}`};
   }
   if(GEK){
