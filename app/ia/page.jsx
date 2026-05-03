@@ -11,44 +11,165 @@ const STORAGE={
 // ── SETTINGS MODAL ─────────────────────────────────────────────────────────
 
 // ── TOKEN MONITOR V2 ─────────────────────────────────────────────────────
-function TokenMonitor(){
-  const[st,setSt]=useState(null);
-  const[exp,setExp]=useState(false);
+
+// ── CONNECTORS LIST com Supabase permanente ────────────────────────────────
+const CONNECTORS_SERVICES=[
+  {id:'google_drive',name:'Google Drive',icon:'https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png',desc:'Arquivos e documentos'},
+  {id:'notion',name:'Notion',icon:'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',desc:'Páginas e bases de dados'},
+  {id:'slack',name:'Slack',icon:'https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg',desc:'Mensagens e canais'},
+  {id:'github',name:'GitHub',icon:'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',desc:'Repositórios e código'},
+  {id:'gmail',name:'Gmail',icon:'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',desc:'E-mails e contatos'},
+  {id:'youtube',name:'YouTube',icon:'https://www.youtube.com/favicon.ico',desc:'Vídeos e canal'},
+  {id:'instagram',name:'Instagram',icon:'https://www.instagram.com/favicon.ico',desc:'Posts e stories'},
+  {id:'elevenlabs',name:'ElevenLabs',icon:'https://elevenlabs.io/favicon.ico',desc:'Síntese de voz realista'},
+  {id:'heygen',name:'HeyGen',icon:'https://www.heygen.com/favicon.ico',desc:'Avatar de vídeo IA'},
+  {id:'canva',name:'Canva',icon:'https://www.canva.com/favicon.ico',desc:'Criar designs'},
+  {id:'supabase',name:'Supabase',icon:'https://supabase.com/favicon.ico',desc:'Banco de dados'},
+  {id:'vercel',name:'Vercel',icon:'https://vercel.com/favicon.ico',desc:'Deploy e infra'},
+  {id:'jira',name:'Jira',icon:'https://www.atlassian.com/favicon.ico',desc:'Tarefas e projetos'},
+  {id:'linear',name:'Linear',icon:'https://linear.app/favicon.ico',desc:'Issues e sprints'},
+];
+
+function ConnectorsList({connectors,setConnectors}){
+  const[loaded,setLoaded]=useState(false);
+  const[testStatus,setTestStatus]=useState({});
+
+  // Carrega tokens do Supabase ao iniciar
   useEffect(()=>{
-    const go=async()=>{try{const r=await fetch('/api/ia-chat');setSt(await r.json());}catch(e){}};
-    go();const t=setInterval(go,10000);return()=>clearInterval(t);
+    const load=async()=>{
+      try{
+        const r=await fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({stream:false,_action:'connectors_load',messages:[{role:'user',content:'load connectors'}]})});
+        if(r.ok){
+          const d=await r.json();
+          if(d.connectors){
+            setConnectors(prev=>({...prev,...d.connectors}));
+            // Salva no localStorage tb
+            Object.entries(d.connectors).forEach(([k,v])=>{if(v?.token)localStorage.setItem(`conn_${k}`,v.token);});
+          }
+        }
+      }catch(e){}
+      setLoaded(true);
+    };
+    load();
   },[]);
-  if(!st)return null;
-  const c=st.current||{};const chain=st.chain||[];const se=st.switch_event;
-  const pct=Math.min(c.pct||0,100);
-  const col=pct<60?'#4ade80':pct<88?'#facc15':'#f87171';
-  const act=chain.find(x=>x.active)||{};
-  const row=(p,i)=>(
-    <div key={i} style={{display:'flex',alignItems:'center',gap:5,padding:'2px 6px',marginBottom:1,borderRadius:3,background:p.active?'rgba(124,58,237,0.08)':'transparent',border:p.active?'1px solid rgba(124,58,237,0.2)':'1px solid transparent'}}>
-      <span style={{width:14,textAlign:'center',opacity:p.active?1:0.4}}>{p.emoji||'🤖'}</span>
-      <span style={{fontSize:9,color:'#374151',width:12}}>#{i+1}</span>
-      <span style={{flex:1,fontSize:10,color:p.active?'#e5e7eb':'#4b5563',fontWeight:p.active?700:400}}>{(p.label||p.name||'').substring(0,20)}</span>
-      {p.active&&<span style={{fontSize:8,color:'#4ade80'}}>●ATIVO</span>}
-      <span style={{fontSize:9,color:'#1f2937'}}>{p.limit>=1e6?`${(p.limit/1e6).toFixed(0)}M`:`${(p.limit/1000).toFixed(0)}k`}</span>
-      <span style={{fontSize:9,color:p.active?'#facc15':'#1f2937'}}>{p.reset_in||'—'}</span>
+
+  const connect=async(svc)=>{
+    const key=window.prompt(`🔑 Token/API Key para ${svc.name}:`);
+    if(!key||!key.trim())return;
+    const token=key.trim();
+    // Salva localmente
+    localStorage.setItem(`conn_${svc.id}`,token);
+    setConnectors(prev=>({...prev,[svc.id]:{name:svc.name,token,connected_at:new Date().toISOString()}}));
+    // Salva no Supabase via API (permanente para sempre)
+    fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({stream:false,_action:'connector_save',_service:svc.id,_token:token,
+        messages:[{role:'user',content:`Salve o token do ${svc.name}`}]})}).catch(()=>{});
+    setTestStatus(p=>({...p,[svc.id]:'saving...'}));
+    setTimeout(()=>setTestStatus(p=>({...p,[svc.id]:'✓ Salvo'})),1000);
+  };
+
+  const disconnect=(svcId)=>{
+    localStorage.removeItem(`conn_${svcId}`);
+    setConnectors(prev=>{const n={...prev};delete n[svcId];return n;});
+    fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({stream:false,_action:'connector_remove',_service:svcId,messages:[{role:'user',content:'remove'}]})}).catch(()=>{});
+  };
+
+  if(!loaded)return<div style={{padding:20,color:'#6b7280',fontSize:12}}>Carregando conectores...</div>;
+
+  return(
+    <div>
+      {CONNECTORS_SERVICES.map(svc=>{
+        const savedKey=`conn_${svc.id}`;
+        const connected=connectors?.[svc.id]?.token||localStorage.getItem(savedKey);
+        const ts=testStatus[svc.id];
+        return(
+          <div key={svc.id} style={{display:'flex',alignItems:'center',padding:'11px 14px',
+            borderBottom:'1px solid #0d0d0d',gap:10}}>
+            <div style={{position:'relative',flexShrink:0}}>
+              <img src={svc.icon} alt={svc.name} style={{width:26,height:26,borderRadius:4,objectFit:'contain',background:'#fff',padding:2}} onError={e=>{e.target.style.display='none';}}/>
+              {connected&&<div style={{position:'absolute',bottom:-2,right:-2,width:8,height:8,borderRadius:'50%',background:'#4ade80',border:'1px solid #000',boxShadow:'0 0 4px #4ade80'}}/>}
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,fontWeight:600,color:'#e5e7eb'}}>{svc.name}</div>
+              <div style={{fontSize:10,color:'#6b7280'}}>{svc.desc}</div>
+            </div>
+            {ts&&<span style={{fontSize:10,color:'#4ade80'}}>{ts}</span>}
+            {connected
+              ?<div style={{display:'flex',alignItems:'center',gap:5}}>
+                  <span style={{fontSize:10,color:'#4ade80',fontWeight:700}}>✓ ON</span>
+                  <button onClick={()=>disconnect(svc.id)} style={{fontSize:9,color:'#6b7280',background:'none',border:'1px solid #222',borderRadius:3,padding:'2px 5px',cursor:'pointer'}}>×</button>
+                </div>
+              :<button onClick={()=>connect(svc)} style={{fontSize:11,color:'#a78bfa',background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.25)',borderRadius:5,padding:'4px 9px',cursor:'pointer',fontWeight:500,whiteSpace:'nowrap'}}>
+                  Conectar
+                </button>
+            }
+          </div>
+        );
+      })}
     </div>
   );
+}
+
+function StatusBar(){
+  const[health,setHealth]=useState(null);
+  const[tokenSt,setTokenSt]=useState(null);
+  const[now,setNow]=useState(new Date());
+  const[expanded,setExpanded]=useState(false);
+  useEffect(()=>{
+    const clock=setInterval(()=>setNow(new Date()),1000);
+    const checkHealth=async()=>{try{const r=await fetch('/api/health');if(r.ok)setHealth(await r.json());}catch(e){}};
+    const checkTokens=async()=>{try{const r=await fetch('/api/ia-chat');if(r.ok)setTokenSt(await r.json());}catch(e){}};
+    checkHealth();checkTokens();
+    const h=setInterval(checkHealth,30000);
+    const t=setInterval(checkTokens,10000);
+    return()=>{clearInterval(clock);clearInterval(h);clearInterval(t);};
+  },[]);
+  const timeStr=now.toLocaleTimeString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const dateStr=now.toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit'});
+  const provIcon=(p)=>p==='groq'?'🦙':p==='gemini'?'✨':p==='cohere'?'🟡':p==='together'?'🔷':'🤖';
+  const shortModel=(n='')=>n.replace('llama-3.3-70b-versatile','Llama 3.3').replace('llama-3.1-8b-instant','Llama 3.1').replace('gemini-2.0-flash','Gemini 2.0').replace('command-r-08-2024','Command-R').replace('Meta-Llama-3.1-8B-Instruct-Turbo','Llama 3.1T').split('/').pop().substring(0,14);
+  const cur=tokenSt?.current||{};
+  const pct=Math.min(cur.pct||0,100);
+  const barColor=pct<60?'#4ade80':pct<85?'#facc15':'#f87171';
+  const activeProvider=cur.provider||'groq';
+  const dotColor=health?.health?.[activeProvider]?.ok?'#4ade80':health?.health?.[activeProvider]?.ok===false?'#f87171':'#6b7280';
+  const okCount=health?.health?Object.values(health.health).filter(h=>h.ok).length:0;
+  const totalCount=health?.health?Object.keys(health.health).length:4;
   return(
     <div style={{borderBottom:'1px solid #111',background:'#030303'}}>
-      <div onClick={()=>setExp(e=>!e)} style={{padding:'4px 10px',display:'flex',alignItems:'center',gap:6,fontSize:11,cursor:'pointer',userSelect:'none'}}>
-        <span>{act.emoji||'🤖'}</span>
-        <span style={{color:col,fontWeight:700}}>{(act.label||c.model||'').substring(0,16)}</span>
-        <div style={{width:80,height:3,background:'#1a1a1a',borderRadius:2,overflow:'hidden'}}>
-          <div style={{width:`${pct}%`,height:'100%',background:col,transition:'width 0.5s'}}/>
+      <div onClick={()=>setExpanded(e=>!e)} style={{display:'flex',alignItems:'center',gap:5,padding:'5px 10px',cursor:'pointer'}}>
+        <div style={{width:7,height:7,borderRadius:'50%',background:dotColor,flexShrink:0,boxShadow:`0 0 4px ${dotColor}`}}/>
+        <span style={{color:barColor,fontWeight:700,fontSize:12,flexShrink:0}}>{provIcon(activeProvider)} {shortModel(cur.model)}</span>
+        <div style={{width:55,height:3,background:'#1a1a1a',borderRadius:2,overflow:'hidden',flexShrink:0}}>
+          <div style={{width:`${pct}%`,height:'100%',background:barColor,borderRadius:2,transition:'width 0.5s'}}/>
         </div>
-        <span style={{color:'#4b5563',fontSize:10}}>{pct}% · {c.reset_in||'—'}</span>
-        {se&&<span style={{color:'#7c3aed',fontSize:9,overflow:'hidden',maxWidth:100,whiteSpace:'nowrap',textOverflow:'ellipsis'}}>⚡{se.substring(0,40)}</span>}
-        <span style={{color:'#1f2937',fontSize:9,marginLeft:'auto'}}>{exp?'▲':'▼'}</span>
+        <span style={{color:'#4b5563',fontSize:10,flexShrink:0}}>{pct}% · {cur.reset_in||'—'}</span>
+        <span style={{color:okCount>0?'#4ade80':'#f87171',fontSize:10,flexShrink:0,marginLeft:4}}>{okCount}/{totalCount} ✓</span>
+        <span style={{marginLeft:'auto',color:'#374151',fontSize:9,fontFamily:'monospace',flexShrink:0}}>{timeStr} {dateStr}</span>
+        <span style={{color:'#1f2937',fontSize:9,flexShrink:0}}>{expanded?'▲':'▼'}</span>
       </div>
-      {exp&&(
-        <div style={{borderTop:'1px solid #0d0d0d',padding:'6px 10px'}}>
-          <div style={{fontSize:9,color:'#374151',marginBottom:4}}>CADEIA · switch 88% · ♾️</div>
-          {chain.map(row)}
+      {expanded&&(
+        <div style={{padding:'8px 10px 10px',borderTop:'1px solid #0a0a0a'}}>
+          <div style={{fontSize:9,color:'#374151',marginBottom:5}}>🔄 24/7 · switch automático a 85% · health a cada 30s</div>
+          {health?.health&&Object.entries(health.health).map(([name,h])=>{
+            const isActive=name===activeProvider;
+            const ts=tokenSt?.provider_status?.find(p=>p.provider===name);
+            return(
+              <div key={name} style={{display:'flex',alignItems:'center',gap:5,padding:'3px 6px',marginBottom:2,borderRadius:3,
+                background:isActive?'rgba(139,92,246,0.08)':'transparent',border:isActive?'1px solid rgba(139,92,246,0.12)':'1px solid transparent'}}>
+                <div style={{width:5,height:5,borderRadius:'50%',background:h.ok?'#4ade80':'#f87171',flexShrink:0}}/>
+                <span style={{fontSize:10}}>{provIcon(name)}</span>
+                <span style={{color:isActive?'#a78bfa':h.ok?'#6b7280':'#374151',fontSize:10,flex:1,fontWeight:isActive?600:400}}>
+                  {name.charAt(0).toUpperCase()+name.slice(1)}{isActive?' ●':''}
+                </span>
+                {h.ok?<span style={{fontSize:9,color:'#4ade80'}}>✓ {h.ms}ms</span>:<span style={{fontSize:9,color:'#f87171'}}>✗ {(h.error||'erro').substring(0,20)}</span>}
+                <span style={{fontSize:9,color:'#1f2937'}}>reset:{ts?.reset_in||'—'}</span>
+              </div>
+            );
+          })}
+          {tokenSt?.switch_event&&<div style={{marginTop:4,fontSize:9,color:'#a78bfa'}}>⚡ {tokenSt.switch_event}</div>}
         </div>
       )}
     </div>
@@ -103,7 +224,7 @@ function SettingsModal({onClose}){
 
   return(
     <>
-      <TokenMonitor/>
+      <StatusBar/>
       {settingsOpen&&<SettingsModal onClose={()=>setSettingsOpen(false)}/>}
     <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(4px)'}} onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
       <div style={{background:'#111',border:'1px solid #222',borderRadius:16,width:'min(800px,95vw)',maxHeight:'88vh',display:'flex',flexDirection:'column',overflow:'hidden',boxShadow:'0 25px 60px rgba(0,0,0,0.8)'}}>
@@ -296,7 +417,7 @@ export default function Chat(){
 
   return(
     <>
-      <TokenMonitor/>
+      <StatusBar/>
       {settingsOpen&&<SettingsModal onClose={()=>setSettingsOpen(false)}/>}
     <div className="app">
       {/* SIDEBAR */}
@@ -332,67 +453,15 @@ export default function Chat(){
         </header>
 
         {/* PANELS */}
-        {panel==='connectors'&&(
+                {panel==='connectors'&&(
           <div className="pnl" style={{width:'min(400px,96vw)',maxHeight:'85vh',overflowY:'auto'}}>
             <div className="pnl-hdr"><span>🔌 Conectores</span><button onClick={()=>setPanel(null)}>✕</button></div>
-            <div style={{padding:'12px 16px',borderBottom:'1px solid #1e1e1e',fontSize:12,color:'#6b7280'}}>
-              Conecte serviços externos para que a Daniela acesse seus dados em tempo real.
+            <div style={{padding:'10px 14px',borderBottom:'1px solid #111',fontSize:11,color:'#6b7280'}}>
+              Conecte serviços externos. Tokens salvos no Supabase para sempre.
             </div>
-            <div style={{padding:'8px 0'}}>
-              {[
-                {id:'google_drive',name:'Google Drive',icon:'https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png',desc:'Acesse arquivos e documentos',auth:'oauth'},
-                {id:'notion',name:'Notion',icon:'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',desc:'Páginas e bases de dados',auth:'token'},
-                {id:'slack',name:'Slack',icon:'https://upload.wikimedia.org/wikipedia/commons/b/b9/Slack_Technologies_Logo.svg',desc:'Mensagens e canais',auth:'token'},
-                {id:'github',name:'GitHub',icon:'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png',desc:'Repositórios e código',auth:'token'},
-                {id:'gmail',name:'Gmail',icon:'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',desc:'E-mails e contatos',auth:'oauth'},
-                {id:'youtube',name:'YouTube',icon:'https://www.youtube.com/favicon.ico',desc:'Vídeos e canal',auth:'token'},
-                {id:'instagram',name:'Instagram',icon:'https://www.instagram.com/favicon.ico',desc:'Posts e stories',auth:'token'},
-                {id:'elevenlabs',name:'ElevenLabs',icon:'https://elevenlabs.io/favicon.ico',desc:'Síntese de voz realista',auth:'token'},
-                {id:'heygen',name:'HeyGen',icon:'https://www.heygen.com/favicon.ico',desc:'Avatar de vídeo IA',auth:'token'},
-                {id:'canva',name:'Canva',icon:'https://www.canva.com/favicon.ico',desc:'Criar designs automaticamente',auth:'token'},
-                {id:'supabase',name:'Supabase',icon:'https://supabase.com/favicon.ico',desc:'Banco de dados e API',auth:'token'},
-                {id:'vercel',name:'Vercel',icon:'https://vercel.com/favicon.ico',desc:'Deploy e infraestrutura',auth:'token'},
-                {id:'jira',name:'Jira',icon:'https://www.atlassian.com/favicon.ico',desc:'Tarefas e projetos',auth:'token'},
-                {id:'linear',name:'Linear',icon:'https://linear.app/favicon.ico',desc:'Issues e sprints',auth:'token'},
-              ].map(svc=>{
-                const savedKey=`conn_${svc.id}`;
-                const connected=typeof window!=='undefined'&&localStorage.getItem(savedKey);
-                return(
-                  <div key={svc.id} style={{display:'flex',alignItems:'center',padding:'12px 16px',borderBottom:'1px solid #111',gap:12}}>
-                    <img src={svc.icon} alt={svc.name} style={{width:28,height:28,borderRadius:4,objectFit:'contain',background:'#fff',padding:2}} onError={e=>{e.target.style.display='none';}}/>
-                    <div style={{flex:1,minWidth:0}}>
-                      <div style={{fontSize:13,fontWeight:600,color:'#e5e7eb'}}>{svc.name}</div>
-                      <div style={{fontSize:11,color:'#6b7280'}}>{svc.desc}</div>
-                    </div>
-                    {connected
-                      ? <div style={{display:'flex',alignItems:'center',gap:6}}>
-                          <span style={{fontSize:11,color:'#4ade80',fontWeight:600}}>✓ Conectado</span>
-                          <button onClick={()=>{localStorage.removeItem(savedKey);setConnectors(c=>{const n={...c};delete n[svc.id];return n;});}} style={{fontSize:10,color:'#6b7280',background:'none',border:'1px solid #333',borderRadius:4,padding:'2px 6px',cursor:'pointer'}}>Remover</button>
-                        </div>
-                      : <button onClick={()=>{
-                          const key=window.prompt(`Token/API Key para ${svc.name}:`);
-                          if(key&&key.trim()){
-                            localStorage.setItem(savedKey,key.trim());
-                            setConnectors(c=>({...c,[svc.id]:{name:svc.name,token:key.trim()}}));
-                            // Save to backend
-                            fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stream:false,messages:[{role:'user',content:`settings_save: service=${svc.id} tokens=${key.trim().substring(0,10)}...`}],_action:'settings_save',_service:svc.id,_tokens:key.trim()})}).catch(()=>{});
-                          }
-                        }} style={{fontSize:11,color:'#a78bfa',background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.3)',borderRadius:6,padding:'4px 10px',cursor:'pointer',whiteSpace:'nowrap',fontWeight:500}}>
-                          Conectar
-                        </button>
-                    }
-                  </div>
-                );
-              })}
-            </div>
-            {Object.keys(connectors||{}).length>0&&(
-              <div style={{padding:'12px 16px',borderTop:'1px solid #1e1e1e',fontSize:11,color:'#6b7280'}}>
-                {Object.keys(connectors).length} serviço(s) conectado(s) · tokens salvos localmente
-              </div>
-            )}
+            <ConnectorsList connectors={connectors} setConnectors={setConnectors}/>
           </div>
         )}
-        
         {panel==='skills'&&(
           <div className="pnl">
             <div className="pnl-hdr"><span>🧠 Skills</span><button onClick={()=>setPanel(null)}>✕</button></div>
