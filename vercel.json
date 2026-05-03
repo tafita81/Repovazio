@@ -1,1 +1,10 @@
-{"crons":[{"path":"/api/cron/auto","schedule":"0 8 * * *"}]}
+{
+  "buildCommand": "next build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "crons": [
+    { "path": "/api/cron", "schedule": "0 */6 * * *" },
+    { "path": "/api/health", "schedule": "*/30 * * * *" }
+  ]
+}
