@@ -333,17 +333,17 @@ async function runTool(name,args){
           method:'POST',headers:{Authorization:`Bearer ${YTT}`,'Content-Type':'application/json','X-Upload-Content-Type':'video/*'},
           body:JSON.stringify(meta)
         });
-        if(!init.ok){const e=await init.text();return(`❌ YouTube init erro ${init.status}: ${e.substring(0,300)}`;})
+        if(!init.ok){const e=await init.text();return(`❌ YouTube init erro ${init.status}: ${e.substring(0,300)}`);}
         const uploadUrl=init.headers.get('Location');
         // Se video_url for uma URL, buscar bytes e fazer upload
         const vr=await fetch(args.video_url,{signal:AbortSignal.timeout(60000)});
         if(!vr.ok)return(`❌ Não consegui baixar vídeo de: ${args.video_url}`);
         const vbuf=await vr.arrayBuffer();
         const up=await fetch(uploadUrl,{method:'PUT',headers:{'Content-Type':'video/*','Content-Length':String(vbuf.byteLength)},body:vbuf});
-        if(!up.ok){const e=await up.text();return(`❌ YouTube upload erro ${up.status}: ${e.substring(0,300)}`;})
+        if(!up.ok){const e=await up.text();return(`❌ YouTube upload erro ${up.status}: ${e.substring(0,300)}`);}
         const d=await up.json();
         return(`✅ **Vídeo publicado no YouTube!**\n📹 ID: ${d.id}\n🔗 URL: https://youtube.com/watch?v=${d.id}\n📊 Título: ${d.snippet?.title}\n🔒 Status: ${d.status?.uploadStatus}`);
-      }catch(e){return(`❌ YouTube upload: ${e.message}`;})
+      }catch(e){return(`❌ YouTube upload: ${e.message}`);}
     }
 
     if(name==='youtube_status'){
@@ -352,13 +352,13 @@ async function runTool(name,args){
         const r=await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true',{
           headers:{Authorization:`Bearer ${YTT}`}
         });
-        if(!r.ok){const e=await r.text();return(`❌ YouTube API ${r.status}: ${e.substring(0,200)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ YouTube API ${r.status}: ${e.substring(0,200)}`);}
         const d=await r.json();
         const ch=d.items?.[0];
         if(!ch)return(`❌ Nenhum canal encontrado para este token`);
         const s=ch.statistics;
         return(`📺 **Canal @psicologiadoc**\n👥 Inscritos: ${Number(s.subscriberCount||0).toLocaleString('pt-BR')}\n👁️ Views totais: ${Number(s.viewCount||0).toLocaleString('pt-BR')}\n🎬 Vídeos: ${s.videoCount||0}\n🌐 URL: https://youtube.com/${ch.snippet?.customUrl||'@psicologiadoc'}\n\n⚠️ Meta: 1.000 inscritos + 4.000h watch → Monetização`);
-      }catch(e){return(`❌ YouTube status: ${e.message}`;})
+      }catch(e){return(`❌ YouTube status: ${e.message}`);}
     }
 
     if(name==='elevenlabs_voz'){
@@ -369,13 +369,13 @@ async function runTool(name,args){
           headers:{'xi-api-key':ELK,'Content-Type':'application/json','Accept':'audio/mpeg'},
           body:JSON.stringify({text:args.texto,model_id:'eleven_multilingual_v2',voice_settings:{stability:args.stability||0.5,similarity_boost:args.similarity||0.75}})
         });
-        if(!r.ok){const e=await r.text();return(`❌ ElevenLabs ${r.status}: ${e.substring(0,200)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ ElevenLabs ${r.status}: ${e.substring(0,200)}`);}
         const buf=await r.arrayBuffer();
         const b64=Buffer.from(buf).toString('base64');
         // Salvar no Supabase Storage ou retornar como data URL
         const chars=args.texto.length;
         return(`🎙️ **Áudio gerado pela Daniela!**\n📝 Texto: ${chars} chars\n🔊 Formato: MP3\n💾 Tamanho: ${Math.round(buf.byteLength/1024)}KB\n⚡ Voice ID: ${EL_VOICE}\n\n📌 Para usar: decodifique o base64 abaixo e salve como .mp3\n\`\`\`\n${b64.substring(0,200)}...\n\`\`\``);
-      }catch(e){return(`❌ ElevenLabs: ${e.message}`;})
+      }catch(e){return(`❌ ElevenLabs: ${e.message}`);}
     }
 
     if(name==='heygen_video'){
@@ -388,11 +388,11 @@ async function runTool(name,args){
           headers:{'X-Api-Key':HGK,'Content-Type':'application/json'},
           body:JSON.stringify({video_inputs:[{character:{type:'avatar',avatar_id:avatarId,avatar_style:'normal'},voice:{type:'text',input_text:args.script,voice_id:voiceId,speed:1.0},background:{type:'color',value:'#1a0a2e'}}],dimension:{width:1920,height:1080},aspect_ratio:'16:9'})
         });
-        if(!r.ok){const e=await r.text();return(`❌ HeyGen ${r.status}: ${e.substring(0,300)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ HeyGen ${r.status}: ${e.substring(0,300)}`);}
         const d=await r.json();
         const vid=d.data?.video_id||d.video_id;
         return(`🎬 **Vídeo HeyGen em processamento!**\n🆔 Video ID: ${vid}\n⏳ Status: processando (geralmente 3-10 min)\n\nVerifique o status:\n\`heygen_status(video_id="${vid}")\`\n🔗 Dashboard: https://app.heygen.com/videos`);
-      }catch(e){return(`❌ HeyGen: ${e.message}`;})
+      }catch(e){return(`❌ HeyGen: ${e.message}`);}
     }
 
     if(name==='whatsapp_enviar'){
@@ -405,10 +405,10 @@ async function runTool(name,args){
           headers:{Authorization:`Bearer ${WAT}`,'Content-Type':'application/json'},
           body:JSON.stringify({messaging_product:'whatsapp',to,type:'text',text:{body:args.mensagem}})
         });
-        if(!r.ok){const e=await r.text();return(`❌ WhatsApp ${r.status}: ${e.substring(0,200)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ WhatsApp ${r.status}: ${e.substring(0,200)}`);}
         const d=await r.json();
         return(`✅ **Mensagem enviada no WhatsApp!**\n📱 Para: ${to}\n📝 Mensagem: ${args.mensagem.substring(0,100)}\n🆔 Message ID: ${d.messages?.[0]?.id}`);
-      }catch(e){return(`❌ WhatsApp: ${e.message}`;})
+      }catch(e){return(`❌ WhatsApp: ${e.message}`);}
     }
 
     if(name==='instagram_publicar'){
@@ -419,15 +419,15 @@ async function runTool(name,args){
         const cParams=new URLSearchParams({image_url:args.imagem_url,caption:args.legenda,access_token:IGT});
         if(tipo==='REELS')cParams.set('media_type','REELS');
         const c=await fetch(`https://graph.facebook.com/v18.0/${IGA}/media`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:cParams});
-        if(!c.ok){const e=await c.text();return(`❌ Instagram container ${c.status}: ${e.substring(0,200)}`;})
+        if(!c.ok){const e=await c.text();return(`❌ Instagram container ${c.status}: ${e.substring(0,200)}`);}
         const cd=await c.json();
         const containerId=cd.id;
         // 2. Publicar container
         const p=await fetch(`https://graph.facebook.com/v18.0/${IGA}/media_publish`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({creation_id:containerId,access_token:IGT})});
-        if(!p.ok){const e=await p.text();return(`❌ Instagram publish ${p.status}: ${e.substring(0,200)}`;})
+        if(!p.ok){const e=await p.text();return(`❌ Instagram publish ${p.status}: ${e.substring(0,200)}`);}
         const pd=await p.json();
         return(`✅ **Publicado no Instagram!**\n🖼️ Post ID: ${pd.id}\n📝 Legenda: ${args.legenda.substring(0,100)}\n🔗 Ver em: https://instagram.com/psicologiadoc`);
-      }catch(e){return(`❌ Instagram: ${e.message}`;})
+      }catch(e){return(`❌ Instagram: ${e.message}`);}
     }
 
     if(name==='tiktok_publicar'){
@@ -441,10 +441,10 @@ async function runTool(name,args){
           headers:{Authorization:`Bearer ${TKT}`,'Content-Type':'application/json; charset=UTF-8'},
           body:JSON.stringify({post_info:{title:caption,privacy_level:'PUBLIC_TO_EVERYONE',disable_duet:false,disable_comment:false,disable_stitch:false},source_info:{source:'PULL_FROM_URL',video_url:args.video_url}})
         });
-        if(!r.ok){const e=await r.text();return(`❌ TikTok ${r.status}: ${e.substring(0,300)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ TikTok ${r.status}: ${e.substring(0,300)}`);}
         const d=await r.json();
         return(`✅ **Upload iniciado no TikTok!**\n🎵 Publish ID: ${d.data?.publish_id}\n📝 Caption: ${caption.substring(0,100)}\n⏳ Processando...\n🔗 Verificar: https://tiktok.com/@psicologiadoc`);
-      }catch(e){return(`❌ TikTok: ${e.message}`;})
+      }catch(e){return(`❌ TikTok: ${e.message}`);}
     }
 
     if(name==='pinterest_publicar'){
@@ -460,14 +460,14 @@ async function runTool(name,args){
           headers:{Authorization:`Bearer ${PTT}`,'Content-Type':'application/json'},
           body:JSON.stringify({board_id:boardId,title:args.titulo,description:args.descricao||args.titulo,link:args.link||'https://youtube.com/@psicologiadoc',media_source:{source_type:'image_url',url:args.imagem_url}})
         });
-        if(!r.ok){const e=await r.text();return(`❌ Pinterest ${r.status}: ${e.substring(0,200)}`;})
+        if(!r.ok){const e=await r.text();return(`❌ Pinterest ${r.status}: ${e.substring(0,200)}`);}
         const d=await r.json();
         return(`✅ **Pin publicado no Pinterest!**\n📌 Pin ID: ${d.id}\n📝 Título: ${args.titulo}\n🔗 Ver em: https://pinterest.com/pin/${d.id}`);
-      }catch(e){return(`❌ Pinterest: ${e.message}`;})
+      }catch(e){return(`❌ Pinterest: ${e.message}`);}
     }
 
     return(`❌ Tool desconhecida: ${name}`);
-  }catch(e){return(`❌ Erro em ${name}: ${e.message}`;})
+  }catch(e){return(`❌ Erro em ${name}: ${e.message}`);}
 }
 
 async function urlToBase64(url){
