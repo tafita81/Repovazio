@@ -1,5 +1,6 @@
 {
   "name": "next-netlify-app",
+  "_deploy": "1777845276",
   "version": "1.0.0",
   "private": true,
   "scripts": {
