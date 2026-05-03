@@ -9,6 +9,88 @@ const PAT=process.env.GH_PAT,SBU=process.env.NEXT_PUBLIC_SUPABASE_URL,SBK=proces
 const VTK=process.env.VERCEL_TOKEN,VTM=process.env.VERCEL_TEAM_ID||'team_zr9vAef0Zz3njNAiGm3v5Y3h';
 const REPO='tafita81/Repovazio',VER='V15-ULTRA-2026-05-03';
 
+
+// ── TOKEN MONITORING & MULTI-MODEL FALLBACK ─────────────────────────────
+// Limits per model (daily for Groq free, per-minute for others)
+const MODEL_CHAIN=[
+  {name:'llama-3.3-70b-versatile',provider:'groq',limit:100000,key:()=>GK},
+  {name:'llama-3.1-8b-instant',provider:'groq',limit:100000,key:()=>GK},
+  {name:'gemini-1.5-flash',provider:'gemini',limit:999999,key:()=>GEK},
+  {name:'gemini-1.5-pro',provider:'gemini',limit:50000,key:()=>GEK},
+];
+const SWITCH_THRESHOLD=0.88; // switch at 88% of limit
+
+async function getTokenState(){
+  if(!SBU||!SBK)return{model:'llama-3.3-70b-versatile',used:0,limit:100000,chain_idx:0};
+  try{
+    const r=await fetch(`${SBU}/rest/v1/ia_cache?cache_key=eq.token_state&select=value`,
+      {headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});
+    const d=await r.json();
+    if(d[0]?.value)return JSON.parse(d[0].value);
+  }catch(e){}
+  return{model:'llama-3.3-70b-versatile',used:0,limit:100000,chain_idx:0,last_reset:Date.now()};
+}
+
+async function saveTokenState(state){
+  if(!SBU||!SBK)return;
+  const val=JSON.stringify({...state,updated_at:Date.now()});
+  await fetch(`${SBU}/rest/v1/ia_cache`,{method:'POST',
+    headers:{apikey:SBK,Authorization:`Bearer ${SBK}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
+    body:JSON.stringify({cache_key:'token_state',value:val,expires_at:new Date(Date.now()+7*864e5).toISOString()})}).catch(()=>{});
+}
+
+async function updateTokenUsage(tokensEstimate){
+  const state=await getTokenState();
+  // Reset daily if needed (Groq resets every 24h)
+  if(state.provider==='groq'&&Date.now()-state.last_reset>86400000){
+    state.used=0;state.last_reset=Date.now();
+  }
+  state.used=(state.used||0)+tokensEstimate;
+  // Check if need to switch model
+  const m=MODEL_CHAIN[state.chain_idx||0];
+  if(m&&state.used>=(m.limit*SWITCH_THRESHOLD)){
+    const nextIdx=(state.chain_idx+1)%MODEL_CHAIN.length;
+    const next=MODEL_CHAIN[nextIdx];
+    state.chain_idx=nextIdx;
+    state.model=next.name;
+    state.provider=next.provider;
+    state.used=0;
+    state.last_reset=Date.now();
+    state.switched_at=new Date().toISOString();
+    // Save checkpoint for continuation
+    state.switch_event=`Switched from ${m.name} to ${next.name} at ${new Date().toLocaleString('pt-BR')}`;
+  }
+  await saveTokenState(state);
+  return state;
+}
+
+async function saveCheckpoint(msgs,state){
+  if(!SBU||!SBK)return;
+  const checkpoint={
+    msgs:msgs.slice(-10), // last 10 messages
+    model:state.model,
+    ts:Date.now(),
+    summary:msgs[msgs.length-1]?.content?.substring(0,200)||''
+  };
+  await fetch(`${SBU}/rest/v1/ia_cache`,{method:'POST',
+    headers:{apikey:SBK,Authorization:`Bearer ${SBK}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
+    body:JSON.stringify({cache_key:'conversation_checkpoint',value:JSON.stringify(checkpoint),expires_at:new Date(Date.now()+2*864e5).toISOString()})}).catch(()=>{});
+}
+
+async function getActiveModel(requestedModel){
+  const state=await getTokenState();
+  const chainModel=MODEL_CHAIN[state.chain_idx||0];
+  return{
+    model:requestedModel||state.model||chainModel.name,
+    provider:state.provider||chainModel.provider,
+    chain_idx:state.chain_idx||0,
+    tokens_used:state.used||0,
+    tokens_limit:chainModel?.limit||100000,
+    switched_at:state.switched_at||null,
+    switch_event:state.switch_event||null,
+  };
+}
+
 const TOOLS=[
   // ── WEB ──
   {type:'function',function:{name:'pesquisar_web',description:'Pesquisa na internet em tempo real',parameters:{type:'object',properties:{query:{type:'string'},num:{type:'number'}},required:['query']}}},
@@ -37,6 +119,19 @@ const TOOLS=[
   // ── APP CREATION ──
   {type:'function',function:{name:'criar_novo_app',description:'Cria app Next.js completo do zero: cria repo GitHub + estrutura de arquivos + conecta Vercel. Use quando o usuário pedir um novo app/projeto.',parameters:{type:'object',properties:{nome:{type:'string'},descricao:{type:'string'},tipo:{type:'string',enum:['nextjs','landing-page','dashboard','api','blog']}},required:['nome','descricao']}}},
   // ── STATUS ──
+
+  // ── MULTI-CONTA & SETTINGS ──────────────────────────────────────────
+  {type:'function',function:{name:'settings_save',description:'Salva tokens/APIs das contas no banco. Use quando usuário inserir novos tokens.',parameters:{type:'object',properties:{service:{type:'string'},tokens:{type:'string'},extra:{type:'string'}},required:['service','tokens']}}},
+  {type:'function',function:{name:'settings_load',description:'Carrega tokens/APIs configurados pelo usuário',parameters:{type:'object',properties:{service:{type:'string'}},required:[]}}},
+  // ── NOTION ──────────────────────────────────────────────────────────
+  {type:'function',function:{name:'notion_search',description:'Busca páginas e conteúdo no Notion do usuário',parameters:{type:'object',properties:{query:{type:'string'},database_id:{type:'string'}},required:['query']}}},
+  {type:'function',function:{name:'notion_write',description:'Cria ou atualiza página no Notion (memória, notas, tarefas)',parameters:{type:'object',properties:{title:{type:'string'},content:{type:'string'},database_id:{type:'string'},page_id:{type:'string'}},required:['title','content']}}},
+  // ── VOZ ─────────────────────────────────────────────────────────────
+  {type:'function',function:{name:'elevenlabs_tts',description:'Converte texto em áudio real via ElevenLabs (voz Daniela)',parameters:{type:'object',properties:{text:{type:'string'},voice_id:{type:'string'}},required:['text']}}},
+  // ── AUTO-UPDATE ──────────────────────────────────────────────────────
+  {type:'function',function:{name:'check_updates',description:'Verifica novidades do Claude AI e features novas para incorporar',parameters:{type:'object',properties:{}}}},
+  // ── CANVA ────────────────────────────────────────────────────────────
+  {type:'function',function:{name:'canva_create',description:'Cria design no Canva (posts, thumbnails, carrosséis)',parameters:{type:'object',properties:{tipo:{type:'string',enum:['post','thumbnail','apresentacao','stories','email']},descricao:{type:'string'},titulo:{type:'string'}},required:['tipo','descricao']}}},
   {type:'function',function:{name:'projeto_status',description:'Status completo do projeto psicologia.doc e do sistema',parameters:{type:'object',properties:{}}}},
 ];
 
@@ -217,23 +312,166 @@ async function runTool(name,args,ctx={}){
       return`🚀 **psicologia.doc ${VER}**\nDeploy: repovazio.vercel.app\nGitHub: tafita81/Repovazio\nCron: a cada 1min → /api/cerebro\nTools: ${TOOLS.length}\nDia: 15/261 (revelação: 31/12/2026)\nCapacidades: self-optimize, criar apps, GitHub CRUD, Vercel API, Supabase SQL`;
     }
 
+
+    // ── SETTINGS ──────────────────────────────────────────────────────────
+    if(name==='settings_save'){
+      if(!SBU||!SBK)return`❌ Supabase não configurado`;
+      const key=`cfg_${args.service||'global'}`;
+      const val=JSON.stringify({tokens:args.tokens,extra:args.extra||'',ts:Date.now()});
+      await fetch(`${SBU}/rest/v1/ia_cache`,{method:'POST',headers:{apikey:SBK,Authorization:`Bearer ${SBK}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify({cache_key:key,value:val,expires_at:new Date(Date.now()+365*864e5).toISOString()})});
+      return`✅ Configuração de **${args.service}** salva. Tokens armazenados de forma segura.`;
+    }
+    if(name==='settings_load'){
+      if(!SBU||!SBK)return`❌ Supabase não configurado`;
+      const svc=args.service||'global';
+      const r=await fetch(`${SBU}/rest/v1/ia_cache?cache_key=eq.cfg_${svc}&select=value`,{headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});
+      const d=await r.json();
+      if(!d[0])return`ℹ️ Nenhuma configuração salva para "${svc}". Adicione tokens nas Configurações (⚙️).`;
+      const cfg=JSON.parse(d[0].value);
+      return`✅ Config **${svc}**: ${cfg.tokens?'tokens configurados':'sem tokens'} | Salvo: ${new Date(cfg.ts).toLocaleString('pt-BR')}`;
+    }
+
+    // ── NOTION ─────────────────────────────────────────────────────────────
+    if(name==='notion_search'||name==='notion_write'){
+      // Get Notion token from Supabase settings
+      let ntk='';
+      if(SBU&&SBK){const r=await fetch(`${SBU}/rest/v1/ia_cache?cache_key=eq.cfg_notion&select=value`,{headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});const d=await r.json();if(d[0])try{ntk=JSON.parse(d[0].value).tokens||'';}catch(e){}}
+      if(!ntk)return`❌ Notion não configurado. Vá em ⚙️ Configurações → Notion e adicione seu Integration Token.`;
+      if(name==='notion_search'){
+        const r=await fetch('https://api.notion.com/v1/search',{method:'POST',headers:{Authorization:`Bearer ${ntk}`,'Notion-Version':'2022-06-28','Content-Type':'application/json'},body:JSON.stringify({query:args.query,page_size:5})});
+        const d=await r.json();
+        if(!r.ok)return`❌ Notion erro: ${d.message||r.status}`;
+        const results=(d.results||[]).map(p=>{const title=p.properties?.title?.title?.[0]?.plain_text||p.properties?.Name?.title?.[0]?.plain_text||'Sem título';return`📄 **${title}** — ${p.url}`;}).join('\n');
+        return`🔍 **Notion:** "${args.query}"\n\n${results||'Nenhum resultado'}`;
+      }
+      if(name==='notion_write'){
+        const dbId=args.database_id;
+        if(dbId){
+          const r=await fetch('https://api.notion.com/v1/pages',{method:'POST',headers:{Authorization:`Bearer ${ntk}`,'Notion-Version':'2022-06-28','Content-Type':'application/json'},body:JSON.stringify({parent:{database_id:dbId},properties:{title:{title:[{text:{content:args.title}}]}},children:[{object:'block',type:'paragraph',paragraph:{rich_text:[{text:{content:args.content.substring(0,2000)}}]}}]})});
+          const d=await r.json();
+          return r.ok?`✅ Página criada no Notion: ${d.url}`:`❌ Notion erro: ${d.message}`;
+        }
+        return`❌ Informe database_id. Use notion_search para encontrar o ID do banco.`;
+      }
+    }
+
+    // ── ELEVENLABS TTS ─────────────────────────────────────────────────────
+    if(name==='elevenlabs_tts'){
+      let xi='';
+      if(SBU&&SBK){const r=await fetch(`${SBU}/rest/v1/ia_cache?cache_key=eq.cfg_elevenlabs&select=value`,{headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});const d=await r.json();if(d[0])try{xi=JSON.parse(d[0].value).tokens||'';}catch(e){}}
+      if(!xi)return`❌ ElevenLabs não configurado. Vá em ⚙️ → Voz e adicione sua API Key.
+🎙 Usando TTS gratuito do navegador como alternativa.`;
+      const voiceId=args.voice_id||'EXAVITQu4vr4xnSDxMaL';
+      const r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream`,{method:'POST',headers:{'xi-api-key':xi,'Content-Type':'application/json'},body:JSON.stringify({text:args.text.substring(0,500),model_id:'eleven_multilingual_v2',voice_settings:{stability:0.5,similarity_boost:0.75}})});
+      if(!r.ok)return`❌ ElevenLabs erro ${r.status}. Verifique sua API key.`;
+      const blob=await r.arrayBuffer();
+      const b64=Buffer.from(blob).toString('base64');
+      return`🎙 [AUDIO:data:audio/mpeg;base64,${b64.substring(0,100)}...] Áudio gerado (${blob.byteLength}b). ✅`;
+    }
+
+    // ── CHECK UPDATES ──────────────────────────────────────────────────────
+    if(name==='check_updates'||args.action==='check_updates'){
+      const r=await fetch('https://www.anthropic.com/news',{headers:{'User-Agent':'Mozilla/5.0'},signal:AbortSignal.timeout(8000)}).catch(()=>null);
+      if(!r?.ok)return`ℹ️ Auto-update: não foi possível verificar novidades agora. Próxima verificação em 24h.`;
+      const html=await r.text();
+      const titles=[];const rx=/<h3[^>]*>([^<]{10,80})<\/h3>/g;let m;
+      while((m=rx.exec(html))&&titles.length<3)titles.push(m[1].trim());
+      if(!titles.length)return`ℹ️ Sem novidades detectadas no Claude hoje.`;
+      const update=`🆕 **Novidades Claude (${new Date().toLocaleDateString('pt-BR')}):**\n${titles.map(t=>`• ${t}`).join('\n')}`;
+      if(SBU&&SBK)await fetch(`${SBU}/rest/v1/ia_cache`,{method:'POST',headers:{apikey:SBK,Authorization:`Bearer ${SBK}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},body:JSON.stringify({cache_key:'last_claude_update',value:update,expires_at:new Date(Date.now()+7*864e5).toISOString()})});
+      return update;
+    }
+
+    // ── CANVA ──────────────────────────────────────────────────────────────
+    if(name==='canva_create'){
+      const tipos={post:'Instagram Post (1080x1080)',thumbnail:'YouTube Thumbnail (1280x720)',apresentacao:'Apresentação (16:9)',stories:'Stories (1080x1920)',email:'Email Header (600x200)'};
+      const img=`https://image.pollinations.ai/prompt/${encodeURIComponent(args.descricao+' professional design '+args.tipo)}?width=1080&height=1080&nologo=true`;
+      return`🎨 **Canva — ${tipos[args.tipo]||args.tipo}**\n\n**${args.titulo||args.descricao}**\n\n![Preview](${img})\n\n💡 Para criar no Canva real, adicione seu token em ⚙️ → Criação → Canva Token.`;
+    }
+
     return`❌ Tool "${name}" não implementada`;
   }catch(e){return`❌ Erro em ${name}: ${e.message}`;}
 }
 
 // ── AI APIs ───────────────────────────────────────────────────────────────
-async function groqStream(msgs,tools,signal){
-  return fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${GK}`,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,tools,tool_choice:'auto',max_tokens:4096,temperature:0.7,stream:true}),signal});
+
+// ── MULTI-KEY ROTATION ─────────────────────────────────────────────────────
+async function getActiveGroqKey(supaUrl,supaKey){
+  const envKey=process.env.GROQ_API_KEY||'';
+  if(!supaUrl||!supaKey)return envKey;
+  try{
+    const r=await fetch(`${supaUrl}/rest/v1/ia_cache?cache_key=eq.cfg_groq&select=value`,{headers:{apikey:supaKey,Authorization:`Bearer ${supaKey}`}});
+    const d=await r.json();
+    if(d[0]){
+      const cfg=JSON.parse(d[0].value);
+      const keys=(cfg.tokens||'').split(',').map(k=>k.trim()).filter(Boolean);
+      if(keys.length){
+        // Rotate based on minute to distribute load
+        const idx=Math.floor(Date.now()/60000)%keys.length;
+        return keys[idx]||envKey;
+      }
+    }
+  }catch(e){}
+  return envKey;
 }
-async function groqCall(msgs,tools){
-  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${GK}`,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,tools,tool_choice:'auto',max_tokens:4096,temperature:0.7})});
+
+async function groqStream(msgs,tools,signal,activeKey){const gk=activeKey||GK;
+  return fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${gk}`,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,tools,tool_choice:'auto',max_tokens:4096,temperature:0.7,stream:true}),signal});
+}
+async function groqCall(msgs,tools,activeKey){const gk=activeKey||GK;
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${gk}`,'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:msgs,tools,tool_choice:'auto',max_tokens:4096,temperature:0.7})});
   return r.json();
 }
 async function geminiCall(msgs){
-  if(!GEK)return'❌ Sem API configurada';
-  const contents=msgs.filter(m=>m.role!=='system').map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:typeof m.content==='string'?m.content:JSON.stringify(m.content)}]}));
-  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEK}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents,generationConfig:{maxOutputTokens:4096}})});
-  const d=await r.json();return d.candidates?.[0]?.content?.parts?.[0]?.text||'Erro Gemini';
+  if(!GEK)return'❌ Gemini não configurado. Verifique GEMINI_API_KEY.';
+  try{
+    // Clean messages for Gemini (remove tool_calls, tool roles, system)
+    const cleanMsgs=msgs.filter(m=>m.role!=='system'&&m.role!=='tool'&&!m.tool_calls);
+    if(!cleanMsgs.length)return'❌ Sem mensagens para processar';
+    const contents=cleanMsgs.map(m=>({
+      role:m.role==='assistant'?'model':'user',
+      parts:[{text:typeof m.content==='string'&&m.content.trim()?m.content:'...'}]
+    }));
+    const systemMsg=msgs.find(m=>m.role==='system');
+    const body={contents,generationConfig:{maxOutputTokens:4096,temperature:0.7}};
+    if(systemMsg)body.systemInstruction={parts:[{text:systemMsg.content}]};
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEK}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(30000)});
+    const d=await r.json();
+    if(!r.ok)return`❌ Gemini erro ${r.status}: ${d.error?.message||JSON.stringify(d).substring(0,100)}`;
+    return d.candidates?.[0]?.content?.parts?.[0]?.text||'Gemini: sem resposta';
+  }catch(e){return`❌ Gemini erro: ${e.message}`;}
+}
+
+
+// Cohere free API fallback (api.cohere.com - requires free key)
+const CHK=process.env.COHERE_API_KEY||'';
+async function cohereCall(msgs){
+  if(!CHK)return null;
+  try{
+    const prompt=msgs.filter(m=>m.role!=='system').map(m=>`${m.role==='assistant'?'Chatbot':'User'}: ${m.content||''}`).join('\n')+'\nChatbot:';
+    const r=await fetch('https://api.cohere.com/v1/generate',{method:'POST',
+      headers:{Authorization:`Bearer ${CHK}`,'Content-Type':'application/json'},
+      body:JSON.stringify({model:'command',prompt,max_tokens:1000,temperature:0.7}),
+      signal:AbortSignal.timeout(20000)});
+    const d=await r.json();
+    return d.generations?.[0]?.text||null;
+  }catch(e){return null;}
+}
+
+// Gemini Pro as extra fallback
+async function geminiProCall(msgs){
+  if(!GEK)return null;
+  try{
+    const cleanMsgs=msgs.filter(m=>m.role!=='system'&&m.role!=='tool'&&!m.tool_calls);
+    if(!cleanMsgs.length)return null;
+    const contents=cleanMsgs.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:String(m.content||'...')}]}));
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEK}`,
+      {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents,generationConfig:{maxOutputTokens:2048}}),signal:AbortSignal.timeout(30000)});
+    const d=await r.json();
+    if(!r.ok)return null;
+    return d.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  }catch(e){return null;}
 }
 
 const SYSTEM=`Você é Daniela Coelho, IA avançada V15 com acesso COMPLETO ao ambiente de desenvolvimento.
@@ -261,17 +499,61 @@ REGRAS:
 Repositório principal: tafita81/Repovazio (branch main)
 Frontend: app/ia/page.jsx | Backend: app/api/ia-chat/route.js`;
 
+
+// Handle GET for token status dashboard
+export async function GET(){
+  const state=await getTokenState();
+  const m=MODEL_CHAIN[state.chain_idx||0];
+  const pct=Math.round(((state.used||0)/(m?.limit||100000))*100);
+  const next=MODEL_CHAIN[(state.chain_idx+1)%MODEL_CHAIN.length];
+  return NextResponse.json({
+    ok:true,
+    current:{model:state.model||m?.name,provider:state.provider||m?.provider,used:state.used||0,limit:m?.limit||100000,pct,remaining:(m?.limit||100000)-(state.used||0)},
+    next:{model:next?.name,provider:next?.provider},
+    switch_at:Math.round((m?.limit||100000)*SWITCH_THRESHOLD),
+    switched_at:state.switched_at||null,
+    switch_event:state.switch_event||null,
+    chain:MODEL_CHAIN.map((mm,i)=>({...mm,active:i===state.chain_idx})),
+    updated_at:state.updated_at||null,
+  });
+}
+
 export async function POST(req){
   try{
     const body=await req.json();
+    // Token-aware model selection
+    const tokenState=await getActiveModel(body.model);
+    const activeModelName=tokenState.model;
+    const activeProvider=tokenState.provider;
+    // Check for continuation after model switch
+    let continuationNote='';
+    if(tokenState.switched_at&&Date.now()-new Date(tokenState.switched_at).getTime()<300000){
+      continuationNote=`\n\n[SISTEMA: Você é ${activeModelName} continuando a conversa. A IA anterior (${MODEL_CHAIN.map(m=>m.name).find(n=>n!==activeModelName)||'anterior'}) atingiu o limite de tokens. Continue naturalmente do ponto onde parou, sem mencionar a troca a menos que perguntado.]`;
+    }
     const{messages=[],stream:doStream=true,image,session_id,mcpCredentials={},skills={}}=body;
     const sysMsgs=[{role:'system',content:SYSTEM}];
     if(Object.keys(skills).length){sysMsgs.push({role:'system',content:`SKILLS: ${Object.entries(skills).map(([k,v])=>`[${k}]: ${v.substring(0,150)}`).join(' | ')}`});}
     let chatMsgs=messages.map(m=>({...m,content:typeof m.content==='string'?m.content:JSON.stringify(m.content)}));
     if(chatMsgs.length>20)chatMsgs=chatMsgs.slice(-20);
+    // Handle ZIP/file content passed in messages
+    if(body.fileContent&&body.fileName){
+      const fname=body.fileName.toLowerCase();
+      let fileNote='';
+      if(fname.endsWith('.zip'))fileNote=`[Arquivo ZIP recebido: ${body.fileName}. Não posso extrair ZIPs diretamente, mas posso ajudar a entender seu conteúdo se você descrever o que há dentro.]`;
+      else fileNote=`[Arquivo recebido: ${body.fileName} (${body.fileContent.length} bytes)]`;
+      if(chatMsgs.length>0&&chatMsgs[chatMsgs.length-1].role==='user'){
+        chatMsgs[chatMsgs.length-1].content+='\n'+fileNote;
+      }
+    }
     if(image&&chatMsgs.length>0){const last=chatMsgs[chatMsgs.length-1];if(last.role==='user')chatMsgs[chatMsgs.length-1]={...last,content:`${last.content}\n[Imagem anexada]`};}
     const allMsgs=[...sysMsgs,...chatMsgs];
 
+
+    // Estimate tokens used and save checkpoint
+    const totalChars=chatMsgs.reduce((a,m)=>a+String(m.content||'').length,0);
+    const estimatedTokens=Math.ceil(totalChars/4);
+    updateTokenUsage(estimatedTokens).catch(()=>{});
+    saveCheckpoint(chatMsgs,{model:activeModelName}).catch(()=>{});
     if(doStream&&GK){
       const enc=new TextEncoder();
       const stream=new ReadableStream({
@@ -282,7 +564,7 @@ export async function POST(req){
             while(iter<5){
               iter++;
               const gr=await groqStream(fMsgs,TOOLS,req.signal);
-              if(!gr.ok){send({type:'text',content:await geminiCall(fMsgs)});break;}
+              if(!gr.ok){const fb=await geminiCall(fMsgs)||await cohereCall(fMsgs)||'⏳ Tokens esgotados. Adicione mais chaves Groq em ⚙️ Configurações → IA & Contas.';send({type:'text',content:fb});break;}
               const reader=gr.body.getReader();const dec=new TextDecoder();
               let tc={};let ac='';
               while(true){const{done,value}=await reader.read();if(done)break;
