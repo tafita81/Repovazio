@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enquete de Comida Favorita</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: #eee;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .options {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #333;
+    color: #eee;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #555;
+  }
+  .chart {
+    max-width: 500px;
+    margin: 0 auto 20px;
+  }
+  .bar {
+    background-color: #4caf50;
+    height: 30px;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+  .bar-label {
+    margin-bottom: 3px;
+  }
+  .total-votes {
+    text-align: center;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+<h1>Qual sua comida favorita?</h1>
+<div class="options">
+  <button data-option="Pizza">Pizza</button>
+  <button data-option="Sushi">Sushi</button>
+  <button data-option="Hamburguer">Hambúrguer</button>
+  <button data-option="Salada">Salada</button>
+</div>
+<div class="chart">
+  <div class="bar-label">Pizza</div>
+  <div id="bar-Pizza" class="bar" style="width: 0%; background-color:#f44336;"></div>
+  <div class="bar-label">Sushi</div>
+  <div id="bar-Sushi" class="bar" style="width: 0%; background-color:#2196f3;"></div>
+  <div class="bar-label">Hambúrguer</div>
+  <div id="bar-Hamburguer" class="bar" style="width: 0%; background-color:#ff9800;"></div>
+  <div class="bar-label">Salada</div>
+  <div id="bar-Salada" class="bar" style="width: 0%; background-color:#4caf50;"></div>
+</div>
+<div class="total-votes">Total de votos: 0</div>
+<script>
+  const API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/app-runtime/enquete-comida/api";
+
+  async function loadVotes() {
+    const res = await fetch(API + "?action=list");
+    const data = await res.json();
+    if (!data.items) return;
+
+    const votesCount = { Pizza: 0, Sushi: 0, Hamburguer: 0, Salada: 0 };
+    data.items.forEach(item => {
+      if (votesCount[item.option] !== undefined) {
+        votesCount[item.option] += 1;
+      }
+    });
+
+    const total = data.items.length;
+    document.querySelector('.total-votes').textContent = `Total de votos: ${total}`;
+
+    Object.keys(votesCount).forEach(option => {
+      const percent = total ? (votesCount[option] / total) * 100 : 0;
+      const bar = document.getElementById(`bar-${option}`);
+      if (bar) bar.style.width = percent + '%';
+    });
+  }
+
+  async function vote(option) {
+    await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create', data: { option } })
+    });
+    loadVotes();
+  }
+
+  document.querySelectorAll('.options button').forEach(btn => {
+    btn.onclick = () => vote(btn.getAttribute('data-option'));
+  });
+
+  loadVotes();
+  setInterval(loadVotes, 3000);
+</script>
+</body>
+</html>
