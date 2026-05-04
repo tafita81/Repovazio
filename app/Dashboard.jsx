@@ -509,7 +509,7 @@ export default function App(){
   const totalWA=waGroups.reduce((s,g)=>s+g.membros,0);
 
   const NAV=[
-    {id:"daniela_chat",icon:"💬",label:"Conversar com Daniela",external:"https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-app"},
+    {id:"daniela_chat",icon:"💬",label:"Conversar com Daniela",external:"/daniela.html"},
     {id:"dashboard",icon:"⊡",label:"Dashboard"},
     {id:"cerebro",icon:"🧠",label:"Cérebro AO VIVO"},
     {id:"gerador",icon:"✨",label:"Gerador Manual"},
