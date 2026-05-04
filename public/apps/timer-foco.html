@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Timer Pomodoro</title>
+<style>
+  body {
+    background-color: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+  #timer {
+    font-size: 6rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  button {
+    background-color: #bb86fc;
+    border: none;
+    color: #121212;
+    padding: 15px 30px;
+    margin: 5px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #9a67ea;
+  }
+</style>
+</head>
+<body>
+<div id="timer">25:00</div>
+<div>
+  <button id="start">Iniciar 25min</button>
+  <button id="pause">Pausar</button>
+  <button id="reset">Resetar</button>
+</div>
+<script>
+  let timerDisplay = document.getElementById('timer');
+  let startBtn = document.getElementById('start');
+  let pauseBtn = document.getElementById('pause');
+  let resetBtn = document.getElementById('reset');
+
+  let timeLeft = 25 * 60; // 25 minutos em segundos
+  let timerInterval = null;
+
+  function updateDisplay() {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerDisplay.textContent =
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  function startTimer() {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateDisplay();
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    timeLeft = 25 * 60;
+    updateDisplay();
+  }
+
+  startBtn.addEventListener('click', startTimer);
+  pauseBtn.addEventListener('click', pauseTimer);
+  resetBtn.addEventListener('click', resetTimer);
+
+  updateDisplay();
+</script>
+</body>
+</html>
