@@ -133,7 +133,7 @@ html,body{height:100%;background:#06060a;color:#f0f0f8;font-family:-apple-system
         <div class="name">Daniela <small>psicologia.doc · gpt-4.1-mini</small></div>
         <div class="icons">
           <span class="live" title="Online"></span>
-          <span style="font-size:11px;color:#a78bfa;font-weight:700" id="tools-cnt">20 tools</span>
+          <span style="font-size:11px;color:#a78bfa;font-weight:700" id="tools-cnt">23 tools</span>
         </div>
       </div>
       <div class="connectors" id="connectors-bar">
@@ -148,8 +148,8 @@ html,body{height:100%;background:#06060a;color:#f0f0f8;font-family:-apple-system
     <div class="msgs" id="msgs">
       <div class="empty" id="empty">
         <div class="empty-i">🤖</div>
-        <div class="empty-t">Sou a Daniela <span class="realtime-badge">V24 AUTOPILOT</span></div>
-        <div class="empty-d">20 tools · conectores MCP herdados do Claude. Quando eu criar um app, ele <strong style="color:#34d399">aparece automaticamente do lado direito</strong>. Tenho <strong style="color:#fbbf24">AUTOPILOT</strong>: crio, verifico, corrijo, espero o deploy, e re-verifico SOZINHA até funcionar 100%. Você só recebe a URL final pronta.</div>
+        <div class="empty-t">Sou a Daniela <span class="realtime-badge">V25 BROWSER</span></div>
+        <div class="empty-d">23 tools · conectores MCP herdados do Claude. Quando eu criar um app, ele <strong style="color:#34d399">aparece automaticamente do lado direito</strong>. Tenho <strong style="color:#fbbf24">BROWSER REAL</strong>: navego páginas, clico em links, preencho formulários, tiro screenshots e VEJO a tela com GPT-4 Vision igual humano. Você só recebe a URL final pronta.</div>
         <div class="suggest">
           <div class="sg" onclick="sugest('Liste todos seus conectores ativos')">📡 Conectores</div>
           <div class="sg" onclick="sugest('Crie uma calculadora moderna dark com histórico')">🧮 Calculadora</div>
@@ -166,7 +166,7 @@ html,body{height:100%;background:#06060a;color:#f0f0f8;font-family:-apple-system
         <textarea class="in" id="in" placeholder="Mensagem para Daniela..." rows="1"></textarea>
         <button class="send" id="send" onclick="send()">➤</button>
       </div>
-      <div class="foot">Daniela <strong>V24-AUTOPILOT</strong> · gpt-4.1-mini · <a href="/conectores.html">Gerenciar conectores</a></div>
+      <div class="foot">Daniela <strong>V25-BROWSER</strong> · gpt-4.1-mini · <a href="/conectores.html">Gerenciar conectores</a></div>
     </div>
   </div>
 
@@ -334,6 +334,11 @@ function addMsg(role, content, tools){
       verify_app: "🔍",
       repair_app: "🔧",
       wait_and_verify: "⏱️",
+      browser_navigate: "🌐",
+      browser_screenshot: "📸",
+      browser_see: "👁️",
+      browser_click: "👆",
+      browser_fill_form: "✍️",
       create_static_app: "📱",
       create_realtime_app: "⚡",
       list_static_apps: "📦",
