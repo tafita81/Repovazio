@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Votação Realtime - Cores</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 0 10px; }
+  h1 { text-align: center; }
+  .buttons { display: flex; justify-content: space-around; margin: 20px 0; }
+  button { padding: 10px 15px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; color: #fff; }
+  button.azul { background-color: #007bff; }
+  button.verde { background-color: #28a745; }
+  button.vermelho { background-color: #dc3545; }
+  button.amarelo { background-color: #ffc107; color: #000; }
+  .chart { margin-top: 30px; }
+  .bar-container { margin: 10px 0; background: #eee; border-radius: 5px; overflow: hidden; }
+  .bar { height: 30px; color: #fff; line-height: 30px; padding-left: 10px; font-weight: bold; }
+  .bar.azul { background-color: #007bff; }
+  .bar.verde { background-color: #28a745; }
+  .bar.vermelho { background-color: #dc3545; }
+  .bar.amarelo { background-color: #ffc107; color: #000; }
+</style>
+</head>
+<body>
+<h1>Votação em Tempo Real - Cores</h1>
+<div class="buttons">
+  <button class="azul" onclick="vote('azul')">Azul</button>
+  <button class="verde" onclick="vote('verde')">Verde</button>
+  <button class="vermelho" onclick="vote('vermelho')">Vermelho</button>
+  <button class="amarelo" onclick="vote('amarelo')">Amarelo</button>
+</div>
+<div class="chart">
+  <div>Azul: <span id="count-azul">0</span> votos (<span id="percent-azul">0%</span>)</div>
+  <div class="bar-container"><div id="bar-azul" class="bar azul" style="width:0%"></div></div>
+
+  <div>Verde: <span id="count-verde">0</span> votos (<span id="percent-verde">0%</span>)</div>
+  <div class="bar-container"><div id="bar-verde" class="bar verde" style="width:0%"></div></div>
+
+  <div>Vermelho: <span id="count-vermelho">0</span> votos (<span id="percent-vermelho">0%</span>)</div>
+  <div class="bar-container"><div id="bar-vermelho" class="bar vermelho" style="width:0%"></div></div>
+
+  <div>Amarelo: <span id="count-amarelo">0</span> votos (<span id="percent-amarelo">0%</span>)</div>
+  <div class="bar-container"><div id="bar-amarelo" class="bar amarelo" style="width:0%"></div></div>
+</div>
+<script>
+const API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/app-runtime/voto-cores/api";
+
+async function vote(color) {
+  await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "create", data: { color } }),
+  });
+  loadVotes();
+}
+
+async function loadVotes() {
+  const res = await fetch(API + "?action=list");
+  const data = await res.json();
+  const votes = { azul: 0, verde: 0, vermelho: 0, amarelo: 0 };
+  data.items.forEach(item => {
+    if (votes.hasOwnProperty(item.data.color)) {
+      votes[item.data.color] += 1;
+    }
+  });
+
+  const total = Object.values(votes).reduce((a,b) => a + b, 0);
+
+  ["azul", "verde", "vermelho", "amarelo"].forEach(color => {
+    const countEl = document.getElementById(`count-${color}`);
+    const percentEl = document.getElementById(`percent-${color}`);
+    const barEl = document.getElementById(`bar-${color}`);
+    const count = votes[color];
+    const percent = total === 0 ? 0 : ((count / total) * 100).toFixed(1);
+    countEl.textContent = count;
+    percentEl.textContent = percent + "%";
+    barEl.style.width = percent + "%";
+  });
+}
+
+// Atualiza votos a cada 3 segundos
+setInterval(loadVotes, 3000);
+loadVotes();
+</script>
+</body>
+</html>
