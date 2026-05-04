@@ -17,15 +17,17 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
 .icons span.live{position:relative;display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 1.5s infinite}
 
 /* Barra de Conectores MCP */
-.connectors{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:8px}
+.connectors{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:8px;align-items:center}
 .connectors::-webkit-scrollbar{display:none}
-.conn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:#13131a;border:1px solid #252535;border-radius:18px;padding:5px 10px;font-size:11px;cursor:pointer;transition:all 0.15s;position:relative;color:#b0b0c8}
+.conn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:#13131a;border:1px solid #252535;border-radius:18px;padding:5px 10px;font-size:11px;cursor:pointer;transition:all 0.15s;position:relative;color:#b0b0c8;text-decoration:none}
 .conn:hover{background:#1c1c26;border-color:#7c3aed}
 .conn.active{border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.06)}
 .conn.busy{border-color:rgba(168,139,250,0.5);background:rgba(168,139,250,0.1);animation:glow 1.5s infinite}
 .conn .ico{font-size:13px;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px}
-.conn .nm{font-weight:600;font-size:10px}
+.conn .nm{font-weight:600;font-size:10px;color:#f0f0f8}
 .conn .dot{position:absolute;top:3px;right:6px;width:5px;height:5px;border-radius:50%;background:#22c55e}
+.conn-add{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(168,85,247,0.1));border:1px dashed rgba(168,139,250,0.5);font-weight:800;font-size:14px;width:32px;height:30px;justify-content:center;padding:0;color:#a78bfa}
+.conn-add:hover{background:rgba(124,58,237,0.25);border-style:solid;border-color:#a78bfa;color:#fff;transform:scale(1.05)}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(168,139,250,0.4)}50%{box-shadow:0 0 0 4px rgba(168,139,250,0)}}
 
 .tokens{background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(168,85,247,0.04));border:1px solid rgba(124,58,237,0.25);border-radius:10px;padding:7px 10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:10px}
@@ -47,7 +49,7 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
 .empty{text-align:center;padding:30px 20px;color:#55556a}
 .empty-i{font-size:42px;margin-bottom:10px}
 .empty-t{font-weight:700;font-size:15px;margin-bottom:6px;color:#b0b0c8}
-.empty-d{font-size:12px;line-height:1.6;max-width:380px;margin:0 auto}
+.empty-d{font-size:12px;line-height:1.6;max-width:400px;margin:0 auto}
 .suggest{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px}
 .sg{background:#13131a;border:1px solid #252535;border-radius:18px;padding:7px 12px;font-size:11px;cursor:pointer;color:#b0b0c8}
 .sg:hover{background:#1c1c26;border-color:#7c3aed}
@@ -62,6 +64,7 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
 .send:not(:disabled):active{transform:scale(0.92)}
 .foot{font-size:10px;color:#55556a;text-align:center;margin-top:6px}
 .foot strong{color:#a78bfa}
+.foot a{color:#a78bfa;text-decoration:none}
 
 .typing{display:inline-flex;gap:3px;align-items:center;padding:4px 0}
 .typing span{width:6px;height:6px;border-radius:50%;background:#a78bfa;animation:typing 1.2s infinite}
@@ -94,18 +97,9 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
         <span style="font-size:11px;color:#a78bfa;font-weight:700" id="tools-cnt">17 tools</span>
       </div>
     </div>
-    <!-- Barra de Conectores MCP -->
+    <!-- Barra de Conectores MCP (carrega dinamicamente, só conectados) -->
     <div class="connectors" id="connectors-bar">
-      <div class="conn active" data-c="openai" title="OpenAI · gpt-4.1-mini"><span class="ico">🤖</span><span class="nm">OpenAI</span><span class="dot"></span></div>
-      <div class="conn active" data-c="supabase" title="Supabase · banco + edge"><span class="ico">🟢</span><span class="nm">Supabase</span><span class="dot"></span></div>
-      <div class="conn active" data-c="vercel" title="Vercel · hospedagem"><span class="ico">▲</span><span class="nm">Vercel</span><span class="dot"></span></div>
-      <div class="conn active" data-c="github" title="GitHub · code repos"><span class="ico">🐙</span><span class="nm">GitHub</span><span class="dot"></span></div>
-      <div class="conn active" data-c="groq" title="Groq · fallback Llama 3.3"><span class="ico">⚡</span><span class="nm">Groq</span><span class="dot"></span></div>
-      <div class="conn" data-c="canva" title="Canva · designs"><span class="ico">🎨</span><span class="nm">Canva</span></div>
-      <div class="conn" data-c="figma" title="Figma · UI/UX"><span class="ico">🖼️</span><span class="nm">Figma</span></div>
-      <div class="conn" data-c="notion" title="Notion · notes/db"><span class="ico">📝</span><span class="nm">Notion</span></div>
-      <div class="conn" data-c="drive" title="Google Drive"><span class="ico">📁</span><span class="nm">Drive</span></div>
-      <div class="conn" data-c="zoom" title="Zoom · meetings"><span class="ico">🎥</span><span class="nm">Zoom</span></div>
+      <div class="conn" style="opacity:0.5"><span class="ico">⏳</span><span class="nm">Carregando...</span></div>
     </div>
     <div class="tokens">
       <div class="tk"><div class="tk-l">Tokens hoje</div><div class="tk-v tk-purple" id="tk-today">—</div></div>
@@ -117,14 +111,12 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
     <div class="empty" id="empty">
       <div class="empty-i">🤖</div>
       <div class="empty-t">Sou a Daniela <span class="realtime-badge">V22 FULL</span></div>
-      <div class="empty-d">IA executora <strong style="color:#a78bfa">psicologia.doc</strong> · 17 tools · 10 conectores MCP.<br><br>
-      Posso criar 2 tipos de apps:<br>
-      <strong style="color:#fbbf24">create_static_app</strong> — ferramentas (calculadora, conversor)<br>
-      <strong style="color:#34d399">create_realtime_app</strong> — apps 24/7 com backend (to-do compartilhada, contador, votação, qualquer dado salvo no Supabase, funciona com browser fechado)</div>
+      <div class="empty-d">IA executora <strong style="color:#a78bfa">psicologia.doc</strong> · 17 tools · conectores MCP herdados do seu Claude.<br><br>
+      Clique no <strong style="color:#a78bfa">+</strong> acima pra adicionar mais conectores (ElevenLabs, HeyGen, YouTube, Instagram, TikTok, etc).</div>
       <div class="suggest">
-        <div class="sg" onclick="sugest('Liste seus conectores MCP')">📡 Conectores</div>
-        <div class="sg" onclick="sugest('Crie uma calculadora simples')">🧮 Calculadora</div>
-        <div class="sg" onclick="sugest('Crie um contador de visitas público que persiste no Supabase, slug: contador-visitas, com botão incrementar e display do total atual em tempo real')">⚡ App 24/7</div>
+        <div class="sg" onclick="sugest('Liste todos seus conectores ativos com use_count')">📡 Conectores</div>
+        <div class="sg" onclick="sugest('Crie uma calculadora moderna dark com histórico')">🧮 Calculadora</div>
+        <div class="sg" onclick="sugest('Crie um app realtime: contador de visitas público com botão +1, lista de últimas 5 visitas, persiste no Supabase. Slug: contador-publico')">⚡ App 24/7</div>
         <div class="sg" onclick="sugest('Liste apps que você criou')">📦 Apps</div>
       </div>
     </div>
@@ -136,19 +128,21 @@ html,body{height:100%;background:#0a0a0f;color:#f0f0f8;font-family:-apple-system
       <textarea class="in" id="in" placeholder="Mensagem para Daniela..." rows="1"></textarea>
       <button class="send" id="send" onclick="send()">➤</button>
     </div>
-    <div class="foot">Daniela <strong>V22-FULL</strong> · gpt-4.1-mini · Edge 24/7 · Vercel CDN</div>
+    <div class="foot">Daniela <strong>V22-FULL</strong> · gpt-4.1-mini · Edge 24/7 · <a href="/conectores.html">Gerenciar conectores</a></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 const EDGE = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-chat";
+const CONN_API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/connectors-api";
 const ANON = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0OTI4OTMsImV4cCI6MjA2MDA2ODg5M30.LBASD9OY8fSyP1ywS-LYzRbZ-_ZLHC7P56v0dFB3opQ";
 const SESSION_ID = "ses_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
 
 let msgs = [];
 let attached = null;
 let busy = false;
+let connectorsMap = {};
 
 document.getElementById("in").addEventListener("keydown", function(e) {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
@@ -165,7 +159,40 @@ function toast(msg, err) {
   setTimeout(function(){ t.className = "toast"+(err?" err":""); }, 2800);
 }
 function sugest(t) { document.getElementById("in").value = t; send(); }
-function escapeHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function escapeHtml(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#39;").replace(/"/g,"&quot;");}
+
+async function loadConnectors() {
+  try {
+    const r = await fetch(CONN_API + "/connected", { headers: { apikey: ANON, Authorization: "Bearer " + ANON } });
+    const d = await r.json();
+    const conns = d.connectors || [];
+    const bar = document.getElementById("connectors-bar");
+    
+    if (!conns.length) {
+      bar.innerHTML = '<a href="/conectores.html" class="conn conn-add" title="Adicionar conector">+</a>';
+      return;
+    }
+
+    // Mapeia para uso em pulseConnector
+    connectorsMap = {};
+    conns.forEach(function(c) { connectorsMap[c.name] = c; });
+
+    let html = conns.map(function(c) {
+      const titleAttr = (c.display_name || c.name) + (c.account_info ? " · " + c.account_info : "");
+      return '<div class="conn active" data-c="' + escapeHtml(c.name) + '" title="' + escapeHtml(titleAttr) + '">' +
+             '<span class="ico">' + (c.icon || '🔌') + '</span>' +
+             '<span class="nm">' + escapeHtml(c.display_name || c.name) + '</span>' +
+             '<span class="dot"></span></div>';
+    }).join("");
+    
+    // Botão "+" no final pra adicionar mais conectores
+    html += '<a href="/conectores.html" class="conn conn-add" title="Adicionar conector">+</a>';
+    bar.innerHTML = html;
+  } catch(e) {
+    document.getElementById("connectors-bar").innerHTML = 
+      '<a href="/conectores.html" class="conn conn-add" title="Conectores">+</a>';
+  }
+}
 
 function renderUrls(text) {
   const safe = escapeHtml(text);
@@ -173,14 +200,14 @@ function renderUrls(text) {
     if(u.indexOf("/apps/") !== -1 || u.indexOf("/daniela-app/") !== -1 || u.indexOf("/app-runtime/") !== -1) {
       let slug = u.split("/").pop().replace(".html","").split("?")[0];
       const isRealtime = u.indexOf("/app-runtime/") !== -1;
-      return '<div class="preview"><div class="preview-l">'+(isRealtime?"⚡ App 24/7 (backend)":"📱 App hospedado")+'</div><div class="preview-u">' + u + '</div><a href="' + u + '" target="_blank" rel="noopener" class="preview-b">Abrir ' + (slug||"app") + ' →</a></div>';
+      return '<div class="preview"><div class="preview-l">' + (isRealtime ? "⚡ App 24/7 (backend)" : "📱 App hospedado") + '</div><div class="preview-u">' + u + '</div><a href="' + u + '" target="_blank" rel="noopener" class="preview-b">Abrir ' + (slug || "app") + ' →</a></div>';
     }
     return '<a href="' + u + '" target="_blank" rel="noopener">' + u + '</a>';
   });
 }
 
 function pulseConnector(name) {
-  const el = document.querySelector('.conn[data-c="'+name+'"]');
+  const el = document.querySelector('.conn[data-c="' + name + '"]');
   if(el) {
     el.classList.add("busy");
     setTimeout(function(){ el.classList.remove("busy"); el.classList.add("active"); }, 1500);
@@ -308,8 +335,10 @@ async function send() {
   ta.focus();
 }
 
+loadConnectors();
 refreshTokens();
 setInterval(refreshTokens, 12000);
+setInterval(loadConnectors, 30000);  // recarrega conectores a cada 30s
 </script>
 </body>
 </html>
