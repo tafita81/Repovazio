@@ -1,2 +1,5 @@
-import { redirect } from 'next/navigation';
-export default function Home() { redirect('/ia'); }
+import Dashboard from "./Dashboard";
+
+export default function Home() {
+  return <Dashboard />;
+}
