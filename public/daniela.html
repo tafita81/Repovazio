@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Daniela V26.5 · psicologia.doc</title>
+<title>Daniela V26.8 · psicologia.doc</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
 /* === SESSOES === */
 var _sp=0,_sa=[];
@@ -284,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <div class="avatar avatar-ai">🤖</div>
         <div>
           <div class="msg-bubble">
-            Oi! Sou a Daniela V26.5 🚀<br><br>
+            Oi! Sou a Daniela V26.8 🚀<br><br>
             <strong>Modelos gratuitos ativos:</strong> Groq Llama 3.1 8b → Llama 4 Scout → Qwen3 32b<br>
             <strong>Fallback automático:</strong> Gemini → gpt-4o-mini → gpt-4.1-mini<br><br>
             Posso criar apps, navegar na web, analisar arquivos (PDF/ZIP/imagem/doc), ver screenshots, editar código no GitHub e muito mais. O que você precisa?
@@ -368,7 +368,7 @@ const EDGE = 'https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-chat
 const ANON = 'eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0OTI4OTMsImV4cCI6MjA2MDA2ODg5M30.LBASD9OY8fSyP1ywS-LYzRbZ-_ZLHC7P56v0dFB3opQ';
 const CONN_API = 'https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/connectors-api';
 
-let currentModel = 'groq:llama-3.1-8b-instant';
+let currentModel = 'groq:qwen/qwen3-32b';
 let sessionId = 'sess_' + Date.now();
 let messages = [];
 let isLoading = false;
@@ -635,7 +635,13 @@ function addMsg(role, content, tools = [], model = '') {
   const div = document.createElement('div');
   div.className = 'msg msg-' + (role === 'user' ? 'user' : 'ai');
   const avatar = role === 'user' ? '<div class="avatar avatar-user">👤</div>' : '<div class="avatar avatar-ai">🤖</div>';
-  let toolsHtml = tools.map(t => '<span class="tool-tag">' + t.name + '</span>').join('');
+  let toolsHtml = '';
+  if (tools.length > 0) {
+    toolsHtml = '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:6px">' + tools.map(function(t) {
+      var args = t.args ? (Array.isArray(t.args) ? t.args.join(', ') : Object.keys(t.args).join(', ')) : '';
+      return '<span style="background:rgba(124,58,237,.12);color:#a78bfa;border:1px solid rgba(124,58,237,.2);border-radius:5px;padding:1px 7px;font-size:10px;font-weight:600">' + t.name + (args ? '<span style=color:#6060a0> · ' + args + '</span>' : '') + '</span>';
+    }).join('') + '</div>';
+  }
   let modelHtml = model ? '<span style="color:var(--text3)">· ' + (MODEL_LABELS[model]||model).replace(/[🆓🌟🤖🧠] /,'') + '</span>' : '';
   const content_html = role === 'ai' ? formatMd(content) : escapeHtml(content);
   if (role === 'user') {
@@ -748,6 +754,12 @@ async function sendToAgent(text, isInternal = false) {
 
     if (!isInternal) addMsg('ai', reply, d.tools_used || [], d.model || currentModel);
     else addMsg('ai', reply, d.tools_used || [], d.model || currentModel);
+
+    // AUTO-PREVIEW: carregar app no browser panel
+    var appMatch = (reply || '').match(/https:\/\/repovazio\.vercel\.app\/apps\/[a-z0-9-]+\.html/i);
+    if (appMatch && typeof autoPreviewApp === 'function') {
+      autoPreviewApp(appMatch[0]);
+    }
 
     // Atualizar stats
     if (d.tokens) {
@@ -984,9 +996,58 @@ async function resumeSess(id, title) {
 }
 // ===== FIM SESSOES =====
 
+// ===== AUTO-PREVIEW & SCREENSHOT =====
+function autoPreviewApp(url) {
+  // Abrir no browser panel
+  if (!splitOn) toggleSplit();
+  var viewport = document.getElementById('browser-viewport');
+  var urlInput = document.getElementById('browser-url');
+  if (urlInput) urlInput.value = url;
+  if (viewport) {
+    viewport.innerHTML = '<iframe src="' + url + '" style="width:100%;height:100%;border:none;border-radius:0 0 12px 0;background:#fff"></iframe>';
+  }
+  var info = document.getElementById('browser-info');
+  if (info) info.innerHTML = '<span style="color:var(--green)">✅ App carregado: ' + url.split('/').pop() + '</span>';
+  // Auto-screenshot após 5s para análise
+  setTimeout(function() { autoScreenshot(url); }, 5000);
+}
+
+async function autoScreenshot(url) {
+  var info = document.getElementById('browser-info');
+  if (info) info.innerHTML = '📸 Capturando screenshot...';
+  try {
+    var r = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(url) + '&screenshot=true&meta=false&waitForTimeout=3000');
+    var d = await r.json();
+    if (d.status === 'success' && d.data && d.data.screenshot) {
+      var imgUrl = d.data.screenshot.url;
+      if (info) info.innerHTML = '📸 <a href="' + imgUrl + '" target="_blank" style="color:var(--green)">Screenshot capturado</a> · <button onclick="analyzeScreenshot(\''+imgUrl.replace(/'/g,"\\'")+'\')" style="background:var(--purple);border:none;color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;cursor:pointer">🔍 Analisar</button>';
+    } else {
+      if (info) info.innerHTML = '⚠️ Screenshot não disponível';
+    }
+  } catch(e) {
+    if (info) info.innerHTML = '❌ Erro no screenshot: ' + e.message;
+  }
+}
+
+function analyzeScreenshot(imgUrl) {
+  sendQuick('Analise este screenshot do app que criei e me diga se está com boa qualidade e o que melhorar: ' + imgUrl);
+}
+
+function loadInPreview(url) {
+  var viewport = document.getElementById('browser-viewport');
+  var urlInput = document.getElementById('browser-url');
+  if (urlInput) urlInput.value = url;
+  if (viewport) {
+    viewport.innerHTML = '<iframe src="' + url + '" style="width:100%;height:100%;border:none;border-radius:0 0 12px 0;background:#fff"></iframe>';
+  }
+  var info = document.getElementById('browser-info');
+  if (info) info.textContent = 'Preview: ' + url;
+}
+// ===== FIM AUTO-PREVIEW =====
+
 // INIT
 window.addEventListener('load', () => {
-  onModelChange('groq:llama-3.1-8b-instant');
+  onModelChange('groq:qwen/qwen3-32b');
   loadConnectors();
   loadTokensByModel();
   pollModelStatus();
