@@ -7,80 +7,65 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background-color: #f4f4f4;
         }
         .calculator {
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             padding: 20px;
-            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .display {
             width: 100%;
             height: 50px;
-            background: #222;
-            color: white;
+            font-size: 24px;
             text-align: right;
             padding: 10px;
+            border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 24px;
             margin-bottom: 10px;
         }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
         .button {
-            width: 60px;
-            height: 60px;
-            margin: 5px;
+            padding: 20px;
             font-size: 18px;
+            background: #007BFF;
+            color: white;
             border: none;
             border-radius: 5px;
-            background-color: #007bff;
-            color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
         .button:hover {
-            background-color: #0056b3;
-        }
-        .button:active {
-            background-color: #004494;
-        }
-        .button:nth-child(4n) {
-            background-color: #28a745;
-        }
-        .button:nth-child(4n):hover {
-            background-color: #218838;
+            background: #0056b3;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
-        <div class="display" id="display">0</div>
-        <div>
+        <input type="text" class="display" id="display" disabled />
+        <div class="buttons">
             <button class="button" onclick="clearDisplay()">C</button>
             <button class="button" onclick="appendToDisplay('7')">7</button>
             <button class="button" onclick="appendToDisplay('8')">8</button>
             <button class="button" onclick="appendToDisplay('9')">9</button>
             <button class="button" onclick="appendToDisplay('/')">/</button>
-        </div>
-        <div>
             <button class="button" onclick="appendToDisplay('4')">4</button>
             <button class="button" onclick="appendToDisplay('5')">5</button>
             <button class="button" onclick="appendToDisplay('6')">6</button>
             <button class="button" onclick="appendToDisplay('*')">*</button>
-        </div>
-        <div>
             <button class="button" onclick="appendToDisplay('1')">1</button>
             <button class="button" onclick="appendToDisplay('2')">2</button>
             <button class="button" onclick="appendToDisplay('3')">3</button>
             <button class="button" onclick="appendToDisplay('-')">-</button>
-        </div>
-        <div>
             <button class="button" onclick="appendToDisplay('0')">0</button>
             <button class="button" onclick="appendToDisplay('.')">.</button>
             <button class="button" onclick="calculate()">=</button>
@@ -88,23 +73,18 @@
         </div>
     </div>
     <script>
-        function clearDisplay() {
-            document.getElementById('display').innerText = '0';
-        }
         function appendToDisplay(value) {
-            const display = document.getElementById('display');
-            if (display.innerText === '0') {
-                display.innerText = value;
-            } else {
-                display.innerText += value;
-            }
+            document.getElementById('display').value += value;
+        }
+        function clearDisplay() {
+            document.getElementById('display').value = '';
         }
         function calculate() {
             const display = document.getElementById('display');
             try {
-                display.innerText = eval(display.innerText);
+                display.value = eval(display.value);
             } catch (e) {
-                display.innerText = 'Error';
+                display.value = 'Erro';
             }
         }
     </script>
