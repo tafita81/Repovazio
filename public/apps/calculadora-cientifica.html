@@ -1,94 +1,180 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Científica</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-        }
-        .calculator {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        #display {
-            width: 100%;
-            height: 60px;
-            font-size: 24px;
-            text-align: right;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            width: 23%;
-            height: 60px;
-            margin: 5px;
-            font-size: 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculadora Científica Completa</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .calculator {
+    background: #2c2f4a;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    padding: 20px;
+    width: 400px;
+  }
+  .display {
+    background: #1e213a;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 2rem;
+    text-align: right;
+    margin-bottom: 20px;
+    min-height: 50px;
+    overflow-x: auto;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  button {
+    background: #4a4e69;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 15px 0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #9a8c98;
+  }
+  button.operator {
+    background: #22223b;
+  }
+  button.operator:hover {
+    background: #f2e9e4;
+    color: #22223b;
+  }
+  button.wide {
+    grid-column: span 2;
+  }
+</style>
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" id="display" disabled />
-        <div>
-            <button onclick="clearDisplay()">C</button>
-            <button onclick="appendToDisplay('7')">7</button>
-            <button onclick="appendToDisplay('8')">8</button>
-            <button onclick="appendToDisplay('9')">9</button>
-            <button onclick="appendToDisplay('/')">/</button>
-        </div>
-        <div>
-            <button onclick="appendToDisplay('4')">4</button>
-            <button onclick="appendToDisplay('5')">5</button>
-            <button onclick="appendToDisplay('6')">6</button>
-            <button onclick="appendToDisplay('*')">*</button>
-        </div>
-        <div>
-            <button onclick="appendToDisplay('1')">1</button>
-            <button onclick="appendToDisplay('2')">2</button>
-            <button onclick="appendToDisplay('3')">3</button>
-            <button onclick="appendToDisplay('-')">-</button>
-        </div>
-        <div>
-            <button onclick="appendToDisplay('0')">0</button>
-            <button onclick="appendToDisplay('.')">.</button>
-            <button onclick="calculate()">=</button>
-            <button onclick="appendToDisplay('+')">+</button>
-        </div>
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="buttons">
+      <button class="operator" data-action="clear">C</button>
+      <button class="operator" data-action="backspace">⌫</button>
+      <button class="operator" data-action="percent">%</button>
+      <button class="operator" data-action="divide">÷</button>
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="operator" data-action="multiply">×</button>
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="operator" data-action="subtract">−</button>
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="operator" data-action="add">+</button>
+      <button data-value="0" class="wide">0</button>
+      <button data-value=".">.</button>
+      <button class="operator" data-action="equals">=</button>
     </div>
-    <script>
-        function appendToDisplay(value) {
-            document.getElementById('display').value += value;
+  </div>
+<script>
+  const display = document.getElementById('display');
+  let currentInput = '';
+  let lastResult = null;
+
+  function updateDisplay() {
+    display.textContent = currentInput || '0';
+  }
+
+  function calculate(expression) {
+    try {
+      // Usar eval com cuidado, aqui simplificado para demo
+      let result = Function('return ' + expression)();
+      if (typeof result === 'number' && !isNaN(result)) {
+        return result;
+      } else {
+        return 'Erro';
+      }
+    } catch {
+      return 'Erro';
+    }
+  }
+
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.getAttribute('data-action');
+      const value = button.getAttribute('data-value');
+
+      if (action === 'clear') {
+        currentInput = '';
+        lastResult = null;
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'backspace') {
+        currentInput = currentInput.slice(0, -1);
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'percent') {
+        if (currentInput) {
+          let val = parseFloat(currentInput);
+          currentInput = (val / 100).toString();
+          updateDisplay();
         }
-        function clearDisplay() {
-            document.getElementById('display').value = '';
-        }
-        function calculate() {
-            const display = document.getElementById('display');
-            try {
-                display.value = eval(display.value);
-            } catch (e) {
-                display.value = 'Erro';
-            }
-        }
-    </script>
+        return;
+      }
+
+      if (action === 'divide') {
+        currentInput += '/';
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'multiply') {
+        currentInput += '*';
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'subtract') {
+        currentInput += '-';
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'add') {
+        currentInput += '+';
+        updateDisplay();
+        return;
+      }
+
+      if (action === 'equals') {
+        const result = calculate(currentInput);
+        currentInput = result.toString();
+        lastResult = result;
+        updateDisplay();
+        return;
+      }
+
+      if (value !== null) {
+        currentInput += value;
+        updateDisplay();
+      }
+    });
+  });
+</script>
 </body>
 </html>
