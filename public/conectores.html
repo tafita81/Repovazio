@@ -1,345 +1,256 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Conectores · Daniela</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-  background: #0a0a0f; color: #f0f0f8;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased; min-height: 100vh;
-}
-.wrap { max-width: 760px; margin: 0 auto; padding: 20px; }
-.hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-.back { color: #a78bfa; text-decoration: none; font-size: 13px; font-weight: 600;
-  display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px;
-  border: 1px solid #2a2a3e; border-radius: 8px; transition: all 0.2s; }
-.back:hover { background: #1a1a2e; }
-h1 { font-size: 26px; font-weight: 900; margin-bottom: 4px; }
-.sub { color: #8888aa; font-size: 13px; line-height: 1.5; margin-bottom: 20px; }
-.section-title {
-  font-size: 11px; font-weight: 700; color: #5555aa; text-transform: uppercase;
-  letter-spacing: 1px; margin: 20px 0 10px; display: flex; align-items: center; gap: 8px;
-}
-.count { background: #1e1e3a; border: 1px solid #252535; color: #a78bfa;
-  border-radius: 20px; padding: 1px 8px; font-size: 11px; }
-.list { display: flex; flex-direction: column; gap: 6px; }
-.item {
-  background: #0e0e1a; border: 1px solid #1e1e2e; border-radius: 12px;
-  padding: 14px 16px; display: flex; align-items: center; gap: 12px; transition: border 0.2s;
-}
-.item:hover { border-color: #2a2a4e; }
-.item.connected { border-color: #1a3a2a; background: #0a150f; }
-.ico { width: 42px; height: 42px; border-radius: 10px; background: #13131a;
-  border: 1px solid #252535; display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0; }
-.info { flex: 1; min-width: 0; }
-.nm { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
-.bd-on { background: rgba(16,163,127,0.15); color: #10a37f; border: 1px solid rgba(16,163,127,0.3);
-  border-radius: 4px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
-.bd-off { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2);
-  border-radius: 4px; padding: 1px 7px; font-size: 10px; font-weight: 700; }
-.dt { font-size: 12px; color: #5555aa; margin-top: 2px; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis; }
-.act { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-.btn { border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px;
-  cursor: pointer; font-weight: 600; transition: all 0.2s; }
-.btn-token { background: #5b21b6; color: #fff; }
-.btn-token:hover { background: #7c3aed; }
-.btn-token.ok { background: #065f46; color: #10a37f; border: 1px solid #10a37f; }
-.btn-save { background: #10a37f; color: #fff; }
-.btn-save:hover { background: #059669; }
-.btn-cancel { background: #1a1a2e; color: #8888aa; border: 1px solid #2a2a3e; }
-.btn-cancel:hover { background: #2a2a3e; }
-.disconn { background: #1a1a2e; color: #5555aa; border: 1px solid #2a2a3e; }
-.disconn:hover { background: #ff4444; color: #fff; border-color: #ff4444; }
-.docs { background: #1a1a2e; color: #a78bfa; border: 1px solid #2a2a3e; text-decoration: none; }
-.docs:hover { background: #2a2a3e; }
-.empty { text-align: center; color: #5555aa; padding: 24px; font-size: 13px; }
-.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #1a3a2a; border: 1px solid #10a37f; color: #10a37f; border-radius: 10px;
-  padding: 10px 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s;
-  z-index: 999; pointer-events: none; }
-.toast.show { opacity: 1; }
-.toast.err { background: #3a1a1a; border-color: #ef4444; color: #ef4444; }
-
-/* TOKEN MODAL */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100;
-  display: none; align-items: center; justify-content: center; padding: 20px; }
-.overlay.open { display: flex; }
-.modal { background: #13131a; border: 1px solid #252535; border-radius: 16px;
-  max-width: 500px; width: 100%; padding: 24px; }
-.modal h3 { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
-.modal .hint { font-size: 12px; color: #5555aa; margin-bottom: 16px; }
-.modal label { display: block; font-size: 11px; font-weight: 700; color: #8888aa;
-  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-.modal .how { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 8px;
-  padding: 12px; margin-bottom: 14px; font-size: 12px; color: #b0b0c8; line-height: 1.5; }
-.modal .how a { color: #a78bfa; }
-.modal .env-tag { font-family: monospace; background: #0a0a0f; border: 1px solid #1e1e2e;
-  border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #a78bfa; margin-bottom: 14px;
-  display: block; }
-.modal input[type=password] { width: 100%; background: #0a0a0f; border: 1px solid #1e1e2e;
-  border-radius: 8px; padding: 10px 14px; color: #f0f0f8; font-size: 14px; outline: none;
-  margin-bottom: 12px; font-family: monospace; transition: border 0.2s; }
-.modal input[type=password]:focus { border-color: #7c3aed; }
-.modal .warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
-  border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #f59e0b; margin-top: 14px; }
-.modal .warning code { background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 3px; }
-.modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-.status-tag { font-size: 11px; margin-bottom: 12px; }
-.status-tag.ok { color: #10a37f; }
-.status-tag.miss { color: #f59e0b; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#08080f;--bg2:#0d0d1a;--bg3:#131320;--border:#1e1e2e;--border2:#252535;--text:#e8e8f0;--text2:#b0b0c8;--text3:#6060a0;--green:#10b981;--red:#ef4444;--purple:#7c3aed;--yellow:#f59e0b}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:820px;margin:0 auto;padding:24px 16px}
+.hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back{color:#a78bfa;text-decoration:none;font-size:12px;font-weight:600;border:1px solid var(--border2);border-radius:8px;padding:6px 12px;background:var(--bg2);transition:all .2s}
+.back:hover{background:var(--bg3)}
+h1{font-size:24px;font-weight:900}
+.sub{color:var(--text3);font-size:13px;margin-bottom:24px;line-height:1.6}
+.sec-title{font-size:10px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.count{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:1px 8px;font-size:10px;color:#a78bfa}
+.list{display:flex;flex-direction:column;gap:6px}
+.item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.item.on{background:#060f0b;border-color:#1a3a28}
+.ico{width:40px;height:40px;border-radius:10px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.info{flex:1;min-width:0}
+.nm{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bd{font-size:9px;font-weight:700;border-radius:3px;padding:1px 6px}
+.bd-on{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.bd-off{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.bd-claude{background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+.bd-future{background:rgba(96,96,160,.1);color:var(--text3);border:1px solid var(--border)}
+.dt{font-size:11px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act{display:flex;gap:6px;flex-shrink:0}
+.btn{border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-tok{background:#5b21b6;color:#fff}
+.btn-tok:hover{background:var(--purple)}
+.btn-tok.configured{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.btn-docs{background:var(--bg3);color:#a78bfa;border:1px solid var(--border2);text-decoration:none;display:inline-block}
+.btn-docs:hover{background:var(--bg2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;max-width:520px;width:100%;padding:24px}
+.modal h3{font-size:16px;font-weight:800;margin-bottom:4px}
+.modal .hint{font-size:12px;color:var(--text3);margin-bottom:14px}
+.modal .how{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.modal .how a{color:#a78bfa}
+.env-tag{font-family:monospace;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;color:#a78bfa;display:block;margin-bottom:12px}
+.modal label{display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.modal input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:monospace;margin-bottom:10px}
+.modal input:focus{border-color:var(--purple)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn-save{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-cancel{background:var(--bg3);color:var(--text3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;cursor:pointer}
+.modal .warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--yellow);margin-top:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--green);color:var(--green);border-radius:10px;padding:8px 18px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1}
+.toast.err{border-color:var(--red);color:var(--red)}
+.st-tag{font-size:10px;padding:1px 6px;border-radius:3px;margin-bottom:8px;display:inline-block}
+.st-ok{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.st-miss{background:rgba(245,158,11,.1);color:var(--yellow);border:1px solid rgba(245,158,11,.2)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="back" href="/daniela.html">← Voltar ao Chat</a>
-  <br><br>
-  <h1>🔌 Conectores da Daniela</h1>
-  <p class="sub">
-    <strong style="color:#10a37f">REAIS</strong> = têm token API no banco e funcionam de verdade.
-    <strong style="color:#ef4444">SEM TOKEN</strong> = precisam de API key para funcionar.
-  </p>
+<div class="hdr">
+  <a class="back" href="/daniela.html">← Chat</a>
+  <div>
+    <h1>🔌 Conectores da Daniela</h1>
+    <p class="sub"><strong style="color:var(--green)">REAL</strong> = token verificado, funciona agora. <strong style="color:var(--red)">SEM TOKEN</strong> = configure a API key. <strong style="color:#a78bfa">VIA CLAUDE.AI</strong> = funciona no Claude.ai via OAuth.</p>
+  </div>
+</div>
 
-  <div class="section-title">✅ CONECTADOS E FUNCIONANDO <span class="count" id="cnt-on">—</span></div>
-  <div class="list" id="list-on"><div class="empty">Carregando...</div></div>
+<div class="sec-title">✅ CONECTADOS E FUNCIONANDO <span class="count" id="cnt-on">—</span></div>
+<div class="list" id="list-on"><div style="color:var(--text3);padding:12px;font-size:12px">Carregando...</div></div>
 
-  <div class="section-title">🔑 SEM TOKEN — precisam de API key <span class="count" id="cnt-miss">—</span></div>
-  <div class="list" id="list-miss"><div class="empty">Carregando...</div></div>
+<div class="sec-title">🔑 SEM TOKEN — configure a API key <span class="count" id="cnt-miss">—</span></div>
+<div class="list" id="list-miss"></div>
 
-  <div class="section-title">🔌 DISPONÍVEIS PARA CONECTAR <span class="count" id="cnt-off">—</span></div>
-  <div class="list" id="list-off"><div class="empty">Carregando...</div></div>
+<div class="sec-title">🤖 VIA CLAUDE.AI — disponíveis no Claude.ai via OAuth <span class="count" id="cnt-claude">—</span></div>
+<div class="list" id="list-claude"></div>
+
+<div class="sec-title">🔌 OUTROS DISPONÍVEIS <span class="count" id="cnt-off">—</span></div>
+<div class="list" id="list-off"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<!-- TOKEN MODAL -->
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h3>🔑 Configurar Token API: <span id="m-name" style="color:#a78bfa"></span></h3>
-    <p class="hint">O token fica salvo no banco Supabase e a Daniela usa imediatamente.</p>
-    <div class="status-tag" id="m-status"></div>
+    <h3>🔑 Configurar Token: <span id="m-name" style="color:#a78bfa"></span></h3>
+    <p class="hint">O token fica salvo no Supabase e a Daniela usa imediatamente.</p>
+    <div class="st-tag" id="m-status"></div>
     <div class="how" id="m-how"></div>
-    <label>Salvar como:</label>
+    <label>Variável de ambiente:</label>
     <code class="env-tag" id="m-env"></code>
-    <label>Token (API key):</label>
-    <input type="password" id="m-token" placeholder="Cole aqui o token..." data-env="">
+    <label>Token / API Key:</label>
+    <input type="password" id="m-token" placeholder="Cole o token aqui..." data-env="">
     <label>Senha admin:</label>
-    <input type="password" id="m-pwd" placeholder="senha admin para salvar">
+    <input type="password" id="m-pwd" placeholder="senha admin">
     <div class="modal-btns">
-      <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-save" onclick="saveToken()">💾 Salvar token</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="saveToken()">💾 Salvar</button>
     </div>
-    <div class="warning">⚠️ Senha admin: <code>tafita-cosmica-2026</code></div>
+    <div class="warn">⚠️ Senha admin: <code>tafita-cosmica-2026</code></div>
   </div>
 </div>
 
 <script>
-const API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/connectors-api";
-const ADMIN_API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-admin";
-const ANON = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0OTI4OTMsImV4cCI6MjA2MDA2ODg5M30.LBASD9OY8fSyP1ywS-LYzRbZ-_ZLHC7P56v0dFB3opQ";
+const EDGE = 'https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-chat';
+const ADMIN = 'https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-admin';
+const CONN = 'https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/connectors-api';
+const ANON = 'eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0OTI4OTMsImV4cCI6MjA2MDA2ODg5M30.LBASD9OY8fSyP1ywS-LYzRbZ-_ZLHC7P56v0dFB3opQ';
 
-var configuredSecrets = [];
-
-// Conectores que precisam de token API proprio
-var TOKEN_MAP = {
-  "notion": {
-    env: "NOTION_TOKEN",
-    how: "1. Acesse <a href='https://notion.so/my-integrations' target='_blank'>notion.so/my-integrations</a><br>2. Clique em + New integration<br>3. Copie o Internal Integration Secret (ntn_... ou secret_...)<br>4. Compartilhe a pagina desejada com a integracao"
-  },
-  "clickup": {
-    env: "CLICKUP_TOKEN",
-    how: "1. Acesse <a href='https://app.clickup.com/settings/apps' target='_blank'>app.clickup.com/settings/apps</a><br>2. Gere um Personal API Token<br>3. Copie e cole aqui"
-  },
-  "canva": {
-    env: "CANVA_TOKEN",
-    how: "1. Acesse <a href='https://www.canva.com/developers/apps' target='_blank'>canva.com/developers</a><br>2. Crie um Connect App<br>3. Copie o Client Secret ou API Token"
-  },
-  "shopify": {
-    env: "SHOPIFY_TOKEN",
-    how: "1. No admin Shopify, va em Apps > Develop apps<br>2. Crie um app e gere Admin API access token<br>3. Copie e cole aqui"
-  },
-  "zoom": {
-    env: "ZOOM_TOKEN",
-    how: "1. Acesse <a href='https://marketplace.zoom.us/develop' target='_blank'>marketplace.zoom.us/develop</a><br>2. Crie um Server-to-Server OAuth app<br>3. Copie o Account Credentials token"
-  },
-  "drive": {
-    env: "GOOGLE_TOKEN",
-    how: "1. Acesse <a href='https://console.cloud.google.com/apis/credentials' target='_blank'>console.cloud.google.com</a><br>2. Crie uma Service Account com permissao ao Drive<br>3. Baixe o JSON e copie o private_key"
-  },
-  "elevenlabs": {
-    env: "ELEVENLABS_API_KEY",
-    how: "1. Acesse <a href='https://elevenlabs.io/app/profile' target='_blank'>elevenlabs.io/app/profile</a><br>2. Va em API Keys<br>3. Copie a chave"
-  },
-  "heygen": {
-    env: "HEYGEN_API_KEY",
-    how: "1. Acesse <a href='https://app.heygen.com/settings/api' target='_blank'>app.heygen.com/settings</a><br>2. Gere uma API Key<br>3. Copie e cole aqui"
-  },
-  "youtube": {
-    env: "YOUTUBE_API_KEY",
-    how: "1. Acesse <a href='https://console.cloud.google.com/apis/credentials' target='_blank'>console.cloud.google.com</a><br>2. Crie uma API Key restrita ao YouTube Data API v3<br>3. Copie e cole aqui"
-  },
-  "instagram": {
-    env: "INSTAGRAM_TOKEN",
-    how: "1. Acesse <a href='https://developers.facebook.com/apps' target='_blank'>developers.facebook.com</a><br>2. Crie um Facebook App com Instagram Graph API<br>3. Gere um Access Token de longa duracao"
-  }
+// Conectores com token configurável diretamente
+const TOKEN_MAP = {
+  notion:{env:'NOTION_TOKEN',how:'1. Vá em <a href="https://notion.so/my-integrations" target="_blank">notion.so/my-integrations</a><br>2. Clique em "+ New integration"<br>3. Copie o Internal Integration Secret<br>4. Compartilhe as páginas desejadas com a integração'},
+  clickup:{env:'CLICKUP_TOKEN',how:'1. Vá em <a href="https://app.clickup.com/settings/apps" target="_blank">app.clickup.com/settings/apps</a><br>2. Gere um Personal API Token<br>3. Copie e cole aqui'},
+  canva:{env:'CANVA_TOKEN',how:'1. Vá em <a href="https://www.canva.com/developers/apps" target="_blank">canva.com/developers</a><br>2. Crie um Connect App<br>3. Copie o Client Secret ou API Token'},
+  shopify:{env:'SHOPIFY_TOKEN',how:'1. No admin Shopify: Apps > Develop apps<br>2. Crie um app e gere Admin API access token<br>3. Copie e cole aqui'},
+  zoom:{env:'ZOOM_TOKEN',how:'1. Vá em <a href="https://marketplace.zoom.us/develop" target="_blank">marketplace.zoom.us/develop</a><br>2. Crie um Server-to-Server OAuth app<br>3. Copie o Account Credentials token'},
+  drive:{env:'GOOGLE_TOKEN',how:'1. Vá em <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com</a><br>2. Crie uma Service Account com acesso ao Drive<br>3. Baixe o JSON e copie o private_key'},
+  elevenlabs:{env:'ELEVENLABS_API_KEY',how:'1. Vá em <a href="https://elevenlabs.io/app/profile" target="_blank">elevenlabs.io/app/profile</a><br>2. Seção API Keys<br>3. Copie a chave'},
+  heygen:{env:'HEYGEN_API_KEY',how:'1. Vá em <a href="https://app.heygen.com/settings/api" target="_blank">app.heygen.com/settings</a><br>2. Gere uma API Key<br>3. Copie e cole'},
+  youtube:{env:'YOUTUBE_API_KEY',how:'1. Vá em <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com</a><br>2. Crie API Key restrita ao YouTube Data API v3<br>3. Copie e cole'},
+  instagram:{env:'INSTAGRAM_TOKEN',how:'1. Vá em <a href="https://developers.facebook.com/apps" target="_blank">developers.facebook.com</a><br>2. Crie Facebook App com Instagram Graph API<br>3. Gere Access Token de longa duração'},
+  stripe:{env:'STRIPE_SECRET_KEY',how:'1. Vá em <a href="https://dashboard.stripe.com/apikeys" target="_blank">dashboard.stripe.com/apikeys</a><br>2. Copie a Secret key (sk_...)'},
+  netlify:{env:'NETLIFY_TOKEN',how:'1. Vá em <a href="https://app.netlify.com/user/applications#personal-access-tokens" target="_blank">app.netlify.com/user/applications</a><br>2. Gere um Personal Access Token<br>3. Copie e cole'},
+  figma:{env:'FIGMA_TOKEN',how:'1. Vá em <a href="https://www.figma.com/settings" target="_blank">figma.com/settings</a><br>2. Seção Personal Access Tokens<br>3. Gere um token e copie'},
+  tiktok:{env:'TIKTOK_TOKEN',how:'1. Vá em <a href="https://developers.tiktok.com" target="_blank">developers.tiktok.com</a><br>2. Crie um app e gere Access Token<br>3. Copie e cole'},
+  pinterest:{env:'PINTEREST_TOKEN',how:'1. Vá em <a href="https://developers.pinterest.com/apps/" target="_blank">developers.pinterest.com</a><br>2. Crie um app e gere Access Token<br>3. Copie e cole'},
+  slack:{env:'SLACK_TOKEN',how:'1. Vá em <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a><br>2. Crie um app e vá em OAuth & Permissions<br>3. Instale no workspace e copie Bot User OAuth Token (xoxb-...)'},
+  gmail:{env:'GMAIL_TOKEN',how:'1. Vá em <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com</a><br>2. Crie OAuth 2.0 Client ID<br>3. Autentique e copie o refresh_token'},
+  calendar:{env:'GOOGLE_CALENDAR_TOKEN',how:'1. Vá em <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com</a><br>2. Crie OAuth 2.0 para Google Calendar API<br>3. Copie o access token'},
+  calendly:{env:'CALENDLY_TOKEN',how:'1. Vá em <a href="https://calendly.com/integrations/api_webhooks" target="_blank">calendly.com/integrations</a><br>2. Copie o Personal Access Token'},
+  paypal:{env:'PAYPAL_TOKEN',how:'1. Vá em <a href="https://developer.paypal.com/developer/applications" target="_blank">developer.paypal.com</a><br>2. Crie um app e copie Client ID + Secret<br>3. Formato: CLIENT_ID:SECRET'},
+  indeed:{env:'INDEED_TOKEN',how:'1. Vá em <a href="https://ads.indeed.com/apikeys" target="_blank">ads.indeed.com/apikeys</a><br>2. Gere uma API key<br>3. Copie e cole'},
 };
 
+// Conectores que funcionam via Claude.ai OAuth (não diretamente via token)
+const CLAUDE_OAUTH = ['docusign','godaddy','wordpress','viator','alltrails','booking','tripadvisor','uber','gamma','spotify'];
+
+var configuredSecrets = [];
+var currentConnector = '';
+
 function toast(msg, err) {
-  var t = document.getElementById("toast");
-  t.textContent = msg;
-  t.className = "toast show" + (err ? " err" : "");
-  setTimeout(function() { t.className = "toast" + (err ? " err" : ""); }, 3000);
-}
-
-function openModal(name, currentlyConfigured) {
-  var cfg = TOKEN_MAP[name];
-  if (!cfg) { toast("Conector " + name + " nao precisa de token separado", true); return; }
-  document.getElementById("overlay").classList.add("open");
-  document.getElementById("m-name").textContent = name;
-  document.getElementById("m-env").textContent = cfg.env;
-  document.getElementById("m-how").innerHTML = cfg.how;
-  document.getElementById("m-token").value = "";
-  document.getElementById("m-token").dataset.env = cfg.env;
-  document.getElementById("m-pwd").value = localStorage.getItem("adm") || "";
-  var st = document.getElementById("m-status");
-  if (currentlyConfigured) {
-    st.className = "status-tag ok";
-    st.textContent = "Token ja configurado — voce pode substituir por um novo";
-  } else {
-    st.className = "status-tag miss";
-    st.textContent = "Token nao configurado — sem ele a Daniela nao pode usar este conector";
-  }
-}
-
-function closeModal() {
-  document.getElementById("overlay").classList.remove("open");
-}
-
-async function saveToken() {
-  var env = document.getElementById("m-token").dataset.env;
-  var value = document.getElementById("m-token").value.trim();
-  var pwd = document.getElementById("m-pwd").value.trim();
-  if (!value) { toast("Cole o token antes de salvar", true); return; }
-  if (!pwd) { toast("Digite a senha admin", true); return; }
-  var btn = document.querySelector(".btn-save");
-  btn.textContent = "Salvando..."; btn.disabled = true;
-  try {
-    var r = await fetch(ADMIN_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-password": pwd },
-      body: JSON.stringify({ action: "save_secret", name: env, value: value })
-    });
-    var d = await r.json();
-    if (r.ok && d.ok) {
-      localStorage.setItem("adm", pwd);
-      toast("Token " + env + " salvo! Daniela ja pode usar este conector.");
-      closeModal();
-      await loadSecrets();
-      loadAll();
-    } else {
-      toast("Erro: " + (d.error || "falhou"), true);
-    }
-  } catch(e) { toast("Erro: " + e.message, true); }
-  btn.textContent = "Salvar token"; btn.disabled = false;
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show' + (err ? ' err' : '');
+  setTimeout(() => t.className = 'toast', 3000);
 }
 
 async function loadSecrets() {
   try {
-    var r = await fetch(ADMIN_API + "?action=list");
-    if (r.ok) { var d = await r.json(); configuredSecrets = d.configured || []; }
+    const r = await fetch(ADMIN + '?action=list');
+    if (r.ok) { const d = await r.json(); configuredSecrets = d.configured || []; }
   } catch(e) {}
 }
 
-function renderReal(c) {
-  var esc = (c.name || "").replace(/'/g, "\\'");
-  return '<div class="item connected">' +
-    '<div class="ico">' + (c.icon || "🔌") + '</div>' +
-    '<div class="info">' +
-      '<div class="nm">' + (c.display_name || c.name) + '<span class="bd-on">✅ REAL</span></div>' +
-      '<div class="dt">' + (c.account_info || c.description || "—") + '</div>' +
-    '</div>' +
-    '<div class="act"></div>' +
-  '</div>';
+function openModal(name) {
+  const cfg = TOKEN_MAP[name];
+  if (!cfg) return;
+  currentConnector = name;
+  const isCfg = configuredSecrets.includes(cfg.env);
+  document.getElementById('m-name').textContent = name;
+  document.getElementById('m-env').textContent = cfg.env;
+  document.getElementById('m-how').innerHTML = cfg.how;
+  document.getElementById('m-token').value = '';
+  document.getElementById('m-token').dataset.env = cfg.env;
+  document.getElementById('m-pwd').value = localStorage.getItem('adm') || '';
+  const st = document.getElementById('m-status');
+  st.className = 'st-tag ' + (isCfg ? 'st-ok' : 'st-miss');
+  st.textContent = isCfg ? '✅ Token já configurado — pode atualizar' : '❌ Sem token — configure para ativar';
+  document.getElementById('overlay').classList.add('open');
 }
 
-function renderMissing(c) {
-  var esc = (c.name || "").replace(/'/g, "\\'");
-  var cfg = TOKEN_MAP[c.name] || null;
-  var hasCfg = cfg && configuredSecrets.includes(cfg.env);
-  var tokenBtnLabel = hasCfg ? "🔑✅ Atualizar Token" : "🔑 Configurar Token";
-  var tokenBtn = cfg
-    ? '<button class="btn btn-token ' + (hasCfg ? "ok" : "") + '" onclick="openModal(\'' + esc + '\',' + hasCfg + ')">' + tokenBtnLabel + '</button>'
-    : '';
-  return '<div class="item">' +
-    '<div class="ico">' + (c.icon || "🔌") + '</div>' +
-    '<div class="info">' +
-      '<div class="nm">' + (c.display_name || c.name) + '<span class="bd-off">SEM TOKEN</span></div>' +
-      '<div class="dt">' + (c.account_info || c.description || "Precisa de API token para funcionar") + '</div>' +
-    '</div>' +
-    '<div class="act">' + tokenBtn + '</div>' +
-  '</div>';
+function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+async function saveToken() {
+  const env = document.getElementById('m-token').dataset.env;
+  const val = document.getElementById('m-token').value.trim();
+  const pwd = document.getElementById('m-pwd').value.trim();
+  if (!val) { toast('Cole o token antes de salvar', true); return; }
+  if (!pwd) { toast('Digite a senha admin', true); return; }
+  const btn = document.querySelector('.btn-save');
+  btn.textContent = 'Salvando...'; btn.disabled = true;
+  try {
+    const r = await fetch(ADMIN, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': pwd },
+      body: JSON.stringify({ action: 'save_secret', name: env, value: val }) });
+    const d = await r.json();
+    if (r.ok && d.ok) {
+      localStorage.setItem('adm', pwd);
+      toast('✅ Token ' + env + ' salvo! Daniela já pode usar este conector.');
+      closeModal();
+      await loadSecrets();
+      loadAll();
+    } else { toast('Erro: ' + (d.error || 'falhou'), true); }
+  } catch(e) { toast('Erro: ' + e.message, true); }
+  btn.textContent = '💾 Salvar'; btn.disabled = false;
 }
 
-function renderOff(c) {
-  var esc = (c.name || "").replace(/'/g, "\\'");
-  var btn = '<button class="btn disconn" onclick="connectConn(\'' + esc + '\')">Conectar</button>';
-  var docs = c.oauth_url ? '<a href="' + c.oauth_url + '" target="_blank" class="btn docs">Docs ↗</a>' : '';
-  return '<div class="item">' +
-    '<div class="ico">' + (c.icon || "🔌") + '</div>' +
-    '<div class="info">' +
-      '<div class="nm">' + (c.display_name || c.name) + '</div>' +
-      '<div class="dt">' + (c.description || "Disponivel para ativar") + '</div>' +
-    '</div>' +
-    '<div class="act">' + docs + btn + '</div>' +
-  '</div>';
-}
+const REAL = new Set(['openai','supabase','vercel','github','groq','gemini','deepseek']);
 
-function connectConn(name) {
-  toast("Para conectar " + name + ": configure o token API ou use o Claude.ai para OAuth");
-}
+function renderConn(c) {
+  const isReal = REAL.has(c.name);
+  const isClaude = CLAUDE_OAUTH.includes(c.name);
+  const hasToken = c.connected;
+  const canConfig = TOKEN_MAP[c.name];
+  const configured = canConfig && configuredSecrets.includes(TOKEN_MAP[c.name].env);
 
-// Conectores com token real no ia_cache (verificado diretamente)
-var REAL_CONNECTORS = ["openai", "supabase", "vercel", "github", "groq", "gemini"];
-// Conectores connected=true no banco mas SEM token real
-var MISSING_TOKEN = ["notion", "canva", "drive", "clickup", "zoom", "shopify"];
+  let badge = '';
+  if (isReal) badge = '<span class="bd bd-on">✅ REAL</span>';
+  else if (hasToken || configured) badge = '<span class="bd bd-on">✅ ATIVO</span>';
+  else if (isClaude) badge = '<span class="bd bd-claude">🤖 VIA CLAUDE.AI</span>';
+  else if (!hasToken) badge = '<span class="bd bd-off">SEM TOKEN</span>';
+
+  let btn = '';
+  if (canConfig) {
+    btn = '<button class="btn btn-tok' + (configured ? ' configured' : '') + '" onclick="openModal(\'' + c.name + '\')">' + (configured ? '🔑✅ Atualizar' : '🔑 Configurar Token') + '</button>';
+  } else if (isClaude) {
+    btn = '<a href="/conectores.html#claude-info" class="btn btn-docs">ℹ️ Como usar</a>';
+  }
+
+  return '<div class="item' + (isReal ? ' on' : '') + '">' +
+    '<div class="ico">' + (c.icon || '🔌') + '</div>' +
+    '<div class="info"><div class="nm">' + (c.display_name || c.name) + badge + '</div>' +
+    '<div class="dt">' + (c.account_info || c.description || '') + '</div></div>' +
+    '<div class="act">' + btn + '</div></div>';
+}
 
 async function loadAll() {
   try {
-    var r = await fetch(API, { headers: { apikey: ANON, Authorization: "Bearer " + ANON } });
-    var d = await r.json();
-    var all = d.connectors || [];
+    const r = await fetch(CONN, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } });
+    const d = await r.json();
+    const all = d.connectors || [];
 
-    var real = all.filter(function(c) { return REAL_CONNECTORS.includes(c.name) && c.connected; });
-    var missing = all.filter(function(c) { return MISSING_TOKEN.includes(c.name); });
-    var off = all.filter(function(c) { return !c.connected && !MISSING_TOKEN.includes(c.name); });
+    const real = all.filter(c => REAL.has(c.name) && c.connected);
+    const miss = all.filter(c => !REAL.has(c.name) && !CLAUDE_OAUTH.includes(c.name) && TOKEN_MAP[c.name]);
+    const claude = all.filter(c => CLAUDE_OAUTH.includes(c.name));
+    const off = all.filter(c => !REAL.has(c.name) && !CLAUDE_OAUTH.includes(c.name) && !TOKEN_MAP[c.name]);
 
-    document.getElementById("cnt-on").textContent = real.length;
-    document.getElementById("cnt-miss").textContent = missing.length;
-    document.getElementById("cnt-off").textContent = off.length;
-    document.getElementById("list-on").innerHTML = real.length
-      ? real.map(renderReal).join("")
-      : '<div class="empty">Nenhum conector real ativo</div>';
-    document.getElementById("list-miss").innerHTML = missing.length
-      ? missing.map(renderMissing).join("")
-      : '<div class="empty">Todos com token configurado!</div>';
-    document.getElementById("list-off").innerHTML = off.length
-      ? off.map(renderOff).join("")
-      : '<div class="empty">Sem conectores adicionais disponíveis</div>';
+    document.getElementById('cnt-on').textContent = real.length;
+    document.getElementById('cnt-miss').textContent = miss.length;
+    document.getElementById('cnt-claude').textContent = claude.length;
+    document.getElementById('cnt-off').textContent = off.length;
+
+    document.getElementById('list-on').innerHTML = real.map(renderConn).join('') || '<div style="color:var(--text3);padding:12px;font-size:12px">Nenhum conector real</div>';
+    document.getElementById('list-miss').innerHTML = miss.map(renderConn).join('');
+    document.getElementById('list-claude').innerHTML = claude.map(renderConn).join('');
+    document.getElementById('list-off').innerHTML = off.map(renderConn).join('');
+
   } catch(e) {
-    document.getElementById("list-on").innerHTML = '<div class="empty">Erro: ' + e.message + '</div>';
+    document.getElementById('list-on').innerHTML = '<div style="color:var(--red);padding:12px">Erro: ' + e.message + '</div>';
   }
 }
 
-// Fechar modal ao clicar fora
-document.getElementById("overlay").addEventListener("click", function(e) {
-  if (e.target === this) closeModal();
-});
-
-// Init
+document.getElementById('overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 loadSecrets().then(loadAll);
 </script>
 </body>
