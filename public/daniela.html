@@ -4,86 +4,73 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Daniela V26.5 · psicologia.doc</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js">
-// ===== SESSIONS =====
-function openSessions() {
-  document.getElementById('sess-ov').style.display = 'flex';
-  loadSessions();
-}
-function closeSess() {
-  document.getElementById('sess-ov').style.display = 'none';
-}
-document.getElementById('sess-ov').addEventListener('click', function(e) {
-  if (e.target === e.currentTarget) closeSess();
-});
-
-var _sessPage = 0;
-var _allSess = [];
-
-async function loadSessions(append) {
-  var list = document.getElementById('sess-list');
-  if (!append) { _allSess = []; _sessPage = 0; list.innerHTML = '<div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Carregando...</div>'; }
+/* === SESSOES === */
+var _sp=0,_sa=[];
+async function loadSessModal(append) {
+  var list=document.getElementById('sess-list');
+  if(!append){_sa=[];_sp=0;list.innerHTML='<div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Carregando...</div>';}
   try {
-    var r = await fetch(EDGE + '?action=sessions&user_id=tafita81&limit=15');
-    var sessions = await r.json();
-    if (!sessions || sessions.length === 0) {
-      if (!append) list.innerHTML = '<div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Nenhuma sessão salva.</div>';
-      document.getElementById('more-btn').style.display = 'none';
+    var r=await fetch(EDGE+'?action=sessions&user_id=tafita81&limit=15');
+    var sessions=await r.json();
+    if(!sessions||sessions.length===0){
+      if(!append)list.innerHTML='<div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Nenhuma sessao salva ainda.</div>';
+      document.getElementById('sess-more').style.display='none';
       return;
     }
-    _allSess = append ? _allSess.concat(sessions) : sessions;
-    document.getElementById('more-btn').style.display = sessions.length < 15 ? 'none' : '';
-    list.innerHTML = _allSess.map(function(s) {
-      var date = s.updated_at ? new Date(s.updated_at).toLocaleString('pt-BR') : '';
-      var prov = s.provider || 'ai';
-      var ico = prov === 'groq' ? '🆓' : prov === 'gemini' ? '🌟' : '🤖';
-      var title = (s.title || 'sem título').substring(0, 60);
-      var id = s.id.replace(/'/g, '');
-      var titleEsc = title.replace(/'/g, '');
-      return '<div onclick="resumeSess('' + id + '','' + titleEsc + '')" style="background:#060610;border:1px solid #1e1e2e;border-radius:10px;padding:11px 13px;cursor:pointer;margin-bottom:5px;transition:border-color .2s" onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='#1e1e2e'">'
-        + '<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">'
-        + '<span>' + ico + '</span>'
-        + '<span style="font-size:13px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + title + '</span>'
-        + '<span style="font-size:10px;color:#6060a0">' + (s.msg_count || 0) + ' msgs</span>'
-        + '</div>'
-        + '<div style="font-size:10px;color:#6060a0">' + date + ' · ' + prov + '</div>'
-        + '</div>';
-    }).join('');
+    _sa=append?_sa.concat(sessions):sessions;
+    document.getElementById('sess-more').style.display=sessions.length<15?'none':'';
+    var html='';
+    for(var i=0;i<_sa.length;i++){
+      var s=_sa[i];
+      var date=s.updated_at?new Date(s.updated_at).toLocaleString('pt-BR'):'';
+      var prov=s.provider||'ai';
+      var ico=prov==='groq'?String.fromCodePoint(0x1F193):prov==='gemini'?String.fromCodePoint(0x1F31F):String.fromCodePoint(0x1F916);
+      var title=((s.title||'sem titulo').substring(0,60));
+      var safeId=encodeURIComponent(s.id||'');
+      var safeTitle=encodeURIComponent(title);
+      html+='<div onclick="resumeSess(decodeURIComponent(''+safeId+''),decodeURIComponent(''+safeTitle+''))" ';
+      html+='style="background:#060610;border:1px solid #1e1e2e;border-radius:10px;padding:11px 13px;cursor:pointer;margin-bottom:5px" ';
+      html+='onmouseover="this.style.borderColor='#7c3aed'" onmouseout="this.style.borderColor='#1e1e2e'">';
+      html+='<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">';
+      html+='<span>'+ico+'</span>';
+      html+='<span style="font-size:13px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+title+'</span>';
+      html+='<span style="font-size:10px;color:#6060a0">'+(s.msg_count||0)+' msgs</span>';
+      html+='</div>';
+      html+='<div style="font-size:10px;color:#6060a0">'+date+' · '+prov+'</div>';
+      html+='</div>';
+    }
+    list.innerHTML=html;
   } catch(e) {
-    list.innerHTML = '<div style="color:#ef4444;font-size:12px;padding:12px">Erro: ' + e.message + '</div>';
+    list.innerHTML='<div style="color:#ef4444;font-size:12px;padding:12px">Erro: '+e.message+'</div>';
   }
 }
-
-function loadMoreSess() { _sessPage++; loadSessions(true); }
-
-function newSess() {
-  sessionId = 'sess_' + Date.now();
-  messages = [];
-  document.getElementById('msgs').innerHTML = '<div class="msg msg-ai"><div class="avatar avatar-ai">🤖</div><div><div class="msg-bubble">Nova sessão! Como posso ajudar?</div></div></div>';
-  document.getElementById('sess-label').textContent = 'sessão nova';
-  closeSess();
-  toast('Nova sessão iniciada!');
+function loadMoreSess(){_sp++;loadSessModal(true);}
+function newSess(){
+  sessionId='sess_'+Date.now();
+  messages=[];
+  document.getElementById('msgs').innerHTML='<div class="msg msg-ai"><div class="avatar avatar-ai">'+String.fromCodePoint(0x1F916)+'</div><div><div class="msg-bubble">Nova sessao! Como posso ajudar?</div></div></div>';
+  document.getElementById('sess-label').textContent='sessao nova';
+  document.getElementById('sess-ov').style.display='none';
+  toast('Nova sessao iniciada!');
 }
-
-async function resumeSess(id, title) {
-  closeSess();
-  toast('Carregando: ' + title.substring(0, 30) + '...');
-  sessionId = id;
+async function resumeSess(id,title) {
+  document.getElementById('sess-ov').style.display='none';
+  sessionId=id;
+  toast('Carregando: '+title.substring(0,30)+'...');
   try {
-    var r = await fetch(EDGE, { method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: 'load_session com id: ' + id + ' e faça um resumo do que foi feito e o estado atual para eu continuar de onde parei' }],
-        model: currentModel, user_id: 'tafita81', session_id: 'resume_' + Date.now() }) });
-    var d = await r.json();
-    messages = [{ role: 'assistant', content: d.reply || '' }];
-    document.getElementById('msgs').innerHTML = '';
-    document.getElementById('sess-label').textContent = '📋 ' + title.substring(0, 40);
-    addMsg('ai', '📋 **Sessão retomada:** ' + title + '\n\n' + (d.reply || 'Pronto! Continue de onde parou.'), d.tools_used || [], d.model || currentModel);
-    toast('Sessão retomada!');
-  } catch(e) {
-    toast('Erro: ' + e.message, true);
-  }
+    var r=await fetch(EDGE,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:'load_session com id: '+id+' e faca um resumo completo do que foi feito para eu continuar'}],
+        model:currentModel,user_id:'tafita81',session_id:'resume_'+Date.now()})});
+    var d=await r.json();
+    messages=[{role:'assistant',content:d.reply||''}];
+    document.getElementById('msgs').innerHTML='';
+    document.getElementById('sess-label').textContent='Sessao: '+title.substring(0,40);
+    addMsg('ai','Sessao retomada: '+title+'\n\n'+(d.reply||'Continue!'),d.tools_used||[],d.model||currentModel);
+    if(d.tokens){document.getElementById('st-tokens').textContent=fmt(d.tokens.total||0);}
+    toast('Sessao retomada!');
+  } catch(e) { toast('Erro: '+e.message,true); }
 }
-// ===== FIM SESSIONS =====
+/* === FIM SESSOES === */
 
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -372,26 +359,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 </div>
 
 <!-- TOAST -->
-
-<!-- MODAL: SESSÕES -->
-<div id="sess-ov" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#0d0d1a;border:1px solid #252535;border-radius:16px;max-width:600px;width:100%;overflow:hidden">
-    <div style="padding:14px 18px;border-bottom:1px solid #1e1e2e;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-size:15px;font-weight:800">📋 Sessões Anteriores</div>
-        <div style="font-size:11px;color:#6060a0;margin-top:2px">Clique para retomar de onde parou</div>
-      </div>
-      <button onclick="closeSess()" style="background:#131320;border:1px solid #1e1e2e;border-radius:7px;color:#6060a0;padding:5px 11px;cursor:pointer;font-size:11px">✕</button>
-    </div>
-    <div style="max-height:55vh;overflow-y:auto;padding:10px" id="sess-list">
-      <div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Carregando sessões...</div>
-    </div>
-    <div style="padding:10px 16px;border-top:1px solid #1e1e2e;display:flex;gap:8px">
-      <button onclick="newSess()" style="background:#7c3aed;border:none;border-radius:8px;color:#fff;padding:7px 14px;cursor:pointer;font-size:11px;font-weight:600">+ Nova sessão</button>
-      <button onclick="loadMoreSess()" id="more-btn" style="background:#131320;border:1px solid #1e1e2e;border-radius:8px;color:#b0b0c8;padding:7px 12px;cursor:pointer;font-size:11px">Carregar mais</button>
-    </div>
-  </div>
-</div>
+<div id="sess-ov" style="position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:none;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this){document.getElementById('sess-ov').style.display='none'}"><div style="background:#0d0d1a;border:1px solid #252535;border-radius:16px;max-width:600px;width:100%;overflow:hidden"><div style="padding:14px 18px;border-bottom:1px solid #1e1e2e;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:800">&#x1F4CB; Sess&#xF5;es Anteriores</div><div style="font-size:11px;color:#6060a0;margin-top:2px">Clique para retomar de onde parou</div></div><button onclick="document.getElementById('sess-ov').style.display='none'" style="background:#131320;border:1px solid #1e1e2e;border-radius:7px;color:#6060a0;padding:5px 11px;cursor:pointer;font-size:11px">&#x2715; Fechar</button></div><div style="max-height:60vh;overflow-y:auto;padding:10px" id="sess-list"><div style="color:#6060a0;font-size:12px;text-align:center;padding:20px">Carregando...</div></div><div style="padding:10px 16px;border-top:1px solid #1e1e2e;display:flex;gap:8px"><button onclick="newSess()" style="background:#7c3aed;border:none;border-radius:8px;color:#fff;padding:7px 14px;cursor:pointer;font-size:11px;font-weight:600">+ Nova sess&#xE3;o</button><button onclick="loadMoreSess()" id="sess-more" style="background:#131320;border:1px solid #1e1e2e;border-radius:8px;color:#b0b0c8;padding:7px 12px;cursor:pointer;font-size:11px;display:none">Carregar mais</button></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -830,7 +798,9 @@ async function send() {
 
 // SESSIONS
 function openSessions() {
-  sendQuick('Liste as últimas 10 sessões anteriores');
+  var el=document.getElementById('sess-ov');
+  if(el){el.style.display='flex';loadSessModal();}
+  else alert('Modal nao carregado');
 }
 
 // RATE LIMIT MONITOR
