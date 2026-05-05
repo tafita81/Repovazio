@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Científica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+        }
+        .display {
+            font-size: 2em;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #eaeaea;
+            border: none;
+            border-radius: 5px;
+            text-align: right;
+            width: 100%;
+        }
+        .button {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .button:active {
+            background: #004494;
+        }
+        .button.operator {
+            background: #28a745;
+        }
+        .button.operator:hover {
+            background: #218838;
+        }
+        .button.operator:active {
+            background: #1e7e34;
+        }
+        .button.clear {
+            background: #dc3545;
+        }
+        .button.clear:hover {
+            background: #c82333;
+        }
+        .button.clear:active {
+            background: #bd2130;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="display" id="display" disabled />
+        <div>
+            <button class="button clear" onclick="clearDisplay()">C</button>
+            <button class="button" onclick="appendToDisplay('7')">7</button>
+            <button class="button" onclick="appendToDisplay('8')">8</button>
+            <button class="button" onclick="appendToDisplay('9')">9</button>
+            <button class="button operator" onclick="appendToDisplay('/')">/</button>
+        </div>
+        <div>
+            <button class="button" onclick="appendToDisplay('4')">4</button>
+            <button class="button" onclick="appendToDisplay('5')">5</button>
+            <button class="button" onclick="appendToDisplay('6')">6</button>
+            <button class="button operator" onclick="appendToDisplay('*')">*</button>
+        </div>
+        <div>
+            <button class="button" onclick="appendToDisplay('1')">1</button>
+            <button class="button" onclick="appendToDisplay('2')">2</button>
+            <button class="button" onclick="appendToDisplay('3')">3</button>
+            <button class="button operator" onclick="appendToDisplay('-')">-</button>
+        </div>
+        <div>
+            <button class="button" onclick="appendToDisplay('0')">0</button>
+            <button class="button" onclick="calculateResult()">=</button>
+            <button class="button operator" onclick="appendToDisplay('+')">+</button>
+        </div>
+    </div>
+    <script>
+        function appendToDisplay(value) {
+            const display = document.getElementById('display');
+            display.value += value;
+        }
+
+        function clearDisplay() {
+            const display = document.getElementById('display');
+            display.value = '';
+        }
+
+        function calculateResult() {
+            const display = document.getElementById('display');
+            try {
+                display.value = eval(display.value);
+            } catch (error) {
+                display.value = 'Erro';
+            }
+        }
+    </script>
+</body>
+</html>
