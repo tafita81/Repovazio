@@ -94,6 +94,56 @@ html,body{background:#0a0a0f;color:#f0f0f8;font-family:-apple-system,BlinkMacSys
 <div class="toast" id="toast"></div>
 
 <script>
+
+const TOKEN_CONFIG = {"notion": {"env": "NOTION_TOKEN", "url": "https://www.notion.so/my-integrations", "help": "Crie uma Internal Integration e copie o "Internal Integration Secret" (começa com secret_ ou ntn_)"}, "clickup": {"env": "CLICKUP_TOKEN", "url": "https://app.clickup.com/settings/apps", "help": "Settings → Apps → API Token → Generate"}, "canva": {"env": "CANVA_TOKEN", "url": "https://www.canva.com/developers/apps", "help": "Crie um Connect App e copie o token"}, "shopify": {"env": "SHOPIFY_TOKEN", "url": "https://admin.shopify.com", "help": "Admin → Apps → Develop apps → Configure Admin API"}, "zoom": {"env": "ZOOM_TOKEN", "url": "https://marketplace.zoom.us/develop", "help": "Crie OAuth/Server-to-Server app"}, "google_drive": {"env": "GOOGLE_TOKEN", "url": "https://console.cloud.google.com/apis/credentials", "help": "Crie OAuth 2.0 client"}, "elevenlabs": {"env": "ELEVENLABS_API_KEY", "url": "https://elevenlabs.io/app/profile", "help": "Profile → API Keys"}, "youtube": {"env": "YOUTUBE_API_KEY", "url": "https://console.cloud.google.com/apis/credentials", "help": "Crie API Key"}, "instagram": {"env": "INSTAGRAM_TOKEN", "url": "https://developers.facebook.com/apps", "help": "Crie Facebook App + Instagram Basic Display"}, "heygen": {"env": "HEYGEN_API_KEY", "url": "https://app.heygen.com/settings/api", "help": "Settings → API"}};
+const ADMIN_API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-admin";
+let configuredSecrets = [];
+
+async function loadConfiguredSecrets() {
+  try {
+    const r = await fetch(ADMIN_API + "?action=list");
+    if(r.ok) { const d = await r.json(); configuredSecrets = d.configured || []; }
+  } catch(e) {}
+}
+
+function openTokenModal(name) {
+  const cfg = TOKEN_CONFIG[name.toLowerCase()];
+  if(!cfg) { alert("Conector " + name + " usa OAuth do Claude — não precisa de token separado"); return; }
+  const isConfigured = configuredSecrets.includes(cfg.env);
+  document.getElementById("tk-modal").style.display = "flex";
+  document.getElementById("tk-name").textContent = name;
+  document.getElementById("tk-env").textContent = cfg.env;
+  document.getElementById("tk-help").textContent = cfg.help;
+  document.getElementById("tk-link").href = cfg.url;
+  document.getElementById("tk-link").textContent = "🔗 " + cfg.url;
+  document.getElementById("tk-status").innerHTML = isConfigured ? '<span style="color:#10a37f">✅ Token já configurado</span>' : '<span style="color:#f59e0b">⚠️ Token ainda não configurado</span>';
+  document.getElementById("tk-token").value = "";
+  document.getElementById("tk-token").dataset.env = cfg.env;
+  document.getElementById("tk-pwd").value = localStorage.getItem("admin_pwd") || "";
+}
+function closeTokenModal() { document.getElementById("tk-modal").style.display = "none"; }
+
+async function saveToken() {
+  const env = document.getElementById("tk-token").dataset.env;
+  const value = document.getElementById("tk-token").value.trim();
+  const pwd = document.getElementById("tk-pwd").value.trim();
+  const btn = document.getElementById("tk-save");
+  if(!value) { alert("Cole o token"); return; }
+  if(!pwd) { alert("Digite a senha admin"); return; }
+  btn.disabled = true; btn.textContent = "Salvando...";
+  try {
+    const r = await fetch(ADMIN_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": pwd },
+      body: JSON.stringify({ action: "save_secret", name: env, value })
+    });
+    const d = await r.json();
+    if(r.ok && d.ok) {
+      localStorage.setItem("admin_pwd", pwd);
+      toast("✅ Token " + env + " salvo! Daniela pode usar agora.");
+      closeTokenModal();
+      await loadConfiguredSecrets();
+
 const API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/connectors-api";
 const ANON = "eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0OTI4OTMsImV4cCI6MjA2MDA2ODg5M30.LBASD9OY8fSyP1ywS-LYzRbZ-_ZLHC7P56v0dFB3opQ";
 let currentConn = null;
@@ -215,54 +265,6 @@ async function disconnect(name) {
 }
 
 
-const TOKEN_CONFIG = {"notion": {"env": "NOTION_TOKEN", "url": "https://www.notion.so/my-integrations", "help": "Crie uma Internal Integration e copie o "Internal Integration Secret" (começa com secret_ ou ntn_)"}, "clickup": {"env": "CLICKUP_TOKEN", "url": "https://app.clickup.com/settings/apps", "help": "Settings → Apps → API Token → Generate"}, "canva": {"env": "CANVA_TOKEN", "url": "https://www.canva.com/developers/apps", "help": "Crie um Connect App e copie o token"}, "shopify": {"env": "SHOPIFY_TOKEN", "url": "https://admin.shopify.com", "help": "Admin → Apps → Develop apps → Configure Admin API"}, "zoom": {"env": "ZOOM_TOKEN", "url": "https://marketplace.zoom.us/develop", "help": "Crie OAuth/Server-to-Server app"}, "google_drive": {"env": "GOOGLE_TOKEN", "url": "https://console.cloud.google.com/apis/credentials", "help": "Crie OAuth 2.0 client"}, "elevenlabs": {"env": "ELEVENLABS_API_KEY", "url": "https://elevenlabs.io/app/profile", "help": "Profile → API Keys"}, "youtube": {"env": "YOUTUBE_API_KEY", "url": "https://console.cloud.google.com/apis/credentials", "help": "Crie API Key"}, "instagram": {"env": "INSTAGRAM_TOKEN", "url": "https://developers.facebook.com/apps", "help": "Crie Facebook App + Instagram Basic Display"}, "heygen": {"env": "HEYGEN_API_KEY", "url": "https://app.heygen.com/settings/api", "help": "Settings → API"}};
-const ADMIN_API = "https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/daniela-admin";
-let configuredSecrets = [];
-
-async function loadConfiguredSecrets() {
-  try {
-    const r = await fetch(ADMIN_API + "?action=list");
-    if(r.ok) { const d = await r.json(); configuredSecrets = d.configured || []; }
-  } catch(e) {}
-}
-
-function openTokenModal(name) {
-  const cfg = TOKEN_CONFIG[name.toLowerCase()];
-  if(!cfg) { alert("Conector " + name + " usa OAuth do Claude — não precisa de token separado"); return; }
-  const isConfigured = configuredSecrets.includes(cfg.env);
-  document.getElementById("tk-modal").style.display = "flex";
-  document.getElementById("tk-name").textContent = name;
-  document.getElementById("tk-env").textContent = cfg.env;
-  document.getElementById("tk-help").textContent = cfg.help;
-  document.getElementById("tk-link").href = cfg.url;
-  document.getElementById("tk-link").textContent = "🔗 " + cfg.url;
-  document.getElementById("tk-status").innerHTML = isConfigured ? '<span style="color:#10a37f">✅ Token já configurado</span>' : '<span style="color:#f59e0b">⚠️ Token ainda não configurado</span>';
-  document.getElementById("tk-token").value = "";
-  document.getElementById("tk-token").dataset.env = cfg.env;
-  document.getElementById("tk-pwd").value = localStorage.getItem("admin_pwd") || "";
-}
-function closeTokenModal() { document.getElementById("tk-modal").style.display = "none"; }
-
-async function saveToken() {
-  const env = document.getElementById("tk-token").dataset.env;
-  const value = document.getElementById("tk-token").value.trim();
-  const pwd = document.getElementById("tk-pwd").value.trim();
-  const btn = document.getElementById("tk-save");
-  if(!value) { alert("Cole o token"); return; }
-  if(!pwd) { alert("Digite a senha admin"); return; }
-  btn.disabled = true; btn.textContent = "Salvando...";
-  try {
-    const r = await fetch(ADMIN_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-admin-password": pwd },
-      body: JSON.stringify({ action: "save_secret", name: env, value })
-    });
-    const d = await r.json();
-    if(r.ok && d.ok) {
-      localStorage.setItem("admin_pwd", pwd);
-      toast("✅ Token " + env + " salvo! Daniela pode usar agora.");
-      closeTokenModal();
-      await loadConfiguredSecrets();
       loadAll();
     } else {
       alert("Erro: " + (d.error || "falhou"));
