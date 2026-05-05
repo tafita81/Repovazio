@@ -1,58 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Calculadora</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-  </style>
+<style>
+body {background:#1e1e1e;color:#fff;font-family:Arial}
+.calculator {width:250px;margin:50px auto;padding:20px;border-radius:10px;background:#2c2c2c;box-shadow:0 0 10px #000}
+.display {width:100%;height:50px;font-size:24px;text-align:right;padding:10px}
+.buttons {display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.button {padding:20px;font-size:18px;border:none;border-radius:5px;cursor:pointer}
+.button.op {background:#ff4757;color:#fff}
+.button.eq {background:#00ff87}
+.dark-toggle {position:absolute;top:10px;right:10px}
+</style>
 </head>
 <body>
-  <h1>Calculadora</h1>
-  <form id="form">
-    <input type="number" id="numero1" placeholder="Número 1">
-    <select id="operador">
-      <option value="+">+</option>
-      <option value="-">-</option>
-      <option value="*">*</option>
-      <option value="/">/</option>
-    </select>
-    <input type="number" id="numero2" placeholder="Número 2">
-    <button type="submit">Calcular</button>
-  </form>
-  <p id="resultado"></p>
-
-  <script>
-    const form = document.getElementById('form');
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const num1 = parseFloat(document.getElementById('numero1').value);
-      const operador = document.getElementById('operador').value;
-      const num2 = parseFloat(document.getElementById('numero2').value);
-      let resultado;
-
-      switch (operador) {
-        case '+':
-          resultado = num1 + num2;
-          break;
-        case '-':
-          resultado = num1 - num2;
-          break;
-        case '*':
-          resultado = num1 * num2;
-          break;
-        case '/':
-          if (num2 !== 0) {
-            resultado = num1 / num2;
-          } else {
-            resultado = 'Erro: Divisão por zero!'
-          }
-          break;
-      }
-
-      document.getElementById('resultado').innerHTML = `Resultado: ${resultado}`;
-    });
-  </script>
+<div class="calculator">
+<input type="text" class="display" id="display">
+<div class="buttons">
+<button class="button" onclick="append('7')">7</button>
+<button class="button" onclick="append('8')">8</button>
+<button class="button" onclick="append('9')">9</button>
+<button class="button op" onclick="append('/')">÷</button>
+<button class="button" onclick="append('4')">4</button>
+<button class="button" onclick="append('5')">5</button>
+<button class="button" onclick="append('6')">6</button>
+<button class="button op" onclick="append('*')">×</button>
+<button class="button" onclick="append('1')">1</button>
+<button class="button" onclick="append('2')">2</button>
+<button class="button" onclick="append('3')">3</button>
+<button class="button op" onclick="append('-')">−</button>
+<button class="button" onclick="append('0')">0</button>
+<button class="button" onclick="append('.')">.</button>
+<button class="button" onclick="calculate()">=</button>
+<button class="button op" onclick="append('+')">+</button>
+<button class="button" onclick="clearDisplay()">C</button>
+</div>
+<label class="dark-toggle">
+<input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+Modo Escuro
+</label>
+</div>
+<script>
+function append(val) {document.getElementById('display').value += val}
+function clearDisplay() {document.getElementById('display').value = ''}
+function calculate() {
+  try {
+    document.getElementById('display').value = eval(document.getElementById('display').value)
+  } catch(e) {
+    document.getElementById('display').value = 'Erro'
+  }
+}
+function toggleDarkMode() {
+  document.body.style.background = document.getElementById('darkToggle').checked ? '#1e1e1e' : '#f0f0f0';
+  document.body.style.color = document.getElementById('darkToggle').checked ? '#fff' : '#000';
+}
+</script>
 </body>
 </html>
