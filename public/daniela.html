@@ -192,26 +192,29 @@ pre:hover .code-copy{opacity:1}
   <!-- MODEL SELECTOR -->
   <div class="model-selector" title="Escolha o modelo de IA">
     <select id="model-select" onchange="onModelChange(this.value)">
-      <optgroup label="💰 OpenAI">
-        <option value="gpt-4.1-mini" selected>gpt-4.1-mini (padrão)</option>
-        <option value="gpt-4o-mini">gpt-4o-mini (mais rápido)</option>
-        <option value="gpt-4.1">gpt-4.1 (mais poderoso)</option>
+      <optgroup label="🧠 DeepSeek (DEFAULT)">
+        <option value="deepseek-chat" selected>DeepSeek Chat (padrão)</option>
+        <option value="deepseek-reasoner">DeepSeek R1 Reasoner</option>
       </optgroup>
-      <optgroup label="🆓 Groq (GRÁTIS)">
-        <option value="groq:llama-3.3-70b-versatile">Llama 3.3 70b (grátis)</option>
-        <option value="groq:llama-3.1-8b-instant">Llama 3.1 8b (ultra rápido)</option>
-        <option value="groq:mixtral-8x7b-32768">Mixtral 8x7b (grátis)</option>
-        <option value="groq:deepseek-r1-distill-llama-70b">DeepSeek R1 70b (grátis)</option>
+      <optgroup label="🆓 Groq (GRÁTIS — com tools)">
+        <option value="groq:llama-3.1-8b-instant">Llama 3.1 8b (grátis ⚡)</option>
+        <option value="groq:meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17b (grátis)</option>
+        <option value="groq:qwen/qwen3-32b">Qwen3 32b (grátis)</option>
       </optgroup>
       <optgroup label="🌟 Google Gemini">
         <option value="gemini:gemini-2.5-flash">Gemini 2.5 Flash</option>
         <option value="gemini:gemini-2.0-flash">Gemini 2.0 Flash</option>
       </optgroup>
+      <optgroup label="💰 OpenAI (fallback final)">
+        <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+        <option value="gpt-4o-mini">gpt-4o-mini (rápido)</option>
+        <option value="gpt-4.1">gpt-4.1 (poderoso)</option>
+      </optgroup>
     </select>
   </div>
   
-  <div id="model-badge" class="model-badge">🤖 gpt-4.1-mini</div>
-  <div class="tools-badge">📦 30 tools</div>
+  <div id="model-badge" class="model-badge">🧠 DeepSeek Chat</div>
+  <div class="tools-badge">📦 31 tools</div>
   
   <div class="header-actions">
     <button class="hbtn" onclick="toggleSessions()" id="btn-sessions" title="Sessões anteriores">📚 Sessões</button>
@@ -230,7 +233,7 @@ pre:hover .code-copy{opacity:1}
   <div class="stat"><div class="label">TOKENS HOJE</div><div class="value" id="stat-tokens">—</div></div>
   <div class="stat"><div class="label">CUSTO USD</div><div class="value blue" id="stat-usd">—</div></div>
   <div class="stat"><div class="label">CUSTO BRL</div><div class="value orange" id="stat-brl">—</div></div>
-  <div class="stat"><div class="label">MODELO</div><div class="value purple" id="stat-model">4.1-mini</div></div>
+  <div class="stat"><div class="label">MODELO</div><div class="value purple" id="stat-model">DeepSeek</div></div>
 </div>
 
 <!-- MAIN -->
@@ -332,7 +335,7 @@ let sessionId = 'sess_' + Date.now();
 let isLoading = false;
 let pendingFile = null;
 let pendingImage = null;
-let currentModel = 'gpt-4.1-mini';
+let currentModel = 'deepseek-chat';
 let currentAppUrl = null;
 let allConnectors = [];
 
@@ -352,20 +355,22 @@ const toolEmojis = {
 function onModelChange(val) {
   currentModel = val;
   const labels = {
-    'gpt-4.1-mini':'🤖 gpt-4.1-mini','gpt-4o-mini':'🤖 gpt-4o-mini','gpt-4.1':'🤖 gpt-4.1',
-    'groq:llama-3.3-70b-versatile':'🆓 Llama 3.3 70b','groq:llama-3.1-8b-instant':'🆓 Llama 3.1 8b',
-    'groq:mixtral-8x7b-32768':'🆓 Mixtral 8x7b','groq:deepseek-r1-distill-llama-70b':'🆓 DeepSeek R1',
+    'deepseek-chat':'🧠 DeepSeek Chat','deepseek-reasoner':'🧠 DeepSeek R1',
+    'groq:llama-3.1-8b-instant':'🆓 Llama 3.1 8b','groq:meta-llama/llama-4-scout-17b-16e-instruct':'🆓 Llama 4 Scout',
+    'groq:qwen/qwen3-32b':'🆓 Qwen3 32b',
     'gemini:gemini-2.5-flash':'🌟 Gemini 2.5','gemini:gemini-2.0-flash':'🌟 Gemini 2.0',
+    'gpt-4.1-mini':'🤖 gpt-4.1-mini','gpt-4o-mini':'🤖 gpt-4o-mini','gpt-4.1':'🤖 gpt-4.1',
   };
   document.getElementById('model-badge').textContent = labels[val] || val;
   const shortLabels = {
+    'deepseek-chat':'DeepSeek','deepseek-reasoner':'DS-R1',
+    'groq:llama-3.1-8b-instant':'Llama8b','groq:meta-llama/llama-4-scout-17b-16e-instruct':'Llama4s',
+    'groq:qwen/qwen3-32b':'Qwen32b',
+    'gemini:gemini-2.5-flash':'Gem2.5','gemini:gemini-2.0-flash':'Gem2.0',
     'gpt-4.1-mini':'4.1-mini','gpt-4o-mini':'4o-mini','gpt-4.1':'4.1',
-    'groq:llama-3.3-70b-versatile':'Llama 70b','groq:llama-3.1-8b-instant':'Llama 8b',
-    'groq:mixtral-8x7b-32768':'Mixtral','groq:deepseek-r1-distill-llama-70b':'DeepSeek',
-    'gemini:gemini-2.5-flash':'Gem 2.5','gemini:gemini-2.0-flash':'Gem 2.0',
   };
   document.getElementById('stat-model').textContent = shortLabels[val] || val;
-  document.getElementById('footer-model').textContent = `V26 · ${labels[val]||val}`;
+  document.getElementById('footer-model').textContent = `V26.3 · ${labels[val]||val}`;
 }
 
 // ── CONNECTORS ──
