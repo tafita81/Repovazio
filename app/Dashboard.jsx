@@ -449,6 +449,38 @@ export default function App(){
     })();
   },[]);
 
+  // AUTO-LOAD: Carregar tokens YouTube do Supabase para localStorage
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const r=await fetch("https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/youtube-api",{
+          method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({action:"channel_info"})
+        });
+        const d=await r.json();
+        if(d.id){
+          const cfg=JSON.parse(localStorage.getItem("doc_cfg")||"{}");
+          const tr=await fetch("https://tpjvalzwkqwttvmszvie.supabase.co/rest/v1/ia_cache?cache_key=in.(secret:YOUTUBE_ACCESS_TOKEN,secret:ELEVENLABS_API_KEY,secret:HEYGEN_API_KEY)&select=cache_key,value",{
+            headers:{apikey:"eyJhbGciOiJIUzI1NiIsImtpZCI6Iks2T29uVnpZTDF2bGYwSEoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDQ5Mjg5MywiZXhwIjoyMDYwMDY4ODkzfQ.kdul_aRxvvbxDqN-fvMjMi5X1yN7N5K1G0rXFP2sVMg"}
+          });
+          if(tr.ok){
+            const tokens=await tr.json();
+            for(const t of tokens){
+              const key=t.cache_key.replace("secret:","");
+              if(key==="YOUTUBE_ACCESS_TOKEN")cfg.youtube=t.value;
+              if(key==="ELEVENLABS_API_KEY")cfg.elevenlabs=t.value;
+              if(key==="HEYGEN_API_KEY")cfg.heygen=t.value;
+            }
+            cfg._yt_channel=d.name;cfg._yt_channel_id=d.id;cfg._yt_subs=d.subscribers;
+            cfg._auto_loaded=new Date().toISOString();
+            localStorage.setItem("doc_cfg",JSON.stringify(cfg));
+            console.log("Tokens auto-carregados:",Object.keys(cfg));
+          }
+        }
+      }catch(e){console.log("Auto-load:",e.message);}
+    })();
+  },[]);
+
   const addLog=useCallback((text,type="info")=>{
     const ts=new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
     const e={id:Date.now()+Math.random(),time:ts,type,text};
