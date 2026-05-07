@@ -94,117 +94,40 @@ jobs:
           ffmpeg -y -loop 1 -framerate 1 -i background.png -i audio.mp3 -vf "$VF" -c:v libx264 -preset ultrafast -tune stillimage -pix_fmt yuv420p -c:a aac -b:a 128k -shortest -movflags +faststart output.mp4
           ls -lh output.mp4
 
-      - name: Refresh YouTube access token
-        id: yt_token
+      - name: Upload MP4 to Supabase Storage and PATCH database
         env:
-          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
-          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
-          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
-        run: |
-          set -e
-          R=$(curl -s -X POST https://oauth2.googleapis.com/token \
-            -d "grant_type=refresh_token" \
-            -d "client_id=$YT_CLIENT_ID" \
-            -d "client_secret=$YT_CLIENT_SECRET" \
-            -d "refresh_token=$YT_REFRESH_TOKEN")
-          ACCESS_TOKEN=$(echo "$R" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('access_token',''))")
-          if [ -z "$ACCESS_TOKEN" ]; then
-            echo "❌ Falha refresh OAuth"
-            echo "$R" | python3 -c "import json,sys; d=json.load(sys.stdin); print('error:', d.get('error',''), d.get('error_description',''))" || echo "$R"
-            exit 1
-          fi
-          echo "::add-mask::$ACCESS_TOKEN"
-          echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
-          echo "✅ Access token obtido (${#ACCESS_TOKEN} chars)"
-
-      - name: Upload to YouTube and PATCH database
-        env:
-          ACCESS_TOKEN: ${{ steps.yt_token.outputs.access_token }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           PIPELINE_ID: ${{ inputs.pipeline_id }}
           SHORT_ID: ${{ inputs.short_id }}
           TITLE: ${{ inputs.title }}
-          STYLE: ${{ inputs.style }}
         run: |
           set -e
-          # Build metadata JSON via Python (handles UTF-8 + escape correto)
-          python3 - <<'PYEOF'
-          import json, os
-          title = os.environ.get('TITLE','Psicologia').strip()
-          style = os.environ.get('STYLE','documentary')
-          is_short = style == 'shorts_vertical'
-          desc = (f"{title}
-
-"
-                  "Conteúdo educativo de psicologia produzido pelo psicologia.doc 🧠
-
-"
-                  "Inscreva-se para mais reflexões sobre saúde mental, comportamento humano "
-                  "e bem-estar emocional.
-
-"
-                  "#psicologia #saudemental #psicologiadoc")
-          tags = ["psicologia","saúde mental","autoconhecimento","bem-estar","psicologia.doc"]
-          if is_short: tags.append("shorts")
-          metadata = {
-            "snippet":{
-              "title": title[:100],
-              "description": desc[:5000],
-              "tags": tags,
-              "categoryId": "27"
-            },
-            "status":{
-              "privacyStatus":"public",
-              "selfDeclaredMadeForKids": False
-            }
-          }
-          json.dump(metadata, open('/tmp/metadata.json','w'), ensure_ascii=False)
-          print('Metadata gerado')
-          PYEOF
-          cat /tmp/metadata.json
-          echo
-          FILE_SIZE=$(stat -c%s output.mp4)
-          echo "📊 MP4 size: $FILE_SIZE bytes"
-          # Initiate resumable upload
-          curl -s -i -X POST \
-            "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "Content-Type: application/json; charset=UTF-8" \
-            -H "X-Upload-Content-Length: $FILE_SIZE" \
-            -H "X-Upload-Content-Type: video/mp4" \
-            --data @/tmp/metadata.json > /tmp/init_response.txt
-          echo "--- Init Response (headers) ---"
-          head -20 /tmp/init_response.txt
-          UPLOAD_URL=$(grep -i "^location:" /tmp/init_response.txt | awk '{print $2}' | tr -d '\r\n')
-          if [ -z "$UPLOAD_URL" ]; then
-            echo "❌ Sem upload URL"
-            cat /tmp/init_response.txt
-            exit 1
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_KEY" ]; then
+            echo "❌ secrets ausentes"; exit 1
           fi
-          echo "✅ Upload URL obtido"
-          # PUT binário
-          UPLOAD_HTTP=$(curl -s -o /tmp/upload_result.json -w "%{http_code}" \
-            -X PUT "$UPLOAD_URL" \
+          SAFE_TITLE=$(echo "$TITLE" | tr ' ' '_' | tr -cd '[:alnum:]_' | head -c 30)
+          TS=$(date +%s)
+          FILENAME="${TS}_${SAFE_TITLE}.mp4"
+          MP4_URL="$SUPABASE_URL/storage/v1/object/public/videos/$FILENAME"
+          echo "⬆️ Uploading videos/$FILENAME"
+          UP_HTTP=$(curl -s -o /tmp/up.json -w "%{http_code}" \
+            -X POST "$SUPABASE_URL/storage/v1/object/videos/$FILENAME" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
             -H "Content-Type: video/mp4" \
+            -H "x-upsert: true" \
             --data-binary @output.mp4)
-          echo "Upload HTTP: $UPLOAD_HTTP"
-          cat /tmp/upload_result.json
+          echo "Upload HTTP: $UP_HTTP"
+          cat /tmp/up.json 2>/dev/null || true
           echo
-          if [ "$UPLOAD_HTTP" -lt 200 ] || [ "$UPLOAD_HTTP" -ge 300 ]; then
-            echo "❌ Upload falhou"
-            exit 1
+          if [ "$UP_HTTP" -lt 200 ] || [ "$UP_HTTP" -ge 300 ]; then
+            echo "❌ Upload Storage falhou"; exit 1
           fi
-          YT_ID=$(python3 -c "import json; print(json.load(open('/tmp/upload_result.json')).get('id',''))")
-          if [ -z "$YT_ID" ]; then
-            echo "❌ Sem YouTube ID na resposta"
-            exit 1
-          fi
-          YT_URL="https://www.youtube.com/watch?v=$YT_ID"
-          echo "✅ 📺 Publicado: $YT_URL"
-          # PATCH content_pipeline (PostgREST aceita sb_secret_*)
+          echo "✅ MP4_URL=$MP4_URL"
+          # PATCH content_pipeline
           cat > /tmp/patch.json <<JSON_EOF
-          {"youtube_id":"$YT_ID","youtube_url":"$YT_URL","status":"published"}
+          {"mp4_url":"$MP4_URL","status":"mp4_ready"}
           JSON_EOF
           if [ -n "$PIPELINE_ID" ]; then
             P_HTTP=$(curl -s -o /tmp/p.json -w "%{http_code}" \
@@ -227,4 +150,8 @@ jobs:
               --data @/tmp/patch.json)
             echo "Short $SHORT_ID PATCH HTTP: $S_HTTP"
           fi
-          echo "🎯 Done! YouTube ID: $YT_ID"
+          # Trigger publisher (graceful: ignora erro quota)
+          curl -s -X POST "$SUPABASE_URL/functions/v1/youtube-publisher" \
+            -H "Content-Type: application/json" \
+            -d '{"action":"publish_pending"}' || true
+          echo "✅ Done. Pipeline em mp4_ready. Cron publica quando quota resetar."
