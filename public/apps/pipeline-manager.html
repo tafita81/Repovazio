@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline · psicologia.doc</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#040408;color:#e8e8f0;font-family:-apple-system,system-ui,sans-serif;min-height:100vh}
+.header{background:linear-gradient(135deg,#0f0f1e,#1a0a2e);border-bottom:1px solid #252545;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+h1{font-size:16px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.back{margin-left:auto;color:#a78bfa;text-decoration:none;font-size:11px;border:1px solid #252545;border-radius:6px;padding:4px 10px}
+.tabs{display:flex;gap:0;border-bottom:1px solid #1e1e2e;padding:0 20px}
+.tab{padding:10px 16px;font-size:12px;font-weight:600;color:#6060a0;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.tab.active{color:#a78bfa;border-bottom-color:#a78bfa}
+.panel{display:none;padding:16px 20px}
+.panel.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.stat{background:#0f0f1e;border:1px solid #252545;border-radius:10px;padding:12px;text-align:center}
+.stat .n{font-size:24px;font-weight:800;color:#a78bfa}
+.stat .l{font-size:10px;color:#6060a0;margin-top:2px}
+.el-warning{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px}
+.el-ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:12px 16px;margin-bottom:14px}
+.card{background:#0a0a14;border:1px solid #1e1e2e;border-radius:12px;overflow:hidden;margin-bottom:10px}
+.card-header{padding:12px 16px;display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.card-body{padding:0 16px 14px;display:none}
+.card.open .card-body{display:block}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.b-ready{background:rgba(16,185,129,.1);color:#10b981}
+.b-draft{background:rgba(251,191,36,.1);color:#fbbf24}
+.b-published{background:rgba(99,102,241,.15);color:#818cf8}
+.b-audio{background:rgba(6,182,212,.1);color:#06b6d4}
+.score{font-size:20px;font-weight:800}
+.score.hi{color:#10b981}.score.mid{color:#fbbf24}.score.lo{color:#ef4444}
+.voice-tag{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);color:#a78bfa;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700}
+.series-tag{background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);color:#f472b6;border-radius:6px;padding:3px 8px;font-size:10px}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn{border:none;border-radius:7px;padding:6px 12px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn:hover{transform:scale(1.03)}.btn:active{transform:scale(.97)}
+.btn-pub{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff}
+.btn-read{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.25)}
+.btn-run{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff}
+.script-preview{background:#040408;border:1px solid #1e1e2e;border-radius:8px;padding:10px;font-size:11px;color:#b0b0c8;line-height:1.6;max-height:120px;overflow-y:auto;margin:8px 0;white-space:pre-wrap;word-break:break-word}
+.reasoning{background:rgba(167,139,250,.06);border-left:3px solid #a78bfa;padding:8px 10px;font-size:11px;color:#a0a0c0;margin:8px 0;border-radius:0 6px 6px 0}
+.emotions{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}
+.em-tag{background:#0f0f1e;border:1px solid #252545;border-radius:4px;padding:2px 7px;font-size:10px;color:#a0a0b8}
+.log-line{padding:5px 0;border-bottom:1px solid #0f0f1e;display:flex;gap:8px;font-size:11px}
+.lt{width:60px;text-align:center;border-radius:4px;padding:1px 0;font-weight:700;font-size:9px}
+.lt-success{background:rgba(16,185,129,.1);color:#10b981}
+.lt-error{background:rgba(239,68,68,.1);color:#ef4444}
+.lt-info{background:rgba(99,102,241,.1);color:#818cf8}
+.lt-warn{background:rgba(251,191,36,.1);color:#fbbf24}
+.loading{text-align:center;padding:20px;color:#6060a0;font-size:12px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f0f1e;border:1px solid #10b981;color:#10b981;border-radius:10px;padding:8px 18px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;z-index:999;pointer-events:none}
+.toast.show{opacity:1}.toast.err{border-color:#ef4444;color:#ef4444}
+.run-banner{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(6,182,212,.1));border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">📋</div>
+  <div><h1>Pipeline de Conteúdo</h1><div style="font-size:10px;color:#6060a0">psicologia.doc · produção autônoma</div></div>
+  <a href="/" class="back">← Dashboard</a>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('pipeline')">📋 Pipeline</div>
+  <div class="tab" onclick="switchTab('logs')">📜 Logs</div>
+  <div class="tab" onclick="switchTab('voices')">🎙️ Vozes</div>
+</div>
+
+<div id="tab-pipeline" class="panel active">
+  <div class="stats" id="stats"></div>
+  <div id="el-status"></div>
+  <div class="run-banner">
+    <div style="flex:1">
+      <div style="font-size:12px;font-weight:700">Sistema autônomo ativo</div>
+      <div style="font-size:10px;color:#a0a0c0;margin-top:2px">Gera novo roteiro a cada 30 minutos automaticamente</div>
+    </div>
+    <button class="btn btn-run" onclick="runNow()">▶ Rodar Agora</button>
+    <button class="btn btn-read" onclick="refreshAll()">↻</button>
+  </div>
+  <div id="pipeline-list"><div class="loading">Carregando...</div></div>
+</div>
+
+<div id="tab-logs" class="panel">
+  <div id="logs-list"><div class="loading">Carregando...</div></div>
+</div>
+
+<div id="tab-voices" class="panel">
+  <div id="voices-list"><div class="loading">Carregando...</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const EF='https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/cerebro-autonomo';
+
+function toast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',3000);}
+function switchTab(name){document.querySelectorAll('.tab').forEach((t,i)=>{const tabs=['pipeline','logs','voices'];t.classList.toggle('active',tabs[i]===name)});document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(name==='logs')loadLogs();if(name==='voices')loadVoices();}
+
+function scoreClass(s){return s>=90?'hi':s>=75?'mid':'lo';}
+function statusBadge(s){const m={ready:'b-ready',draft:'b-draft',published:'b-published',audio_ready:'b-audio'};return '<span class="badge '+(m[s]||'b-draft')+'">'+s+'</span>';}
+
+async function loadStatus(){
+  const d=await fetch(EF+'?action=status').then(r=>r.json());
+  // Stats
+  const p=d.pipeline||[];
+  const stats=[
+    {n:d.config?.total_generated||'0',l:'Gerados'},
+    {n:p.filter(x=>x.status==='ready').length,l:'Prontos'},
+    {n:p.filter(x=>x.audio_url).length,l:'Com Áudio'},
+    {n:p.filter(x=>x.status==='published').length,l:'Publicados'},
+  ];
+  document.getElementById('stats').innerHTML=stats.map(s=>'<div class="stat"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div></div>').join('');
+  // ElevenLabs status
+  const el=d.integrations?.elevenlabs;
+  const elEl=document.getElementById('el-status');
+  if(!el?.key){
+    elEl.innerHTML='<div class="el-warning">⚠️ <div><b>ElevenLabs sem API key</b><br><span style="font-size:11px;color:#fca5a5">Cole a key aqui ou no chat da Daniela</span></div></div>';
+  }else if(!el?.functional){
+    elEl.innerHTML='<div class="el-warning">⚠️ <div style="flex:1"><b>ElevenLabs: key salva mas sem permissão text_to_speech</b><br><span style="font-size:11px;color:#fca5a5">Erro: '+el.error+'<br>→ Gere nova key em <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#f472b6">elevenlabs.io/app/settings/api-keys</a> com permissão <b>Text to speech</b></span></div></div>';
+  }else{
+    elEl.innerHTML='<div class="el-ok">✅ <b style="color:#10b981">ElevenLabs ativo</b> — geração de áudio funcionando</div>';
+  }
+  // Pipeline
+  const list=document.getElementById('pipeline-list');
+  if(!p.length){list.innerHTML='<div class="loading">Nenhum item ainda</div>';return;}
+  list.innerHTML=p.map(item=>{
+    const ep=item.episode_number?'Ep.'+item.episode_number:'';
+    const series=item.emotion_profile?.series_name||'';
+    const emotions=(item.emotion_profile?.emotions||[]);
+    return '<div class="card" id="c'+item.id+'">'+
+      '<div class="card-header" onclick="toggleCard('+item.id+')">'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:5px">'+
+            statusBadge(item.status)+
+            (item.voice_name?'<span class="voice-tag">🎙️ '+item.voice_name+'</span>':'')+
+            (series?'<span class="series-tag">📺 '+series+(ep?' '+ep:'')+'</span>':'')+
+            (item.audio_url?'<span class="badge b-audio">🎵 áudio</span>':'')+
+          '</div>'+
+          '<div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+item.title+'</div>'+
+          '<div style="font-size:10px;color:#6060a0;margin-top:3px">'+new Date(item.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</div>'+
+        '</div>'+
+        '<div class="score '+scoreClass(item.score||0)+'">'+item.score+'</div>'+
+      '</div>'+
+      '<div class="card-body">'+
+        (item.voice_reasoning?'<div class="reasoning">💡 '+item.voice_reasoning+'</div>':'')+
+        (emotions.length?'<div class="emotions">'+emotions.map(e=>'<span class="em-tag">'+e+'</span>').join('')+'</div>':'')+
+        (item.tone_analysis?'<div style="font-size:11px;color:#7070a0;margin:4px 0">Tom: '+item.tone_analysis+'</div>':'')+
+        (item.audio_url?'<div style="margin:8px 0"><audio controls style="width:100%;height:32px" src="'+item.audio_url+'"></audio></div>':
+          item.audio_error?'<div style="font-size:11px;color:#ef4444;margin:6px 0">❌ Áudio: '+item.audio_error+'</div>':'<div style="font-size:11px;color:#fbbf24;margin:6px 0">⏳ Áudio na fila</div>')+
+        '<div class="actions">'+
+          (item.status!=='published'?'<button class="btn btn-pub" onclick="publish('+item.id+')">📤 Publicar no YouTube</button>':'')+
+          '<button class="btn btn-read" onclick="viewScript('+item.id+')">📖 Ver Roteiro</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function toggleCard(id){const c=document.getElementById('c'+id);c.classList.toggle('open');}
+
+async function viewScript(id){
+  const d=await fetch(EF+'?action=pipeline').then(r=>r.json());
+  const item=d.find(x=>x.id===id);
+  if(!item)return;
+  const win=window.open('');
+  win.document.write('<html><head><title>Roteiro: '+item.title+'</title><style>body{background:#040408;color:#e8e8f0;font-family:system-ui,sans-serif;padding:24px;max-width:860px;margin:0 auto}h1{color:#a78bfa;margin-bottom:16px}pre{white-space:pre-wrap;line-height:1.7;font-size:14px}</style></head><body><h1>'+item.title+'</h1><pre>'+item.script+'</pre></body></html>');
+}
+
+async function publish(id){
+  if(!confirm('Publicar este conteúdo no YouTube?'))return;
+  toast('Publicando...');
+  const d=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'publish',id})}).then(r=>r.json());
+  if(d.ok)toast('✅ Publicado! ID: '+d.video_id);
+  else toast('Erro: '+(d.error||'falhou'),true);
+  await loadStatus();
+}
+
+async function runNow(){
+  toast('⏳ Gerando roteiro...');
+  const d=await fetch(EF+'?action=run').then(r=>r.json());
+  if(d.ok)toast('✅ Gerado: '+d.title.substring(0,40)+' | Score: '+d.score+' | Voz: '+(d.voice?.name||'?'));
+  else if(d.skipped)toast('⏭️ '+d.reason+' — '+d.next_in);
+  else toast('Erro: '+(d.error||'?'),true);
+  await loadStatus();
+}
+
+async function loadLogs(){
+  const logs=await fetch(EF+'?action=logs').then(r=>r.json());
+  document.getElementById('logs-list').innerHTML=logs.map(l=>'<div class="log-line"><span class="lt lt-'+l.type+'">'+l.type+'</span><span style="flex:1">'+l.message+'</span><span style="color:#6060a0;font-size:10px;white-space:nowrap">'+new Date(l.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+'</span></div>').join('');
+}
+
+async function loadVoices(){
+  const voices=await fetch(EF+'?action=voices').then(r=>r.json());
+  document.getElementById('voices-list').innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">'+voices.map(v=>{
+    const ep=v.emotion_profile||{};
+    const bars=['calor','autoridade','energia','empatia','dramaticidade'];
+    return '<div class="card" style="padding:14px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+
+        '<div style="width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#06b6d4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">'+(v.gender==='feminino'?'👩':'👨')+'</div>'+
+        '<div><div style="font-size:14px;font-weight:700">'+v.name+'</div><div style="font-size:10px;color:#6060a0">'+v.gender+' · ElevenLabs</div></div>'+
+        '<div style="margin-left:auto;font-size:10px;font-family:monospace;color:#7060a0">'+v.voice_id?.substring(0,12)+'...</div>'+
+      '</div>'+
+      '<div style="margin-bottom:8px">'+bars.map(b=>'<div style="margin-bottom:4px"><div style="display:flex;justify-content:space-between;font-size:9px;color:#6060a0;margin-bottom:2px"><span>'+b+'</span><span>'+(ep[b]||0)+'%</span></div><div style="height:3px;background:#1e1e2e;border-radius:2px"><div style="height:100%;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:2px;width:'+(ep[b]||0)+'%"></div></div></div>').join('')+'</div>'+
+      '<div style="font-size:10px;color:#6060a0">Melhor para: <span style="color:#a0a0b8">'+(v.best_for||[]).join(', ')+'</span></div>'+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+async function refreshAll(){await loadStatus();}
+
+// Auto-refresh 60s
+setInterval(loadStatus, 60000);
+loadStatus();
+</script>
+</body>
+</html>
