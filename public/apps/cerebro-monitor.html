@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cérebro Autônomo · psicologia.doc</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#040408;color:#e8e8f0;font-family:-apple-system,system-ui,sans-serif;min-height:100vh}
+.header{background:linear-gradient(135deg,#0f0f1e,#1a0a2e);border-bottom:1px solid #252545;padding:16px 24px;display:flex;align-items:center;gap:16px}
+.logo{width:40px;height:40px;background:linear-gradient(135deg,#7c3aed,#ec4899);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+h1{font-size:18px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;padding:20px 24px}
+.card{background:#0f0f1e;border:1px solid #252545;border-radius:14px;padding:16px}
+.card h3{font-size:11px;color:#6060a0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.val{font-size:28px;font-weight:800;margin-bottom:4px}
+.val.green{color:#10b981}.val.purple{color:#a78bfa}.val.cyan{color:#06b6d4}.val.yellow{color:#f59e0b}.val.red{color:#ef4444}
+.sub{font-size:11px;color:#6060a0}
+.section{padding:0 24px 24px}
+.section-title{font-size:13px;font-weight:700;color:#a78bfa;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#6060a0;border-bottom:1px solid #1e1e2e}
+.table td{padding:8px 12px;font-size:12px;border-bottom:1px solid #0f0f1e}
+.status{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.s-ready{background:rgba(16,185,129,.1);color:#10b981}
+.s-draft{background:rgba(251,191,36,.1);color:#fbbf24}
+.s-published{background:rgba(99,102,241,.15);color:#818cf8}
+.s-audio{background:rgba(6,182,212,.1);color:#06b6d4}
+.s-video{background:rgba(244,114,182,.1);color:#f472b6}
+.int-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #0f0f1e}
+.int-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.int-dot.ok{background:#10b981}.int-dot.no{background:#6060a0}
+.btn{background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;color:#fff;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:transform .1s}
+.btn:hover{transform:scale(1.03)}.btn:active{transform:scale(.97)}
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-red{background:linear-gradient(135deg,#7c3aed,#ec4899)}
+.series-card{background:#0a0a14;border:1px solid #1e1e2e;border-radius:10px;padding:12px;margin-bottom:8px}
+.progress{height:4px;background:#1e1e2e;border-radius:2px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:2px;transition:width .5s}
+.log-item{padding:6px 0;border-bottom:1px solid #0f0f1e;font-size:11px;display:flex;gap:8px}
+.log-type{width:60px;text-align:center;padding:1px 6px;border-radius:4px;font-weight:700;flex-shrink:0}
+.lt-success{background:rgba(16,185,129,.1);color:#10b981}
+.lt-error{background:rgba(239,68,68,.1);color:#ef4444}
+.lt-info{background:rgba(99,102,241,.1);color:#818cf8}
+.lt-warn{background:rgba(251,191,36,.1);color:#fbbf24}
+.refresh-btn{margin-left:auto;background:none;border:1px solid #252545;color:#a78bfa;border-radius:6px;padding:4px 10px;font-size:10px;cursor:pointer}
+#loading{position:fixed;inset:0;background:rgba(4,4,8,.8);display:flex;align-items:center;justify-content:center;font-size:14px;color:#a78bfa;z-index:100}
+</style>
+</head>
+<body>
+<div id="loading">⚡ Carregando sistema...</div>
+
+<div class="header">
+  <div class="logo">🧠</div>
+  <div>
+    <h1>Cérebro Autônomo · psicologia.doc</h1>
+    <div style="font-size:11px;color:#6060a0">Sistema de produção 24/7 autônomo</div>
+  </div>
+  <div class="badge" id="status-badge">● ATIVO</div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="btn btn-sm" onclick="runNow()">▶ Rodar Agora</button>
+    <button class="btn btn-sm btn-red" onclick="refreshAll()">↻ Atualizar</button>
+  </div>
+</div>
+
+<div class="grid" id="stats-grid">
+  <div class="card"><h3>Conteúdo Gerado</h3><div class="val purple" id="total-gen">—</div><div class="sub">roteiros criados</div></div>
+  <div class="card"><h3>Publicados</h3><div class="val green" id="total-pub">—</div><div class="sub">no YouTube</div></div>
+  <div class="card"><h3>Score Médio</h3><div class="val cyan" id="avg-score">—</div><div class="sub">qualidade viral</div></div>
+  <div class="card"><h3>Séries Ativas</h3><div class="val yellow" id="series-count">5</div><div class="sub">em produção</div></div>
+  <div class="card"><h3>Próximo Ciclo</h3><div class="val purple" id="next-run">—</div><div class="sub">produção automática</div></div>
+  <div class="card"><h3>YT Token</h3><div class="val green" id="yt-token">✅</div><div class="sub">OAuth ativo</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 24px 16px">
+  <!-- Integrações -->
+  <div class="card">
+    <div class="section-title">🔌 Integrações</div>
+    <div id="integrations-list"></div>
+    <div style="margin-top:12px;font-size:11px;color:#6060a0">Para ativar ElevenLabs/HeyGen, cole a API key no chat da Daniela</div>
+  </div>
+  <!-- CRON Jobs -->
+  <div class="card">
+    <div class="section-title">⏰ CRON Jobs Ativos</div>
+    <div class="int-row"><div class="int-dot ok"></div><div><div style="font-size:12px;font-weight:600">cerebro-producao-30min</div><div style="font-size:10px;color:#6060a0">Gera roteiro + pipeline a cada 30min</div></div></div>
+    <div class="int-row"><div class="int-dot ok"></div><div><div style="font-size:12px;font-weight:600">youtube-token-refresh</div><div style="font-size:10px;color:#6060a0">Renova token OAuth a cada 45min</div></div></div>
+    <div style="margin-top:12px;padding:10px;background:#040408;border-radius:8px">
+      <div style="font-size:10px;color:#6060a0">STATUS DO PIPELINE</div>
+      <div id="pipeline-status" style="font-size:12px;color:#10b981;margin-top:4px">Carregando...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Séries -->
+<div class="section">
+  <div class="section-title">📺 Séries Episódicas <button class="refresh-btn" onclick="loadSeries()">↻</button></div>
+  <div id="series-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px"></div>
+</div>
+
+<!-- Pipeline Recente -->
+<div class="section">
+  <div class="section-title">📋 Pipeline de Conteúdo <button class="refresh-btn" onclick="loadPipeline()">↻</button></div>
+  <div style="background:#0a0a14;border:1px solid #1e1e2e;border-radius:12px;overflow:hidden">
+    <table class="table">
+      <thead><tr><th>Título</th><th>Série/Ep</th><th>Score</th><th>Status</th><th>Criado</th><th>Ações</th></tr></thead>
+      <tbody id="pipeline-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Logs -->
+<div class="section">
+  <div class="section-title">📜 Logs do Sistema <button class="refresh-btn" onclick="loadLogs()">↻</button></div>
+  <div id="logs-list" style="background:#0a0a14;border:1px solid #1e1e2e;border-radius:12px;padding:12px;max-height:300px;overflow-y:auto"></div>
+</div>
+
+<script>
+const EF='https://tpjvalzwkqwttvmszvie.supabase.co/functions/v1/cerebro-autonomo';
+
+async function fetchEF(params='',body=null){
+  const opts=body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{};
+  const r=await fetch(EF+(params?'?action='+params:''),opts);
+  return await r.json();
+}
+
+function statusBadge(s){
+  const map={ready:'s-ready',draft:'s-draft',published:'s-published',audio_ready:'s-audio',video_generating:'s-video'};
+  return '<span class="status '+(map[s]||'s-draft')+'">'+s+'</span>';
+}
+
+async function refreshAll(){
+  document.getElementById('loading').style.display='flex';
+  try{await Promise.all([loadStatus(),loadSeries(),loadPipeline(),loadLogs()]);}
+  finally{document.getElementById('loading').style.display='none';}
+}
+
+async function loadStatus(){
+  const d=await fetchEF('status');
+  document.getElementById('total-gen').textContent=d.config?.total_generated||'0';
+  document.getElementById('total-pub').textContent=d.config?.total_published||'0';
+  document.getElementById('yt-token').textContent=d.integrations?.youtube?.token?'✅ Ativo':'❌ Expirado';
+  // Integrações
+  const intEl=document.getElementById('integrations-list');
+  const ints=[
+    {name:'YouTube OAuth',ok:d.integrations?.youtube?.token},
+    {name:'YouTube API Key',ok:d.integrations?.youtube?.api_key},
+    {name:'Groq AI (Qwen3)',ok:d.integrations?.groq},
+    {name:'ElevenLabs TTS',ok:d.integrations?.elevenlabs},
+    {name:'HeyGen Avatar',ok:d.integrations?.heygen},
+    {name:'YouTube Refresh Token',ok:d.integrations?.youtube?.refresh}
+  ];
+  intEl.innerHTML=ints.map(i=>'<div class="int-row"><div class="int-dot '+(i.ok?'ok':'no')+'"></div><div style="font-size:12px">'+(i.ok?'✅':'⭕')+' '+i.name+'</div></div>').join('');
+  // Score médio
+  if(d.pipeline?.length){
+    const scores=d.pipeline.filter(p=>p.score>0).map(p=>p.score);
+    const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+    document.getElementById('avg-score').textContent=avg+'/100';
+  }
+  // Pipeline status
+  const lastRun=d.config?.last_run;
+  if(lastRun){
+    const mins=Math.round((Date.now()-new Date(lastRun).getTime())/60000);
+    const nextIn=Math.max(0,30-mins);
+    document.getElementById('next-run').textContent=nextIn>0?nextIn+'min':'Agora';
+    document.getElementById('pipeline-status').textContent='Último ciclo: '+mins+'min atrás | Próximo em: '+nextIn+'min';
+  }
+}
+
+async function loadSeries(){
+  const d=await fetchEF('series');
+  const el=document.getElementById('series-list');
+  el.innerHTML=d.map(s=>{
+    const pct=Math.round((s.published_episodes||0)/s.total_episodes*100);
+    return '<div class="series-card">'+
+      '<div style="font-size:13px;font-weight:700">'+s.title+'</div>'+
+      '<div style="font-size:11px;color:#6060a0;margin-top:2px">'+s.total_episodes+' episódios | Status: '+s.status+'</div>'+
+      '<div class="progress"><div class="progress-fill" style="width:'+pct+'%"></div></div>'+
+      '<div style="font-size:10px;color:#6060a0;margin-top:4px">'+(s.published_episodes||0)+'/'+s.total_episodes+' publicados ('+pct+'%)</div>'+
+    '</div>';
+  }).join('');
+  document.getElementById('series-count').textContent=d.filter(s=>s.status==='active').length;
+}
+
+async function loadPipeline(){
+  const d=await fetchEF('pipeline');
+  const tbody=document.getElementById('pipeline-tbody');
+  tbody.innerHTML=d.map(p=>{
+    const dt=new Date(p.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return '<tr>'+
+      '<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+p.title+'">'+p.title+'</td>'+
+      '<td style="font-size:11px;color:#a78bfa">'+(p.metadata?.series_name||'Solo')+(p.episode_number?' #'+p.episode_number:'')+'</td>'+
+      '<td><span style="color:'+(p.score>=90?'#10b981':p.score>=75?'#fbbf24':'#ef4444')+'">'+p.score+'</span></td>'+
+      '<td>'+statusBadge(p.status)+'</td>'+
+      '<td style="font-size:10px;color:#6060a0">'+dt+'</td>'+
+      '<td><button onclick="publishItem('+p.id+')" style="background:none;border:1px solid #252545;color:#a78bfa;border-radius:4px;padding:2px 8px;font-size:10px;cursor:pointer">📤 Pub</button></td>'+
+    '</tr>';
+  }).join('');
+}
+
+async function loadLogs(){
+  const d=await fetchEF('logs');
+  const el=document.getElementById('logs-list');
+  el.innerHTML=d.map(l=>{
+    const dt=new Date(l.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return '<div class="log-item">'+
+      '<span class="log-type lt-'+l.type+'">'+l.type+'</span>'+
+      '<span style="flex:1">'+l.message+'</span>'+
+      '<span style="color:#6060a0;font-size:10px">'+dt+'</span>'+
+    '</div>';
+  }).join('');
+}
+
+async function runNow(){
+  document.getElementById('pipeline-status').textContent='⏳ Executando pipeline...';
+  const d=await fetchEF('',{action:'run'});
+  if(d.ok) alert('✅ Gerado: '+d.title+'\nScore: '+d.score+'/100\nSérie: '+(d.series||'Solo'));
+  else if(d.skipped) alert('⏭️ Skipped: '+d.reason+' (próximo: '+d.next_in+')');
+  else alert('❌ Erro: '+JSON.stringify(d).substring(0,200));
+  await refreshAll();
+}
+
+async function publishItem(id){
+  if(!confirm('Publicar este conteúdo no YouTube?')) return;
+  const d=await fetchEF('',{action:'publish',id});
+  if(d.ok) alert('✅ Publicado! YouTube ID: '+d.video_id);
+  else alert('❌ Erro: '+(d.error||JSON.stringify(d)));
+  await loadPipeline();
+}
+
+// Auto-refresh a cada 60s
+setInterval(refreshAll, 60000);
+refreshAll();
+</script>
+</body>
+</html>
