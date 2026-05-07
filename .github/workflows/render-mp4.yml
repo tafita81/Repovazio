@@ -3,78 +3,228 @@ on:
   workflow_dispatch:
     inputs:
       audio_url:
+        description: 'URL do audio MP3 publico'
         required: true
       pipeline_id:
+        description: 'ID do pipeline'
         required: true
       title:
+        description: 'Titulo do video'
         required: true
       style:
+        description: 'Estilo'
         default: 'documentary'
       short_id:
+        description: 'ID do short'
         default: ''
+
 jobs:
   render:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Setup tools
+      - name: Setup deps
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg python3-pip python3-pil inkscape
-      - name: Generate background
+
+      - name: Generate background image
         env:
           STYLE: ${{ inputs.style }}
           TITLE: ${{ inputs.title }}
         run: |
           set -e
-          python3 - <<'PY'
+          python3 - <<'PYEOF'
           import os
-          s=os.environ.get('STYLE','documentary')
-          t=os.environ.get('TITLE','Psicologia')
+          style = os.environ.get('STYLE','documentary')
+          title = os.environ.get('TITLE','Psicologia')
           BG={'documentary':'#0a0a1a','cartoon':'#6c5ce7','cinematic_case':'#0d0d0d','shorts_vertical':'#000000','series_binge':'#0a0a1a','animated_slides':'#1a0d2e'}
-          AC={'documentary':'#9b59b6','cartoon':'#fdcb6e','cinematic_case':'#e74c3c','shorts_vertical':'#ff4757','series_binge':'#9b59b6','animated_slides':'#e056fd'}
-          bg=BG.get(s,'#0a0a1a');ac=AC.get(s,'#9b59b6')
-          W,H=(1080,1920) if s=='shorts_vertical' else (1920,1080)
-          tc=t[:60].replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
-          fs=W//22 if len(t)>40 else W//18
-          svg=f"<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:{bg}'/><stop offset='100%' style='stop-color:{bg}99'/></linearGradient><filter id='blur'><feGaussianBlur stdDeviation='40'/></filter></defs><rect width='{W}' height='{H}' fill='url(#g)'/><circle cx='{W//2}' cy='{H//3}' r='{min(W,H)//4}' fill='{ac}' opacity='0.08' filter='url(#blur)'/><text x='{W//2}' y='{H//10}' font-family='Arial Black' font-size='{W//60}' fill='{ac}' text-anchor='middle' letter-spacing='10' opacity='0.7'>PSICOLOGIA.DOC</text><text x='{W//2}' y='{H//2}' font-family='Georgia' font-size='{fs}' fill='white' text-anchor='middle' dominant-baseline='middle' font-weight='bold'>{tc}</text><rect x='{W//2-80}' y='{H//2+W//15}' width='160' height='5' fill='{ac}' rx='3'/></svg>"
-          open('bg.svg','w').write(svg)
-          print(f'SVG {W}x{H}')
-          PY
-      - name: SVG to PNG
+          ACC={'documentary':'#9b59b6','cartoon':'#fdcb6e','cinematic_case':'#e74c3c','shorts_vertical':'#ff4757','series_binge':'#9b59b6','animated_slides':'#e056fd'}
+          bg=BG.get(style,'#0a0a1a'); acc=ACC.get(style,'#9b59b6')
+          is_short = style=='shorts_vertical'
+          W,H = (1080,1920) if is_short else (1920,1080)
+          tc = title[:60].replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
+          fs = W//22 if len(title)>40 else W//18
+          svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='{W}' height='{H}'>
+            <defs>
+              <linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'>
+                <stop offset='0%' style='stop-color:{bg}'/>
+                <stop offset='100%' style='stop-color:{bg}99'/>
+              </linearGradient>
+              <filter id='blur'><feGaussianBlur stdDeviation='40'/></filter>
+            </defs>
+            <rect width='{W}' height='{H}' fill='url(#g)'/>
+            <circle cx='{W//2}' cy='{H//3}' r='{min(W,H)//4}' fill='{acc}' opacity='0.08' filter='url(#blur)'/>
+            <circle cx='{W//4}' cy='{H*2//3}' r='{min(W,H)//5}' fill='{acc}' opacity='0.05' filter='url(#blur)'/>
+            <text x='{W//2}' y='{H//10}' font-family='Arial Black,Arial' font-size='{W//60}' fill='{acc}' text-anchor='middle' letter-spacing='10' opacity='0.7'>PSICOLOGIA.DOC</text>
+            <text x='{W//2}' y='{H//2}' font-family='Georgia,serif' font-size='{fs}' fill='white' text-anchor='middle' dominant-baseline='middle' font-weight='bold'>{tc}</text>
+            <rect x='{W//2-80}' y='{H//2+W//15}' width='160' height='5' fill='{acc}' rx='3'/>
+            <text x='{W//2}' y='{H*9//10}' font-family='Arial,sans-serif' font-size='{W//70}' fill='white' text-anchor='middle' opacity='0.4'>psicologia.doc</text>
+          </svg>"""
+          open('background.svg','w').write(svg)
+          print(f'SVG {W}x{H} criado')
+          PYEOF
+
+      - name: Convert SVG to PNG
         env:
           STYLE: ${{ inputs.style }}
         run: |
           set -e
           if [ "$STYLE" = "shorts_vertical" ]; then W=1080; H=1920; else W=1920; H=1080; fi
-          inkscape --export-type=png --export-filename=bg.png --export-width=$W --export-height=$H bg.svg
-      - name: Audio
+          inkscape --export-type=png --export-filename=background.png --export-width=$W --export-height=$H background.svg 2>/dev/null || python3 -c "from PIL import Image; Image.new('RGB',($W,$H),'#0a0a1a').save('background.png')"
+          ls -lh background.png
+
+      - name: Download audio
         run: |
           set -e
           wget -q -O audio.mp3 '${{ inputs.audio_url }}'
           ls -lh audio.mp3
+
+      - name: Get audio duration
+        id: duration
+        run: |
+          set -e
+          DURATION=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 audio.mp3 | head -1)
+          echo "duration=$DURATION" >> $GITHUB_OUTPUT
+          echo "Duration: $DURATION s"
+
       - name: Render MP4
         run: |
           set -e
           STYLE='${{ inputs.style }}'
           if [ "$STYLE" = "shorts_vertical" ]; then VF="scale=1080:1920,setsar=1"; else VF="scale=1920:1080,setsar=1"; fi
-          ffmpeg -y -loop 1 -framerate 1 -i bg.png -i audio.mp3 -vf "$VF" -c:v libx264 -preset ultrafast -tune stillimage -pix_fmt yuv420p -c:a aac -b:a 128k -shortest -movflags +faststart out.mp4
-          ls -lh out.mp4
-      - name: Upload via Proxy
+          ffmpeg -y -loop 1 -framerate 1 -i background.png -i audio.mp3 -vf "$VF" -c:v libx264 -preset ultrafast -tune stillimage -pix_fmt yuv420p -c:a aac -b:a 128k -shortest -movflags +faststart output.mp4
+          ls -lh output.mp4
+
+      - name: Refresh YouTube access token
+        id: yt_token
         env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          set -e
+          R=$(curl -s -X POST https://oauth2.googleapis.com/token \
+            -d "grant_type=refresh_token" \
+            -d "client_id=$YT_CLIENT_ID" \
+            -d "client_secret=$YT_CLIENT_SECRET" \
+            -d "refresh_token=$YT_REFRESH_TOKEN")
+          ACCESS_TOKEN=$(echo "$R" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('access_token',''))")
+          if [ -z "$ACCESS_TOKEN" ]; then
+            echo "❌ Falha refresh OAuth"
+            echo "$R" | python3 -c "import json,sys; d=json.load(sys.stdin); print('error:', d.get('error',''), d.get('error_description',''))" || echo "$R"
+            exit 1
+          fi
+          echo "::add-mask::$ACCESS_TOKEN"
+          echo "access_token=$ACCESS_TOKEN" >> $GITHUB_OUTPUT
+          echo "✅ Access token obtido (${#ACCESS_TOKEN} chars)"
+
+      - name: Upload to YouTube and PATCH database
+        env:
+          ACCESS_TOKEN: ${{ steps.yt_token.outputs.access_token }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           PIPELINE_ID: ${{ inputs.pipeline_id }}
           SHORT_ID: ${{ inputs.short_id }}
           TITLE: ${{ inputs.title }}
+          STYLE: ${{ inputs.style }}
         run: |
           set -e
-          SAFE=$(echo "$TITLE" | tr ' ' '_' | tr -cd '[:alnum:]_' | head -c 30)
-          TS=$(date +%s)
-          FN="${TS}_${SAFE}.mp4"
-          URL="$SUPABASE_URL/functions/v1/mp4-upload?filename=$FN&pipeline_id=$PIPELINE_ID"
-          if [ -n "$SHORT_ID" ]; then URL="$URL&short_id=$SHORT_ID"; fi
-          echo "⏫ POST -> $URL"
-          HTTP=$(curl -s -o resp.json -w "%{http_code}" -X POST "$URL" -H "Content-Type: application/octet-stream" --data-binary @out.mp4)
-          echo "HTTP $HTTP"
-          cat resp.json
+          # Build metadata JSON via Python (handles UTF-8 + escape correto)
+          python3 - <<'PYEOF'
+          import json, os
+          title = os.environ.get('TITLE','Psicologia').strip()
+          style = os.environ.get('STYLE','documentary')
+          is_short = style == 'shorts_vertical'
+          desc = (f"{title}
+
+"
+                  "Conteúdo educativo de psicologia produzido pelo psicologia.doc 🧠
+
+"
+                  "Inscreva-se para mais reflexões sobre saúde mental, comportamento humano "
+                  "e bem-estar emocional.
+
+"
+                  "#psicologia #saudemental #psicologiadoc")
+          tags = ["psicologia","saúde mental","autoconhecimento","bem-estar","psicologia.doc"]
+          if is_short: tags.append("shorts")
+          metadata = {
+            "snippet":{
+              "title": title[:100],
+              "description": desc[:5000],
+              "tags": tags,
+              "categoryId": "27"
+            },
+            "status":{
+              "privacyStatus":"public",
+              "selfDeclaredMadeForKids": False
+            }
+          }
+          json.dump(metadata, open('/tmp/metadata.json','w'), ensure_ascii=False)
+          print('Metadata gerado')
+          PYEOF
+          cat /tmp/metadata.json
           echo
-          [ "$HTTP" = "200" ] || exit 1
-          echo "✅ Done"
+          FILE_SIZE=$(stat -c%s output.mp4)
+          echo "📊 MP4 size: $FILE_SIZE bytes"
+          # Initiate resumable upload
+          curl -s -i -X POST \
+            "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -H "Content-Type: application/json; charset=UTF-8" \
+            -H "X-Upload-Content-Length: $FILE_SIZE" \
+            -H "X-Upload-Content-Type: video/mp4" \
+            --data @/tmp/metadata.json > /tmp/init_response.txt
+          echo "--- Init Response (headers) ---"
+          head -20 /tmp/init_response.txt
+          UPLOAD_URL=$(grep -i "^location:" /tmp/init_response.txt | awk '{print $2}' | tr -d '\r\n')
+          if [ -z "$UPLOAD_URL" ]; then
+            echo "❌ Sem upload URL"
+            cat /tmp/init_response.txt
+            exit 1
+          fi
+          echo "✅ Upload URL obtido"
+          # PUT binário
+          UPLOAD_HTTP=$(curl -s -o /tmp/upload_result.json -w "%{http_code}" \
+            -X PUT "$UPLOAD_URL" \
+            -H "Content-Type: video/mp4" \
+            --data-binary @output.mp4)
+          echo "Upload HTTP: $UPLOAD_HTTP"
+          cat /tmp/upload_result.json
+          echo
+          if [ "$UPLOAD_HTTP" -lt 200 ] || [ "$UPLOAD_HTTP" -ge 300 ]; then
+            echo "❌ Upload falhou"
+            exit 1
+          fi
+          YT_ID=$(python3 -c "import json; print(json.load(open('/tmp/upload_result.json')).get('id',''))")
+          if [ -z "$YT_ID" ]; then
+            echo "❌ Sem YouTube ID na resposta"
+            exit 1
+          fi
+          YT_URL="https://www.youtube.com/watch?v=$YT_ID"
+          echo "✅ 📺 Publicado: $YT_URL"
+          # PATCH content_pipeline (PostgREST aceita sb_secret_*)
+          cat > /tmp/patch.json <<JSON_EOF
+          {"youtube_id":"$YT_ID","youtube_url":"$YT_URL","status":"published"}
+          JSON_EOF
+          if [ -n "$PIPELINE_ID" ]; then
+            P_HTTP=$(curl -s -o /tmp/p.json -w "%{http_code}" \
+              -X PATCH "$SUPABASE_URL/rest/v1/content_pipeline?id=eq.$PIPELINE_ID" \
+              -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+              -H "apikey: $SUPABASE_SERVICE_KEY" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              --data @/tmp/patch.json)
+            echo "Pipeline $PIPELINE_ID PATCH HTTP: $P_HTTP"
+            cat /tmp/p.json 2>/dev/null || true
+          fi
+          if [ -n "$SHORT_ID" ]; then
+            S_HTTP=$(curl -s -o /tmp/s.json -w "%{http_code}" \
+              -X PATCH "$SUPABASE_URL/rest/v1/shorts_pipeline?id=eq.$SHORT_ID" \
+              -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+              -H "apikey: $SUPABASE_SERVICE_KEY" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              --data @/tmp/patch.json)
+            echo "Short $SHORT_ID PATCH HTTP: $S_HTTP"
+          fi
+          echo "🎯 Done! YouTube ID: $YT_ID"
