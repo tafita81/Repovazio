@@ -1,0 +1,70 @@
+name: full-pipeline
+# Pipeline autônomo 24/7 de produção de vídeos cinematográficos psicologia.doc
+# Cron a cada 4h: pega o próximo pipeline `script_ready`, gera áudio com ElevenLabs+Groq,
+# gera HTML cinematográfico, dispara render-mp4.yml. Sem dependência da página do user.
+
+on:
+  schedule:
+    # A cada 4h em ponto: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+    inputs:
+      pipeline_id:
+        description: 'ID específico (deixe vazio pra auto-pick do próximo script_ready)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: full-pipeline
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      GH_PAT: ${{ secrets.GH_PAT }}
+      PIPELINE_ID: ${{ github.event.inputs.pipeline_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -yqq ffmpeg
+          ffmpeg -version | head -1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate secrets
+        run: |
+          [ -n "$SUPABASE_URL" ] || { echo "ERR: SUPABASE_URL missing"; exit 1; }
+          [ -n "$SUPABASE_SERVICE_KEY" ] || { echo "ERR: SUPABASE_SERVICE_KEY missing"; exit 1; }
+          [ -n "$GROQ_API_KEY" ] || { echo "ERR: GROQ_API_KEY missing"; exit 1; }
+          [ -n "$ELEVENLABS_API_KEY" ] || { echo "ERR: ELEVENLABS_API_KEY missing"; exit 1; }
+          [ -n "$GH_PAT" ] || { echo "ERR: GH_PAT missing"; exit 1; }
+          echo "All secrets present."
+
+      - name: Run pipeline
+        run: python3 scripts/produce_video.py
+
+      - name: Upload work artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-debug-${{ github.run_id }}
+          path: /tmp/pipeline_work/
+          retention-days: 3
+          if-no-files-found: ignore
