@@ -188,6 +188,56 @@ def synthesize_paragraph(text, emotion, out_path):
     out_path.write_bytes(b)
     return len(b)
 
+def condense_for_short(script, target_platform, target_chars=320):
+    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-58s.
+
+    YouTube Shorts: max 60s estrito (acima vira long e perde monetizacao Shorts feed).
+    ElevenLabs Sarah PT-BR ~5.8 chars/s. 320 chars = ~55s (sweet spot retencao + margem).
+    """
+    if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
+        return script  # long-form, sem condensacao
+    if len(script) <= target_chars:
+        return script
+    log(f"  CONDENSE: target={target_platform} chars={len(script)}->{target_chars} via Groq")
+    sys_prompt = f"""You are a viral PT-BR Shorts copywriter for psychology content.
+Take the long-form script and CONDENSE it into a {target_chars}-character vertical short with:
+- HOOK in first 5 words (curiosity, paradox, or shocking stat)
+- 2-3 punchy sentences body (concrete fact + emotional pull)
+- CTA closer ("siga psicologia.doc", "comente abaixo", etc)
+- Conversational PT-BR Brazilian, not formal
+- ZERO filler words. ZERO disclaimers. ZERO ellipses.
+- Stay UNDER {target_chars} characters total. Hard limit.
+
+Output STRICT JSON: {{"short": "<text>"}}"""
+    body = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user",   "content": script[:8000]},
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0.7,
+        "max_tokens": 500,
+    }
+    headers = {"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json",
+               "User-Agent": "psicologia-doc/1.0"}
+    s, b, _ = http("https://api.groq.com/openai/v1/chat/completions",
+                   method="POST", headers=headers, body=body, timeout=60)
+    if s != 200:
+        log(f"  Groq condense failed (HTTP {s}), fallback truncation")
+        return script[:target_chars].rsplit(".", 1)[0] + "."
+    try:
+        content = json.loads(b)["choices"][0]["message"]["content"]
+        result = json.loads(content)
+        short = (result.get("short") or "").strip()
+        if len(short) > int(target_chars * 1.1):
+            short = short[:target_chars].rsplit(".", 1)[0] + "."
+        log(f"  CONDENSED to {len(short)} chars: {short[:80]}...")
+        return short or script[:target_chars]
+    except Exception as e:
+        log(f"  parse error ({e}), fallback truncation")
+        return script[:target_chars].rsplit(".", 1)[0] + "."
+
 # ============================ SCRIPT SPLITTING ============================
 def split_paragraphs(script):
     """Quebra script em parágrafos respeitando pontuação. Junta linhas curtas."""
@@ -263,6 +313,9 @@ def step_audio(pipeline):
         return pipeline["audio_url"]
 
     script = pipeline["script"]
+    # CONDENSE pra shorts/reels/tiktok: garante <60s audio (monetizacao YouTube Shorts)
+    target_platform = pipeline.get("target_platform") or "youtube_long"
+    script = condense_for_short(script, target_platform)
     paragraphs = split_paragraphs(script)
     log(f"[{pid}] {len(paragraphs)} parágrafos, total {sum(len(p) for p in paragraphs)} chars")
 
