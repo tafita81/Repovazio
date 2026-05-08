@@ -188,12 +188,12 @@ def synthesize_paragraph(text, emotion, out_path):
     out_path.write_bytes(b)
     return len(b)
 
-def condense_for_short(script, target_platform, char_min=680, char_max=760):
+def condense_for_short(script, target_platform, char_min=730, char_max=790):
     """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-56s.
 
     YouTube Shorts: max 60s estrito (acima vira long e perde monetizacao Shorts feed).
     ElevenLabs Sarah PT-BR mede ~13.4 chars/s (calibrado em producao 2026-05-08).
-    Target intervalo: 680-760 chars => 50.7-56.7s (sweet spot retencao + margem 4s).
+    Target intervalo: 730-790 chars => 54.5-58.9s (margem 1s) (sweet spot retencao + margem 4s).
     """
     if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
         return script  # long-form, sem condensacao
