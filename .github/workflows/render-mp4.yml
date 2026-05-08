@@ -189,7 +189,9 @@ jobs:
           fi
           ls -lh mixed_audio.m4a
 
-      - name: Render final MP4 1080p 30fps H.264 CRF 18
+      - name: Render final MP4 1080p 30fps H.264 (dynamic CRF v8.4)
+        env:
+          DUR: ${{ steps.duration.outputs.duration }}
         run: |
           STYLE='${{ inputs.style }}'
           if [ "$STYLE" = "shorts_vertical" ]; then
@@ -197,27 +199,61 @@ jobs:
           else
             VF="scale=1920:1080:flags=lanczos,setsar=1,fps=30"
           fi
+          # Dynamic CRF/preset based on duration (Supabase Free Storage 50MB limit per object)
+          # Long (>5min): CRF 23 medium = ~3MB/min @ 1080p (16min approx 48MB, fits)
+          # Short (<=5min): CRF 18 slow = qualidade extrema cabe folgada
+          if [ "$DUR" -gt 300 ]; then
+            CRF=23
+            PRESET=medium
+            ENC_TAG="libx264_crf23_medium"
+          else
+            CRF=18
+            PRESET=slow
+            ENC_TAG="libx264_crf18_slow"
+          fi
+          echo "Duration ${DUR}s -> CRF=$CRF preset=$PRESET"
+          # Audio: vídeos longos usam 128k pra economizar espaço
+          if [ "$DUR" -gt 300 ]; then
+            ffmpeg -y -i mixed_audio.m4a -c:a aac -b:a 128k -ar 48000 -ac 2 mixed_audio_128.m4a
+            AUDIO_FILE=mixed_audio_128.m4a
+          else
+            AUDIO_FILE=mixed_audio.m4a
+          fi
           if [ -f raw_video.webm ]; then
             echo "Encoding cinematic HTML capture (Playwright webm)"
-            ffmpeg -y -i raw_video.webm -i mixed_audio.m4a \
+            ffmpeg -y -i raw_video.webm -i "$AUDIO_FILE" \
               -vf "$VF" \
-              -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -profile:v high -level 4.1 \
+              -c:v libx264 -preset "$PRESET" -crf "$CRF" -pix_fmt yuv420p -profile:v high -level 4.1 \
               -c:a copy -shortest -movflags +faststart \
               -metadata title="${{ inputs.title }}" \
               -metadata artist="psicologia.doc" \
               output.mp4
           else
             echo "Encoding fallback PNG estatico 30fps"
-            ffmpeg -y -loop 1 -framerate 30 -i background.png -i mixed_audio.m4a \
+            ffmpeg -y -loop 1 -framerate 30 -i background.png -i "$AUDIO_FILE" \
               -vf "$VF" \
-              -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -profile:v high -level 4.1 -tune stillimage \
+              -c:v libx264 -preset "$PRESET" -crf "$CRF" -pix_fmt yuv420p -profile:v high -level 4.1 -tune stillimage \
               -c:a copy -shortest -movflags +faststart \
               -metadata title="${{ inputs.title }}" \
               -metadata artist="psicologia.doc" \
               output.mp4
           fi
           ls -lh output.mp4
+          # Hard guard: se >49MB re-encoda com CRF 28 pra caber em 50MB Storage Free
+          SIZE=$(stat -c%s output.mp4)
+          MAX_BYTES=$((49*1024*1024))
+          echo "MP4 size: $SIZE bytes (limit $MAX_BYTES = 49MB)"
+          if [ "$SIZE" -gt "$MAX_BYTES" ]; then
+            echo "::warning::MP4 oversized, re-encoding CRF 28"
+            mv output.mp4 output_oversized.mp4
+            ffmpeg -y -i output_oversized.mp4 -c:v libx264 -preset medium -crf 28 -pix_fmt yuv420p \
+              -c:a copy -movflags +faststart output.mp4
+            ls -lh output.mp4
+            ENC_TAG="libx264_crf28_recompressed"
+          fi
           ffprobe -v quiet -show_streams output.mp4 | head -40
+          echo "ENC_TAG=$ENC_TAG" >> $GITHUB_ENV
+
 
       - name: Upload to Supabase Storage + update DB
         env:
@@ -251,7 +287,7 @@ jobs:
           FILE_SIZE=$(stat -c%s output.mp4)
           DURATION=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 output.mp4)
           cat > /tmp/patch.json << JSON_EOF
-          {"mp4_url":"$MP4_URL","status":"mp4_ready","video_style":"$STYLE","metadata":{"render_version":"v8_cinematic","fps":30,"resolution":"1080p","audio":"stereo_48k_192kbps","encoder":"libx264_crf18_slow","file_size":$FILE_SIZE,"duration_seconds":$DURATION}}
+          {"mp4_url":"$MP4_URL","status":"mp4_ready","video_style":"$STYLE","metadata":{"render_version":"v8_cinematic","fps":30,"resolution":"1080p","audio":"stereo_48k_192kbps","encoder":"'$ENC_TAG'","file_size":$FILE_SIZE,"duration_seconds":$DURATION}}
           JSON_EOF
           cat /tmp/patch.json
           if [ -n "$PIPELINE_ID" ] && [ "$PIPELINE_ID" != "999999" ]; then
