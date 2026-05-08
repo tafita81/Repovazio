@@ -188,27 +188,33 @@ def synthesize_paragraph(text, emotion, out_path):
     out_path.write_bytes(b)
     return len(b)
 
-def condense_for_short(script, target_platform, target_chars=320):
-    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-58s.
+def condense_for_short(script, target_platform, char_min=680, char_max=760):
+    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-56s.
 
     YouTube Shorts: max 60s estrito (acima vira long e perde monetizacao Shorts feed).
-    ElevenLabs Sarah PT-BR ~5.8 chars/s. 320 chars = ~55s (sweet spot retencao + margem).
+    ElevenLabs Sarah PT-BR mede ~13.4 chars/s (calibrado em producao 2026-05-08).
+    Target intervalo: 680-760 chars => 50.7-56.7s (sweet spot retencao + margem 4s).
     """
     if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
         return script  # long-form, sem condensacao
     if len(script) <= target_chars:
         return script
     log(f"  CONDENSE: target={target_platform} chars={len(script)}->{target_chars} via Groq")
+    char_target = (char_min + char_max) // 2
     sys_prompt = f"""You are a viral PT-BR Shorts copywriter for psychology content.
-Take the long-form script and CONDENSE it into a {target_chars}-character vertical short with:
+Take the long-form script and CONDENSE it into a vertical short between {char_min} and {char_max} characters (target ~{char_target}).
+The text MUST be SUBSTANTIVE — fill the time with real insight, not fluff:
+
 - HOOK in first 5 words (curiosity, paradox, or shocking stat)
-- 2-3 punchy sentences body (concrete fact + emotional pull)
-- CTA closer ("siga psicologia.doc", "comente abaixo", etc)
+- 4-6 punchy sentences body (concrete facts, emotional pull, story beats)
+- Specific examples or numbers when possible
+- CTA closer ("siga psicologia.doc para mais", "comente abaixo se concorda")
 - Conversational PT-BR Brazilian, not formal
 - ZERO filler words. ZERO disclaimers. ZERO ellipses.
-- Stay UNDER {target_chars} characters total. Hard limit.
 
-Output STRICT JSON: {{"short": "<text>"}}"""
+CRITICAL: Output text MUST be at least {char_min} characters. If too short, add more concrete detail, examples, or context. The video duration depends on text length — do NOT make it shorter than {char_min} characters.
+
+Output STRICT JSON: {{"short": "<text {char_min}-{char_max} chars>"}}"""
     body = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
@@ -225,18 +231,18 @@ Output STRICT JSON: {{"short": "<text>"}}"""
                    method="POST", headers=headers, body=body, timeout=60)
     if s != 200:
         log(f"  Groq condense failed (HTTP {s}), fallback truncation")
-        return script[:target_chars].rsplit(".", 1)[0] + "."
+        return script[:char_max].rsplit(".", 1)[0] + "."
     try:
         content = json.loads(b)["choices"][0]["message"]["content"]
         result = json.loads(content)
         short = (result.get("short") or "").strip()
-        if len(short) > int(target_chars * 1.1):
-            short = short[:target_chars].rsplit(".", 1)[0] + "."
+        if len(short) > char_max:
+            short = short[:char_max].rsplit(".", 1)[0] + "."
         log(f"  CONDENSED to {len(short)} chars: {short[:80]}...")
-        return short or script[:target_chars]
+        return short or script[:char_max]
     except Exception as e:
         log(f"  parse error ({e}), fallback truncation")
-        return script[:target_chars].rsplit(".", 1)[0] + "."
+        return script[:char_max].rsplit(".", 1)[0] + "."
 
 # ============================ SCRIPT SPLITTING ============================
 def split_paragraphs(script):
