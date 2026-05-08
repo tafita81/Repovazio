@@ -109,27 +109,34 @@ def claim_pipeline():
     if not rows: raise SystemExit(f"no script_ready for {TARGET_PLATFORM}")
     return rows[0]
 
-def condense_for_short(script, target_platform, target_chars=380):
-    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-58s.
-    
-    YouTube Shorts: max 60s estrito. Acima de 60s vira long e perde monetização Shorts feed.
-    Edge-TTS PT-BR ~7 chars/s. 380 chars = ~54s (sweet spot retencao).
+def condense_for_short(script, target_platform, char_min=600, char_max=680):
+    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-56s.
+
+    YouTube Shorts: max 60s estrito. Acima de 60s vira long e perde monetizacao Shorts feed.
+    Edge-TTS PT-BR mede ~12.1 chars/s (calibrado em producao 2026-05-08).
+    Target intervalo: 600-680 chars => 49.6-56.2s (sweet spot retencao + margem 4s).
+    Groq recebe MIN+MAX e mira no centro do range.
     """
     if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
         return script  # long-form, sem condensacao
     if len(script) <= target_chars:
         return script  # ja eh curto o suficiente
     log(f"  CONDENSE: target={target_platform} chars={len(script)}->{target_chars} via Groq")
+    char_target = (char_min + char_max) // 2
     sys_prompt = f"""You are a viral PT-BR Shorts copywriter for psychology content.
-Take the long-form script and CONDENSE it into a {target_chars}-character vertical short with:
+Take the long-form script and CONDENSE it into a vertical short between {char_min} and {char_max} characters (target ~{char_target}).
+The text MUST be SUBSTANTIVE — fill the time with real insight, not fluff:
+
 - HOOK in first 5 words (curiosity, paradox, or shocking stat)
-- 2-3 punchy sentences body (concrete fact + emotional pull)
-- CTA closer ("siga psicologia.doc", "comente abaixo", etc)
+- 4-6 punchy sentences body (concrete facts, emotional pull, story beats)
+- Specific examples or numbers when possible
+- CTA closer ("siga psicologia.doc para mais", "comente abaixo se concorda")
 - Conversational PT-BR Brazilian, not formal
 - ZERO filler words. ZERO disclaimers. ZERO ellipses.
-- Stay UNDER {target_chars} characters total. Hard limit.
 
-Output STRICT JSON: {{"short": "<text>"}}"""
+CRITICAL: Output text MUST be at least {char_min} characters. If too short, add more concrete detail, examples, or context. The video duration depends on text length — do NOT make it shorter than {char_min} characters.
+
+Output STRICT JSON: {{"short": "<text {char_min}-{char_max} chars>"}}"""
     body = {
         "model": "llama-3.3-70b-versatile",
         "messages": [
@@ -151,13 +158,17 @@ Output STRICT JSON: {{"short": "<text>"}}"""
         result = json.loads(content)
         short = result.get("short", "").strip()
         # Hard cap: trunca se excedeu target+10%
-        if len(short) > int(target_chars * 1.1):
-            short = short[:target_chars].rsplit(".", 1)[0] + "."
+        # Cap superior: nunca passar de char_max (pra ficar abaixo de 60s)
+        if len(short) > char_max:
+            short = short[:char_max].rsplit(".", 1)[0] + "."
+        # Se ficou MUITO abaixo do mínimo, retry com prompt mais agressivo (silencioso)
+        if len(short) < char_min - 50:
+            log(f"  WARN: short {len(short)} chars < {char_min-50}, considering retry")
         log(f"  CONDENSED to {len(short)} chars: {short[:80]}...")
-        return short or script[:target_chars]
+        return short or script[:char_max]
     except Exception as e:
-        log(f"  Groq condense failed ({e}), naive truncation")
-        return script[:target_chars].rsplit(".", 1)[0] + "."
+        log(f"  Groq condense failed ({e}), naive truncation to char_max")
+        return script[:char_max].rsplit(".", 1)[0] + "."
 
 def split_paragraphs(script, target_platform):
     """Quebra em parágrafos respeitando o tamanho ideal por plataforma."""
