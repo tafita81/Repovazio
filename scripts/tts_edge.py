@@ -109,12 +109,12 @@ def claim_pipeline():
     if not rows: raise SystemExit(f"no script_ready for {TARGET_PLATFORM}")
     return rows[0]
 
-def condense_for_short(script, target_platform, char_min=600, char_max=680):
+def condense_for_short(script, target_platform, char_min=800, char_max=860):
     """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-56s.
 
     YouTube Shorts: max 60s estrito. Acima de 60s vira long e perde monetizacao Shorts feed.
-    Edge-TTS PT-BR mede ~12.1 chars/s (calibrado em producao 2026-05-08).
-    Target intervalo: 600-680 chars => 49.6-56.2s (sweet spot retencao + margem 4s).
+    Edge-TTS PT-BR mede ~15.2 chars/s (re-calibrado em producao 2026-05-08).
+    Target intervalo: 800-860 chars => 52.6-56.6s (sweet spot retencao + margem 4s).
     Groq recebe MIN+MAX e mira no centro do range.
     """
     if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
