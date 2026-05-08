@@ -109,6 +109,56 @@ def claim_pipeline():
     if not rows: raise SystemExit(f"no script_ready for {TARGET_PLATFORM}")
     return rows[0]
 
+def condense_for_short(script, target_platform, target_chars=380):
+    """Quando target_platform = shorts/reels/tiktok, condensa script via Groq pra ~50-58s.
+    
+    YouTube Shorts: max 60s estrito. Acima de 60s vira long e perde monetização Shorts feed.
+    Edge-TTS PT-BR ~7 chars/s. 380 chars = ~54s (sweet spot retencao).
+    """
+    if target_platform not in ("instagram_reels", "tiktok_short", "youtube_shorts", "pinterest_pin"):
+        return script  # long-form, sem condensacao
+    if len(script) <= target_chars:
+        return script  # ja eh curto o suficiente
+    log(f"  CONDENSE: target={target_platform} chars={len(script)}->{target_chars} via Groq")
+    sys_prompt = f"""You are a viral PT-BR Shorts copywriter for psychology content.
+Take the long-form script and CONDENSE it into a {target_chars}-character vertical short with:
+- HOOK in first 5 words (curiosity, paradox, or shocking stat)
+- 2-3 punchy sentences body (concrete fact + emotional pull)
+- CTA closer ("siga psicologia.doc", "comente abaixo", etc)
+- Conversational PT-BR Brazilian, not formal
+- ZERO filler words. ZERO disclaimers. ZERO ellipses.
+- Stay UNDER {target_chars} characters total. Hard limit.
+
+Output STRICT JSON: {{"short": "<text>"}}"""
+    body = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user",   "content": script[:8000]},  # input cap
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0.7,
+        "max_tokens": 500,
+    }
+    headers = {"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json",
+               "User-Agent": "psicologia-doc/1.0"}
+    req = urllib.request.Request("https://api.groq.com/openai/v1/chat/completions",
+                                 data=json.dumps(body).encode(), method="POST", headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            j = json.loads(r.read())
+        content = j["choices"][0]["message"]["content"]
+        result = json.loads(content)
+        short = result.get("short", "").strip()
+        # Hard cap: trunca se excedeu target+10%
+        if len(short) > int(target_chars * 1.1):
+            short = short[:target_chars].rsplit(".", 1)[0] + "."
+        log(f"  CONDENSED to {len(short)} chars: {short[:80]}...")
+        return short or script[:target_chars]
+    except Exception as e:
+        log(f"  Groq condense failed ({e}), naive truncation")
+        return script[:target_chars].rsplit(".", 1)[0] + "."
+
 def split_paragraphs(script, target_platform):
     """Quebra em parágrafos respeitando o tamanho ideal por plataforma."""
     # Long videos: parágrafos por blank line / section header
@@ -322,6 +372,8 @@ def main():
              {"status": "audio_processing",
               "audio_queued_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
 
+    # CONDENSE pra shorts/reels/tiktok: garante <60s áudio (monetização YouTube Shorts)
+    script = condense_for_short(script, target)
     paras = split_paragraphs(script, target)
     log(f"  split into {len(paras)} paragraphs")
 
