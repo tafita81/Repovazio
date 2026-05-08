@@ -218,24 +218,41 @@ For each paragraph below, output the SINGLE best matching category from this lis
 - HOOK_ENERGICO (surprise, curiosity hook, attention grabber)
 
 Output STRICT JSON: {"results":[{"id":"P0","emotion":"<CATEGORY>"},...]}"""
-    body = {
-        "model": "llama-3.3-70b-versatile",
-        "messages": [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user",   "content": numbered},
-        ],
-        "temperature": 0.2,
-        "response_format": {"type": "json_object"},
-        "max_tokens": 1024,
-    }
-    s, raw, _ = http_json("https://api.groq.com/openai/v1/chat/completions",
-                          method="POST", body=body,
-                          headers={"Authorization": f"Bearer {GROQ_KEY}"})
-    if s != 200:
-        log(f"  GROQ FAIL {s}, fallback to default emotion")
-        return [DEFAULT_EMOTION] * len(paragraphs)
-    payload = json.loads(raw)
-    content = payload["choices"][0]["message"]["content"]
+    # NEW 2026-05-08: LLMRouter first - fallback chain Groq->DeepSeek->Nvidia V4Pro->OpenAI
+    content = None
+    try:
+        from llm_router import LLMRouter
+        _result = LLMRouter().chat(
+            messages=[
+                {"role": "system", "content": sys_prompt},
+                {"role": "user", "content": numbered},
+            ],
+            temperature=0.2,
+            max_tokens=1024,
+            response_format={"type": "json_object"},
+        )
+        content = _result["content"]
+        log(f"  emotions classified by {_result['engine_used']} ({_result['latency_ms']}ms)")
+    except Exception as _e:
+        log(f"  LLMRouter unavailable ({type(_e).__name__}: {_e}), falling back to direct Groq")
+        body = {
+            "model": "llama-3.3-70b-versatile",
+            "messages": [
+                {"role": "system", "content": sys_prompt},
+                {"role": "user",   "content": numbered},
+            ],
+            "temperature": 0.2,
+            "response_format": {"type": "json_object"},
+            "max_tokens": 1024,
+        }
+        s, raw, _ = http_json("https://api.groq.com/openai/v1/chat/completions",
+                              method="POST", body=body,
+                              headers={"Authorization": f"Bearer {GROQ_KEY}"})
+        if s != 200:
+            log(f"  GROQ FAIL {s}, fallback to default emotion")
+            return [DEFAULT_EMOTION] * len(paragraphs)
+        payload = json.loads(raw)
+        content = payload["choices"][0]["message"]["content"]
     try:
         results = json.loads(content)["results"]
         ordered = [DEFAULT_EMOTION] * len(paragraphs)
