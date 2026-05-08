@@ -13,10 +13,13 @@ import os, json, time, urllib.request, urllib.error
 
 
 class LLMRouter:
+    # ENGINES 100% GRATIS 2026 (sem deepseek_direct - api.deepseek.com cobra apos creditos)
     ENGINES = [
+        # 1. Groq Llama 3.3 70B - 14.4k req/dia FREE, ~250ms latency
         ("groq",                 "GROQ_API_KEY",     "https://api.groq.com/openai/v1",         "llama-3.3-70b-versatile"),
-        ("deepseek_direct",      "DEEPSEEK_API_KEY", "https://api.deepseek.com/v1",            "deepseek-chat"),
+        # 2. Nvidia Build DeepSeek V4 Pro - FREE ILIMITADO 2026 (1.6T parametros)
         ("nvidia_deepseek_v4",   "NVIDIA_API_KEY",   "https://integrate.api.nvidia.com/v1",    "deepseek-ai/deepseek-v3.1"),
+        # 3. OpenAI gpt-4o-mini - ULTIMO RECURSO (raramente chamado, paid)
         ("openai_mini",          "OPENAI_API_KEY",   "https://api.openai.com/v1",              "gpt-4o-mini"),
     ]
 
