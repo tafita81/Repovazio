@@ -295,7 +295,7 @@ Output STRICT JSON: {"results":[{"id":"P0","emotion":"<CATEGORY>"},...]}"""
             response_format={"type": "json_object"},
         )
         content = _result["content"]
-        log(f"  emotions classified by {_result['engine_used']} ({_result['latency_ms']}ms)")
+        log(f"  emotions classified by {_result['engine']} ({_result['latency_ms']}ms)")
     except Exception as _e:
         log(f"  LLMRouter unavailable ({type(_e).__name__}: {_e}), falling back to direct Groq")
         body = {
