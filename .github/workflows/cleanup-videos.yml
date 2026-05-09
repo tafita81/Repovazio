@@ -27,37 +27,27 @@ jobs:
         run: |
           python3 -m pip install --quiet requests
           python3 << 'PY'
-          import os, requests, sys
+          import os, requests, sys, json
           SB = os.environ['SUPABASE_URL']
           KEY = os.environ['SUPABASE_SERVICE_KEY']
           KEEP_V2 = os.environ.get('KEEP_V2', 'true') == 'true'
-          H = {'apikey': KEY, 'Authorization': f'Bearer {KEY}'}
           
-          # List all files using PostgREST query on storage.objects (read allowed, only delete blocked)
+          # Read file list directly from storage.objects via REST + Accept-Profile=storage
+          # Service role can SELECT, just not DELETE directly
           r = requests.get(
               f"{SB}/rest/v1/objects?bucket_id=eq.videos&select=name&limit=10000",
-              headers={**H, 'Accept-Profile': 'storage'}, timeout=60)
+              headers={
+                  'apikey': KEY,
+                  'Authorization': f'Bearer {KEY}',
+                  'Accept-Profile': 'storage',
+              }, timeout=60)
           if r.status_code != 200:
-              # Fallback: use storage list API
-              print(f"Direct query failed ({r.status_code}), using storage list API")
-              # Storage list endpoint
-              r2 = requests.post(f"{SB}/storage/v1/object/list/videos",
-                  headers={**H, 'Content-Type':'application/json'},
-                  json={'limit':10000,'offset':0}, timeout=60)
-              files = [f['name'] for f in r2.json()] if r2.status_code == 200 else []
-              # Recursive list for subdirs
-              for prefix in ['v2/', 'thumbnails/']:
-                  rs = requests.post(f"{SB}/storage/v1/object/list/videos",
-                      headers={**H, 'Content-Type':'application/json'},
-                      json={'limit':10000,'offset':0,'prefix':prefix}, timeout=60)
-                  if rs.status_code == 200:
-                      files.extend([prefix + f['name'] for f in rs.json()])
-          else:
-              files = [o['name'] for o in r.json()]
+              print(f"❌ List failed: {r.status_code} {r.text[:300]}")
+              sys.exit(1)
           
+          files = [o['name'] for o in r.json()]
           print(f"Found {len(files)} files in bucket 'videos'")
           
-          # Filter
           to_delete = [f for f in files if not (KEEP_V2 and f.startswith('v2/'))]
           to_keep = [f for f in files if KEEP_V2 and f.startswith('v2/')]
           print(f"Will delete: {len(to_delete)} | Will keep: {len(to_keep)}")
@@ -66,20 +56,37 @@ jobs:
               print("Nothing to delete.")
               sys.exit(0)
           
-          # Delete in batches of 100 using bulk DELETE endpoint
+          # Bulk delete via Storage API: POST /storage/v1/object/{bucket} with method DELETE and body {prefixes: []}
+          # Actually it's: DELETE /storage/v1/object/{bucket} with body {prefixes: [...]}
           deleted = 0
           failed = 0
-          for i in range(0, len(to_delete), 100):
-              batch = to_delete[i:i+100]
-              rd = requests.delete(f"{SB}/storage/v1/object/videos",
-                  headers={**H, 'Content-Type':'application/json'},
-                  json={'prefixes': batch}, timeout=60)
+          for i in range(0, len(to_delete), 50):
+              batch = to_delete[i:i+50]
+              rd = requests.delete(
+                  f"{SB}/storage/v1/object/videos",
+                  headers={
+                      'apikey': KEY,
+                      'Authorization': f'Bearer {KEY}',
+                      'Content-Type': 'application/json',
+                  },
+                  data=json.dumps({'prefixes': batch}),
+                  timeout=60)
               if rd.status_code in (200, 204):
                   deleted += len(batch)
-                  print(f"  ✓ Deleted batch {i//100 + 1}: {len(batch)} files")
+                  print(f"  ✓ Batch {i//50 + 1}: deleted {len(batch)} files")
               else:
-                  failed += len(batch)
-                  print(f"  ✗ Batch {i//100 + 1} FAILED: {rd.status_code} - {rd.text[:200]}")
+                  print(f"  ✗ Batch {i//50 + 1} status={rd.status_code}: {rd.text[:200]}")
+                  # Try one-by-one as fallback
+                  for f in batch:
+                      r1 = requests.delete(f"{SB}/storage/v1/object/videos/{f}",
+                          headers={'apikey': KEY, 'Authorization': f'Bearer {KEY}'},
+                          timeout=20)
+                      if r1.status_code in (200, 204):
+                          deleted += 1
+                      else:
+                          failed += 1
+                          if failed <= 5:
+                              print(f"    ✗ {f}: {r1.status_code} {r1.text[:100]}")
           
           print(f"\n✅ DONE. Deleted: {deleted} | Failed: {failed} | Kept (V2): {len(to_keep)}")
           PY
