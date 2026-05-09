@@ -44,56 +44,57 @@ H_SB_J = {**H_SB, "Content-Type": "application/json"}
 # All 16 PT-BR Neural voices: Francisca, Antonio, Thalita, Brenda, Donato, Elza,
 # Fabio, Giovanna, Humberto, Julio, Leila, Leticia, Manuela, Nicolau, Valerio, Yara
 EMOTION_VOICES = {
-    # Calm openers — warm feminine voices
+    # Calm openers — slow Francisca/Thalita (3 valid PT-BR voices: Antonio/Francisca/ThalitaMultilingual)
     "INTRO_CALMO": [
         {"voice": "pt-BR-FranciscaNeural", "rate": "-5%",  "volume": "+0%"},
-        {"voice": "pt-BR-LeticiaNeural",   "rate": "-5%",  "volume": "+0%"},
-        {"voice": "pt-BR-ManuelaNeural",   "rate": "-3%",  "volume": "+0%"},
-        {"voice": "pt-BR-GiovannaNeural",  "rate": "-5%",  "volume": "+0%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "-3%",  "volume": "+0%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "-5%",  "volume": "+0%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "-3%",  "volume": "+0%"},
     ],
-    # Tense alerts — punchy masculine voices
+    # Tense alerts — punchy Antonio
     "ALERTA_TENSO": [
         {"voice": "pt-BR-AntonioNeural",   "rate": "+8%",  "volume": "+5%"},
-        {"voice": "pt-BR-FabioNeural",     "rate": "+10%", "volume": "+5%"},
-        {"voice": "pt-BR-HumbertoNeural",  "rate": "+8%",  "volume": "+5%"},
-        {"voice": "pt-BR-ValerioNeural",   "rate": "+10%", "volume": "+5%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+10%", "volume": "+5%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+12%", "volume": "+8%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+15%", "volume": "+5%"},
     ],
-    # Warm empathy — slow embracing feminine voices
+    # Warm empathy — slow Francisca/Thalita
     "EMPATIA_ACOLHEDOR": [
         {"voice": "pt-BR-FranciscaNeural", "rate": "-10%", "volume": "+0%"},
-        {"voice": "pt-BR-ElzaNeural",      "rate": "-12%", "volume": "+0%"},
-        {"voice": "pt-BR-LeilaNeural",     "rate": "-10%", "volume": "+0%"},
-        {"voice": "pt-BR-YaraNeural",      "rate": "-8%",  "volume": "+0%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "-12%", "volume": "+0%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "-10%", "volume": "+0%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "-8%",  "volume": "+0%"},
     ],
-    # Cold analytical — neutral mature masculine voices
+    # Cold analytical — neutral Antonio
     "ANALITICO_FRIO": [
         {"voice": "pt-BR-AntonioNeural",   "rate": "+0%",  "volume": "+0%"},
-        {"voice": "pt-BR-NicolauNeural",   "rate": "+0%",  "volume": "+0%"},
-        {"voice": "pt-BR-DonatoNeural",    "rate": "+0%",  "volume": "+0%"},
-        {"voice": "pt-BR-JulioNeural",     "rate": "+2%",  "volume": "+0%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+2%",  "volume": "+0%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "-2%",  "volume": "+0%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+3%",  "volume": "-2%"},
     ],
-    # Rising hope — multilingual modern feminine voices
+    # Rising hope — modern Thalita/Francisca
     "ESPERANCA_CRESCENTE": [
-        {"voice": "pt-BR-ThalitaNeural",   "rate": "+0%",  "volume": "+2%"},
-        {"voice": "pt-BR-GiovannaNeural",  "rate": "+2%",  "volume": "+3%"},
-        {"voice": "pt-BR-LeticiaNeural",   "rate": "+0%",  "volume": "+2%"},
-        {"voice": "pt-BR-ManuelaNeural",   "rate": "+0%",  "volume": "+2%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "+0%",  "volume": "+2%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "+2%",  "volume": "+3%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "+0%",  "volume": "+2%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "+2%",  "volume": "+3%"},
     ],
-    # Urgent CTA — strong commanding masculine voices
+    # Urgent CTA — strong commanding Antonio
     "CTA_URGENTE": [
         {"voice": "pt-BR-AntonioNeural",   "rate": "+12%", "volume": "+8%"},
-        {"voice": "pt-BR-FabioNeural",     "rate": "+15%", "volume": "+10%"},
-        {"voice": "pt-BR-HumbertoNeural",  "rate": "+12%", "volume": "+8%"},
-        {"voice": "pt-BR-ValerioNeural",   "rate": "+14%", "volume": "+9%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+10%", "volume": "+10%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+15%", "volume": "+8%"},
+        {"voice": "pt-BR-AntonioNeural",   "rate": "+13%", "volume": "+12%"},
     ],
-    # Energetic hook — young vibrant feminine voices
+    # Energetic hook — bright Thalita/Francisca
     "HOOK_ENERGICO": [
-        {"voice": "pt-BR-BrendaNeural",    "rate": "+5%",  "volume": "+5%"},
-        {"voice": "pt-BR-GiovannaNeural",  "rate": "+8%",  "volume": "+5%"},
-        {"voice": "pt-BR-ThalitaNeural",   "rate": "+5%",  "volume": "+5%"},
-        {"voice": "pt-BR-LeticiaNeural",   "rate": "+6%",  "volume": "+5%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "+5%",  "volume": "+5%"},
+        {"voice": "pt-BR-ThalitaMultilingualNeural", "rate": "+8%",  "volume": "+5%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "+5%",  "volume": "+5%"},
+        {"voice": "pt-BR-FranciscaNeural", "rate": "+8%",  "volume": "+8%"},
     ],
 }
+
 # Backward-compat alias (set membership checks still work via __contains__)
 EMOTION_VOICE = EMOTION_VOICES
 DEFAULT_EMOTION = "EMPATIA_ACOLHEDOR"
