@@ -369,16 +369,41 @@ def run():
         print(f"  • Scene {i+1} ({s['duration_s']}s, {s['emotion']}, {s['shot_type']}): {s['narration'][:70]}...")
     
     print(f"\n[3/7] Generate audio per scene (Edge TTS)")
+    # Filter out scenes with empty/whitespace-only narration (TTS can't handle them)
+    scenes_clean = []
+    for i, sc in enumerate(scenes):
+        narr = (sc.get('narration') or '').strip()
+        if len(narr) < 3:
+            print(f"  ⊘ Skipping scene {i+1}: empty/too-short narration ({len(narr)} chars)")
+            continue
+        sc['narration'] = narr  # use cleaned version
+        scenes_clean.append(sc)
+    if not scenes_clean:
+        raise RuntimeError("No scenes with valid narration after filtering")
+    print(f"  ↳ {len(scenes_clean)}/{len(scenes)} scenes have valid narration")
+    scenes = scenes_clean
+    
     audio_paths = []
     actual_durations = []
     for i, sc in enumerate(scenes):
         ap = WORK / f"audio_{i:03d}.mp3"
-        actual_dur = gen_audio_edge_tts(sc['narration'], sc['emotion'], str(ap))
+        try:
+            actual_dur = gen_audio_edge_tts(sc['narration'], sc['emotion'], str(ap))
+        except Exception as e:
+            print(f"  ❌ Scene {i+1} TTS failed: {type(e).__name__}: {str(e)[:120]}")
+            print(f"     Narration was: {sc['narration'][:80]!r}")
+            # Skip this scene rather than fail entire pipeline
+            continue
         audio_paths.append(str(ap))
         actual_durations.append(actual_dur)
         # Use ACTUAL audio duration (more accurate than DeepSeek estimate)
         sc['duration_s'] = max(actual_dur + 0.3, 2.0)  # +0.3s breathing room, min 2s
         print(f"  ✓ Scene {i+1}: {sc['duration_s']:.1f}s ({sc['emotion']})")
+    
+    # Re-filter scenes to only those that succeeded TTS (in case some failed mid-loop)
+    if len(audio_paths) < len(scenes):
+        scenes = scenes[:len(audio_paths)]
+        print(f"  ↳ {len(audio_paths)} scenes have audio (others skipped)")
     
     print(f"\n[4/7] Generate images (Flux Schnell Nvidia)")
     width, height = (768, 1344) if is_short else (1344, 768)
