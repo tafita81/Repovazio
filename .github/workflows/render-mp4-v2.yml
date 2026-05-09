@@ -1,43 +1,75 @@
-name: render-mp4-v2
+name: render-mp4-v2 (Psych2Go style)
 
 on:
   workflow_dispatch:
     inputs:
       pipeline_id:
-        description: 'Pipeline ID to render (V2 Psych2Go style)'
-        required: true
-        type: string
+        description: 'Pipeline ID to render (single)'
+        required: false
+        default: ''
+      batch_mp4_ready:
+        description: 'Re-render ALL mp4_ready pipelines (true/false)'
+        required: false
+        default: 'false'
 
 jobs:
   render:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python 3.11
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install ffmpeg
+      - name: Install ffmpeg + deps
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y -qq ffmpeg
+          pip install --quiet edge-tts==6.1.12 requests==2.31.0
           ffmpeg -version | head -1
-          ffprobe -version | head -1
+          python -c "import edge_tts; print('edge-tts ok')"
 
-      - name: Install Python dependencies
+      - name: Determine pipeline IDs to process
+        id: pids
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          INPUT_PID: ${{ github.event.inputs.pipeline_id }}
+          INPUT_BATCH: ${{ github.event.inputs.batch_mp4_ready }}
         run: |
-          python -m pip install --upgrade pip
-          pip install requests edge-tts==6.1.10
+          python3 <<'PY'
+          import os, json, requests
+          pid = (os.environ.get('INPUT_PID') or '').strip()
+          batch = (os.environ.get('INPUT_BATCH') or 'false').lower() == 'true'
+          ids = []
+          if pid:
+              ids = [int(pid)]
+          elif batch:
+              r = requests.get(f"{os.environ['SUPABASE_URL']}/rest/v1/content_pipeline?status=eq.mp4_ready&select=id&order=id",
+                  headers={'apikey': os.environ['SUPABASE_SERVICE_KEY'],
+                           'Authorization': f"Bearer {os.environ['SUPABASE_SERVICE_KEY']}"}, timeout=15)
+              ids = [p['id'] for p in r.json()]
+          print(f"pids={ids}")
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"pids={json.dumps(ids)}\n")
+          PY
 
-      - name: Render video V2 (Psych2Go style)
+      - name: Render videos
         env:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          PIPELINE_ID: ${{ inputs.pipeline_id }}
         run: |
-          python scripts/video_gen_v2.py "$PIPELINE_ID"
+          PIDS='${{ steps.pids.outputs.pids }}'
+          echo "Processing: $PIDS"
+          python3 -c "import json,sys; print(' '.join(str(i) for i in json.loads('$PIDS')))" > /tmp/pids.txt
+          for PID in $(cat /tmp/pids.txt); do
+            echo "════════════════════════════════════════════════"
+            echo "▶ Rendering pipeline #$PID"
+            echo "════════════════════════════════════════════════"
+            PIPELINE_ID=$PID python scripts/video_gen_v2.py $PID || echo "⚠ Pipeline #$PID failed (continuing)"
+          done
+          echo "✅ Batch complete"
