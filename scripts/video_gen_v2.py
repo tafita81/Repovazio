@@ -8,7 +8,7 @@ Video Generator V2 - Psych2Go style
 - ZERO TEXT on screen
 - Output: MP4 1080p 30fps
 """
-import os, sys, json, base64, requests, subprocess, asyncio, hashlib, time, tempfile, shutil, random
+import os, sys, re, json, base64, requests, subprocess, asyncio, hashlib, time, tempfile, shutil, random
 from pathlib import Path
 
 NVIDIA_KEY = os.environ['NVIDIA_API_KEY']
@@ -48,6 +48,40 @@ def sb_upload_storage(bucket, path, file_path, content_type):
     return f"{SB_URL}/storage/v1/object/public/{bucket}/{path}"
 
 # -------------- DeepSeek V4 Pro: scene segmentation --------------
+# LLM chain: DeepSeek V4 Pro primary, Llama 3.3 70B fallback (faster)
+LLM_CHAIN = [
+    ('deepseek-ai/deepseek-v4-pro', 300, 6000),  # (model, timeout_s, max_tokens)
+    ('meta/llama-3.3-70b-instruct', 180, 6000),
+    ('qwen/qwen3.5-397b-a17b', 180, 6000),
+]
+
+def call_llm_with_fallback(messages, response_format=None):
+    last_err = None
+    for model, timeout, max_tok in LLM_CHAIN:
+        for attempt in range(2):
+            try:
+                payload = {
+                    'model': model,
+                    'messages': messages,
+                    'max_tokens': max_tok,
+                    'temperature': 0.5,
+                }
+                if response_format:
+                    payload['response_format'] = response_format
+                print(f"  [llm] try {model} (timeout={timeout}s, attempt {attempt+1})")
+                r = requests.post('https://integrate.api.nvidia.com/v1/chat/completions',
+                    headers={'Authorization': f'Bearer {NVIDIA_KEY}', 'Content-Type': 'application/json'},
+                    json=payload, timeout=timeout)
+                r.raise_for_status()
+                content = r.json()['choices'][0]['message']['content']
+                print(f"  [llm] ✓ {model} returned {len(content)} chars")
+                return content
+            except Exception as e:
+                last_err = e
+                print(f"  [llm] ✗ {model} attempt {attempt+1}: {type(e).__name__}: {str(e)[:100]}")
+                time.sleep(3)
+    raise RuntimeError(f"All LLM attempts failed. Last: {last_err}")
+
 def segment_scenes(script, target_platform, total_duration_s):
     is_short = any(s in target_platform.lower() for s in ['short', 'reel', 'tiktok', 'pin'])
     aspect = '9:16' if is_short else '16:9'
@@ -83,19 +117,19 @@ Retorne APENAS JSON valido: {{"scenes": [...], "background_music_mood": "calmo_r
 
 NAO USE TEXTO NA IMAGEM. NAO MENCIONE PALAVRAS NO PROMPT. So personagens, expressoes, ambientes."""
 
-    r = requests.post('https://integrate.api.nvidia.com/v1/chat/completions',
-        headers={'Authorization': f'Bearer {NVIDIA_KEY}', 'Content-Type': 'application/json'},
-        json={
-            'model': 'deepseek-ai/deepseek-v4-pro',
-            'messages': [
-                {'role': 'system', 'content': 'Voce eh diretor visual do canal Psych2Go (9M subs). Estilo: personagens humanoides ilustrados, cores pastel, ZERO TEXTO na tela. Retorne SOMENTE JSON valido.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            'max_tokens': 8000, 'temperature': 0.5,
-            'response_format': {'type': 'json_object'}
-        }, timeout=180)
-    r.raise_for_status()
-    data = json.loads(r.json()['choices'][0]['message']['content'])
+    content = call_llm_with_fallback(
+        messages=[
+            {'role': 'system', 'content': 'Voce eh diretor visual do canal Psych2Go (9M subs). Estilo: personagens humanoides ilustrados, cores pastel, ZERO TEXTO na tela. Retorne SOMENTE JSON valido.'},
+            {'role': 'user', 'content': prompt}
+        ],
+        response_format={'type': 'json_object'}
+    )
+    # Robust JSON parsing (some models may wrap in code fences)
+    content = content.strip()
+    if content.startswith('```'):
+        content = re.sub(r'^```(?:json)?\n', '', content)
+        content = re.sub(r'\n```$', '', content)
+    data = json.loads(content)
     return data['scenes'], data.get('background_music_mood', 'calmo_reflexivo')
 
 # -------------- Flux Schnell Nvidia: image generation --------------
