@@ -1,0 +1,84 @@
+name: Quality Loop 95+
+
+on:
+  workflow_dispatch:
+    inputs:
+      pipeline_id:
+        description: 'ID do pipeline para iterar'
+        required: true
+      target_score:
+        description: 'Score alvo (default 95)'
+        default: '95'
+      max_iterations:
+        description: 'Maximo iteracoes (default 5)'
+        default: '5'
+
+jobs:
+  iterate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Loop quality iteration
+        env:
+          SB_URL: ${{ secrets.SUPABASE_URL }}
+          SB_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          PID: ${{ inputs.pipeline_id }}
+          TARGET: ${{ inputs.target_score }}
+          MAX_ITER: ${{ inputs.max_iterations }}
+        run: |
+          set -e
+          echo "=== Quality Loop Pipeline #$PID target=$TARGET max=$MAX_ITER ==="
+          
+          # Get current score
+          CURRENT=$(curl -s -X POST "$SB_URL/rest/v1/rpc/analyze_viral" \
+            -H "apikey: $SB_KEY" \
+            -H "Authorization: Bearer $SB_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"p_pipeline_id\": $PID}" | jq -r '.best_in_world // 0')
+          
+          echo "Initial score: $CURRENT"
+          
+          ITER=0
+          while [ "$CURRENT" -lt "$TARGET" ] && [ "$ITER" -lt "$MAX_ITER" ]; do
+            ITER=$((ITER + 1))
+            echo ""
+            echo "--- Iteration $ITER (current: $CURRENT, target: $TARGET) ---"
+            
+            # Iterate (rewrite script)
+            ITER_RES=$(curl -s -X POST "$SB_URL/rest/v1/rpc/iterate_quality" \
+              -H "apikey: $SB_KEY" \
+              -H "Authorization: Bearer $SB_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"p_pipeline_id\": $PID, \"p_target_score\": $TARGET}")
+            
+            echo "Iterate result: $(echo $ITER_RES | jq -c '{hook_strategy, expected_uplift}')"
+            
+            # Re-analyze
+            ANALYZE_RES=$(curl -s -X POST "$SB_URL/rest/v1/rpc/analyze_viral" \
+              -H "apikey: $SB_KEY" \
+              -H "Authorization: Bearer $SB_KEY" \
+              -H "Content-Type: application/json" \
+              -d "{\"p_pipeline_id\": $PID}")
+            
+            CURRENT=$(echo $ANALYZE_RES | jq -r '.best_in_world // 0')
+            echo "New score: $CURRENT"
+          done
+          
+          # Final safety check
+          echo ""
+          echo "=== Final Safety Check ==="
+          SAFETY_RES=$(curl -s -X POST "$SB_URL/rest/v1/rpc/run_safety_check" \
+            -H "apikey: $SB_KEY" \
+            -H "Authorization: Bearer $SB_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"p_pipeline_id\": $PID}")
+          
+          echo "Safety: $(echo $SAFETY_RES | jq -c '{safe_to_publish, blockers, warnings, ban_risk_score, demonetization_risk_score}')"
+          
+          echo ""
+          echo "=== FINAL ==="
+          echo "Pipeline: #$PID"
+          echo "Final score: $CURRENT / $TARGET"
+          echo "Iterations: $ITER / $MAX_ITER"
+          echo "Reached target: $([ "$CURRENT" -ge "$TARGET" ] && echo YES || echo NO)"
+          echo "Safe to publish: $(echo $SAFETY_RES | jq -r '.safe_to_publish')"
