@@ -47,17 +47,25 @@ def sb_upload_storage(bucket, path, file_path, content_type):
         return None
     return f"{SB_URL}/storage/v1/object/public/{bucket}/{path}"
 
-# -------------- DeepSeek V4 Pro: scene segmentation --------------
-# LLM chain: DeepSeek V4 Pro primary, Llama 3.3 70B fallback (faster)
+# -------------- LLM scene segmentation (multi-provider chain) --------------
+# Groq primary (sub-second), Nvidia fallback, OpenAI ultimate fallback
+GROQ_KEY = os.environ.get('GROQ_API_KEY', '')
+OPENAI_KEY = os.environ.get('OPENAI_API_KEY', '')
+
 LLM_CHAIN = [
-    ('deepseek-ai/deepseek-v4-pro', 300, 6000),  # (model, timeout_s, max_tokens)
-    ('meta/llama-3.3-70b-instruct', 180, 6000),
-    ('qwen/qwen3.5-397b-a17b', 180, 6000),
+    # (provider, model, endpoint, key, timeout_s, max_tokens)
+    ('groq',   'llama-3.3-70b-versatile',     'https://api.groq.com/openai/v1/chat/completions',     GROQ_KEY,   60,  6000),
+    ('groq',   'llama-3.1-8b-instant',        'https://api.groq.com/openai/v1/chat/completions',     GROQ_KEY,   60,  6000),
+    ('nvidia', 'meta/llama-3.3-70b-instruct', 'https://integrate.api.nvidia.com/v1/chat/completions', NVIDIA_KEY, 120, 6000),
+    ('openai', 'gpt-4o-mini',                  'https://api.openai.com/v1/chat/completions',          OPENAI_KEY, 90,  6000),
 ]
 
 def call_llm_with_fallback(messages, response_format=None):
     last_err = None
-    for model, timeout, max_tok in LLM_CHAIN:
+    for provider, model, endpoint, key, timeout, max_tok in LLM_CHAIN:
+        if not key:
+            print(f"  [llm] skip {provider}/{model} (no key)")
+            continue
         for attempt in range(2):
             try:
                 payload = {
@@ -68,18 +76,19 @@ def call_llm_with_fallback(messages, response_format=None):
                 }
                 if response_format:
                     payload['response_format'] = response_format
-                print(f"  [llm] try {model} (timeout={timeout}s, attempt {attempt+1})")
-                r = requests.post('https://integrate.api.nvidia.com/v1/chat/completions',
-                    headers={'Authorization': f'Bearer {NVIDIA_KEY}', 'Content-Type': 'application/json'},
+                print(f"  [llm] try {provider}/{model} (timeout={timeout}s, attempt {attempt+1})")
+                t0 = time.time()
+                r = requests.post(endpoint,
+                    headers={'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'},
                     json=payload, timeout=timeout)
                 r.raise_for_status()
                 content = r.json()['choices'][0]['message']['content']
-                print(f"  [llm] ✓ {model} returned {len(content)} chars")
+                print(f"  [llm] ✓ {provider}/{model} returned {len(content)} chars in {time.time()-t0:.1f}s")
                 return content
             except Exception as e:
                 last_err = e
-                print(f"  [llm] ✗ {model} attempt {attempt+1}: {type(e).__name__}: {str(e)[:100]}")
-                time.sleep(3)
+                print(f"  [llm] ✗ {provider}/{model} attempt {attempt+1}: {type(e).__name__}: {str(e)[:120]}")
+                time.sleep(2)
     raise RuntimeError(f"All LLM attempts failed. Last: {last_err}")
 
 def segment_scenes(script, target_platform, total_duration_s):
