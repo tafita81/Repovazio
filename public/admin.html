@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · psicologia.doc</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
+body{background:#0a0e1a;color:#e6edf3;min-height:100vh;padding:0 0 60px}
+.bar{background:linear-gradient(135deg,#1a2438 0%,#0f1825 100%);border-bottom:2px solid #1f6feb;padding:18px 24px;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.bar h1{font-size:18px;color:#79c0ff;display:flex;align-items:center;gap:10px}
+.bar h1 .dot{width:8px;height:8px;border-radius:50%;background:#3fb950;box-shadow:0 0 12px #3fb950;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.bar .meta{font-size:11px;color:#8b949e;margin-top:2px}
+.container{max-width:1400px;margin:0 auto;padding:24px}
+.config-banner{background:linear-gradient(135deg,#7d2424,#a83838);border:1px solid #f85149;border-radius:8px;padding:20px;margin-bottom:24px;display:none}
+.config-banner.show{display:block}
+.config-banner h3{color:#ffa198;margin-bottom:10px}
+.config-banner input{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:10px;border-radius:6px;font-family:'SF Mono',Consolas,monospace;font-size:12px;margin-top:8px}
+.config-banner button{background:#238636;color:#fff;border:0;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:12px;font-weight:600}
+.config-banner button:hover{background:#2ea043}
+.config-banner code{background:#161b22;padding:2px 6px;border-radius:4px;color:#79c0ff;font-size:11px}
+.section{margin-bottom:32px}
+.section h2{font-size:20px;color:#79c0ff;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #21262d;padding-bottom:8px}
+.section h2 .badge{font-size:10px;background:#1f6feb;color:#fff;padding:2px 8px;border-radius:10px;font-weight:600}
+.section .desc{color:#8b949e;font-size:13px;margin-bottom:16px}
+.grid{display:grid;gap:14px}
+.grid-3{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.grid-4{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+.card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+.card-stat{text-align:center}
+.card-stat .num{font-size:32px;font-weight:700;color:#3fb950}
+.card-stat .num.warn{color:#d29922}
+.card-stat .num.danger{color:#f85149}
+.card-stat .num.info{color:#58a6ff}
+.card-stat .label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.card-stat .sub{font-size:10px;color:#6e7681;margin-top:6px}
+.connector{display:flex;align-items:center;gap:12px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;cursor:pointer;transition:all .15s}
+.connector:hover{border-color:#1f6feb;transform:translateY(-1px)}
+.connector .status{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.connector.ok .status{background:#3fb950;box-shadow:0 0 8px #3fb950}
+.connector.miss .status{background:#f85149}
+.connector .info{flex:1;min-width:0}
+.connector .name{font-weight:600;font-size:13px}
+.connector .desc{font-size:11px;color:#8b949e;margin-top:2px}
+.secret-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;padding:10px 12px;background:#0d1117;border:1px solid #21262d;border-radius:6px;align-items:center;font-size:12px;margin-bottom:6px}
+.secret-row .indicator{width:10px;height:10px;border-radius:50%}
+.secret-row .indicator.ok{background:#3fb950}
+.secret-row .indicator.miss{background:#f85149}
+.secret-row .indicator.expiring{background:#d29922}
+.secret-row .key{font-family:monospace;font-weight:600}
+.secret-row .meta{color:#8b949e;font-size:11px}
+.secret-row .category{font-size:10px;background:#21262d;padding:2px 6px;border-radius:4px;color:#8b949e}
+.secret-row .category.critical{background:#5d2424;color:#ffa198}
+.btn{background:#21262d;color:#c9d1d9;border:1px solid #30363d;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;text-decoration:none;display:inline-block}
+.btn:hover{background:#30363d;border-color:#58a6ff}
+.btn-primary{background:#238636;color:#fff;border-color:#2ea043}
+.btn-primary:hover{background:#2ea043}
+.btn-warn{background:#7d2424;color:#fff;border-color:#a83838}
+.btn-warn:hover{background:#a83838}
+.btn-info{background:#1f6feb;color:#fff;border-color:#388bfd}
+.btn-info:hover{background:#388bfd}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;justify-content:center;align-items:flex-start;padding:50px 20px;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal.show{display:flex}
+.modal-content{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:24px;max-width:700px;width:100%;position:relative}
+.modal-content h3{color:#79c0ff;margin-bottom:14px;font-size:18px}
+.modal .close{position:absolute;top:12px;right:14px;background:none;border:0;color:#8b949e;font-size:24px;cursor:pointer}
+.modal .close:hover{color:#f85149}
+.modal label{display:block;color:#c9d1d9;font-size:12px;margin:14px 0 6px;font-weight:600}
+.modal input,.modal textarea,.modal select{width:100%;background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:10px;border-radius:6px;font-family:monospace;font-size:13px}
+.modal textarea{min-height:120px;resize:vertical}
+.modal .help{font-size:11px;color:#8b949e;margin-top:4px}
+.modal .help a{color:#58a6ff;text-decoration:none}
+.modal .help a:hover{text-decoration:underline}
+.sql-output{background:#0d1117;border:1px solid #1f6feb;border-radius:6px;padding:14px;margin-top:14px;font-family:monospace;font-size:12px;color:#a5d6ff;white-space:pre-wrap;word-break:break-all;display:none;position:relative}
+.sql-output.show{display:block}
+.sql-output .copy-btn{position:absolute;top:8px;right:8px;background:#1f6feb;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid #30363d;padding-bottom:0}
+.tab{padding:10px 16px;background:none;color:#8b949e;border:0;border-bottom:2px solid transparent;cursor:pointer;font-size:13px;font-weight:500}
+.tab.active{color:#58a6ff;border-bottom-color:#58a6ff}
+.tab:hover{color:#c9d1d9}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.action-btn{padding:14px 20px;background:#161b22;border:1px solid #30363d;border-radius:8px;color:#c9d1d9;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;font-size:13px;text-decoration:none;transition:all .15s}
+.action-btn:hover{border-color:#1f6feb;background:#1c2128}
+.action-btn .icon{font-size:24px}
+.action-btn .text{flex:1}
+.action-btn .text strong{display:block;color:#79c0ff;margin-bottom:2px}
+.action-btn .text small{color:#8b949e;font-size:11px}
+.toast{position:fixed;bottom:20px;right:20px;background:#1f6feb;color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;z-index:2000;display:none;box-shadow:0 4px 20px rgba(31,111,235,.5)}
+.toast.show{display:block;animation:slideUp .3s}
+.toast.success{background:#238636}
+.toast.error{background:#f85149}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.alert{padding:12px 16px;border-radius:6px;margin-bottom:16px;font-size:13px;border-left:3px solid}
+.alert.warn{background:#332b00;border-color:#d29922;color:#e3b341}
+.alert.info{background:#0d2444;border-color:#1f6feb;color:#79c0ff}
+.alert.danger{background:#330909;border-color:#f85149;color:#ffa198}
+.loading{display:inline-block;width:14px;height:14px;border:2px solid #30363d;border-top-color:#58a6ff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{height:1px;background:#30363d;margin:20px 0}
+@media(max-width:640px){.grid-3,.grid-4,.grid-2{grid-template-columns:1fr}.modal-content{padding:16px}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1><span class="dot"></span>psicologia.doc · Admin Panel</h1>
+  <div class="meta">Sistema autônomo eterno · Daniela Coelho · DeepSeek V4 Pro · $0/mês</div>
+</div>
+
+<div class="container">
+
+  <div id="config-banner" class="config-banner">
+    <h3>⚙️ Configuração inicial necessária</h3>
+    <p style="color:#e6edf3;font-size:13px;margin-bottom:8px">Cole sua <strong>SUPABASE_ANON_KEY</strong> do Dashboard:</p>
+    <p style="font-size:11px;color:#ffa198;margin-bottom:4px">Pegue em: Supabase Dashboard → Project Settings → API → <code>anon public</code></p>
+    <input id="anon-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+    <p style="font-size:11px;color:#ffa198;margin-top:14px;margin-bottom:4px">GitHub PAT (para disparar workflows) — opcional:</p>
+    <input id="gh-pat-input" placeholder="ghp_... (opcional, só para botões de workflow)" />
+    <button onclick="saveConfig()">Salvar e carregar</button>
+    <p style="font-size:10px;color:#8b949e;margin-top:8px">As keys ficam apenas no localStorage do seu browser. Anon key é pública e segura por design.</p>
+  </div>
+
+  <div class="section">
+    <h2>📊 Estado do sistema <span class="badge" id="health-badge">--</span></h2>
+    <div class="grid grid-4" id="health-stats">
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Brain Insights</div><div class="sub">carregando...</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Pesquisas científicas</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Vozes emocionais</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Iterações de qualidade</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Pipelines safe</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Séries criadas</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Cron jobs ativos</div><div class="sub">--</div></div>
+      <div class="card card-stat"><div class="num info"><span class="loading"></span></div><div class="label">Prontos para publicar</div><div class="sub">--</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔌 Conectores · status</h2>
+    <p class="desc">Cada conector precisa de credenciais OAuth para publicar automaticamente. Verde = configurado. Vermelho = falta.</p>
+    <div class="grid grid-3" id="connectors-grid">
+      <div class="connector"><div class="status"></div><div class="info"><div class="name">Carregando...</div></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔑 Credenciais · <span id="secrets-summary" style="font-size:13px;color:#8b949e;font-weight:400">carregando...</span></h2>
+    <p class="desc">Status de todas as credenciais que o sistema usa. Clique em uma credencial faltante para ver instruções de obtenção.</p>
+    <div class="tabs">
+      <button class="tab active" onclick="filterSecrets('all',this)">Todas</button>
+      <button class="tab" onclick="filterSecrets('ai_engines',this)">IA Engines</button>
+      <button class="tab" onclick="filterSecrets('core',this)">Core</button>
+      <button class="tab" onclick="filterSecrets('youtube',this)">YouTube</button>
+      <button class="tab" onclick="filterSecrets('instagram',this)">Instagram</button>
+      <button class="tab" onclick="filterSecrets('tiktok',this)">TikTok</button>
+      <button class="tab" onclick="filterSecrets('pinterest',this)">Pinterest</button>
+      <button class="tab" onclick="filterSecrets('whatsapp',this)">WhatsApp</button>
+      <button class="tab" onclick="filterSecrets('threads',this)">Threads</button>
+      <button class="tab" onclick="filterSecrets('kwai',this)">Kwai</button>
+      <button class="tab" onclick="filterSecrets('heygen',this)">HeyGen</button>
+    </div>
+    <div id="secrets-list"></div>
+  </div>
+
+  <div class="section">
+    <h2>⚡ Ações rápidas</h2>
+    <div class="grid grid-2">
+      <a class="action-btn" href="https://supabase.com/dashboard/project/tpjvalzwkqwttvmszvie/sql/new" target="_blank">
+        <span class="icon">📝</span>
+        <span class="text"><strong>Editor SQL Supabase</strong><small>Cola SQL gerado por essa página aqui</small></span>
+      </a>
+      <a class="action-btn" href="https://supabase.com/dashboard/project/tpjvalzwkqwttvmszvie/functions" target="_blank">
+        <span class="icon">⚡</span>
+        <span class="text"><strong>Edge Functions</strong><small>Deletar EFs órfãs aqui (libera quota)</small></span>
+      </a>
+      <a class="action-btn" href="https://github.com/tafita81/Repovazio/actions" target="_blank">
+        <span class="icon">🔄</span>
+        <span class="text"><strong>GitHub Actions</strong><small>Ver runs dos workflows e trigger manual</small></span>
+      </a>
+      <a class="action-btn" href="https://repovazio.vercel.app/videos-analise.html" target="_blank">
+        <span class="icon">📈</span>
+        <span class="text"><strong>Dashboard de Vídeos</strong><small>Ver análise viral 95+ ao vivo</small></span>
+      </a>
+      <a class="action-btn" href="https://repovazio.vercel.app/videos-prontos.html" target="_blank">
+        <span class="icon">🎬</span>
+        <span class="text"><strong>Galeria de Vídeos</strong><small>Vídeos MP4 prontos · público</small></span>
+      </a>
+      <a class="action-btn" href="https://vercel.com/team_zr9vAef0Zz3njNAiGm3v5Y3h/repovazio" target="_blank">
+        <span class="icon">▲</span>
+        <span class="text"><strong>Vercel Project</strong><small>Deploy logs e env vars</small></span>
+      </a>
+      <a class="action-btn" href="https://github.com/tafita81/Repovazio" target="_blank">
+        <span class="icon">🐙</span>
+        <span class="text"><strong>Repositório GitHub</strong><small>Workflows + .github/workflows</small></span>
+      </a>
+      <button class="action-btn" onclick="triggerWorkflow('series-generator.yml',{action:'iterate_to_95'})">
+        <span class="icon">🚀</span>
+        <span class="text"><strong>Disparar auto-iterate</strong><small>Empurra pipelines até 95+ (precisa GH PAT)</small></span>
+      </button>
+      <button class="action-btn" onclick="openSeriesModal()">
+        <span class="icon">📚</span>
+        <span class="text"><strong>Gerar nova série</strong><small>Cria batch de N episódios viral</small></span>
+      </button>
+      <button class="action-btn" onclick="reload()">
+        <span class="icon">🔄</span>
+        <span class="text"><strong>Recarregar dados</strong><small>Refresh status sistema</small></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🔧 Troubleshooting · pendências para 100%</h2>
+    <div id="todo-list"></div>
+  </div>
+</div>
+
+<!-- Modal: setar credencial -->
+<div id="secret-modal" class="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal('secret-modal')">×</button>
+    <h3 id="secret-modal-title">Configurar credencial</h3>
+    <div id="secret-modal-help"></div>
+    <label>Valor:</label>
+    <textarea id="secret-modal-value" placeholder="Cole o valor aqui..."></textarea>
+    <label>Expira em (dias) <span style="color:#8b949e">— vazio = nunca</span>:</label>
+    <input id="secret-modal-expires" type="number" placeholder="60 (típico para tokens OAuth)" />
+    <button class="btn btn-primary" onclick="generateSecretSQL()" style="margin-top:14px">Gerar SQL</button>
+    <div id="secret-sql-output" class="sql-output"></div>
+  </div>
+</div>
+
+<!-- Modal: gerar série -->
+<div id="series-modal" class="modal">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal('series-modal')">×</button>
+    <h3>📚 Gerar série de episódios</h3>
+    <p class="help">DeepSeek V4 Pro vai gerar N episódios conectados com cliffhangers + auto-iterate até 95+. Roda no GitHub Actions em background (~10 min).</p>
+    <label>Tema:</label>
+    <input id="series-theme" placeholder="Ex: Sinais de Manipulacao Emocional em Relacionamentos" />
+    <label>Episódios:</label>
+    <input id="series-episodes" type="number" value="5" min="2" max="10" />
+    <label>Plataforma:</label>
+    <select id="series-platform">
+      <option value="youtube_shorts">YouTube Shorts (60s)</option>
+      <option value="youtube_long">YouTube Long (8-12 min)</option>
+      <option value="instagram_reels">Instagram Reels</option>
+      <option value="tiktok_short">TikTok</option>
+      <option value="pinterest_pin">Pinterest Pin</option>
+    </select>
+    <button class="btn btn-primary" onclick="dispatchSeries()" style="margin-top:14px">Disparar geração</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const SB_URL = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+let ANON_KEY = localStorage.getItem('admin_anon_key') || '';
+let GH_PAT = localStorage.getItem('admin_gh_pat') || '';
+let SECRETS_DATA = [];
+let HEALTH_DATA = null;
+
+const SETUP_GUIDES = {
+  INSTAGRAM_ACCESS_TOKEN: {
+    title: 'Instagram Access Token',
+    portal: 'https://developers.facebook.com/apps',
+    steps: '1. Acesse Meta for Developers → My Apps → Create App (Business)<br>2. Adicione produto "Instagram Graph API"<br>3. Conecte sua conta Instagram Business (precisa estar vinculada a página Facebook)<br>4. Em Tools → Graph API Explorer, gere User Token com permissões: <code>instagram_content_publish</code>, <code>instagram_basic</code>, <code>pages_show_list</code><br>5. Use o User Token para gerar Long-Lived Token (60 dias) via /access_token endpoint',
+    expires: 60
+  },
+  INSTAGRAM_USER_ID: {
+    title: 'Instagram Business User ID',
+    portal: 'https://developers.facebook.com/tools/explorer',
+    steps: '1. Com o Access Token configurado<br>2. No Graph API Explorer rode: <code>GET /me/accounts</code> para pegar Page ID<br>3. Depois: <code>GET /{page-id}?fields=instagram_business_account</code><br>4. O ID retornado é o INSTAGRAM_USER_ID',
+    expires: null
+  },
+  TIKTOK_ACCESS_TOKEN: {
+    title: 'TikTok Access Token',
+    portal: 'https://developers.tiktok.com/apps',
+    steps: '1. TikTok for Developers → Manage Apps → Create App<br>2. Configure scopes: <code>video.publish</code>, <code>video.upload</code>, <code>user.info.basic</code><br>3. Configure Redirect URI<br>4. Faça OAuth flow e troque code por access_token (24h validity, refresh_token disponível)',
+    expires: 1
+  },
+  TIKTOK_OPEN_ID: {
+    title: 'TikTok Open ID',
+    portal: 'https://developers.tiktok.com',
+    steps: 'O open_id é retornado junto com o access_token na resposta OAuth. É o identificador único do usuário.',
+    expires: null
+  },
+  PINTEREST_ACCESS_TOKEN: {
+    title: 'Pinterest Access Token',
+    portal: 'https://developers.pinterest.com/apps',
+    steps: '1. Pinterest Developers → Create App<br>2. Scopes: <code>pins:write</code>, <code>boards:read</code>, <code>user_accounts:read</code><br>3. OAuth flow para gerar access_token (validade 30 dias, refreshable)',
+    expires: 30
+  },
+  PINTEREST_BOARD_ID: {
+    title: 'Pinterest Board ID',
+    portal: 'https://www.pinterest.com',
+    steps: '1. Crie/acesse um Board no seu perfil<br>2. Pegue a URL: <code>pinterest.com/seu-user/nome-do-board/</code><br>3. Use API: <code>GET /v5/boards</code> com access_token para listar boards e seus IDs<br>4. O ID parece um número longo: ex <code>1153484537829328999</code>',
+    expires: null
+  },
+  WHATSAPP_TOKEN: {
+    title: 'WhatsApp Business API Token',
+    portal: 'https://developers.facebook.com/apps',
+    steps: '1. Meta for Developers → seu App → WhatsApp Business → Setup<br>2. Use System User Token (permanente) ou Temporary Access Token (24h)<br>3. Permissões: <code>whatsapp_business_messaging</code>, <code>whatsapp_business_management</code><br>4. Adicione número de teste em Phone Numbers',
+    expires: null
+  },
+  WHATSAPP_PHONE_ID: {
+    title: 'WhatsApp Phone Number ID',
+    portal: 'https://developers.facebook.com',
+    steps: 'Em WhatsApp → API Setup, copie o Phone Number ID (não o número em si — é um ID numérico fornecido pela Meta).',
+    expires: null
+  },
+  WHATSAPP_GROUP_ID: {
+    title: 'WhatsApp Group ID',
+    portal: 'https://www.whatsapp.com/',
+    steps: 'API oficial Meta NÃO suporta envio para grupos. Para automação real de grupos use:<br>• <strong>whapi.cloud</strong> (não oficial mas funciona)<br>• <strong>z-api.io</strong> (BR)<br>• <strong>API Cloud da Meta</strong> só serve para mensagens 1-on-1 ou broadcasts via templates aprovados',
+    expires: null
+  },
+  HEYGEN_API_KEY: {
+    title: 'HeyGen API Key (avatar)',
+    portal: 'https://app.heygen.com/settings?nav=API',
+    steps: '1. HeyGen Settings → API<br>2. Generate API Key<br>3. Plano free permite ~10 vídeos/mês<br>4. Plano Creator ($24/mês) destrava avatar customizado<br>⚠️ Custo $$$ (não é grátis como o resto do sistema)',
+    expires: null
+  },
+  META_THREADS_TOKEN: {
+    title: 'Threads Access Token',
+    portal: 'https://developers.facebook.com',
+    steps: '1. Meta for Developers → seu App → Threads<br>2. Conecte conta Threads ao Facebook<br>3. OAuth com scope <code>threads_basic</code>, <code>threads_content_publish</code><br>4. Long-lived token (60 dias)',
+    expires: 60
+  },
+  META_THREADS_USER_ID: {
+    title: 'Threads User ID',
+    portal: 'https://developers.facebook.com',
+    steps: 'Após OAuth, chame <code>GET /me?access_token={token}</code> no endpoint Threads Graph. Retorna User ID.',
+    expires: null
+  },
+  KWAI_ACCESS_TOKEN: {
+    title: 'Kwai Access Token',
+    portal: 'https://open.kwai.com/',
+    steps: '⚠️ API oficial Kwai BR é limitada — geralmente requer parceria comercial.<br>Alternativas: usar app mobile com Adb scripting OU upload manual.',
+    expires: null
+  }
+};
+
+function showToast(msg, type='info'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function saveConfig(){
+  const ak = document.getElementById('anon-key-input').value.trim();
+  const gp = document.getElementById('gh-pat-input').value.trim();
+  if(!ak.startsWith('eyJ')){ showToast('Anon key inválida (deve começar com eyJ)','error'); return; }
+  localStorage.setItem('admin_anon_key', ak);
+  if(gp) localStorage.setItem('admin_gh_pat', gp);
+  ANON_KEY = ak;
+  GH_PAT = gp;
+  document.getElementById('config-banner').classList.remove('show');
+  showToast('Config salva! Carregando dados...','success');
+  loadAll();
+}
+
+async function rpc(fn, body={}){
+  const r = await fetch(SB_URL + '/rest/v1/rpc/' + fn, {
+    method:'POST',
+    headers:{
+      'apikey': ANON_KEY,
+      'Authorization':'Bearer ' + ANON_KEY,
+      'Content-Type':'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error(r.status + ': ' + await r.text());
+  return r.json();
+}
+
+async function loadHealth(){
+  try{
+    const h = await rpc('get_system_health');
+    HEALTH_DATA = h;
+    const stats = [
+      {num:h.brain.insights_active, label:'Brain insights', sub:`${h.brain.high_confidence} high-conf · avg ${h.brain.avg_priority}`, cls:'info'},
+      {num:h.science.papers, label:'Pesquisas científicas', sub:`avg authority ${h.science.avg_authority} · max IF ${h.science.max_impact_factor}`, cls:'info'},
+      {num:h.voice.emotion_mappings, label:'Vozes emocionais', sub:`${h.voice.pipelines_with_voice_plan} pipelines com plano`, cls:'info'},
+      {num:h.iterations.total, label:'Iterações qualidade', sub:`max uplift +${h.iterations.best_uplift_pts || 0} pts`, cls:'info'},
+      {num:h.safety.pipelines_safe, label:'Safe to publish', sub:`${h.safety.violations_logged} violacoes log`, cls:h.safety.pipelines_safe>0?'info':'warn'},
+      {num:h.series.total, label:'Séries criadas', sub:`${h.series.episodes_planned} episódios planejados`, cls:'info'},
+      {num:h.cron.jobs_active, label:'Cron jobs ativos', sub:`${h.cron.runs_last_hour} runs/hora`, cls:'info'},
+      {num:h.pipelines.ready_to_publish, label:'Prontos publicar', sub:`${h.pipelines.mp4_ready} MP4 ready · ${h.pipelines.published} já pub`, cls:h.pipelines.ready_to_publish>0?'':'warn'}
+    ];
+    document.getElementById('health-stats').innerHTML = stats.map(s => `
+      <div class="card card-stat">
+        <div class="num ${s.cls}">${s.num}</div>
+        <div class="label">${s.label}</div>
+        <div class="sub">${s.sub}</div>
+      </div>`).join('');
+    document.getElementById('health-badge').textContent = `${h.cron.jobs_active} crons · 24/7`;
+    
+    // Conectores
+    const cMap = {
+      youtube:{name:'YouTube',desc:'⚠️ DESATIVADO (canal antigo bloqueado)',icon:'📺'},
+      instagram:{name:'Instagram',desc:'Reels + Stories autônomos',icon:'📸'},
+      tiktok:{name:'TikTok',desc:'Vídeos curtos viral',icon:'🎵'},
+      pinterest:{name:'Pinterest',desc:'Pins com link tráfego',icon:'📌'},
+      whatsapp:{name:'WhatsApp',desc:'Comunidade engajamento',icon:'💬'},
+      threads:{name:'Threads (Meta)',desc:'Texto curto + vídeo',icon:'@'},
+      kwai:{name:'Kwai',desc:'Brasil mobile audience',icon:'📱'},
+      heygen:{name:'HeyGen Avatar',desc:'Avatar Daniela ($)',icon:'🎭'}
+    };
+    document.getElementById('connectors-grid').innerHTML = Object.entries(h.connectors_status).map(([k,v]) => {
+      const c = cMap[k] || {name:k,desc:'',icon:'?'};
+      return `<div class="connector ${v?'ok':'miss'}" onclick="filterToCategory('${k}')">
+        <div class="status"></div>
+        <div class="info">
+          <div class="name">${c.icon} ${c.name}</div>
+          <div class="desc">${v?'✓ Configurado':c.desc}</div>
+        </div>
+      </div>`;
+    }).join('');
+    
+    renderTodos(h);
+  }catch(e){ showToast('Erro ao carregar health: '+e.message,'error'); console.error(e); }
+}
+
+async function loadSecrets(){
+  try{
+    const s = await rpc('get_secrets_status');
+    SECRETS_DATA = s.secrets;
+    document.getElementById('secrets-summary').textContent = `${s.configured}/${s.total} configurados`;
+    renderSecrets('all');
+  }catch(e){ showToast('Erro ao carregar secrets: '+e.message,'error'); console.error(e); }
+}
+
+function renderSecrets(filter){
+  const list = filter==='all' ? SECRETS_DATA : SECRETS_DATA.filter(s => s.category===filter);
+  document.getElementById('secrets-list').innerHTML = list.map(s => {
+    const exp = s.expires_in_days;
+    let icls = s.exists ? 'ok' : 'miss';
+    if(s.exists && exp !== null && exp < 30) icls = 'expiring';
+    let metaText = '';
+    if(s.exists){
+      metaText = `${s.value_length} chars`;
+      if(exp !== null && exp < 9999) metaText += ` · expira em ${exp}d`;
+      else if(exp === null || exp >= 9999) metaText += ' · permanente';
+    } else {
+      metaText = 'não configurado';
+    }
+    return `<div class="secret-row">
+      <div class="indicator ${icls}"></div>
+      <div class="key">${s.key}</div>
+      <div class="meta">${metaText} <span class="category ${s.critical?'critical':''}">${s.category}${s.critical?' · CRITICAL':''}</span></div>
+      <button class="btn ${s.exists?'':'btn-primary'}" onclick="openSecretModal('${s.key}')">${s.exists?'Atualizar':'Configurar'}</button>
+    </div>`;
+  }).join('') || '<div class="alert info">Nenhuma credencial nesse filtro</div>';
+}
+
+function filterSecrets(cat, btn){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderSecrets(cat);
+}
+
+function filterToCategory(cat){
+  // Achar tab e clicar
+  document.querySelectorAll('.tab').forEach(t => {
+    if(t.getAttribute('onclick')?.includes(`'${cat}'`)) t.click();
+  });
+  document.querySelector('.section h2').scrollIntoView({behavior:'smooth'});
+}
+
+function openSecretModal(key){
+  const guide = SETUP_GUIDES[key] || {title:key, portal:'', steps:'Cole o valor da credencial. Sem instruções específicas para essa key.', expires:null};
+  document.getElementById('secret-modal-title').textContent = '🔑 ' + guide.title;
+  document.getElementById('secret-modal-help').innerHTML = `
+    <div class="alert info">
+      <strong>Como obter:</strong><br>${guide.steps}
+      ${guide.portal ? `<br><br><a href="${guide.portal}" target="_blank" class="btn btn-info" style="margin-top:8px">🔗 Abrir portal de desenvolvedores</a>` : ''}
+    </div>`;
+  document.getElementById('secret-modal-value').value = '';
+  document.getElementById('secret-modal-expires').value = guide.expires || '';
+  document.getElementById('secret-modal-expires').dataset.key = key;
+  document.getElementById('secret-sql-output').classList.remove('show');
+  document.getElementById('secret-modal').classList.add('show');
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function generateSecretSQL(){
+  const key = document.getElementById('secret-modal-expires').dataset.key;
+  const value = document.getElementById('secret-modal-value').value.trim();
+  const expires = document.getElementById('secret-modal-expires').value.trim();
+  if(!value){ showToast('Cole o valor da credencial primeiro','error'); return; }
+  const escaped = value.replace(/'/g, "''");
+  let sql;
+  if(expires && parseInt(expires) > 0){
+    sql = `-- Configurar ${key} (expira em ${expires} dias)\nSELECT upsert_secret('${key}', '${escaped}', ${expires});`;
+  } else {
+    sql = `-- Configurar ${key} (permanente)\nSELECT upsert_secret('${key}', '${escaped}');`;
+  }
+  const out = document.getElementById('secret-sql-output');
+  out.innerHTML = `<button class="copy-btn" onclick="copyToClipboard(this)">Copiar SQL</button>${sql}\n\n-- Cola no SQL Editor: https://supabase.com/dashboard/project/tpjvalzwkqwttvmszvie/sql/new`;
+  out.classList.add('show');
+  out.dataset.sql = sql;
+}
+
+function copyToClipboard(btn){
+  const out = document.getElementById('secret-sql-output');
+  navigator.clipboard.writeText(out.dataset.sql).then(() => {
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar SQL', 2000);
+  });
+}
+
+async function triggerWorkflow(yml, inputs={}){
+  if(!GH_PAT){
+    showToast('Cole o GH_PAT na config inicial primeiro','error');
+    document.getElementById('config-banner').classList.add('show');
+    return;
+  }
+  try{
+    const r = await fetch(`https://api.github.com/repos/tafita81/Repovazio/actions/workflows/${yml}/dispatches`, {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer ' + GH_PAT,
+        'Accept':'application/vnd.github+json',
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ref:'main', inputs})
+    });
+    if(r.status === 204){
+      showToast('✓ Workflow disparado! Veja em Actions.','success');
+    } else {
+      showToast('Erro ' + r.status + ': ' + await r.text(),'error');
+    }
+  }catch(e){ showToast('Erro: '+e.message,'error'); }
+}
+
+function openSeriesModal(){ document.getElementById('series-modal').classList.add('show'); }
+
+function dispatchSeries(){
+  const theme = document.getElementById('series-theme').value.trim();
+  const eps = document.getElementById('series-episodes').value;
+  const platform = document.getElementById('series-platform').value;
+  if(!theme){ showToast('Tema obrigatório','error'); return; }
+  triggerWorkflow('series-generator.yml', {action:'series', theme, episodes:eps, target_platform:platform});
+  closeModal('series-modal');
+}
+
+function renderTodos(h){
+  const todos = [];
+  if(h.cron.jobs_active < 11) todos.push({lvl:'warn',txt:`Apenas ${h.cron.jobs_active} cron jobs ativos (esperado 11). Verifique pg_cron.`});
+  if(h.pipelines.ready_to_publish === 0) todos.push({lvl:'warn',txt:`0 pipelines prontos para publicar. Iterations precisam atingir score 95+.`});
+  
+  const missing = [];
+  Object.entries(h.connectors_status).forEach(([k,v]) => { if(!v && k!=='youtube') missing.push(k); });
+  if(missing.length > 0) todos.push({lvl:'danger',txt:`${missing.length} conectores não configurados: <strong>${missing.join(', ')}</strong>. Sem eles, nada é publicado automaticamente.`});
+  
+  if(h.science.pipelines_with_science < h.pipelines.mp4_ready) todos.push({lvl:'info',txt:`${h.pipelines.mp4_ready - h.science.pipelines_with_science} pipelines mp4_ready sem ciência atribuída. Rode <code>find_scientific_ref</code>.`});
+  
+  if(h.voice.pipelines_with_voice_plan < h.pipelines.mp4_ready) todos.push({lvl:'info',txt:`${h.pipelines.mp4_ready - h.voice.pipelines_with_voice_plan} pipelines mp4_ready sem plano de voz emocional. Rode <code>optimize_voice_emotion</code>.`});
+  
+  todos.push({lvl:'warn',txt:`<strong>Edge Functions quota 100% cheia:</strong> bloqueia deploy de novas EFs. Acesse Dashboard → Functions e delete EFs órfãs (lista em chats anteriores), ou upgrade Pro $25/mês.`});
+  
+  todos.push({lvl:'info',txt:`<strong>Visão computacional pendente:</strong> análise de frames do MP4 não implementada. Adicionar gpt-4o-mini vision para validar thumbnail.`});
+  
+  todos.push({lvl:'info',txt:`<strong>Audio analysis pendente:</strong> transcrever áudio gerado e validar contra script original (detectar erros TTS).`});
+  
+  todos.push({lvl:'info',txt:`<strong>Distribute workflow pendente:</strong> precisa workflow que pega <code>list_publishable_pipelines()</code> e posta nas redes via OAuth.`});
+  
+  todos.push({lvl:'info',txt:`<strong>Analytics pós-publicação pendente:</strong> coletar views/likes 24h após postar e fazer feedback no brain (uplift real).`});
+  
+  document.getElementById('todo-list').innerHTML = todos.map(t => 
+    `<div class="alert ${t.lvl}">${t.txt}</div>`
+  ).join('');
+}
+
+async function loadAll(){
+  if(!ANON_KEY){ document.getElementById('config-banner').classList.add('show'); return; }
+  await loadHealth();
+  await loadSecrets();
+}
+
+function reload(){ loadAll(); showToast('Recarregando...','info'); }
+
+// Init
+if(!ANON_KEY){
+  document.getElementById('config-banner').classList.add('show');
+} else {
+  document.getElementById('anon-key-input').value = ANON_KEY;
+  if(GH_PAT) document.getElementById('gh-pat-input').value = GH_PAT;
+  loadAll();
+}
+
+// Modal click outside to close
+document.querySelectorAll('.modal').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('show'); });
+});
+
+// Auto-reload every 60s
+setInterval(() => { if(ANON_KEY) loadAll(); }, 60000);
+</script>
+</body>
+</html>
