@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎬 Mapa Producao · psicologia.doc</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,sans-serif;background:#000;color:#fff;padding:14px;max-width:1200px;margin:0 auto;line-height:1.5}
+h1{font-size:22px;margin-bottom:4px;background:linear-gradient(90deg,#a855f7,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sub{color:#888;font-size:12px;margin-bottom:18px}
+.pulse{display:inline-block;width:10px;height:10px;background:#4ade80;border-radius:50%;animation:p 2s infinite}
+@keyframes p{50%{opacity:.5}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.stat{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:12px;text-align:center}
+.stat .n{font-size:24px;font-weight:700;color:#a855f7;display:block}
+.stat .l{color:#888;font-size:10px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.stat.green .n{color:#4ade80}.stat.amber .n{color:#fbbf24}.stat.blue .n{color:#60a5fa}.stat.red .n{color:#f87171}
+h2{font-size:15px;margin:20px 0 10px;color:#a855f7;border-bottom:1px solid #333;padding-bottom:6px}
+.serie-card{background:#0d0d0d;border-left:3px solid #a855f7;padding:12px 14px;margin:8px 0;border-radius:0 8px 8px 0}
+.serie-card .nome{color:#fff;font-weight:600;font-size:14px}
+.serie-card .meta{color:#888;font-size:11px;margin-top:4px}
+.serie-card .voz{display:inline-block;background:#2a1a3d;color:#c084fc;padding:3px 8px;border-radius:10px;font-size:10px;margin:4px 4px 0 0}
+.serie-card .canal{display:inline-block;background:#1a2a3d;color:#60a5fa;padding:3px 8px;border-radius:10px;font-size:10px;margin:4px 4px 0 0}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:11px;background:#161616;border-radius:6px;overflow:hidden}
+th,td{padding:8px;text-align:left;border-bottom:1px solid #222}
+th{background:#222;color:#a855f7;font-weight:600;font-size:10px;text-transform:uppercase}
+tr.pri-10{border-left:3px solid #fbbf24}
+.mirror-cell{font-size:10px;color:#aaa;line-height:1.4}
+.mirror-cell strong{color:#fff}
+.tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600}
+.tag.green{background:#1a3d2a;color:#4ade80}.tag.red{background:#3d1a1a;color:#f87171}.tag.amber{background:#3d2a1a;color:#fbbf24}
+.foot{margin-top:24px;padding:14px;background:#0d0d0d;border-radius:8px;text-align:center;font-size:11px;color:#666}
+.foot a{color:#a855f7;text-decoration:none;margin:0 6px}
+</style></head><body>
+
+<h1><span class="pulse"></span> Mapa Produção · Voz Cinematográfica</h1>
+<p class="sub">@psidanielacoelho · espelhos virais reais · 10 séries cross-canal · auto-validação 90+</p>
+
+<div class="grid" id="stats"></div>
+
+<h2>🎬 10 Séries Cross-Canal (cada uma replica top viral mundial)</h2>
+<div id="series"></div>
+
+<h2>🔮 13 Espelhos Virais Reais (mapeamento completo)</h2>
+<table id="mirrors"><tr><th>#</th><th>Canal Origem</th><th>Subs</th><th>Título Original → Clonado PT</th><th>Views</th><th>Voz</th><th>Série</th></tr></table>
+
+<h2>🎤 9 Vozes Cinematográficas (refatorado de aguda → calma profunda)</h2>
+<table id="voices"><tr><th>Código</th><th>Edge Voice</th><th>Rate</th><th>Pitch</th><th>OpenAI</th><th>Inspiração Real</th></tr></table>
+
+<h2>📋 Últimos 15 Pipelines Cinematográficos</h2>
+<table id="pipes"><tr><th>#</th><th>Título</th><th>Série</th><th>Voz</th><th>Espelho</th><th>Score</th><th>Status</th></tr></table>
+
+<div class="foot">
+🧠 <a href="/cerebro.html">Cérebro Eterno</a> · 
+🎬 <a href="/v2.html">Galeria V2</a> · 
+📊 <a href="/canal-oficial.html">Blueprint Canal</a> · 
+🛠 <a href="/admin.html">Admin</a> · 
+🔐 <a href="/setup-canal.html">Setup OAuth</a><br>
+<span id="ts"></span>
+</div>
+
+<script>
+const SUPA='https://tpjvalzwkqwttvmszvie.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MjA0NjcsImV4cCI6MjA4MjE5NjQ2N30.iBfx1DAzVA9MhAEgZ54SyPePcjtszSc-CqZpTFlxDnE';
+const f=async(t,p='')=>{const r=await fetch(`${SUPA}/rest/v1/${t}${p}`,{headers:{apikey:KEY,Authorization:`Bearer ${KEY}`}});return r.ok?r.json():[]};
+
+(async()=>{
+  const [vm,sc,vp,mp]=await Promise.all([
+    f('viral_mirrors','?order=prioridade.desc,video_views_M.desc.nullslast'),
+    f('serie_canais','?order=prioridade_lancamento.desc'),
+    f('voice_profiles','?order=voice_code'),
+    f('mapa_producao','?eternal_brain_decision=eq.CINEMATIC_RESET_2026-05-10&limit=15')
+  ]);
+
+  const totalCases=vm.length, totalSeries=sc.length, totalVozes=vp.length;
+  const totalCanais=new Set(vm.map(x=>x.canal_origem)).size;
+  const totalSubsM=vm.reduce((a,x)=>a+(parseFloat(x.canal_subs_M)||0),0).toFixed(1);
+  const totalViewsM=vm.reduce((a,x)=>a+(parseFloat(x.video_views_M)||0),0).toFixed(0);
+  const cinema=mp.length;
+
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><span class="n">${totalCases}</span><div class="l">espelhos virais</div></div>
+    <div class="stat green"><span class="n">${totalSeries}</span><div class="l">séries</div></div>
+    <div class="stat blue"><span class="n">${totalVozes}</span><div class="l">vozes cinema</div></div>
+    <div class="stat amber"><span class="n">${totalCanais}</span><div class="l">canais top</div></div>
+    <div class="stat"><span class="n">${totalSubsM}M</span><div class="l">subs total</div></div>
+    <div class="stat"><span class="n">${totalViewsM}M</span><div class="l">views ref</div></div>
+    <div class="stat green"><span class="n">${cinema}</span><div class="l">cinemáticos novos</div></div>
+    <div class="stat amber"><span class="n">90+</span><div class="l">auto-validação</div></div>`;
+
+  document.getElementById('series').innerHTML=sc.map(s=>`
+    <div class="serie-card">
+      <div class="nome">${s.serie_nome} <span style="color:#888;font-size:11px">· ${s.serie_codigo}</span></div>
+      <div class="meta">${s.serie_tema} · ${s.duracao_padrao_s/60}min · ${s.num_episodios_meta} episódios meta</div>
+      <span class="voz">🎤 ${s.voz_padrao}</span>
+      ${(s.publish_canais||[]).map(c=>`<span class="canal">📡 ${c}</span>`).join('')}
+    </div>`).join('');
+
+  document.getElementById('mirrors').innerHTML=
+    `<tr><th>#</th><th>Canal</th><th>Subs</th><th>Original → Clone PT</th><th>Views</th><th>Voz</th><th>Série</th></tr>`+
+    vm.map((m,i)=>`<tr class="${m.prioridade>=10?'pri-10':''}">
+      <td>${i+1}</td>
+      <td><strong>${m.canal_origem}</strong></td>
+      <td>${m.canal_subs_M||'-'}M</td>
+      <td class="mirror-cell"><strong>${m.video_titulo_original}</strong><br>→ ${m.video_titulo_pt_clonado}</td>
+      <td><span class="tag amber">${m.video_views_M||'-'}M</span></td>
+      <td style="font-size:10px">${m.estilo_voz||''}</td>
+      <td style="font-size:10px;color:#a855f7">${m.serie_atribuida||''}</td>
+    </tr>`).join('');
+
+  document.getElementById('voices').innerHTML=
+    `<tr><th>Código</th><th>Edge Voice</th><th>Rate</th><th>Pitch</th><th>OpenAI</th><th>Inspiração Real</th></tr>`+
+    vp.map(v=>`<tr>
+      <td><strong>${v.voice_code}</strong></td>
+      <td style="font-size:10px">${v.edge_voice.replace('pt-BR-','').replace('Neural','')}</td>
+      <td><span class="tag ${v.edge_rate.includes('-')?'green':'red'}">${v.edge_rate}</span></td>
+      <td><span class="tag ${v.edge_pitch.includes('-')?'green':'red'}">${v.edge_pitch}</span></td>
+      <td>${v.openai_voice}</td>
+      <td style="font-size:10px;color:#aaa">${v.inspiracao_real||''}</td>
+    </tr>`).join('');
+
+  document.getElementById('pipes').innerHTML=
+    `<tr><th>#</th><th>Título</th><th>Série</th><th>Voz</th><th>Espelho</th><th>Score</th><th>Status</th></tr>`+
+    mp.map(p=>`<tr>
+      <td>${p.pipeline_id}</td>
+      <td style="font-size:11px;max-width:200px">${p.title}</td>
+      <td style="font-size:10px;color:#a855f7">${p.serie_codigo||'-'}</td>
+      <td style="font-size:10px">${p.voz||'-'}</td>
+      <td style="font-size:10px">${p.mirror_canal||'-'} (${p.mirror_views_M||'?'}M)</td>
+      <td>${p.score?`<span class="tag ${p.score>=90?'green':'amber'}">${p.score}</span>`:'-'}</td>
+      <td><span class="tag ${p.renderizado?'green':'amber'}">${p.renderizado?'✓ render':p.status}</span></td>
+    </tr>`).join('');
+
+  document.getElementById('ts').textContent=`Atualizado: ${new Date().toLocaleString('pt-BR')}`;
+})();
+</script></body></html>
