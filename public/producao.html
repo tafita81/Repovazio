@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Produção Cross-Platform · psicologia.doc</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#000;color:#fff;padding:14px;max-width:1100px;margin:0 auto;line-height:1.5}
+  h1{font-size:22px;margin-bottom:4px;background:linear-gradient(90deg,#a855f7,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:10px}
+  .sub{color:#888;font-size:12px;margin-bottom:14px}
+  .pulse{display:inline-block;width:10px;height:10px;background:#4ade80;border-radius:50%;animation:p 2s ease-in-out infinite}
+  @keyframes p{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+  h2{font-size:14px;margin:18px 0 8px;color:#a855f7;border-bottom:1px solid #333;padding-bottom:4px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0}
+  .stat{background:#161616;border:1px solid #2a2a2a;border-radius:8px;padding:12px;text-align:center}
+  .stat .num{font-size:24px;font-weight:700;color:#a855f7;display:block}
+  .stat .label{color:#888;font-size:10px;margin-top:3px;text-transform:uppercase;letter-spacing:0.5px}
+  .stat.green .num{color:#4ade80}
+  .stat.amber .num{color:#fbbf24}
+  .stat.red .num{color:#f87171}
+  .stat.blue .num{color:#60a5fa}
+  table{width:100%;border-collapse:collapse;margin:6px 0;font-size:11px;background:#0d0d0d;border-radius:6px;overflow:hidden}
+  th,td{padding:8px;text-align:left;border-bottom:1px solid #1a1a1a}
+  th{background:#1a1a1a;color:#a855f7;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:0.5px}
+  tr.premium{background:#1a3d2a}
+  tr.premium td:first-child{color:#4ade80;font-weight:700}
+  tr.standard{background:#1a2d3d}
+  tr.iter{background:#3d2a1a}
+  tr.regen{background:#3d1a1a}
+  .platform-pill{display:inline-block;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px}
+  .pl-yt{background:#cc0000}.pl-ig{background:#e1306c}.pl-tt{background:#000;border:1px solid #fff}.pl-pin{background:#bd081c}.pl-wa{background:#25d366;color:#000}
+  .progress{height:6px;background:#1a1a1a;border-radius:3px;overflow:hidden;margin:4px 0}
+  .progress div{height:100%;background:linear-gradient(90deg,#4ade80,#a855f7);border-radius:3px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;margin:2px}
+  .tag-on{background:#4ade80;color:#000;font-weight:700}
+  .tag-off{background:#444}
+  .footer{margin-top:20px;padding:12px;background:#0d0d0d;border-radius:6px;text-align:center;font-size:10px;color:#666;line-height:1.7}
+  .footer a{color:#a855f7;text-decoration:none}
+  .reload-btn{position:fixed;bottom:14px;right:14px;background:#a855f7;color:#fff;border:none;padding:10px 14px;border-radius:24px;font-size:11px;cursor:pointer;box-shadow:0 4px 12px rgba(168,85,247,0.5)}
+  .alert{padding:10px 12px;border-radius:6px;margin:6px 0;font-size:12px;border-left:3px solid;background:#0d0d0d}
+  .alert-warn{border-color:#fbbf24;color:#fbbf24}
+  .alert-ok{border-color:#4ade80;color:#4ade80}
+  .alert-info{border-color:#60a5fa;color:#60a5fa}
+  .ts{font-family:Menlo,monospace;font-size:10px;color:#666}
+</style>
+</head>
+<body>
+
+<h1><span class="pulse"></span> Produção Cross-Platform</h1>
+<p class="sub">@psidanielacoelho · Auto-validação 90+ · Anti-bloqueio · Viralização baseada em cases reais 2026</p>
+
+<h2>🎯 Estado da Produção</h2>
+<div class="grid" id="growth-stats"></div>
+
+<h2>📊 Distribuição de Qualidade (Score v5)</h2>
+<div class="grid" id="quality-stats"></div>
+
+<h2>🌐 Cross-Platform · 5 Plataformas</h2>
+<table id="cross-platform">
+<tr><th>Plataforma</th><th>Total</th><th>Pending</th><th>Ready</th><th>Published</th><th>Próximo Post</th></tr>
+</table>
+
+<h2>📅 Horários Pico (Sprout Social 2026 · 2bn engagements)</h2>
+<table id="schedule">
+<tr><th>Plataforma</th><th>Dia</th><th>Janela</th><th>Prioridade</th></tr>
+</table>
+
+<h2>🛡️ Anti-Bloqueio · Frases Proibidas (severity 8+)</h2>
+<table id="forbidden">
+<tr><th>Pattern</th><th>Categoria</th><th>Severity</th><th>Recomendação</th></tr>
+</table>
+
+<h2>🚀 Top Vídeos Prontos (Score ≥90)</h2>
+<table id="top-videos">
+<tr><th>ID</th><th>Título</th><th>Plataforma</th><th>Score</th><th>Tier</th></tr>
+</table>
+
+<h2>🎯 Metas de Crescimento (Cases Reais)</h2>
+<table id="milestones">
+<tr><th>Meta</th><th>Prazo</th><th>Case</th><th>Estratégia</th></tr>
+</table>
+
+<div class="footer">
+  Sistema 100% autônomo · Auto-validate cron 5min · Cross-platform repurpose cron 15min · Eternal brain optimize daily<br>
+  📋 <a href="/admin.html">admin</a> · 🧠 <a href="/cerebro.html">cérebro eterno</a> · 📺 <a href="/v2.html">galeria v2</a> · 🎬 <a href="/canal-oficial.html">blueprint canal</a> · 🔐 <a href="/setup-canal.html">setup OAuth</a><br>
+  <span class="ts" id="ts"></span>
+</div>
+
+<button class="reload-btn" onclick="loadAll()">🔄 Atualizar</button>
+
+<script>
+const SUPA = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MjA0NjcsImV4cCI6MjA4MjE5NjQ2N30.iBfx1DAzVA9MhAEgZ54SyPePcjtszSc-CqZpTFlxDnE';
+
+async function fetchTable(table, params='') {
+  try {
+    const r = await fetch(`${SUPA}/rest/v1/${table}${params}`, {headers:{apikey:KEY,Authorization:`Bearer ${KEY}`}});
+    return r.ok ? r.json() : [];
+  } catch { return []; }
+}
+
+function platClass(p){return ({'youtube_shorts':'pl-yt','youtube_long_monetized':'pl-yt','instagram_reels':'pl-ig','tiktok_short':'pl-tt','pinterest_pin':'pl-pin','whatsapp_groups':'pl-wa'})[p]||''}
+function platName(p){return ({'youtube_shorts':'YT Shorts','youtube_long_monetized':'YT Long','instagram_reels':'Instagram','tiktok_short':'TikTok','pinterest_pin':'Pinterest','whatsapp_groups':'WhatsApp'})[p]||p}
+function fmtDate(d){return d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'}
+
+async function loadAll() {
+  // Growth stats
+  const g = await fetchTable('growth_projection_live','?limit=1');
+  if(g[0]){const s=g[0];
+    document.getElementById('growth-stats').innerHTML=`
+      <div class="stat green"><span class="num">${s.videos_renderizados}</span><div class="label">Vídeos prontos</div></div>
+      <div class="stat blue"><span class="num">${s.cross_platform_assets_total}</span><div class="label">Assets cross-platform</div></div>
+      <div class="stat amber"><span class="num">${s.cross_platform_pending}</span><div class="label">Pending</div></div>
+      <div class="stat green"><span class="num">${s.cross_platform_published}</span><div class="label">Publicados</div></div>
+      <div class="stat"><span class="num">${s.score_medio||0}</span><div class="label">Score médio</div></div>
+      <div class="stat blue"><span class="num">${s.insights_brain}</span><div class="label">Insights brain</div></div>
+      <div class="stat green"><span class="num">~${s.projecao_subs_por_dia}</span><div class="label">Subs/dia projeção</div></div>
+      <div class="stat amber"><span class="num">${(s.proxima_meta_subs/1000).toFixed(0)}k</span><div class="label">Próx. meta</div></div>
+    `;
+  }
+
+  // Quality
+  const q = await fetchTable('publishable_pipelines_v5','?quality_score_current=not.is.null');
+  const tiers = {PREMIUM:0,STANDARD:0,NEEDS_ITERATION:0,NEEDS_REGEN:0};
+  q.forEach(p=>{tiers[p.quality_tier]=(tiers[p.quality_tier]||0)+1});
+  document.getElementById('quality-stats').innerHTML=`
+    <div class="stat green"><span class="num">${tiers.PREMIUM}</span><div class="label">PREMIUM (95+)</div></div>
+    <div class="stat blue"><span class="num">${tiers.STANDARD}</span><div class="label">STANDARD (90-94)</div></div>
+    <div class="stat amber"><span class="num">${tiers.NEEDS_ITERATION}</span><div class="label">Iterando (75-89)</div></div>
+    <div class="stat red"><span class="num">${tiers.NEEDS_REGEN}</span><div class="label">Regenerar (&lt;75)</div></div>
+  `;
+
+  // Top videos
+  const top = q.sort((a,b)=>(b.quality_score_current||0)-(a.quality_score_current||0)).slice(0,8);
+  document.getElementById('top-videos').innerHTML=`
+    <tr><th>ID</th><th>Título</th><th>Plataforma</th><th>Score</th><th>Tier</th></tr>
+    ${top.map(v=>`<tr class="${v.quality_tier.toLowerCase().replace('needs_','')}">
+      <td>#${v.id}</td>
+      <td>${(v.title||'').slice(0,55)}</td>
+      <td><span class="platform-pill ${platClass(v.target_platform)}">${platName(v.target_platform)}</span></td>
+      <td><strong>${v.quality_score_current}</strong></td>
+      <td>${v.quality_tier}</td></tr>`).join('')}
+  `;
+
+  // Cross-platform
+  const cp = await fetchTable('cross_platform_dashboard');
+  document.getElementById('cross-platform').innerHTML=`
+    <tr><th>Plataforma</th><th>Total</th><th>Pending</th><th>Ready</th><th>Published</th><th>Próximo Post</th></tr>
+    ${cp.map(p=>`<tr>
+      <td><span class="platform-pill ${platClass(p.platform)}">${platName(p.platform)}</span></td>
+      <td><strong>${p.total_assets}</strong></td>
+      <td>${p.pending}</td>
+      <td>${p.ready}</td>
+      <td>${p.published}</td>
+      <td class="ts">${fmtDate(p.next_post_time)}</td></tr>`).join('')}
+  `;
+
+  // Schedule
+  const sch = await fetchTable('posting_schedule_optimal','?priority=gte.8&order=priority.desc&limit=15');
+  document.getElementById('schedule').innerHTML=`
+    <tr><th>Plataforma</th><th>Dia</th><th>Janela</th><th>Prioridade</th></tr>
+    ${sch.map(s=>`<tr>
+      <td><span class="platform-pill ${platClass(s.platform)}">${platName(s.platform)}</span></td>
+      <td>${s.weekday}</td>
+      <td class="ts">${s.hour_start}h–${s.hour_end}h ${s.timezone_logic||'local'}</td>
+      <td><strong>${s.priority}</strong>/10</td></tr>`).join('')}
+  `;
+
+  // Forbidden
+  const fb = await fetchTable('forbidden_phrases','?severity=gte.8&order=severity.desc&limit=10');
+  document.getElementById('forbidden').innerHTML=`
+    <tr><th>Pattern</th><th>Categoria</th><th>Severity</th><th>Recomendação</th></tr>
+    ${fb.map(f=>`<tr>
+      <td><code style="color:#f87171">${f.pattern}</code></td>
+      <td>${f.category}</td>
+      <td><strong>${f.severity}</strong>/10</td>
+      <td style="font-size:10px;color:#aaa">${(f.recomendacao||'').slice(0,80)}</td></tr>`).join('')}
+  `;
+
+  // Milestones
+  const m = await fetchTable('growth_milestones','?order=meta_subs.asc');
+  document.getElementById('milestones').innerHTML=`
+    <tr><th>Meta</th><th>Prazo</th><th>Case</th><th>Estratégia</th></tr>
+    ${m.map(x=>`<tr ${x.alcancado_em?'class="premium"':''}>
+      <td><strong>${x.meta_subs.toLocaleString('pt-BR')}</strong> subs</td>
+      <td>${x.prazo_dias}d</td>
+      <td><code style="color:#a855f7">${x.case_referencia}</code></td>
+      <td style="font-size:10px;color:#aaa">${(x.estrategia_resumo||'').slice(0,90)}</td></tr>`).join('')}
+  `;
+
+  document.getElementById('ts').textContent=`Última atualização: ${new Date().toLocaleString('pt-BR')}`;
+}
+
+loadAll();
+setInterval(loadAll, 60000);
+</script>
+</body>
+</html>
