@@ -3,62 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>psicologia.doc — V2 Psych2Go</title>
+<title>psicologia.doc — V2 Psych2Go Viral</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;padding:20px;max-width:1200px;margin:0 auto}
-  h1{font-size:28px;margin-bottom:8px;background:linear-gradient(90deg,#ff6b9d,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  .sub{color:#888;font-size:14px;margin-bottom:24px}
-  .badge{display:inline-block;background:#1f3d28;color:#4ade80;padding:4px 10px;border-radius:6px;font-size:12px;margin-right:8px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-  .card{background:#1a1a1a;border:1px solid #333;border-radius:12px;overflow:hidden;transition:.2s}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0a0a0a;color:#fff;padding:16px;max-width:1400px;margin:0 auto}
+  h1{font-size:26px;margin-bottom:6px;background:linear-gradient(90deg,#ff6b9d,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#888;font-size:13px;margin-bottom:20px;line-height:1.5}
+  .badge{display:inline-block;background:#1f3d28;color:#4ade80;padding:3px 8px;border-radius:5px;font-size:11px;margin-right:6px;margin-bottom:4px}
+  .badge.warn{background:#3d2c1f;color:#facc15}
+  h2{font-size:20px;margin:30px 0 12px;padding:12px 16px;background:linear-gradient(90deg,rgba(168,85,247,.15),rgba(168,85,247,0));border-left:3px solid #a855f7;border-radius:4px}
+  h2 .meta{font-size:12px;color:#888;font-weight:normal;margin-left:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+  .grid-wide{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .card{background:#161616;border:1px solid #2a2a2a;border-radius:10px;overflow:hidden;transition:.2s}
   .card:hover{border-color:#a855f7;transform:translateY(-2px)}
-  video{width:100%;display:block;background:#000}
-  .meta{padding:14px}
-  .title{font-size:14px;font-weight:600;margin-bottom:6px;color:#fff}
-  .info{font-size:12px;color:#888;display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
-  .platform{display:inline-block;padding:2px 8px;background:#2a2a2a;border-radius:4px;font-size:11px;color:#a855f7;text-transform:uppercase}
-  .footer{margin-top:30px;padding:16px;background:#1a1a1a;border-radius:8px;text-align:center;color:#666;font-size:12px}
-  a.dl{display:inline-block;margin-top:8px;color:#a855f7;font-size:12px;text-decoration:none}
+  .card.viral{border-color:rgba(74,222,128,.3)}
+  video{width:100%;display:block;background:#000;aspect-ratio:9/16}
+  video.wide{aspect-ratio:16/9}
+  .meta{padding:10px 12px}
+  .ep{display:inline-block;background:#a855f7;color:#fff;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;margin-right:6px}
+  .title{font-size:13px;font-weight:600;margin:6px 0 4px;color:#fff;line-height:1.3}
+  .info{font-size:11px;color:#888;display:flex;gap:8px;flex-wrap:wrap}
+  .dur{color:#4ade80;font-weight:600}
+  .dur.warn{color:#facc15}
+  .footer{margin-top:30px;padding:14px;background:#161616;border-radius:8px;text-align:center;color:#666;font-size:11px;line-height:1.6}
+  a.dl{display:inline-block;margin-top:6px;color:#a855f7;font-size:11px;text-decoration:none}
   a.dl:hover{text-decoration:underline}
 </style>
 </head>
 <body>
-<h1>🎬 psicologia.doc — V2 Psych2Go style</h1>
+<h1>🎬 psicologia.doc — V2 Psych2Go Viral</h1>
 <p class="sub">
   <span class="badge">✅ ZERO texto na tela</span>
-  <span class="badge">✅ Personagens animados sincronizados</span>
-  <span class="badge">✅ Estilo Psych2Go (9M subs)</span>
+  <span class="badge">✅ Personagens animados Psych2Go</span>
+  <span class="badge">✅ Vozes Edge TTS PT-BR</span>
+  <span class="badge">✅ Sweet spot 50-58s viral</span><br>
+  Custo: $0/mês · Llama 3.3 70B + Flux Schnell + Edge TTS + ffmpeg
 </p>
-<div class="grid" id="grid"></div>
+
+<h2>🔥 SÉRIE VIRAL 1: Apego Ansioso — Medo do Abandono <span class="meta">6 episódios · gerada do roteiro long #70</span></h2>
+<div class="grid" id="s1"></div>
+
+<h2>🔥 SÉRIE VIRAL 2: O Medo do Abandono <span class="meta">6 episódios · gerada do roteiro long #32</span></h2>
+<div class="grid" id="s2"></div>
+
+<h2>📹 Vídeos individuais (longs e shorts originais)</h2>
+<div class="grid grid-wide" id="solo"></div>
+
 <div class="footer">
-  Gerado por: DeepSeek/Groq Llama 3.3 + Flux Schnell Nvidia + Edge TTS + ffmpeg<br>
-  Custo: $0/mês · Pipeline V2 · 6 vídeos · 776s totais
+  <strong>Pipeline V2 Psych2Go-clone</strong><br>
+  Stack: Groq Llama 3.3 70B (roteiros) + Nvidia Flux.1 Schnell (imagens, ZERO texto) + Microsoft Edge TTS (3 vozes PT-BR neural) + ffmpeg Ken Burns 30fps H.264 1080p<br>
+  Modo Viral: split_long_into_viral_series() divide longs em série de 55s · expand_short_to_viral() estica curtos · sentence-redistribution se LLM cortar narração
 </div>
+
 <script>
-const videos = [
-  {id:81, plat:'pinterest_pin', title:'Apego Ansioso: Medo do Abandono', cenas:8, dur:'41s', mb:'6.3', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_81_1778356853.mp4'},
-  {id:78, plat:'youtube_shorts', title:'Apego Ansioso: Medo do Abandono', cenas:12, dur:'58s', mb:'10.3', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_78_1778357088.mp4'},
-  {id:35, plat:'youtube_shorts', title:'Apego Ansioso: O medo do abandono', cenas:15, dur:'130s', mb:'14.2', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_35_1778357193.mp4'},
-  {id:76, plat:'youtube', title:'Apego Ansioso: Medo do Abandono', cenas:35, dur:'206s', mb:'24.6', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_76_1778357492.mp4'},
-  {id:32, plat:'youtube', title:'Apego Ansioso: O medo do abandono', cenas:53, dur:'297s', mb:'34.6', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_32_1778356888.mp4'},
-  {id:70, plat:'youtube', title:'Apego Ansioso: Medo do Abandono', cenas:'?', dur:'long', mb:'39.2', url:'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_70_1778356243.mp4'}
+const s1 = [
+  {id:88, ep:1, title:'O Que É Apego Ansioso?', dur:54, mb:6.0, viral:true},
+  {id:89, ep:2, title:'Como O Apego Ansioso Se Desenvolve', dur:56, mb:5.2, viral:true},
+  {id:90, ep:3, title:'Consequências Do Apego Ansioso', dur:52, mb:6.5, viral:true},
+  {id:91, ep:4, title:'Sinais De Apego Ansioso', dur:55, mb:4.5, viral:true},
+  {id:92, ep:5, title:'Superando O Apego Ansioso', dur:46, mb:4.8, viral:false},
+  {id:93, ep:6, title:'Vencendo O Apego Ansioso', dur:46, mb:6.2, viral:false}
 ];
-document.getElementById('grid').innerHTML = videos.map(v => `
-  <div class="card">
-    <video controls preload="metadata" src="${v.url}"></video>
-    <div class="meta">
-      <div class="title">#${v.id} · ${v.title}</div>
-      <div class="info">
-        <span class="platform">${v.plat}</span>
-        <span>${v.cenas} cenas</span>
-        <span>${v.dur}</span>
-        <span>${v.mb}MB</span>
-      </div>
-      <a class="dl" href="${v.url}" download>⬇ Baixar MP4</a>
-    </div>
-  </div>
-`).join('');
+const s2 = [
+  {id:94, ep:1, title:'O Medo do Abandono', dur:50, mb:4.9, viral:true},
+  {id:95, ep:2, title:'Causas do Apego Ansioso', dur:52, mb:5.9, viral:true},
+  {id:96, ep:3, title:'Sinais do Apego Ansioso', dur:54, mb:4.7, viral:true},
+  {id:97, ep:4, title:'O Ciclo do Medo de Abandono', dur:52, mb:5.6, viral:true},
+  {id:98, ep:5, title:'Superando o Apego Ansioso', dur:53, mb:5.0, viral:true},
+  {id:99, ep:6, title:'Conclusão e CTA', dur:51, mb:8.0, viral:true}
+];
+const solo = [
+  {id:81, plat:'pinterest_pin', title:'Apego Ansioso', cenas:8, dur:'41s', mb:6.3, asp:'9/16'},
+  {id:78, plat:'youtube_shorts', title:'Apego Ansioso (long)', cenas:12, dur:'58s', mb:10.3, asp:'9/16'},
+  {id:35, plat:'youtube_shorts', title:'Apego Ansioso', cenas:15, dur:'130s', mb:14.2, asp:'9/16'},
+  {id:76, plat:'youtube', title:'Apego Ansioso (long)', cenas:35, dur:'206s', mb:24.6, asp:'16/9'},
+  {id:32, plat:'youtube', title:'Apego Ansioso (5min)', cenas:53, dur:'297s', mb:34.6, asp:'16/9'}
+];
+
+async function getMp4(id) {
+  // Hardcoded URLs from DB query
+  const urls = {
+    88:'pipeline_88_1778376030.mp4', 89:'pipeline_89_1778376028.mp4', 90:'pipeline_90_1778376094.mp4',
+    91:'pipeline_91_1778376052.mp4', 92:'pipeline_92_1778376074.mp4', 93:'pipeline_93_1778376024.mp4',
+    94:'pipeline_94_1778376085.mp4', 95:'pipeline_95_1778376101.mp4', 96:'pipeline_96_1778376082.mp4',
+    97:'pipeline_97_1778376099.mp4', 98:'pipeline_98_1778376092.mp4', 99:'pipeline_99_1778376073.mp4',
+    81:'pipeline_81_1778356853.mp4', 78:'pipeline_78_1778357088.mp4', 35:'pipeline_35_1778357193.mp4',
+    76:'pipeline_76_1778357492.mp4', 32:'pipeline_32_1778356888.mp4'
+  };
+  return 'https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/' + urls[id];
+}
+
+async function render(arr, containerId, isSerie) {
+  const container = document.getElementById(containerId);
+  const cards = await Promise.all(arr.map(async v => {
+    const url = await getMp4(v.id);
+    if (isSerie) {
+      const viral = v.viral;
+      return `<div class="card${viral?' viral':''}">
+        <video controls preload="metadata" src="${url}"></video>
+        <div class="meta">
+          <span class="ep">PARTE ${v.ep}</span>
+          <div class="title">${v.title}</div>
+          <div class="info">
+            <span class="dur${viral?'':' warn'}">${viral?'✅':'🟠'} ${v.dur}s</span>
+            <span>${v.mb}MB</span>
+            <span>#${v.id}</span>
+          </div>
+          <a class="dl" href="${url}" download>⬇ MP4</a>
+        </div>
+      </div>`;
+    } else {
+      const wideClass = v.asp==='16/9' ? 'wide' : '';
+      return `<div class="card">
+        <video controls preload="metadata" src="${url}" class="${wideClass}"></video>
+        <div class="meta">
+          <div class="title">#${v.id} · ${v.title}</div>
+          <div class="info">
+            <span style="background:#2a2a2a;padding:2px 6px;border-radius:3px;color:#a855f7;font-size:10px">${v.plat.toUpperCase()}</span>
+            <span>${v.cenas} cenas</span>
+            <span>${v.dur}</span>
+            <span>${v.mb}MB</span>
+          </div>
+          <a class="dl" href="${url}" download>⬇ MP4</a>
+        </div>
+      </div>`;
+    }
+  }));
+  container.innerHTML = cards.join('');
+}
+
+render(s1, 's1', true);
+render(s2, 's2', true);
+render(solo, 'solo', false);
 </script>
 </body>
 </html>
