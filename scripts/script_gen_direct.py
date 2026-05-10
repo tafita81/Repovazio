@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""Gera scripts cinematograficos direto via Groq sem Edge Functions."""
+"""Gera scripts cinematograficos direto via Groq sem Edge Functions.
+UA-aware: Supabase usa python-client, Groq usa openai-python.
+"""
 import os, json, urllib.request, urllib.error
 
 SBU = os.environ["SUPABASE_URL"].rstrip("/")
 SBK = os.environ["SUPABASE_SERVICE_KEY"]
 GROQ = os.environ["GROQ_API_KEY"]
-H_SB = {"apikey": SBK, "Authorization": f"Bearer {SBK}"}
-UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 openai-python/1.0"
 
-def http(url, method="GET", body=None, headers=None, timeout=180):
+UA_SUPABASE = "supabase-py/2.0 (script-gen-direct)"
+UA_GROQ = "openai-python/1.51.0"
+
+def http(url, method="GET", body=None, headers=None, timeout=180, ua=None):
     h = dict(headers or {})
-    h.setdefault("User-Agent", UA)
+    h["User-Agent"] = ua or "python-urllib/3.11"
     h.setdefault("Accept", "application/json")
     data = None
     if body:
@@ -25,24 +28,27 @@ def http(url, method="GET", body=None, headers=None, timeout=180):
     except Exception as e:
         return 0, str(e)
 
+def sb(url, method="GET", body=None):
+    return http(url, method, body,
+                headers={"apikey": SBK, "Authorization": f"Bearer {SBK}"},
+                ua=UA_SUPABASE)
+
 def groq_generate(system, user, max_tokens=8000):
     s, body = http("https://api.groq.com/openai/v1/chat/completions", "POST",
-        body={
-            "model": "llama-3.3-70b-versatile",
-            "messages":[{"role":"system","content":system},{"role":"user","content":user}],
-            "max_tokens": max_tokens, "temperature": 0.7
-        },
-        headers={"Authorization": f"Bearer {GROQ}",
-                 "User-Agent": "openai-python/1.51 (groq-direct-cinematic)"})
+        body={"model":"llama-3.3-70b-versatile",
+              "messages":[{"role":"system","content":system},{"role":"user","content":user}],
+              "max_tokens": max_tokens, "temperature": 0.7},
+        headers={"Authorization": f"Bearer {GROQ}"},
+        ua=UA_GROQ)
     if s == 200:
         return json.loads(body)["choices"][0]["message"]["content"]
     print(f"[groq] err {s}: {body[:300]}")
     return None
 
 def main():
-    s, raw = http(f"{SBU}/rest/v1/content_pipeline?status=eq.pending_generation&metadata->>eternal_brain_decision=eq.CINEMATIC_RESET_2026-05-10&order=id.desc&limit=3&select=id,title,target_platform,metadata", headers=H_SB)
+    s, raw = sb(f"{SBU}/rest/v1/content_pipeline?status=eq.pending_generation&metadata->>eternal_brain_decision=eq.CINEMATIC_RESET_2026-05-10&order=id.desc&limit=3&select=id,title,target_platform,metadata")
     if s != 200:
-        print(f"[err] supabase {s}: {raw[:200]}"); return
+        print(f"[err] supabase {s}: {raw[:300]}"); return
     pipes = json.loads(raw)
     print(f"[gen] {len(pipes)} cinematograficos pending")
 
@@ -88,15 +94,14 @@ Gere o roteiro completo agora em portugues BR cinematografico, narrado em primei
             print(f"[gen] #{pid} falhou"); continue
         script = script.strip()
         if len(script) < 500:
-            print(f"[gen] #{pid} muito curto ({len(script)}c)"); continue
+            print(f"[gen] #{pid} muito curto"); continue
 
-        s_up, _ = http(f"{SBU}/rest/v1/content_pipeline?id=eq.{pid}", "PATCH",
+        s_up, b_up = sb(f"{SBU}/rest/v1/content_pipeline?id=eq.{pid}", "PATCH",
             body={"status":"script_ready", "script": script,
                   "metadata": {**meta,
                                "script_generated_chars": len(script),
-                               "script_generated_via": "groq_direct_cinematic"}},
-            headers={**H_SB, "Prefer":"return=minimal"})
-        print(f"[gen] #{pid} -> script_ready ({len(script)}c) status={s_up}")
+                               "script_generated_via": "groq_direct_cinematic"}})
+        print(f"[gen] #{pid} -> script_ready ({len(script)}c) sb={s_up}")
         if s_up < 300: ok += 1
     print(f"\n[gen] total ok: {ok}/{len(pipes)}")
 
