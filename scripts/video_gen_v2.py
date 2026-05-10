@@ -461,15 +461,20 @@ def gen_image_flux(prompt, output_path, width=768, height=1344, retries=4):
     return False
 
 # -------------- Edge TTS audio --------------
+# CINEMATIC VOICE PROFILES (Psych2Go-style: lenta, profunda, calma)
+# Refatorado 2026-05-10: voz Amanda Silvera tom toasty cup of hot chocolate
+# Default rate -12% pitch -12Hz para narrativa hipnotica
 EMOTION_VOICE = {
-    'calmo':         ('pt-BR-AntonioNeural',   '+0%',   '+0Hz'),
-    'tenso':         ('pt-BR-FranciscaNeural', '+8%',   '+30Hz'),
-    'empatia':       ('pt-BR-FranciscaNeural', '-3%',   '+0Hz'),
-    'esperanca':     ('pt-BR-FranciscaNeural', '+5%',   '+15Hz'),
-    'urgente':       ('pt-BR-FranciscaNeural', '+12%',  '+25Hz'),
-    'contemplativo': ('pt-BR-AntonioNeural',   '-5%',   '-5Hz'),
-    'melancolico':   ('pt-BR-AntonioNeural',   '-8%',   '-10Hz'),
-    'alivio':        ('pt-BR-FranciscaNeural', '-3%',   '+5Hz'),
+    'calmo':         ('pt-BR-FranciscaNeural', '-12%', '-12Hz'),  # base cinematografica
+    'tenso':         ('pt-BR-AntonioNeural',   '-10%', '-15Hz'),  # grave dramatico
+    'empatia':       ('pt-BR-FranciscaNeural', '-15%', '-10Hz'),  # muito lento empatico
+    'esperanca':     ('pt-BR-FranciscaNeural', '-8%',  '-5Hz'),   # leve elevacao
+    'urgente':       ('pt-BR-AntonioNeural',   '-5%',  '-8Hz'),   # firme grave (NUNCA agudo/rapido)
+    'contemplativo': ('pt-BR-AntonioNeural',   '-15%', '-18Hz'),  # MUITO lento profundo
+    'melancolico':   ('pt-BR-AntonioNeural',   '-18%', '-20Hz'),  # extremo grave
+    'alivio':        ('pt-BR-FranciscaNeural', '-10%', '-8Hz'),   # suave alivio
+    'hipnotico':     ('pt-BR-AntonioNeural',   '-15%', '-15Hz'),  # cinema dark
+    'dramatico':     ('pt-BR-AntonioNeural',   '-12%', '-15Hz'),
 }
 
 def gen_audio_edge_tts(text, emotion, output_path):
@@ -507,11 +512,7 @@ def gen_audio_edge_tts(text, emotion, output_path):
     # 3. Final fallback: OpenAI TTS-1 (paid but very cheap ~$0.015/1k chars)
     if OPENAI_KEY:
         try:
-            voice_map_oa = {
-                'calmo': 'onyx', 'tenso': 'nova', 'empatia': 'nova',
-                'esperanca': 'shimmer', 'urgente': 'nova',
-                'contemplativo': 'onyx', 'melancolico': 'echo', 'alivio': 'shimmer'
-            }
+            voice_map_oa = {'calmo':'shimmer','tenso':'onyx','empatia':'nova','esperanca':'shimmer','urgente':'onyx','contemplativo':'fable','melancolico':'onyx','alivio':'nova','hipnotico':'onyx','dramatico':'onyx'}
             r = requests.post('https://api.openai.com/v1/audio/speech',
                 headers={'Authorization': f'Bearer {OPENAI_KEY}', 'Content-Type': 'application/json'},
                 json={
