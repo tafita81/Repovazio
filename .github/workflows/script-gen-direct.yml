@@ -1,0 +1,24 @@
+name: Script Generator Direct (Groq Cinematic)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'  # a cada 30min
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate cinematic scripts via Groq direct
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/script_gen_direct.py
