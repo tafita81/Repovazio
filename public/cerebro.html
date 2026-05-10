@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Cérebro Eterno · psicologia.doc · @psidanielacoelho</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#000;color:#fff;padding:16px;max-width:1100px;margin:0 auto;line-height:1.5}
+  h1{font-size:24px;margin-bottom:4px;background:linear-gradient(90deg,#a855f7,#ec4899,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:10px}
+  .subtitle{color:#888;font-size:13px;margin-bottom:18px}
+  .pulse{display:inline-block;width:10px;height:10px;background:#4ade80;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(1.3)}}
+  .diretiva{background:linear-gradient(135deg,#1a0a2a 0%,#2a0a1a 100%);border:2px solid #a855f7;border-radius:12px;padding:18px;margin:16px 0;font-size:13px;line-height:1.6;position:relative}
+  .diretiva::before{content:'⚡ DIRETIVA ETERNA';position:absolute;top:-10px;left:14px;background:#a855f7;color:#fff;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:1px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 0}
+  .stat{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:14px;text-align:center}
+  .stat .num{font-size:28px;font-weight:700;color:#a855f7;display:block}
+  .stat .label{color:#888;font-size:11px;margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+  .stat.green .num{color:#4ade80}
+  .stat.amber .num{color:#fbbf24}
+  .stat.blue .num{color:#60a5fa}
+  h2{font-size:16px;margin:24px 0 10px;color:#a855f7;border-bottom:1px solid #333;padding-bottom:6px;display:flex;align-items:center;gap:8px}
+  .topic-chip{display:inline-block;background:#2a1a3d;color:#c084fc;padding:5px 12px;border-radius:14px;font-size:11px;margin:3px}
+  .hook-chip{display:inline-block;background:#1a2a3d;color:#60a5fa;padding:5px 12px;border-radius:14px;font-size:11px;margin:3px;font-family:Menlo,monospace}
+  .source-card{background:#0d0d0d;border-left:3px solid #4ade80;padding:10px 14px;margin:6px 0;border-radius:0 6px 6px 0;font-size:12px;color:#bbb}
+  .source-card strong{color:#4ade80}
+  .source-card .key{color:#a855f7;font-family:Menlo,monospace;font-size:10px;text-transform:uppercase}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px;background:#161616;border-radius:6px;overflow:hidden}
+  th,td{padding:10px;text-align:left;border-bottom:1px solid #222}
+  th{background:#222;color:#a855f7;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+  tr.eterno{background:#1a3d2a}
+  tr.eterno td:first-child{color:#4ade80;font-weight:700}
+  .footer{margin-top:24px;padding:14px;background:#0d0d0d;border-radius:8px;text-align:center;font-size:11px;color:#666;line-height:1.7}
+  .footer a{color:#a855f7;text-decoration:none}
+  .footer a:hover{text-decoration:underline}
+  .timestamp{font-family:Menlo,monospace;font-size:11px;color:#666}
+  .reload-btn{position:fixed;bottom:20px;right:20px;background:#a855f7;color:#fff;border:none;padding:10px 16px;border-radius:24px;font-size:12px;cursor:pointer;box-shadow:0 4px 12px rgba(168,85,247,0.5)}
+</style>
+</head>
+<body>
+
+<h1><span class="pulse"></span> Cérebro Eterno</h1>
+<p class="subtitle">@psidanielacoelho · psidanielacoelho1982@gmail.com · Otimizado em tempo real</p>
+
+<div class="diretiva" id="diretiva">Carregando estado eterno…</div>
+
+<div class="grid" id="stats"></div>
+
+<h2>📐 Padrão Eterno de Produção</h2>
+<table id="estrategia">
+<tr><th>Tier</th><th>Duração</th><th>Mid-rolls</th><th>Receita ×</th><th>% Produção</th><th>Por dia</th></tr>
+</table>
+
+<h2>🎯 Tópicos Quentes (mantidos no cérebro)</h2>
+<div id="topics"></div>
+
+<h2>📝 Fórmulas de Hook Validadas (top mundiais)</h2>
+<div id="hooks"></div>
+
+<h2>📊 Fonte da Decisão (evidência salva)</h2>
+<div id="sources"></div>
+
+<h2>⏱️ Histórico de Otimizações</h2>
+<table id="history">
+<tr><th>Ciclo</th><th>Quando</th><th>Mudou</th><th>De → Para</th><th>Motivo</th></tr>
+</table>
+
+<div class="footer">
+  Estado eterno mantido em <code>eternal_brain</code> · Otimização automática diária às 04:00 BRT via <code>pg_cron</code><br>
+  📋 Setup OAuth: <a href="/setup-canal.html">setup-canal.html</a> · 
+  📊 Blueprint: <a href="/canal-oficial.html">canal-oficial.html</a> · 
+  🎬 Galeria: <a href="/v2.html">v2.html</a><br>
+  <span class="timestamp" id="ts"></span>
+</div>
+
+<button class="reload-btn" onclick="loadAll()">🔄 Atualizar agora</button>
+
+<script>
+const SUPA = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2MjA0NjcsImV4cCI6MjA4MjE5NjQ2N30.iBfx1DAzVA9MhAEgZ54SyPePcjtszSc-CqZpTFlxDnE';
+
+async function fetchTable(table, params='') {
+  const r = await fetch(`${SUPA}/rest/v1/${table}${params}`, {headers:{apikey:KEY,Authorization:`Bearer ${KEY}`}});
+  return r.ok ? r.json() : [];
+}
+
+async function loadAll() {
+  // Estado eterno
+  const cs = await fetchTable('current_strategy', '?limit=1');
+  if (cs[0]) {
+    const s = cs[0];
+    document.getElementById('diretiva').textContent = s.diretiva_principal;
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><span class="num">${s.duracao_padrao_min}</span><div class="label">min padrão</div></div>
+      <div class="stat green"><span class="num">${s.mid_rolls_alvo}</span><div class="label">mid-rolls</div></div>
+      <div class="stat amber"><span class="num">${s.receita_relativa}×</span><div class="label">receita relativa</div></div>
+      <div class="stat blue"><span class="num">${s.videos_renderizados_total}</span><div class="label">vídeos prontos</div></div>
+      <div class="stat"><span class="num">${s.pipelines_ultimas_24h}</span><div class="label">novos 24h</div></div>
+      <div class="stat"><span class="num">${s.insights_no_cerebro}</span><div class="label">insights</div></div>
+      <div class="stat green"><span class="num">${s.ciclos_otimizacao_total}</span><div class="label">ciclos</div></div>
+      <div class="stat"><span class="num">${s.monetizacao_garantida ? '✅' : '⚠️'}</span><div class="label">monetiz. garantida</div></div>
+    `;
+    document.getElementById('topics').innerHTML = (s.topicos_quentes||[]).map(t=>`<span class="topic-chip">${t}</span>`).join('');
+    document.getElementById('hooks').innerHTML = (s.hooks_validados||[]).map(h=>`<span class="hook-chip">${h}</span>`).join('');
+    const sources = Object.entries(s.fonte_decisao||{}).map(([k,v])=>
+      `<div class="source-card"><span class="key">${k}</span><br><strong>${typeof v==='object'?JSON.stringify(v):v}</strong></div>`
+    ).join('');
+    document.getElementById('sources').innerHTML = sources;
+  }
+
+  // Estratégia tiers
+  const ev = await fetchTable('estrategia_videos', '?order=duracao_min_s.desc');
+  document.getElementById('estrategia').innerHTML = `
+    <tr><th>Tier</th><th>Duração</th><th>Mid-rolls</th><th>Receita ×</th><th>% Produção</th><th>Por dia</th></tr>
+    ${ev.map(t=>`
+      <tr class="${t.tier==='ETERNO_20'?'eterno':''}">
+        <td>${t.tier}</td>
+        <td>${t.duracao_alvo}</td>
+        <td>${t.duracao_min_s>=480?'✅':'—'}</td>
+        <td>${t.receita_relativa}×</td>
+        <td>${t.pct_da_producao}%</td>
+        <td>${t.vids_dia}</td>
+      </tr>
+    `).join('')}
+  `;
+
+  // Histórico
+  const h = await fetchTable('eternal_brain_history', '?order=alterado_em.desc&limit=10');
+  document.getElementById('history').innerHTML = `
+    <tr><th>#</th><th>Quando</th><th>Mudou</th><th>De → Para</th><th>Motivo</th></tr>
+    ${h.map(r=>`
+      <tr>
+        <td>${r.ciclo}</td>
+        <td><span class="timestamp">${new Date(r.alterado_em).toLocaleString('pt-BR')}</span></td>
+        <td>${r.campo_alterado}</td>
+        <td><code>${r.valor_anterior}</code> → <code style="color:#4ade80">${r.valor_novo}</code></td>
+        <td style="font-size:11px;color:#aaa">${(r.motivo||'').slice(0,120)}…</td>
+      </tr>
+    `).join('')}
+  `;
+
+  document.getElementById('ts').textContent = `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
+}
+
+loadAll();
+setInterval(loadAll, 60000);  // auto-refresh 60s
+</script>
+</body>
+</html>
