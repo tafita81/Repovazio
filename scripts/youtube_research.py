@@ -39,9 +39,20 @@ def yt_get(token, path, **params):
     r.raise_for_status()
     return r.json()
 
+KNOWN_CHANNEL_IDS = {
+    'CharismaOnCommand': 'UC6h6MnKJM4rBOtYwdiQ9LEA',  # 8M subs Charisma on Command
+    'Psych2Go': 'UCkJEpR7JmS36tajD34Gp4VA',
+    'TheSchoolofLifeTV': 'UC7IcJI8PUf5Z3zKxnZvTBog',
+    'TherapyinaNutshell': 'UCpuqYFKLkcEryEieomiAv3Q',
+    'PracticalPsychology1': 'UCYFG_4UV-cDIFXIBQ_5g6Vg',  # Practical Psychology
+}
+
 def find_channel_id(token, handle_or_username):
     """Try multiple methods to resolve a channel ID from a handle/name."""
     h = handle_or_username.lstrip('@')
+    # Method 0: known IDs
+    if handle_or_username in KNOWN_CHANNEL_IDS:
+        return KNOWN_CHANNEL_IDS[handle_or_username]
     # Method 1: search
     try:
         r = yt_get(token, 'search', part='snippet', type='channel', q=h, maxResults=5)
@@ -124,21 +135,40 @@ def get_video_stats_batch(token, video_ids):
     return out
 
 def get_transcript(video_id):
-    """Try to get English transcript via youtube-transcript-api (no auth needed)."""
+    """Try yt-dlp first (more reliable in CI), fallback to youtube-transcript-api."""
+    import subprocess, tempfile, os as _os, json as _json
+    # Method 1: yt-dlp subtitles
+    try:
+        with tempfile.TemporaryDirectory() as td:
+            subprocess.run([
+                'yt-dlp','--quiet','--no-warnings','--skip-download',
+                '--write-auto-subs','--sub-langs','en.*,en','--sub-format','json3',
+                '--output', f'{td}/%(id)s.%(ext)s',
+                f'https://www.youtube.com/watch?v={video_id}'
+            ], capture_output=True, timeout=30)
+            for fn in _os.listdir(td):
+                if fn.endswith('.json3'):
+                    with open(f'{td}/{fn}') as fh:
+                        data = _json.load(fh)
+                    text_parts = []
+                    for ev in data.get('events',[]):
+                        for seg in ev.get('segs',[]):
+                            t = seg.get('utf8','')
+                            if t.strip(): text_parts.append(t)
+                    text = ' '.join(text_parts).replace('\n',' ').strip()
+                    if text: return text[:8000]
+    except Exception as e:
+        pass
+    # Method 2: youtube-transcript-api fallback
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
-        try:
-            t = YouTubeTranscriptApi.get_transcript(video_id, languages=['en','en-US','en-GB'])
-        except:
-            try:
-                t = YouTubeTranscriptApi.get_transcript(video_id)
-            except:
-                return None
-        if not t: return None
-        text = ' '.join(s['text'] for s in t).replace('\n',' ').strip()
-        return text[:8000]  # cap at 8K chars
-    except Exception as e:
-        return None
+        try: t = YouTubeTranscriptApi.get_transcript(video_id, languages=['en','en-US','en-GB'])
+        except: t = YouTubeTranscriptApi.get_transcript(video_id)
+        if t:
+            text = ' '.join(s['text'] for s in t).replace('\n',' ').strip()
+            return text[:8000]
+    except: pass
+    return None
 
 def supa_upsert(table, row, conflict_col='video_id'):
     r = S.post(f'{SUPA_URL}/rest/v1/{table}?on_conflict={conflict_col}',
@@ -240,10 +270,10 @@ def run():
     
     # Top viral psychology channels worldwide
     targets = [
-        ('Psych2Go',          120, 25),  # primary target — deep dive
-        ('TherapyinaNutshell', 60, 10),
-        ('Charisma',          60, 10),  # Charisma on Command
-        ('TheSchoolofLifeTV', 60, 10),  # The School of Life
+        ('Psych2Go',          250, 30),  # PRIMARY deep dive
+        ('TherapyinaNutshell', 80, 12),
+        ('CharismaOnCommand', 80, 12),  # FIXED: 8M subs channel
+        ('TheSchoolofLifeTV', 80, 12),
         ('PracticalPsychology1', 60, 10),
     ]
     
