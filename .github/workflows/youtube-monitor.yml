@@ -1,0 +1,42 @@
+name: YouTube Monitor & Growth 24/7
+on:
+  schedule:
+    - cron: "0 9,15,21 * * *"   # 3x por dia: 6h, 12h, 18h BRT
+    - cron: "0 12 * * *"         # SEO optimizer ao meio-dia
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "monitor | publish | optimize | full"
+        default: "full"
+
+env:
+  SBU: https://tpjvalzwkqwttvmszvie.supabase.co
+  SBK: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  YT_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+  YT_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+  YT_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+  YT_CHANNEL_ID: UCyCkIpsVgME9yCj_oXJFheA
+  GH_PAT: ${{ secrets.GH_PAT }}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: YouTube Monitor + Growth Engine
+        run: python3 scripts/youtube_monitor.py
+        env:
+          ACTION: ${{ github.event.inputs.action || 'full' }}
+
+      - name: Report
+        if: always()
+        run: echo "Monitor concluido. Ver Supabase > channel_snapshots"
