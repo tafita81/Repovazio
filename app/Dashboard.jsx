@@ -1077,56 +1077,100 @@ function PageVariacoes({dayNumber,ranking,addLog,onContent,variations,setVariati
 // ═══════════════════════════════════════════════════════════════════
 function PageSeries({dayNumber}){
   const[sel,setSel]=useState("apego");
-  const serie=SERIES_LIBRARY.find(s=>s.id===sel);
+  const[seriesData,setSeriesData]=useState({});
+  const[loading,setLoading]=useState(true);
+  
+  useEffect(()=>{
+    // Buscar séries reais do pipeline
+    sbFetch("content_pipeline?metadata->>serie=not.is.null&status=neq.archived&select=id,title,status,metadata,target_platform&order=id.asc&limit=200").then(rows=>{
+      if(!rows?.length){setLoading(false);return;}
+      const grouped={};
+      rows.forEach(r=>{
+        const serie=r.metadata?.serie||"";
+        const ep=r.metadata?.episodio||"?";
+        if(!serie) return;
+        if(!grouped[serie]) grouped[serie]={eps:[],published:0,total:0,nome:""};
+        grouped[serie].eps.push({id:r.id,titulo:r.title,ep,status:r.status,score:r.metadata?.gate_score||0});
+        grouped[serie].total++;
+        if(r.status==="published") grouped[serie].published++;
+        const names={apego:"S1 Apego Ansioso",narcisismo:"S2 Narcisismo",ansiedade:"S3 Ansiedade",trauma:"S4 Trauma",burnout:"S5 Burnout"};
+        grouped[serie].nome=names[serie]||serie;
+      });
+      setSeriesData(grouped);
+      setLoading(false);
+    });
+  },[]);
+
+  const serie=SERIES_LIBRARY.find(s=>s.id===sel)||{};
   const eps=SERIES_EPS[sel]||[];
   const SC={active:"var(--green)",planned:"var(--blue)",completed:"var(--amber)"};
+  const SERIES_KEYS=Object.keys(seriesData);
+  
   return(
     <>
-      <div className="ph"><div><div className="pt">🎬 Séries Episódicas</div><div className="ps">Hipnose narrativa · loop aberto · 8x watch time</div></div></div>
+      <div className="ph"><div><div className="pt">🎬 Séries Episódicas</div><div className="ps">Pipeline completo de {SERIES_KEYS.length} séries</div></div></div>
       <div className="body">
-        <div style={{background:"rgba(5,150,105,0.08)",border:"1px solid var(--gb)",borderRadius:14,padding:14,marginBottom:14}}>
-          <div style={{fontWeight:700,fontSize:13,color:"var(--green)",marginBottom:4}}>🎯 Case real: Emma McAdam 50K→800K</div>
-          <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>
-            <strong>Loop aberto:</strong> cada ep termina com pergunta que só o próximo responde — força o próximo view.<br/>
-            <strong>PNL espelhamento:</strong> pessoa se vê → compartilha → traz mais pessoas.<br/>
-            <strong>Canal dark:</strong> imagens estáticas + narração cinematográfica = sem edição complexa + CPM máximo.
-          </div>
-        </div>
-        <div className="tab-bar">{SERIES_LIBRARY.map(s=><div key={s.id} className={"tab"+(sel===s.id?" on":"")} onClick={()=>setSel(s.id)} style={{display:"flex",alignItems:"center",gap:5}}><span style={{width:7,height:7,borderRadius:"50%",background:SC[s.status]||"var(--muted)",flexShrink:0}}/>{s.nome.split(" ").slice(0,2).join(" ")}</div>)}</div>
-        {serie&&<>
-          <div style={{background:SC[serie.status]+"14",border:"1px solid "+SC[serie.status]+"44",borderRadius:14,padding:12,marginBottom:12}}>
-            <div style={{fontWeight:700,fontSize:14,marginBottom:3}}>{serie.nome}</div>
-            <div style={{fontSize:12,color:"var(--text2)",fontStyle:"italic",marginBottom:6}}>"{serie.subtitulo}"</div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:6}}>
-              <span style={{fontSize:11,fontWeight:700,background:SC[serie.status]+"22",color:SC[serie.status],borderRadius:6,padding:"2px 8px"}}>{serie.status.toUpperCase()}</span>
-              <span style={{fontSize:11,color:"var(--muted)"}}>{serie.eps} eps · Lança: {serie.lancamento}</span>
-            </div>
-            <div style={{fontSize:11,color:"var(--purple)",background:"var(--pl)",borderRadius:8,padding:"6px 8px",lineHeight:1.5}}>🎯 {serie.tecnica}</div>
-          </div>
-          {eps.map((ep,i)=>(
-            <div key={i} className="card mb12">
-              <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",background:serie.status==="active"?"linear-gradient(135deg,var(--purple),#a855f7)":"var(--surf2)",color:serie.status==="active"?"white":"var(--muted)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:800,flexShrink:0}}>{i+1}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontWeight:600,fontSize:13,lineHeight:1.35,marginBottom:4}}>{ep}</div>
-                  <div style={{display:"flex",gap:5}}>
-                    {i===0&&<span style={{fontSize:9,background:"var(--rl)",color:"var(--red)",borderRadius:4,padding:"1px 6px",fontWeight:700}}>GANCHO INICIAL</span>}
-                    {i===eps.length-1&&<span style={{fontSize:9,background:"var(--gl)",color:"var(--green)",borderRadius:4,padding:"1px 6px",fontWeight:700}}>CONCLUSÃO + CTA</span>}
-                    {i>0&&i<eps.length-1&&<span style={{fontSize:9,background:"var(--pl)",color:"var(--purple)",borderRadius:4,padding:"1px 6px"}}>🔄 loop → próximo</span>}
-                  </div>
+        {loading?<div style={{color:"#64748b",textAlign:"center",padding:"40px"}}>Carregando séries do pipeline...</div>:(
+        <>
+        {/* Resumo das séries */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:"12px",marginBottom:"20px"}}>
+          {SERIES_KEYS.map(k=>{
+            const s=seriesData[k];
+            const pct=Math.round((s.published/s.total)*100)||0;
+            const isActive=sel===k;
+            return(
+              <div key={k} onClick={()=>setSel(k)}
+                style={{background:isActive?"rgba(124,58,237,.2)":"var(--card2)",border:isActive?"1px solid #7c3aed":"1px solid var(--border)",
+                  borderRadius:"12px",padding:"14px",cursor:"pointer",transition:"all .2s"}}>
+                <div style={{fontWeight:700,fontSize:"13px",marginBottom:"6px"}}>{s.nome}</div>
+                <div style={{fontSize:"24px",fontWeight:800,color:"#c084fc"}}>{s.published}<span style={{fontSize:"13px",color:"#64748b"}}>/{s.total}</span></div>
+                <div style={{fontSize:"11px",color:"#64748b",marginBottom:"6px"}}>publicados</div>
+                <div style={{height:"4px",background:"var(--border)",borderRadius:"4px",overflow:"hidden"}}>
+                  <div style={{height:"100%",width:pct+"%",background:"linear-gradient(90deg,#7c3aed,#06b6d4)",borderRadius:"4px"}}/>
                 </div>
+                <div style={{fontSize:"11px",color:"#64748b",marginTop:"4px"}}>{pct}% concluído</div>
               </div>
+            );
+          })}
+        </div>
+        {/* Episódios da série selecionada */}
+        {seriesData[sel]&&(
+          <div>
+            <div style={{fontWeight:700,fontSize:"15px",marginBottom:"12px"}}>{seriesData[sel].nome} — {seriesData[sel].total} episódios</div>
+            <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
+              {seriesData[sel].eps.sort((a,b)=>(parseInt(a.ep)||0)-(parseInt(b.ep)||0)).map(ep=>{
+                const stColor={published:"#10b981",mp4_ready:"#3b82f6",ready_tts:"#a855f7",pending_generation:"#64748b",audio_processing:"#f59e0b",script_ready:"#06b6d4"}[ep.status]||"#64748b";
+                return(
+                  <div key={ep.id} style={{background:"var(--card2)",borderRadius:"10px",padding:"12px",display:"flex",alignItems:"center",gap:"12px"}}>
+                    <div style={{background:"var(--acc)",color:"#fff",width:"32px",height:"32px",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:"13px",minWidth:"32px"}}>
+                      {ep.ep}
+                    </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:"13px",fontWeight:600,marginBottom:"2px"}}>{ep.titulo}</div>
+                      <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+                        <span style={{background:stColor+"20",color:stColor,fontSize:"11px",padding:"2px 8px",borderRadius:"20px",fontWeight:600}}>{ep.status}</span>
+                        {ep.score>0&&<span style={{fontSize:"11px",color:"#f59e0b"}}>⭐ {ep.score}</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
-        </>}
+          </div>
+        )}
+        {SERIES_KEYS.length===0&&(
+          <div style={{textAlign:"center",padding:"40px",color:"#64748b"}}>
+            <div style={{fontSize:"48px",marginBottom:"12px"}}>🎬</div>
+            <div>Nenhuma série encontrada no pipeline</div>
+          </div>
+        )}
+        </>
+        )}
       </div>
     </>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// PAGE: REVELAÇÃO 2027
-// ═══════════════════════════════════════════════════════════════════
 function PageRevelacao({dayNumber,revealed,canReveal,daysToReveal,revealDate,onRevealClick}){
   const BIOS=[
     {p:"YouTube",e:"▶️",bio:"Daniela Coelho, psicóloga 🧠 | psicologia.doc | CRP [NÚMERO] | Consultas online → link abaixo"},
@@ -1531,65 +1575,85 @@ function PageConteudo({contents:contentsProp,setNotifCount}){
 // PAGE: MONETIZAÇÃO
 // ═══════════════════════════════════════════════════════════════════
 function PageMonetizacao({metrics,dayNumber,revealed}){
-  const[tab,setTab]=useState("fontes");
-  const TC={passivo:"var(--green)",recorrente:"var(--blue)",variável:"var(--amber)",lançamento:"var(--purple)",profissional:"var(--green)","alto valor":"var(--red)"};
+  const[tab,setTab]=useState("visao");
+  const[canal,setCanal]=useState({});
+  const[pub,setPub]=useState(0);
+  const[mp4,setMp4]=useState(0);
+  useEffect(()=>{
+    sbFetch("channel_snapshots?order=snapshot_at.desc&limit=1").then(r=>{if(r?.length)setCanal(r[0]);});
+    sbFetch("content_pipeline?status=eq.published&select=id").then(r=>{setPub(r?.length||0);});
+    sbFetch("content_pipeline?status=eq.mp4_ready&select=id").then(r=>{setMp4(r?.length||0);});
+  },[]);
+  
+  const subs=canal.subscribers||0;
+  const views28=canal.views_28d||0;
+  const ctr=canal.ctr_28d||0;
+  const cpmR=12;
+  const estMensal=views28>0?Math.round(views28*cpmR/1000):0;
+  
+  const TC={passivo:"var(--green)",recorrente:"var(--blue)","variável":"var(--amber)",lançamento:"var(--purple)"};
   return(
     <>
-      <div className="ph"><div><div className="pt">💰 Monetização</div><div className="ps">Dia {dayNumber} · CRP-compliant · psicologia.doc</div></div></div>
+      <div className="ph"><div><div className="pt">💰 Monetização & Receita</div><div className="ps">Plano 50K — Canal @psidanielacoelho</div></div></div>
       <div className="body">
-        <div className="tab-bar">{[["fontes","💡 Fontes"],["projecao","📈 Projeção"],["protecao","🛡️ Anti-Ban"]].map(([id,lb])=><div key={id} className={"tab"+(tab===id?" on":"")} onClick={()=>setTab(id)}>{lb}</div>)}</div>
-        {tab==="fontes"&&MONETIZACAO.map((s,i)=>(
-          <div key={i} className="card mb12">
-            <div style={{display:"flex",gap:12,alignItems:"center"}}>
-              <span style={{fontSize:26,flexShrink:0}}>{s.ic}</span>
-              <div style={{flex:1}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:2}}>
-                  <div style={{fontWeight:700,fontSize:13}}>{s.n}</div>
-                  <span style={{fontSize:9,fontWeight:700,background:TC[s.tipo]+"22",color:TC[s.tipo],borderRadius:4,padding:"1px 6px",flexShrink:0,marginLeft:6}}>{s.tipo}</span>
-                </div>
-                <div style={{fontSize:11,color:"var(--muted)",marginBottom:3}}>⏰ {s.t}</div>
-                <div style={{fontWeight:800,fontSize:12,color:"var(--green)"}}>{s.v}</div>
-              </div>
+        {/* KPIs */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:"12px",marginBottom:"20px"}}>
+          {[
+            {label:"Subscribers",val:subs.toLocaleString("pt-BR"),icon:"👥",color:"#c084fc"},
+            {label:"Views 28d",val:(views28||0).toLocaleString("pt-BR"),icon:"👁️",color:"#38bdf8"},
+            {label:"CTR médio",val:(ctr||0).toFixed(1)+"%",icon:"📊",color:"#34d399"},
+            {label:"Publicados",val:pub,icon:"✅",color:"#f59e0b"},
+            {label:"MP4 prontos",val:mp4,icon:"🎬",color:"#a855f7"},
+            {label:"Est. Mensal",val:"R$"+estMensal,icon:"💰",color:"#10b981"},
+          ].map(k=>(
+            <div key={k.label} style={{background:"var(--card2)",borderRadius:"10px",padding:"14px",textAlign:"center"}}>
+              <div style={{fontSize:"22px",marginBottom:"4px"}}>{k.icon}</div>
+              <div style={{fontSize:"22px",fontWeight:800,color:k.color}}>{k.val}</div>
+              <div style={{fontSize:"11px",color:"#64748b"}}>{k.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Progresso 1K */}
+        <div style={{background:"var(--card2)",borderRadius:"12px",padding:"16px",marginBottom:"16px"}}>
+          <div style={{fontWeight:700,marginBottom:"8px"}}>🎯 Progresso para Monetização (1.000 subs)</div>
+          <div style={{display:"flex",justifyContent:"space-between",fontSize:"13px",marginBottom:"6px"}}>
+            <span style={{color:"#64748b"}}>Subs atuais</span>
+            <span style={{color:"#c084fc",fontWeight:700}}>{subs} / 1.000</span>
+          </div>
+          <div style={{height:"10px",background:"var(--border)",borderRadius:"10px",overflow:"hidden"}}>
+            <div style={{height:"100%",width:Math.min(100,(subs/10))+"%",background:"linear-gradient(90deg,#7c3aed,#06b6d4)",borderRadius:"10px"}}/>
+          </div>
+          <div style={{fontSize:"12px",color:"#64748b",marginTop:"6px"}}>
+            Faltam {Math.max(0,1000-subs)} subs · Est. AdSense após 1K: R$2.000-8.000/mês
+          </div>
+        </div>
+
+        {/* Plano de receita */}
+        <div style={{fontWeight:700,fontSize:"14px",marginBottom:"12px"}}>📈 Plano 50K — Fases</div>
+        {[
+          {fase:"Fase 1 (0→100 subs)",prazo:"30 dias",receita:"R$ 0→2K",fonte:"Afiliados Zenklub",cor:"#c084fc",orc:"R$200"},
+          {fase:"Fase 2 (100→500 subs)",prazo:"60 dias",receita:"R$ 2K→8K",fonte:"AdSense + Memberships",cor:"#38bdf8",orc:"R$500"},
+          {fase:"Fase 3 (500→1K subs)",prazo:"60 dias",receita:"R$ 8K→20K",fonte:"Curso R$97 + WA Premium",cor:"#34d399",orc:"R$800"},
+          {fase:"Escala (1K→100K)",prazo:"2027",receita:"R$ 50K+/mês",fonte:"Todas as fontes ativas",cor:"#f59e0b",orc:"—"},
+        ].map((f,i)=>(
+          <div key={i} style={{background:"var(--card2)",borderRadius:"10px",padding:"14px",marginBottom:"8px",display:"flex",gap:"12px",alignItems:"center"}}>
+            <div style={{width:"4px",minWidth:"4px",height:"50px",background:f.cor,borderRadius:"4px"}}/>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:"13px"}}>{f.fase}</div>
+              <div style={{fontSize:"12px",color:"#64748b"}}>{f.prazo} · {f.fonte}</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontWeight:800,fontSize:"15px",color:f.cor}}>{f.receita}</div>
+              <div style={{fontSize:"11px",color:"#64748b"}}>Ads: {f.orc}</div>
             </div>
           </div>
         ))}
-        {tab==="projecao"&&<>
-          <div style={{background:"rgba(5,150,105,0.08)",border:"1px solid var(--gb)",borderRadius:14,padding:14,marginBottom:14}}>
-            <div style={{fontSize:10,fontWeight:700,color:"var(--green)",textTransform:"uppercase",marginBottom:6}}>📊 Case real verificado</div>
-            <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>Canal dark anônimo: 1.2M views + R$24K em 60 dias</div>
-            <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.6}}>Vídeos 22-28min + imagens estáticas + narração + público 25-54 + nicho emocional. <strong>CPM gringo: 6-7x maior que Brasil.</strong></div>
-          </div>
-          {[{p:"Dias 1-30",r:"R$0-500/mês",f:"Afiliados Zenklub desde o dia 1"},{p:"Dias 31-60",r:"R$500-2K/mês",f:"AdSense + Memberships"},{p:"Dias 61-180",r:"R$2K-15K/mês",f:"Curso R$97 + WA Premium + Patrocínio"},{p:"Dias 181-260",r:"R$15K-50K/mês",f:"Curso avançado + Grupo premium"},{p:"Dia 261+",r:"R$50K-250K/mês",f:"Consultas + todos os acima"}].map((t,i)=>(
-            <div key={i} style={{display:"flex",gap:10,padding:"10px 0",borderBottom:"1px solid var(--border)"}}>
-              <div style={{flexShrink:0,width:70}}><div style={{fontSize:10,fontWeight:700,color:"var(--muted)"}}>{t.p}</div></div>
-              <div style={{flex:1}}><div style={{fontWeight:800,fontSize:13,color:"var(--green)",marginBottom:2}}>{t.r}</div><div style={{fontSize:10,color:"var(--text2)"}}>{t.f}</div></div>
-            </div>
-          ))}
-          <div style={{marginTop:10,padding:10,background:"linear-gradient(135deg,rgba(5,150,105,0.1),rgba(5,150,105,0.03))",borderRadius:10}}>
-            <div style={{fontSize:11,color:"var(--green)",fontWeight:700}}>🎯 Meta final — psicologia.doc + Daniela Coelho, psicóloga</div>
-            <div style={{fontSize:20,fontWeight:800,color:"var(--green)",marginTop:4}}>R$80.000 – 250.000/mês</div>
-          </div>
-        </>}
-        {tab==="protecao"&&<div className="card mb12">
-          <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:"var(--red)"}}>🛡️ Anti-Ban + CRP Compliance</div>
-          {[["SEM","diagnóstico médico ou psiquiátrico"],["SEM","promessa de cura ou tratamento"],["SEM","prática ilegal de psicologia"],["SEM","citação de medicamentos"],["SEM","conteúdo que induza automedicação"],["COM","base científica citável (DSM-5, APA, CID-11)"],["COM","CRP compliance total"],["COM","linguagem inclusiva e empática"],["SEM","nome de pessoa em 2026"],["SEM","'Dra.' — apenas 'psicóloga' em 2027"]].map(([tp,r],i)=>(
-            <div key={i} style={{display:"flex",gap:8,padding:"7px 0",borderBottom:"1px solid var(--border)"}}>
-              <span style={{color:tp==="SEM"?"var(--red)":"var(--green)",flexShrink:0,fontWeight:700}}>{tp==="SEM"?"❌":"✅"}</span>
-              <span style={{fontSize:12,lineHeight:1.5,color:tp==="SEM"?"var(--red)":"var(--text2)"}}>{tp} {r}</span>
-            </div>
-          ))}
-          <div style={{marginTop:12,padding:12,background:"rgba(217,119,6,0.08)",borderRadius:10,fontSize:11,color:"var(--amber)"}}>
-            ⚠️ Freq. máx/dia: YT {ANTI_BAN.maxDaily.youtube} · TK {ANTI_BAN.maxDaily.tiktok} · IG {ANTI_BAN.maxDaily.instagram} · Pinterest {ANTI_BAN.maxDaily.pinterest}
-          </div>
-        </div>}
       </div>
     </>
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// PAGE: CONFIGURAÇÕES
-// ═══════════════════════════════════════════════════════════════════
 function PageConfig({metrics}){
   const load2=()=>{try{return JSON.parse(localStorage.getItem("doc_cfg")||"{}");}catch{return{};}};
   const[keys,setKeys]=useState(load2);
