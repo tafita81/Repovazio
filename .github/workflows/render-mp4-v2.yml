@@ -43,7 +43,7 @@ jobs:
           import os, requests, json
           PID = "${{ inputs.pipeline_id }}".strip()
           BATCH = "${{ inputs.batch_mp4_ready }}" == "true"
-          PAYLOAD = json.loads('${{ toJson(github.event.client_payload) }}' or '{}')
+          PAYLOAD = json.loads('${{ toJson(github.event.client_payload) }}' or '{}') or {}
 
           if PID:
               pids = [int(PID)]
@@ -57,10 +57,11 @@ jobs:
               pids = [int(PAYLOAD['pipeline_id'])]
           else:
               r = requests.get(
-                  f"{os.environ['SUPABASE_URL']}/rest/v1/content_pipeline?status=eq.mp4_ready&select=id&order=id.desc&limit=1",
+                  f"{os.environ['SUPABASE_URL']}/rest/v1/content_pipeline?status=eq.mp4_ready&select=id&order=id.desc&limit=3",
                   headers={'apikey': os.environ['SUPABASE_SERVICE_KEY'],
                            'Authorization': f"Bearer {os.environ['SUPABASE_SERVICE_KEY']}"}, timeout=30)
-              pids = [p['id'] for p in r.json()][:1]
+              data = r.json()
+              pids = [p['id'] for p in data] if isinstance(data, list) else []
 
           out = ','.join(str(p) for p in pids)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f: f.write(f"pids={out}\n")
