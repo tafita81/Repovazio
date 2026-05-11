@@ -1,0 +1,226 @@
+name: YouTube — Teste + Publicar Pendentes
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'test = só testar credencial | publish = publicar vídeos pendentes'
+        required: true
+        default: 'test'
+        type: choice
+        options: [test, publish]
+      limit:
+        description: 'Quantos vídeos publicar (máx 5)'
+        required: false
+        default: '2'
+
+jobs:
+  youtube:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Teste / Publicação YouTube
+        env:
+          SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          ACTION:           ${{ inputs.action }}
+          LIMIT:            ${{ inputs.limit }}
+        run: |
+          python3 - << 'EOF'
+          import os, sys, json, time, urllib.request, urllib.parse, tempfile
+
+          SBU = os.environ["SUPABASE_URL"].rstrip("/")
+          SBK = os.environ["SUPABASE_SERVICE_KEY"]
+          H_SB = {"apikey": SBK, "Authorization": f"Bearer {SBK}"}
+          H_SB_J = {**H_SB, "Content-Type": "application/json"}
+          YT_CID  = os.environ.get("YT_CLIENT_ID", "")
+          YT_CSEC = os.environ.get("YT_CLIENT_SECRET", "")
+          YT_RT   = os.environ.get("YT_REFRESH_TOKEN", "")
+          ACTION  = os.environ.get("ACTION", "test")
+          LIMIT   = int(os.environ.get("LIMIT", "2"))
+          CORRECT_CHANNEL = "UCyCkIpsVgME9yCj_oXJFheA"
+          BLOCKED_CHANNEL = "UCSH63tBfY6wEIdkC4u4zKdg"
+
+          def http(url, method="GET", body=None, headers=None, timeout=300, raw_body=False):
+              h = dict(headers or {})
+              data = None
+              if body is not None:
+                  if raw_body or isinstance(body, (bytes, bytearray)):
+                      data = body if isinstance(body, (bytes, bytearray)) else body.encode()
+                  else:
+                      data = json.dumps(body).encode()
+                      h.setdefault("Content-Type", "application/json")
+              h.setdefault("User-Agent", "psicologia-doc/2.0")
+              req = urllib.request.Request(url, data=data, method=method, headers=h)
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as r:
+                      return r.status, r.read(), dict(r.headers)
+              except urllib.error.HTTPError as e:
+                  return e.code, e.read() if e.fp else b"", dict(e.headers or {})
+
+          def log(*a): print(f"[{time.strftime('%H:%M:%S')}]", *a, flush=True)
+
+          # ── PASSO 1: Obter Access Token ──────────────────────────────
+          log("🔑 Obtendo Access Token...")
+          if not (YT_CID and YT_CSEC and YT_RT):
+              log("❌ Credenciais YouTube ausentes!")
+              log(f"  YT_CLIENT_ID:     {'✅' if YT_CID else '❌'}")
+              log(f"  YT_CLIENT_SECRET: {'✅' if YT_CSEC else '❌'}")
+              log(f"  YT_REFRESH_TOKEN: {'✅' if YT_RT else '❌'}")
+              sys.exit(1)
+
+          body = urllib.parse.urlencode({
+              "client_id": YT_CID, "client_secret": YT_CSEC,
+              "refresh_token": YT_RT, "grant_type": "refresh_token"
+          }).encode()
+          s, raw, _ = http("https://oauth2.googleapis.com/token", method="POST",
+              body=body, raw_body=True,
+              headers={"Content-Type": "application/x-www-form-urlencoded"})
+
+          if s != 200:
+              log(f"❌ OAuth falhou ({s}): {raw[:300].decode()}")
+              log("💡 O REFRESH TOKEN está inválido ou revogado.")
+              log("💡 Gere um novo em: developers.google.com/oauthplayground")
+              sys.exit(1)
+
+          access_token = json.loads(raw)["access_token"]
+          log("✅ Access Token obtido!")
+
+          # ── PASSO 2: Verificar canal ─────────────────────────────────
+          log("📺 Verificando canal conectado...")
+          s2, raw2, _ = http("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+              headers={"Authorization": f"Bearer {access_token}"})
+          ch_data = json.loads(raw2)
+          if not ch_data.get("items"):
+              log(f"❌ Nenhum canal encontrado. Resposta: {raw2[:200].decode()}")
+              sys.exit(1)
+
+          ch = ch_data["items"][0]
+          ch_id = ch["id"]
+          ch_title = ch["snippet"]["title"]
+          subs = ch["statistics"].get("subscriberCount", "?")
+          videos = ch["statistics"].get("videoCount", "?")
+
+          if ch_id == BLOCKED_CHANNEL:
+              log(f"🚫 BLOQUEADO: Canal antigo {ch_id}")
+              sys.exit(1)
+
+          if ch_id != CORRECT_CHANNEL:
+              log(f"⚠️  Canal {ch_id} não é o esperado {CORRECT_CHANNEL}")
+          else:
+              log(f"✅ Canal correto: @psidanielacoelho")
+
+          log(f"   📺 Canal: {ch_title}")
+          log(f"   👥 Inscritos: {subs}")
+          log(f"   🎬 Vídeos: {videos}")
+
+          if ACTION == "test":
+              log("✅ TESTE COMPLETO — credenciais funcionando!")
+              sys.exit(0)
+
+          # ── PASSO 3: Publicar vídeos pendentes ───────────────────────
+          log(f"📋 Buscando até {LIMIT} vídeos mp4_ready...")
+          s3, raw3, _ = http(f"{SBU}/rest/v1/content_pipeline?status=eq.mp4_ready&mp4_url=not.is.null&order=id.asc&limit={LIMIT}&select=*",
+              headers=H_SB)
+          pipelines = json.loads(raw3)
+          log(f"   Encontrados: {len(pipelines)} vídeos")
+
+          if not pipelines:
+              log("ℹ️  Nenhum vídeo mp4_ready no momento.")
+              sys.exit(0)
+
+          published = 0
+          for p in pipelines:
+              pid = p["id"]
+              title = (p.get("youtube_title") or p.get("title") or "Video")[:100]
+              desc  = (p.get("youtube_description") or f"{p.get('title','')}
+
+#psicologia #saudemental #danielacoelho")[:5000]
+              tags  = json.loads(p.get("youtube_tags") or '[]') or ["psicologia","saude mental","Daniela Coelho"]
+              mp4_url = p.get("mp4_url")
+              is_shorts = p.get("target_platform","") in ["youtube_shorts","tiktok_short","instagram_reels"]
+
+              log(f"🎬 Publicando #{pid}: {title}")
+              log(f"   URL: {mp4_url}")
+
+              # Baixar MP4 para arquivo temporário
+              log("   ⬇️  Baixando MP4...")
+              s4, mp4_data, _ = http(mp4_url, timeout=300)
+              if s4 != 200:
+                  log(f"   ❌ Download falhou ({s4})")
+                  continue
+              log(f"   ✅ MP4 baixado ({len(mp4_data)//1024}KB)")
+
+              # Metadata
+              meta = {
+                  "snippet": {
+                      "title": title, "description": desc,
+                      "tags": tags[:500], "categoryId": "26",
+                      "defaultLanguage": "pt-BR", "defaultAudioLanguage": "pt-BR"
+                  },
+                  "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False}
+              }
+
+              # Init upload resumable
+              log("   📤 Iniciando upload...")
+              init_headers = {
+                  "Authorization": f"Bearer {access_token}",
+                  "Content-Type": "application/json",
+                  "X-Upload-Content-Type": "video/mp4",
+                  "X-Upload-Content-Length": str(len(mp4_data))
+              }
+              s5, raw5, init_resp_h = http(
+                  "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
+                  method="POST", body=json.dumps(meta).encode(), raw_body=True, headers=init_headers)
+
+              if s5 not in (200,201):
+                  log(f"   ❌ Init upload falhou ({s5}): {raw5[:300].decode()}")
+                  continue
+
+              upload_url = init_resp_h.get("Location","")
+              if not upload_url:
+                  log("   ❌ Sem Location header")
+                  continue
+
+              # Upload do vídeo
+              log(f"   📤 Enviando {len(mp4_data)//1024}KB...")
+              s6, raw6, _ = http(upload_url, method="PUT", body=mp4_data, raw_body=True,
+                  headers={"Content-Type": "video/mp4", "Content-Length": str(len(mp4_data))}, timeout=600)
+
+              if s6 not in (200,201):
+                  log(f"   ❌ Upload falhou ({s6}): {raw6[:300].decode()}")
+                  continue
+
+              vdata = json.loads(raw6)
+              vid = vdata.get("id")
+              if not vid:
+                  log(f"   ❌ Sem video ID na resposta")
+                  continue
+
+              yt_url = f"https://www.youtube.com/watch?v={vid}"
+              log(f"   ✅ PUBLICADO! {yt_url}")
+
+              # Atualizar Supabase
+              http(f"{SBU}/rest/v1/content_pipeline?id=eq.{pid}", method="PATCH",
+                  body={"status":"published","youtube_id":vid,"youtube_url":yt_url,
+                        "published_at": time.strftime("%Y-%m-%dT%H:%M:%SZ")},
+                  headers=H_SB_J)
+              published += 1
+              time.sleep(5)
+
+          log(f"
+🎉 RESULTADO: {published}/{len(pipelines)} publicados com sucesso!")
+          EOF
