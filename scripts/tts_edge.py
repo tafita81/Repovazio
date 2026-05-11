@@ -167,7 +167,7 @@ def claim_pipeline():
         return rows[0]
     # auto-pick by platform
     rows = sb_select("content_pipeline",
-        f"status=eq.ready_tts&target_platform=eq.{TARGET_PLATFORM}"
+        f"status=eq.ready_tts&target_platform=in.({TARGET_PLATFORM},{TARGET_PLATFORM.replace('_long','').replace('_shorts','')},youtube_long,youtube,youtube_shorts)"
         f"&select=id,title,script,target_platform,duration_target_min,case_id,series_id,episode_number,metadata"
         f"&order=id.desc&limit=1")
     if not rows: raise SystemExit(f"no ready_tts for {TARGET_PLATFORM}")
