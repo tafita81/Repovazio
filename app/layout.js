@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "psicologia.doc — Cérebro Autônomo",
-  description: "@psicologiadoc · Sistema autônomo 24/7 (Next.js / Netlify)",
+  title: "psicologia.doc · Central de Controle",
+  description: "@psidanielacoelho · Pipeline autônomo 24/7",
 };
 
 export default function RootLayout({ children }) {
