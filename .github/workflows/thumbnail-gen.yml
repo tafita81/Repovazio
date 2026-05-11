@@ -1,0 +1,22 @@
+name: Thumbnail Generator (Flux.1 Schnell)
+on:
+  schedule:
+    - cron: "30 8,14,20 * * *"   # 3x/dia nos horários peak
+  workflow_dispatch:
+
+env:
+  SBU: https://tpjvalzwkqwttvmszvie.supabase.co
+  SBK: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+
+jobs:
+  thumbnails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Gerar thumbnails via Flux.1 Schnell
+        run: python3 scripts/thumbnail_gen.py
