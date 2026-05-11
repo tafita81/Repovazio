@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YouTube OAuth</title>
+<style>
+body{background:#05050f;color:#e2e8f0;font-family:system-ui;padding:20px;text-align:center}
+.box{background:#0d0d1a;border:2px solid #10b981;border-radius:12px;padding:20px;margin:20px auto;max-width:500px}
+.code{background:#030308;border:1px solid #374151;border-radius:8px;padding:12px;font-family:monospace;font-size:0.75rem;color:#10b981;word-break:break-all;margin:10px 0;text-align:left}
+h1{color:#10b981;font-size:1.2rem}
+p{font-size:0.85rem;color:#6b7280}
+.err{color:#ef4444}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1 id="title">⏳ Processando...</h1>
+  <p id="msg">Aguarde...</p>
+  <div class="code" id="code-display" style="display:none"></div>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code');
+const error = params.get('error');
+
+if (error) {
+  document.getElementById('title').textContent = '❌ Erro';
+  document.getElementById('title').className = 'err';
+  document.getElementById('msg').textContent = 'Erro: ' + error;
+} else if (code) {
+  document.getElementById('title').textContent = '✅ Autorizado!';
+  document.getElementById('msg').textContent = 'Copie o código abaixo e envie para o Claude:';
+  const display = document.getElementById('code-display');
+  display.textContent = code;
+  display.style.display = 'block';
+  // Copiar automaticamente
+  navigator.clipboard.writeText(code).catch(()=>{});
+} else {
+  document.getElementById('title').textContent = '❌ Sem código';
+  document.getElementById('msg').textContent = 'Nenhum código de autorização encontrado na URL.';
+}
+</script>
+</body>
+</html>
