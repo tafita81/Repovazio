@@ -9,6 +9,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 // 2027: Daniela Coelho, psicóloga (NÃO "Dra." — apenas psicóloga)
 // ═══════════════════════════════════════════════════════════════════
 
+
+const SBU = "https://tpjvalzwkqwttvmszvie.supabase.co";
+const SBK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njg2OTIzMCwiZXhwIjoyMDYyNDQ1MjMwfQ.v8h1t7cjDvM2vxGpMr7sRlWEWvDSnBBpgjNPGDZ7Rlk";
+const H_SB = {apikey:SBK,"Authorization":"Bearer "+SBK};
+async function sbFetch(path){try{const r=await fetch(SBU+"/rest/v1/"+path,{headers:H_SB});return r.ok?r.json():[];}catch{return[];}}
+
 const RANK_INTERVAL = 60*1000;
 const PROD_INTERVAL = 30*60*1000;
 const FIRST_RANK    = 15*1000;
@@ -1296,7 +1302,17 @@ function PageWhatsApp({waGroups,setWaGroups,contents,revealed}){
 // ═══════════════════════════════════════════════════════════════════
 // PAGE: RANKING MUNDIAL
 // ═══════════════════════════════════════════════════════════════════
-function PageRanking({ranking,isRanking}){
+function PageRanking({ranking:rankingProp,isRanking:isRankingProp}){
+  const[ranking,setRanking]=useState(rankingProp||[]);
+  const[isRanking,setIsRanking]=useState(isRankingProp||false);
+  useEffect(()=>{
+    setIsRanking(true);
+    sbFetch("viral_mirror?order=views.desc&limit=20&select=title_pt,title_en,channel,views,duration_min,hook,what_makes_viral,url").then(rows=>{
+      if(rows?.length) setRanking(rows);
+      else if(rankingProp?.length) setRanking(rankingProp);
+      setIsRanking(false);
+    });
+  },[]);
   return(
     <>
       <div className="ph"><div><div className="pt">🌍 Ranking Mundial</div><div className="ps">Psicologia + dark channels · atualiza 1x/min</div></div>
@@ -1330,7 +1346,20 @@ function PageRanking({ranking,isRanking}){
 // ═══════════════════════════════════════════════════════════════════
 // PAGE: CASES DO DIA
 // ═══════════════════════════════════════════════════════════════════
-function PageCases({cases}){
+function PageCases({cases:casesProp}){
+  const[cases,setCases]=useState(casesProp);
+  useEffect(()=>{
+    if(!cases?.cases?.length){
+      sbFetch("real_cases?order=created_at.desc&limit=20&select=*").then(rows=>{
+        if(rows?.length){
+          setCases({cases:rows.map(r=>({
+            channel:r.channel||r.title,achievement:r.achievement||r.description,
+            tactic:r.tactic||"Conteúdo emocional",metric:r.metric||r.views,apply:r.apply_tactic
+          })),tactics:[]});
+        }
+      }).catch(()=>{});
+    }
+  },[]);
   return(
     <>
       <div className="ph"><div><div className="pt">📈 Cases do Dia</div><div className="ps">Pesquisa automática · implementação imediata</div></div></div>
@@ -1459,7 +1488,24 @@ function ContentCard({c}){
 // ═══════════════════════════════════════════════════════════════════
 // PAGE: CONTEÚDO
 // ═══════════════════════════════════════════════════════════════════
-function PageConteudo({contents,setNotifCount}){
+function PageConteudo({contents:contentsProp,setNotifCount}){
+  const[contents,setContents]=useState(contentsProp||[]);
+  const[loading,setLoading]=useState(true);
+  useEffect(()=>{
+    setNotifCount(0);
+    sbFetch("content_pipeline?order=id.desc&limit=50&select=id,title,status,target_platform,audio_url,mp4_url,youtube_url,published_at,created_at").then(rows=>{
+      if(rows?.length){
+        const mapped=rows.map(r=>({
+          id:r.id,title:r.title,channel:r.target_platform||"youtube",
+          status:r.status,audioUrl:r.audio_url,videoUrl:r.mp4_url,
+          youtubeUrl:r.youtube_url,publishedAt:r.published_at,
+          safetyScore:92,books:[]
+        }));
+        setContents(mapped);
+      }
+      setLoading(false);
+    });
+  },[]);
   const[filter,setFilter]=useState("todos");
   useEffect(()=>setNotifCount(0),[]);
   const filtered=filter==="todos"?contents:contents.filter(c=>c.channel===filter);
