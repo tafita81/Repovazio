@@ -1,0 +1,21 @@
+name: Daily Growth Report
+on:
+  schedule:
+    - cron: "0 10 * * *"    # 7h BRT todos os dias
+  workflow_dispatch:
+
+env:
+  SBU: https://tpjvalzwkqwttvmszvie.supabase.co
+  SBK: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests
+      - name: Gerar Relatório Diário
+        run: python3 scripts/daily_report.py
