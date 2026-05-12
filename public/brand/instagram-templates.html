@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Instagram Templates - psicologia.doc</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;font-family:monospace;padding:20px;color:#888}
+h2{margin:20px 0 12px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555}
+.grid{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:30px}
+.post{width:400px;height:400px;border-radius:8px;position:relative;overflow:hidden;flex-shrink:0;cursor:pointer}
+.post:hover{transform:scale(1.02);transition:transform .2s}
+.story{width:225px;height:400px;border-radius:8px;position:relative;overflow:hidden;flex-shrink:0}
+</style>
+</head>
+<body>
+<h2>Instagram Posts 1080×1080</h2>
+<div class="grid" id="posts"></div>
+<h2>Stories & Reels 1080×1920</h2>
+<div class="grid" id="stories"></div>
+
+<script>
+const PSI = (color, size) => `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+  <rect x="46" y="52" width="8" height="36" rx="4" fill="${color}"/>
+  <path d="M20 20 C20 20 20 58 46 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M80 20 C80 20 80 58 54 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <rect x="16" y="16" width="68" height="8" rx="4" fill="${color}"/>
+</svg>`;
+
+const POSTS = [
+  {bg:'linear-gradient(160deg,#06060F,#1A0A3E)',color:'#7C3AED',label:'Psicologia Clínica',text:'"O que não é dito com palavras, o corpo grita com sintomas."',meta:'psicologia.doc · Psicossomática'},
+  {bg:'linear-gradient(160deg,#06000A,#1A0011)',color:'#E11D48',label:'Dado Científico',text:'1 em cada 5 adultos tem um transtorno de ansiedade sem diagnóstico',meta:'Fonte: OMS · 2023 · #SaudeMental'},
+  {bg:'linear-gradient(160deg,#000A0A,#001A18)',color:'#0D9488',label:'Série: Mentes Narcisistas',text:'3 Sinais que você está em um relacionamento tóxico com um narcisista',meta:'Episódio 2 · Assista no YouTube'},
+  {bg:'linear-gradient(160deg,#0A0600,#1A1000)',color:'#F59E0B',label:'Neurociência',text:'"A neuroplasticidade prova que você pode mudar quem você é — em qualquer idade."',meta:'Daniela Coelho · psicologia.doc'},
+];
+
+const STORIES = [
+  {bg:'linear-gradient(180deg,#06060F,#1A0A3E 50%,#06060F)',color:'#7C3AED',tag:'NOVO VÍDEO',cta:'ASSISTIR AGORA',text:'Apego Ansioso: O que seu corpo sente quando ele não responde'},
+  {bg:'linear-gradient(180deg,#06000A,#2D0011 50%,#06000A)',color:'#E11D48',tag:'VOCÊ SABIA?',cta:'SALVAR',text:'O trauma não precisa de um único grande evento. Microtraumas diários são igualmente devastadores.'},
+  {bg:'linear-gradient(180deg,#000A0A,#001A18 50%,#000A0A)',color:'#0D9488',tag:'QUIZ',cta:'RESPONDER NOS COMMENTS',text:'Qual tipo de apego você tem? Ansioso, Evitativo, Seguro ou Desorganizado?'},
+  {bg:'linear-gradient(180deg,#0A0600,#1A1000 50%,#0A0600)',color:'#F59E0B',tag:'FATO',cta:'COMPARTILHAR',text:'87% das pessoas com burnout levam mais de 6 meses para reconhecer os sintomas'},
+];
+
+const postsEl = document.getElementById('posts');
+POSTS.forEach((p,i) => {
+  postsEl.innerHTML += `
+  <div class="post" style="background:${p.bg}">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.1" viewBox="0 0 400 400">
+      <radialGradient id="pn${i}"><stop offset="0%" stop-color="${p.color}"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      <circle cx="100" cy="100" r="200" fill="url(#pn${i})"/>
+    </svg>
+    <div style="position:absolute;inset:0;padding:28px;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        ${PSI(p.color,28)}
+        <span style="font-size:11px;color:#475569;letter-spacing:1px">@psidanielacoelho</span>
+      </div>
+      <div>
+        <div style="font-size:11px;color:${p.color};text-transform:uppercase;letter-spacing:3px;font-weight:700;margin-bottom:14px">${p.label}</div>
+        <div style="font-family:Georgia,serif;font-size:22px;color:#F0F4FF;line-height:1.4">${p.text}</div>
+      </div>
+      <div>
+        <div style="height:2px;background:${p.color};width:40px;margin-bottom:10px;opacity:.6"></div>
+        <div style="font-size:11px;color:#64748B">${p.meta}</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${p.color};opacity:.7"></div>
+  </div>`;
+});
+
+const storiesEl = document.getElementById('stories');
+STORIES.forEach((s,i) => {
+  storiesEl.innerHTML += `
+  <div class="story" style="background:${s.bg}">
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.1" viewBox="0 0 225 400">
+      <radialGradient id="sn${i}"><stop offset="0%" stop-color="${s.color}"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      <circle cx="112" cy="200" r="200" fill="url(#sn${i})"/>
+    </svg>
+    <div style="position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;justify-content:space-between">
+      <div style="text-align:center">
+        ${PSI(s.color,22)}
+        <div style="font-size:9px;color:${s.color};text-transform:uppercase;letter-spacing:2px;margin-top:6px;font-weight:700">${s.tag}</div>
+      </div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:16px;color:#F0F4FF;text-align:center;line-height:1.4">${s.text}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:8px;color:#64748B;margin-bottom:6px">psicologia.doc</div>
+        <div style="border:1px solid ${s.color};color:${s.color};font-size:9px;padding:5px 14px;border-radius:20px;display:inline-block;letter-spacing:2px;text-transform:uppercase;font-weight:700">${s.cta}</div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${s.color}"></div>
+  </div>`;
+});
+</script>
+</body>
+</html>
