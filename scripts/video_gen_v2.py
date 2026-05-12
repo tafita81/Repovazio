@@ -10,6 +10,32 @@ Video Generator V2 - Psych2Go style
 """
 import os, sys, re, json, base64, requests, subprocess, asyncio, hashlib, time, tempfile, shutil, random
 from pathlib import Path
+# =============================================================================
+# CEREBRO V14 — REGRAS IMUTÁVEIS (DECISÃO AUTÔNOMA 2026-05-12)
+# =============================================================================
+# FORMATO LONGO:   15 minutos target (14-16 min aceitável)  — monetização YT
+# FORMATO SHORT:   54s target (50-58s)  — Shorts YT + Reels + TikTok
+# RENDER:          EXCLUSIVAMENTE Flux.1 Schnell + Ken Burns 30fps H.264 1080p
+# IMAGENS:         ZERO texto, ZERO marcas, personagens BR 2D flat vector
+# QUALIDADE:       gate_score >= 90 para render | >= 92 para publicar
+# SÉRIES:          Apego Ansioso | Mentes Narcisistas | Trauma Invisível |
+#                  Ansiedade e Pânico | Burnout  (formato: PARTE N + episódio)
+# =============================================================================
+
+CEREBRO_REGRAS = {
+    "long_target_seconds": 900,    # 15 minutos
+    "long_min_seconds":    840,    # 14 minutos
+    "long_max_seconds":    960,    # 16 minutos
+    "short_target_seconds": 54,    # 54 segundos
+    "short_min_seconds":    50,    # mínimo 50s
+    "short_max_seconds":    58,    # máximo 58s (< 60s para Shorts YT)
+    "render_method":        "flux_kenburns_v2",
+    "gate_score_render":    90,
+    "gate_score_publish":   92,
+    "imagens":              "ZERO_texto_ZERO_marcas_personagem_BR_2D",
+}
+
+
 
 NVIDIA_KEY = os.environ['NVIDIA_API_KEY']
 SB_URL = os.environ['SUPABASE_URL']
