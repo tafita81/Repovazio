@@ -3,407 +3,578 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Galeria Quantica | psicologia.doc</title>
+<title>psicologia.doc — Galeria Quântica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#06060F;--c1:#0e0e18;--c2:#14142b;--bd:#1e1e35;--acc:#7c3aed;--t:#e2e8f0;--dim:#64748b}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background:
-  linear-gradient(rgba(124,58,237,.02) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(124,58,237,.02) 1px,transparent 1px);
-  background-size:36px 36px;pointer-events:none;z-index:0}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+:root {
+  --bg:      #06060F;
+  --surface: #0E0E1A;
+  --card:    #12121F;
+  --border:  rgba(255,255,255,.07);
+  --acc:     #7C3AED;
+  --acc2:    #5B21B6;
+  --crimson: #E11D48;
+  --gold:    #F59E0B;
+  --teal:    #0D9488;
+  --frost:   #F0F4FF;
+  --mist:    #C4B5FD;
+  --dim:     #4B5563;
+  --t1:      #E2E8F0;
+  --t2:      #94A3B8;
+}
+* { margin:0; padding:0; box-sizing:border-box }
+body { background:var(--bg); color:var(--t1); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden }
 
-.hdr{position:sticky;top:0;z-index:100;background:rgba(6,6,15,.92);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--bd);padding:10px 22px;display:flex;align-items:center;gap:14px}
-.logo{font-size:15px;font-weight:800;background:linear-gradient(90deg,#c084fc,#38bdf8);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.live{width:6px;height:6px;background:#10b981;border-radius:50%;animation:blink 1.5s infinite;display:inline-block;margin-right:5px}
-.badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;font-family:monospace}
-.badge-quantum{background:rgba(124,58,237,.25);color:#c084fc;border:1px solid rgba(124,58,237,.4)}
-.badge-score{background:rgba(16,185,129,.2);color:#34d399;border:1px solid rgba(16,185,129,.3)}
-.hbtns{display:flex;gap:7px;margin-left:auto}
-.hb{padding:4px 12px;border-radius:7px;font-size:11px;font-weight:700;text-decoration:none;border:1px solid var(--bd);color:#94a3b8;transition:all .15s}
-.hb:hover{border-color:#7c3aed;color:#c084fc}
-.hb-p{background:var(--acc);color:#fff;border-color:transparent}
+/* grid bg */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,58,237,.12), transparent);
+}
 
-.wrap{max-width:1400px;margin:0 auto;padding:24px 22px;position:relative;z-index:1}
+/* ── HEADER ── */
+.hdr {
+  position:sticky; top:0; z-index:99;
+  background:rgba(6,6,15,.85); backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  padding:0 28px; height:58px;
+  display:flex; align-items:center; gap:16px;
+}
+.logo-mark { font-size:22px; font-weight:800; letter-spacing:-1px; color:var(--frost); line-height:1 }
+.logo-mark span { color:var(--mist) }
+.hdr-div { width:1px; height:22px; background:var(--border) }
+.hdr-sub { font-size:11px; color:var(--dim); font-family:'DM Mono',monospace }
+.hdr-pill {
+  padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700; font-family:'DM Mono',monospace;
+  background:rgba(124,58,237,.15); color:var(--mist); border:1px solid rgba(124,58,237,.3);
+}
+.hdr-nav { margin-left:auto; display:flex; gap:8px }
+.hdr-link {
+  padding:5px 14px; border-radius:8px; font-size:11px; font-weight:600;
+  text-decoration:none; color:var(--t2); border:1px solid var(--border); transition:all .15s;
+}
+.hdr-link:hover { color:var(--frost); border-color:rgba(255,255,255,.15) }
+.hdr-link.cta { background:var(--acc); color:#fff; border-color:transparent }
 
-/* Stats bar */
-.stats-bar{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px;padding:14px 18px;
-  background:var(--c1);border:1px solid var(--bd);border-radius:14px;align-items:center}
-.stat{text-align:center;min-width:60px}
-.stat-n{font-size:22px;font-weight:800;color:#c084fc;font-family:monospace;line-height:1}
-.stat-l{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+/* ── HERO ── */
+.hero {
+  position:relative; z-index:1; text-align:center;
+  padding:64px 28px 48px;
+}
+.hero-eyebrow {
+  display:inline-flex; align-items:center; gap:7px; margin-bottom:16px;
+  padding:5px 14px; border-radius:20px;
+  background:rgba(124,58,237,.1); border:1px solid rgba(124,58,237,.25);
+  font-size:11px; font-weight:600; color:var(--mist); font-family:'DM Mono',monospace;
+}
+.hero-eyebrow-dot { width:6px; height:6px; border-radius:50%; background:#10B981; animation:pulse 2s infinite }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.hero h1 {
+  font-size:clamp(32px,5vw,56px); font-weight:800; letter-spacing:-2px; line-height:1.05;
+  color:var(--frost); margin-bottom:12px;
+}
+.hero h1 em {
+  font-style:normal;
+  background:linear-gradient(135deg, var(--mist), #38BDF8);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero-sub {
+  font-size:15px; color:var(--t2); max-width:560px; margin:0 auto 32px; line-height:1.6;
+}
+.hero-stats {
+  display:inline-flex; gap:0; border:1px solid var(--border);
+  border-radius:14px; overflow:hidden; background:var(--surface);
+}
+.hstat {
+  padding:14px 24px; text-align:center;
+  border-right:1px solid var(--border);
+}
+.hstat:last-child { border-right:none }
+.hstat-n { font-size:24px; font-weight:800; color:var(--mist); font-family:'DM Mono',monospace; line-height:1 }
+.hstat-l { font-size:9px; color:var(--dim); text-transform:uppercase; letter-spacing:.8px; margin-top:3px }
 
-/* Filtros */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.filter-btn{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
-  border:1px solid var(--bd);background:transparent;color:#64748b;transition:all .15s}
-.filter-btn.active{background:var(--acc);color:#fff;border-color:transparent}
-.filter-btn:hover:not(.active){border-color:#475569;color:#e2e8f0}
+/* ── CANAIS REFERÊNCIA ── */
+.ref-bar {
+  position:relative; z-index:1;
+  margin:0 auto 40px; max-width:900px; padding:0 28px;
+  display:flex; align-items:center; gap:12px; overflow:hidden;
+}
+.ref-label { font-size:9px; color:var(--dim); text-transform:uppercase; letter-spacing:1px; white-space:nowrap; font-family:'DM Mono',monospace }
+.ref-chips { display:flex; gap:7px; flex-wrap:wrap }
+.ref-chip {
+  padding:4px 12px; border-radius:20px; font-size:10px; font-weight:600;
+  border:1px solid var(--border); color:var(--t2); white-space:nowrap;
+}
+.ref-chip.active { background:rgba(245,158,11,.12); border-color:rgba(245,158,11,.3); color:var(--gold) }
 
-/* Section */
-.section-t{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);
-  font-weight:600;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
-.section-t::after{content:'';flex:1;height:1px;background:var(--bd)}
+/* ── FILTROS ── */
+.filters-wrap {
+  position:relative; z-index:1;
+  max-width:1320px; margin:0 auto 28px; padding:0 28px;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.filter-label { font-size:10px; color:var(--dim); font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.8px; margin-right:4px }
+.fbtn {
+  padding:6px 16px; border-radius:20px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--dim);
+  transition:all .15s; font-family:'DM Sans',sans-serif;
+}
+.fbtn:hover { color:var(--t1); border-color:rgba(255,255,255,.15) }
+.fbtn.on { background:var(--acc); color:#fff; border-color:transparent }
+.fbtn.on.gold { background:var(--gold); color:#000 }
+.fbtn.on.crimson { background:var(--crimson); color:#fff }
+.fbtn.on.teal { background:var(--teal); color:#fff }
 
-/* Video Grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+/* ── GRID ── */
+.wrap { max-width:1320px; margin:0 auto; padding:0 28px 60px; position:relative; z-index:1 }
+.section-head {
+  display:flex; align-items:center; gap:12px;
+  font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--dim);
+  font-weight:700; font-family:'DM Mono',monospace; margin-bottom:16px;
+}
+.section-head::after { content:''; flex:1; height:1px; background:var(--border) }
+.section-head .badge-count {
+  padding:2px 8px; border-radius:20px; font-size:9px;
+  background:rgba(124,58,237,.2); color:var(--mist); border:1px solid rgba(124,58,237,.3);
+}
 
-/* Video Card */
-.vcard{background:var(--c1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;
-  transition:all .2s;animation:fadeIn .3s ease both;cursor:pointer}
-.vcard:hover{border-color:#475569;transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.5)}
-.vcard.quantum{border-color:rgba(124,58,237,.3)}
-.vcard.quantum:hover{border-color:rgba(124,58,237,.6);box-shadow:0 8px 32px rgba(124,58,237,.2)}
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin-bottom:40px }
 
-.vcard-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#0d0d1a}
-.vcard-thumb video{width:100%;height:100%;object-fit:cover}
-.vcard-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#06060F,#1A0A3E)}
-.vcard-badges{position:absolute;top:8px;left:8px;display:flex;gap:5px;flex-wrap:wrap}
-.vcard-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.3);opacity:0;transition:opacity .2s}
-.vcard:hover .vcard-play{opacity:1}
-.play-ico{width:48px;height:48px;background:rgba(255,255,255,.9);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:18px;color:#06060F}
+/* ── CARD ── */
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; overflow:hidden; cursor:pointer;
+  transition:transform .2s, border-color .2s, box-shadow .2s;
+  animation:fadeUp .35s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.card:hover {
+  transform:translateY(-4px); border-color:rgba(124,58,237,.4);
+  box-shadow:0 12px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(124,58,237,.15);
+}
+.card.quantum { border-color:rgba(124,58,237,.2) }
+.card.quantum:hover { border-color:rgba(124,58,237,.6); box-shadow:0 12px 40px rgba(124,58,237,.2), 0 0 0 1px rgba(124,58,237,.2) }
 
-.vcard-body{padding:14px}
-.vcard-title{font-size:13px;font-weight:700;color:#e2e8f0;line-height:1.35;margin-bottom:8px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.vcard-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
-.vmeta{font-size:9px;color:var(--dim);padding:2px 7px;background:var(--c2);border-radius:20px;font-family:monospace}
-.vmeta.score-hi{background:rgba(16,185,129,.15);color:#34d399}
-.vmeta.quantum{background:rgba(124,58,237,.15);color:#c084fc}
-.vmeta.serie{background:rgba(56,189,248,.15);color:#38bdf8}
+/* thumb */
+.thumb {
+  position:relative; aspect-ratio:16/9; overflow:hidden;
+  background:linear-gradient(135deg,#0A0A18,#160B2E);
+}
+.thumb video { width:100%; height:100%; object-fit:cover; display:block }
+.thumb-bg {
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+}
+.psi-bg {
+  font-size:80px; opacity:.06; color:var(--mist); font-weight:800; user-select:none;
+  background:linear-gradient(135deg,var(--acc),#38BDF8);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.thumb-overlay {
+  position:absolute; inset:0; background:rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:opacity .2s;
+}
+.card:hover .thumb-overlay { opacity:1 }
+.play-btn {
+  width:52px; height:52px; border-radius:50%;
+  background:rgba(255,255,255,.95);
+  display:flex; align-items:center; justify-content:center;
+  color:#06060F; font-size:20px; transform:scale(.85); transition:transform .2s;
+}
+.card:hover .play-btn { transform:scale(1) }
+.thumb-badges {
+  position:absolute; top:10px; left:10px;
+  display:flex; gap:5px; flex-wrap:wrap;
+}
+.tb {
+  padding:3px 8px; border-radius:6px; font-size:9px; font-weight:700;
+  font-family:'DM Mono',monospace; backdrop-filter:blur(8px);
+}
+.tb-q  { background:rgba(124,58,237,.75); color:#E9D5FF; border:1px solid rgba(196,181,253,.3) }
+.tb-s  { background:rgba(16,185,129,.7);  color:#A7F3D0; border:1px solid rgba(16,185,129,.4) }
+.tb-60 { background:rgba(245,158,11,.75); color:#FEF3C7; border:1px solid rgba(245,158,11,.4) }
+.tb-se { background:rgba(56,189,248,.7);  color:#BAE6FD; border:1px solid rgba(56,189,248,.4) }
+.tb-yt { background:rgba(244,63,94,.75);  color:#FFE4E6; border:1px solid rgba(244,63,94,.4) }
 
-.vcard-actions{display:flex;gap:6px}
-.vbtn{flex:1;padding:7px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;
-  border:1px solid var(--bd);background:transparent;color:#94a3b8;transition:all .15s;text-decoration:none;
-  text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
-.vbtn:hover{border-color:#7c3aed;color:#c084fc;background:rgba(124,58,237,.08)}
-.vbtn-dl{background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3);color:#38bdf8}
-.vbtn-yt{background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.3);color:#f43f5e}
+/* body */
+.cbody { padding:14px }
+.ctitle {
+  font-size:13px; font-weight:700; color:var(--frost); line-height:1.35; margin-bottom:9px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.cmeta { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px }
+.cm {
+  padding:2px 8px; border-radius:5px; font-size:9px; font-weight:600; font-family:'DM Mono',monospace;
+  background:rgba(255,255,255,.05); color:var(--dim); border:1px solid rgba(255,255,255,.06);
+}
+.cm.hi  { background:rgba(16,185,129,.12); color:#34D399; border-color:rgba(16,185,129,.2) }
+.cm.acc { background:rgba(124,58,237,.12); color:var(--mist); border-color:rgba(124,58,237,.2) }
+.cm.gld { background:rgba(245,158,11,.12); color:var(--gold); border-color:rgba(245,158,11,.2) }
+.cactions { display:flex; gap:6px }
+.ca {
+  flex:1; padding:7px 10px; border-radius:9px; font-size:10px; font-weight:700;
+  cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--t2);
+  transition:all .15s; text-decoration:none; text-align:center;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+  font-family:'DM Sans',sans-serif;
+}
+.ca:hover { border-color:rgba(255,255,255,.15); color:var(--frost) }
+.ca-dl { background:rgba(56,189,248,.08); border-color:rgba(56,189,248,.2); color:#38BDF8 }
+.ca-dl:hover { background:rgba(56,189,248,.15) }
+.ca-yt { background:rgba(244,63,94,.08); border-color:rgba(244,63,94,.2); color:#F43F5E }
+.ca-yt:hover { background:rgba(244,63,94,.15) }
+.ca-au { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.2); color:#34D399 }
 
-/* Empty state */
-.empty{text-align:center;padding:60px 20px;color:var(--dim)}
-.empty-ico{font-size:48px;margin-bottom:12px;opacity:.4}
+/* ── PENDING SECTION ── */
+.pending-card {
+  background:var(--surface); border:1px dashed rgba(124,58,237,.25);
+  border-radius:12px; padding:16px; display:flex; gap:12px; align-items:flex-start;
+}
+.pending-icon { font-size:22px; flex-shrink:0; margin-top:1px }
+.pending-title { font-size:12px; font-weight:700; color:var(--t1); margin-bottom:4px }
+.pending-meta { font-size:10px; color:var(--dim); font-family:'DM Mono',monospace }
+.pending-score {
+  margin-left:auto; flex-shrink:0;
+  padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800;
+  background:rgba(16,185,129,.15); color:#34D399; border:1px solid rgba(16,185,129,.25);
+  font-family:'DM Mono',monospace;
+}
+.pending-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px }
 
-/* Loader */
-#loader{display:flex;align-items:center;justify-content:center;padding:40px;gap:10px;color:var(--dim)}
-.spin{width:24px;height:24px;border:2px solid var(--bd);border-top-color:#7c3aed;border-radius:50%;animation:spin 1s linear infinite}
+/* ── MODAL ── */
+.modal {
+  display:none; position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.92); backdrop-filter:blur(12px);
+  align-items:center; justify-content:center; padding:20px;
+}
+.modal.open { display:flex }
+.modal-box {
+  max-width:860px; width:100%; background:var(--card);
+  border-radius:20px; overflow:hidden; border:1px solid rgba(124,58,237,.3);
+  box-shadow:0 0 80px rgba(124,58,237,.2);
+}
+.modal-close {
+  position:absolute; top:16px; right:16px;
+  background:rgba(255,255,255,.1); border:none; color:var(--t1);
+  width:36px; height:36px; border-radius:50%; font-size:16px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .15s; z-index:10;
+}
+.modal-close:hover { background:rgba(255,255,255,.2) }
+.modal-video { width:100%; aspect-ratio:16/9; display:block }
+.modal-info { padding:16px 20px }
+.modal-title { font-size:15px; font-weight:700; margin-bottom:6px }
+.modal-footer { display:flex; gap:8px; flex-wrap:wrap }
+.mf-chip { padding:3px 10px; border-radius:6px; font-size:10px; color:var(--t2); background:var(--surface); font-family:'DM Mono',monospace }
 
-/* Modal video player */
-.modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.9);
-  align-items:center;justify-content:center}
-.modal.open{display:flex}
-.modal-inner{max-width:900px;width:90%;background:var(--c1);border-radius:16px;overflow:hidden;
-  border:1px solid var(--bd);position:relative}
-.modal-close{position:absolute;top:10px;right:12px;background:rgba(0,0,0,.5);border:none;
-  color:#94a3b8;font-size:18px;cursor:pointer;width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;z-index:10}
-.modal-close:hover{color:#e2e8f0}
-.modal-video{width:100%;aspect-ratio:16/9}
-.modal-info{padding:14px}
-.modal-title{font-size:15px;font-weight:700;margin-bottom:6px}
-.modal-meta{font-size:11px;color:var(--dim);display:flex;gap:12px;flex-wrap:wrap}
+/* ── LOADING ── */
+#loader { display:flex; align-items:center; justify-content:center; gap:10px; padding:48px; z-index:1; position:relative }
+.spin { width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--acc); border-radius:50%; animation:rotate 1s linear infinite }
+@keyframes rotate { to { transform:rotate(360deg) } }
+.loader-txt { font-size:12px; color:var(--dim); font-family:'DM Mono',monospace }
 
-footer{text-align:center;padding:24px;font-size:10px;color:var(--dim);border-top:1px solid var(--bd);margin-top:32px}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.stats-bar{flex-wrap:wrap}}
+/* ── RESPONSIVE ── */
+@media(max-width:640px) {
+  .hdr-nav { display:none }
+  .hero { padding:40px 20px 32px }
+  .hero-stats { flex-wrap:wrap }
+  .grid { grid-template-columns:1fr }
+  .ref-bar { flex-wrap:wrap }
+}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
 <header class="hdr">
-  <div>
-    <div class="logo">psicologia.doc</div>
-    <div style="font-size:10px;color:var(--dim);margin-top:2px">
-      <span class="live"></span>Galeria Quantica &middot; Flux.1 Schnell + Ken Burns
-    </div>
-  </div>
-  <span class="badge badge-quantum">Sistema Quantico V2</span>
-  <div class="hbtns">
-    <a href="/dashboard" class="hb hb-p">Dashboard</a>
-    <a href="/videos-prontos.html" class="hb">Todos os Videos</a>
-    <a href="/hub.html" class="hb">Hub</a>
-  </div>
+  <div class="logo-mark">ψ <span>psicologia.doc</span></div>
+  <div class="hdr-div"></div>
+  <div class="hdr-sub">Galeria Quântica · Flux.1 Schnell + Ken Burns</div>
+  <div class="hdr-pill">Sistema V2</div>
+  <nav class="hdr-nav">
+    <a href="/dashboard" class="hdr-link cta">Dashboard</a>
+    <a href="/hub.html" class="hdr-link">Hub</a>
+    <a href="/videos-prontos.html" class="hdr-link">Todos</a>
+  </nav>
 </header>
 
-<div class="wrap">
-  <!-- Stats bar -->
-  <div class="stats-bar" id="stats-bar">
-    <div class="stat"><div class="stat-n" id="s-total">-</div><div class="stat-l">Total v2 Flux</div></div>
-    <div class="stat"><div class="stat-n" id="s-score95">-</div><div class="stat-l">Score 95+</div></div>
-    <div class="stat"><div class="stat-n" id="s-series">-</div><div class="stat-l">Series</div></div>
-    <div class="stat"><div class="stat-n" id="s-curtos">-</div><div class="stat-l">Shorts 60s</div></div>
-    <div style="flex:1"></div>
-    <div style="font-size:10px;color:var(--dim);text-align:right">
-      <div style="color:#c084fc;font-weight:700">Imagens Quanticas</div>
-      <div>Flux.1 Schnell NVIDIA + Ken Burns 30fps 1080p</div>
-      <div>Sistema: psicologia.doc V2 | Estilo: Psych2Go Quantico</div>
-    </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="hero-eyebrow-dot"></span>
+    Sistema Quântico V2 · Ao vivo
   </div>
-
-  <!-- Filtros -->
-  <div class="filters">
-    <button class="filter-btn active" data-filter="all" onclick="filtrar('all',this)">Todos</button>
-    <button class="filter-btn" data-filter="score95" onclick="filtrar('score95',this)">Score 95+</button>
-    <button class="filter-btn" data-filter="series" onclick="filtrar('series',this)">Series</button>
-    <button class="filter-btn" data-filter="shorts" onclick="filtrar('shorts',this)">Shorts 60s</button>
-    <button class="filter-btn" data-filter="long" onclick="filtrar('long',this)">Long Form</button>
-    <button class="filter-btn" data-filter="apego" onclick="filtrar('apego',this)">Apego</button>
-    <button class="filter-btn" data-filter="narcisismo" onclick="filtrar('narcisismo',this)">Narcisismo</button>
-    <button class="filter-btn" data-filter="trauma" onclick="filtrar('trauma',this)">Trauma</button>
-    <button class="filter-btn" data-filter="ansiedade" onclick="filtrar('ansiedade',this)">Ansiedade</button>
+  <h1>Vídeos com <em>Imagens Quânticas</em></h1>
+  <p class="hero-sub">
+    Personagens brasileiros planos 2D · Emoção cinematográfica · Paleta dinâmica por estado emocional ·
+    Estilo Psych2Go adaptado para o Brasil · ZERO texto nas imagens
+  </p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n" id="s-total">—</div><div class="hstat-l">Quânticos Prontos</div></div>
+    <div class="hstat"><div class="hstat-n" id="s-score">—</div><div class="hstat-l">Score 90+</div></div>
+    <div class="hstat"><div class="hstat-n" id="s-series">—</div><div class="hstat-l">Séries</div></div>
+    <div class="hstat"><div class="hstat-n" id="s-render">—</div><div class="hstat-l">Em Render</div></div>
   </div>
+</section>
 
-  <!-- Loader -->
-  <div id="loader"><div class="spin"></div><span>Carregando videos quanticos...</span></div>
-
-  <!-- Secao Series -->
-  <div id="section-series" style="display:none">
-    <div class="section-t">Series com Imagens Quanticas</div>
-    <div class="grid" id="grid-series"></div>
-  </div>
-
-  <!-- Secao Principal -->
-  <div class="section-t" id="section-main-label" style="display:none">Videos Prontos</div>
-  <div class="grid" id="grid-main"></div>
-
-  <div id="empty" class="empty" style="display:none">
-    <div class="empty-ico">🎬</div>
-    <div style="font-size:14px;color:#94a3b8">Nenhum video encontrado com esse filtro</div>
-    <div style="font-size:11px;color:var(--dim);margin-top:6px">Experimente outro filtro ou aguarde o render completar</div>
+<!-- CANAIS REFERÊNCIA -->
+<div class="ref-bar">
+  <span class="ref-label">Padrão:</span>
+  <div class="ref-chips">
+    <span class="ref-chip active">Psych2Go 28M views</span>
+    <span class="ref-chip active">Therapy in a Nutshell</span>
+    <span class="ref-chip active">BrainCraft</span>
+    <span class="ref-chip active">MedCircle</span>
+    <span class="ref-chip active">Psychology Today BR</span>
+    <span class="ref-chip">→ psicologia.doc</span>
   </div>
 </div>
 
-<footer>
-  psicologia.doc &middot; @psidanielacoelho &middot; Sistema Quantico V2 &middot; Flux.1 Schnell + Ken Burns 30fps 1080p<br>
-  Estilo: Psych2Go Quantico &middot; Paleta por emocao &middot; Diversidade de personagens BR &middot; ZERO texto nas imagens
-</footer>
+<!-- FILTROS -->
+<div class="filters-wrap">
+  <span class="filter-label">Filtrar:</span>
+  <button class="fbtn on" onclick="filtrar('all',this)">Todos</button>
+  <button class="fbtn" onclick="filtrar('apego',this)">💔 Apego</button>
+  <button class="fbtn" onclick="filtrar('narcisismo',this)">😈 Narcisismo</button>
+  <button class="fbtn" onclick="filtrar('trauma',this)">💊 Trauma</button>
+  <button class="fbtn" onclick="filtrar('ansiedade',this)">😰 Ansiedade</button>
+  <button class="fbtn" onclick="filtrar('impostor',this)">🎭 Impostor</button>
+  <button class="fbtn" onclick="filtrar('short',this)">⚡ Shorts 60s</button>
+  <button class="fbtn" onclick="filtrar('serie',this)">📚 Séries</button>
+</div>
 
-<!-- Modal Player -->
-<div class="modal" id="modal" onclick="fecharModal(event)">
-  <div class="modal-inner">
-    <button class="modal-close" onclick="fecharModal(null,true)">x</button>
-    <video class="modal-video" id="modal-video" controls autoplay></video>
+<!-- CONTEÚDO -->
+<div class="wrap">
+  <div id="loader"><div class="spin"></div><span class="loader-txt">Carregando biblioteca quântica...</span></div>
+
+  <!-- PRONTOS -->
+  <div id="section-prontos" style="display:none">
+    <div class="section-head">
+      Vídeos Quânticos Prontos
+      <span class="badge-count" id="count-prontos">0</span>
+    </div>
+    <div class="grid" id="grid-prontos"></div>
+  </div>
+
+  <!-- EM RENDER -->
+  <div id="section-render" style="display:none">
+    <div class="section-head">
+      Em Renderização — Score 90+ · Chegando em breve
+      <span class="badge-count" id="count-render">0</span>
+    </div>
+    <div class="pending-grid" id="grid-render"></div>
+  </div>
+
+  <div id="empty" style="display:none; text-align:center; padding:60px; color:var(--dim)">
+    <div style="font-size:40px; margin-bottom:12px; opacity:.3">🎬</div>
+    <div style="font-size:13px">Nenhum vídeo encontrado</div>
+  </div>
+</div>
+
+<!-- MODAL PLAYER -->
+<div class="modal" id="modal" onclick="fechar(event)">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="fechar(null,1)">✕</button>
+    <video class="modal-video" id="mv" controls playsinline></video>
     <div class="modal-info">
-      <div class="modal-title" id="modal-title"></div>
-      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-title" id="mt"></div>
+      <div class="modal-footer">
+        <span class="mf-chip">Flux.1 Schnell NVIDIA</span>
+        <span class="mf-chip">Ken Burns 30fps 1080p</span>
+        <span class="mf-chip">psicologia.doc Sistema V2</span>
+        <span class="mf-chip" id="mf-id"></span>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-const SBU="https://tpjvalzwkqwttvmszvie.supabase.co";
-const SBK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4NjkyMzAsImV4cCI6MjA2MjQ0NTIzMH0.w45_lqUBd_9m8HEZSbNDHMb0kfKWq0Nwd1Dqf7V5NVc";
+const SB = "https://tpjvalzwkqwttvmszvie.supabase.co";
+const SK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4NjkyMzAsImV4cCI6MjA2MjQ0NTIzMH0.w45_lqUBd_9m8HEZSbNDHMb0kfKWq0Nwd1Dqf7V5NVc";
+const H = { apikey: SK, Authorization: "Bearer " + SK };
 
-let allVideos = [];
-let filterAtivo = 'all';
+let PRONTOS = [], RENDER = [], FILTRO = "all";
 
-// Series conhecidas
-const SERIES_MAP = {
-  'apego': {nome:'A Ciencia do Apego', cor:'#7C3AED', emoji:'💔'},
-  'narcisismo': {nome:'Mentes Narcisistas', cor:'#E11D48', emoji:'😈'},
-  'trauma': {nome:'Trauma Invisivel', cor:'#0D9488', emoji:'💔'},
-  'ansiedade': {nome:'Ansiedade e Panico', cor:'#F59E0B', emoji:'😰'},
-  'burnout': {nome:'Burnout', cor:'#FB7185', emoji:'🔥'},
+const SERIES_INFO = {
+  apego:     { emoji:"💔", cor:"#7C3AED", nome:"Apego Ansioso" },
+  narcisismo:{ emoji:"😈", cor:"#E11D48", nome:"Mentes Narcisistas" },
+  trauma:    { emoji:"💊", cor:"#0D9488", nome:"Trauma Invisível" },
+  ansiedade: { emoji:"😰", cor:"#F59E0B", nome:"Ansiedade" },
+  impostor:  { emoji:"🎭", cor:"#8B5CF6", nome:"Síndrome do Impostor" },
+  burnout:   { emoji:"🔥", cor:"#FB7185", nome:"Burnout" },
+  outros:    { emoji:"🧠", cor:"#64748B", nome:"Outros" },
 };
 
-function detectSerie(title) {
-  const t = title.toLowerCase();
-  if (t.includes('apego')) return 'apego';
-  if (t.includes('narcis')) return 'narcisismo';
-  if (t.includes('trauma')) return 'trauma';
-  if (t.includes('ansiedade') || t.includes('ansio')) return 'ansiedade';
-  if (t.includes('burnout')) return 'burnout';
-  return null;
+function detectSerie(t) {
+  t = t.toLowerCase();
+  if (t.includes("apego")) return "apego";
+  if (t.includes("narcis")) return "narcisismo";
+  if (t.includes("trauma")) return "trauma";
+  if (t.includes("ansiedade") || t.includes("ansio")) return "ansiedade";
+  if (t.includes("impostor") || t.includes("fraude")) return "impostor";
+  if (t.includes("burnout")) return "burnout";
+  return "outros";
 }
 
-function isQuantum(v) {
-  return v.mp4_url && v.mp4_url.includes('/v2/');
+function isSerie(t) {
+  return /PARTE\s*\d|S\d+E\d+|\[Ep\.|Ep\.\s*\d/.test(t);
 }
 
-function isShort(v) {
-  return v.title && (v.title.includes('[60s]') || v.title.includes('60s') || v.title.includes('[Short]'));
+function isShort(t) {
+  return /\[?60s\]?|Short/.test(t);
 }
 
-function getScore(v) {
+function score(v) {
   const m = v.metadata || {};
   return parseFloat(m.gate_score || v.score || 0);
 }
 
-function getMetodo(v) {
-  if (!v.mp4_url) return null;
-  if (v.mp4_url.includes('/v2/')) return 'Flux+KenBurns V2';
-  if (v.mp4_url.includes('_v8.mp4')) return 'HTML Slides V8';
-  return 'Desconhecido';
+async function load() {
+  // Quânticos prontos (v2/)
+  const r1 = await fetch(SB + "/rest/v1/content_pipeline?mp4_url=like.*%2Fv2%2F*&select=id,title,status,score,mp4_url,audio_url,youtube_url,metadata&order=id.desc&limit=100", { headers: H });
+  PRONTOS = (await r1.json()) || [];
+
+  // Em render: mp4_ready sem mp4 com gate_score alto
+  const r2 = await fetch(SB + "/rest/v1/content_pipeline?status=eq.mp4_ready&mp4_url=is.null&select=id,title,status,score,metadata&order=id.desc&limit=30", { headers: H });
+  RENDER = ((await r2.json()) || []).filter(v => score(v) >= 85);
+
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("s-total").textContent = PRONTOS.length;
+  document.getElementById("s-score").textContent = [...PRONTOS,...RENDER].filter(v => score(v) >= 90).length;
+  const series = new Set([...PRONTOS,...RENDER].map(v => detectSerie(v.title)).filter(s => s !== "outros"));
+  document.getElementById("s-series").textContent = series.size;
+  document.getElementById("s-render").textContent = RENDER.length;
+
+  renderizar();
 }
 
-async function carregarVideos() {
-  try {
-    const r = await fetch(SBU + "/rest/v1/content_pipeline?mp4_url=not.is.null&select=id,title,status,score,mp4_url,audio_url,youtube_url,metadata&order=id.desc&limit=200", {
-      headers: { apikey: SBK, Authorization: "Bearer " + SBK }
-    });
-    const data = await r.json();
-    // Filtrar apenas os quanticos (v2/)
-    allVideos = (data || []).filter(v => isQuantum(v));
-    
-    // Stats
-    document.getElementById('loader').style.display = 'none';
-    document.getElementById('s-total').textContent = allVideos.length;
-    document.getElementById('s-score95').textContent = allVideos.filter(v => getScore(v) >= 95).length;
-    document.getElementById('s-curtos').textContent = allVideos.filter(v => isShort(v)).length;
-    const series = new Set(allVideos.map(v => detectSerie(v.title)).filter(Boolean));
-    document.getElementById('s-series').textContent = series.size;
-    
-    renderizar(allVideos);
-  } catch(e) {
-    document.getElementById('loader').innerHTML = '<div style="color:#64748b;font-size:12px">Erro ao carregar. Verifique a conexao.</div>';
-  }
+function filtrar(f, btn) {
+  FILTRO = f;
+  document.querySelectorAll(".fbtn").forEach(b => b.classList.remove("on"));
+  btn.classList.add("on");
+  renderizar();
 }
 
-function filtrar(tipo, btn) {
-  filterAtivo = tipo;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  let filtered = allVideos;
-  if (tipo === 'score95') filtered = allVideos.filter(v => getScore(v) >= 95);
-  else if (tipo === 'series') filtered = allVideos.filter(v => detectSerie(v.title));
-  else if (tipo === 'shorts') filtered = allVideos.filter(v => isShort(v));
-  else if (tipo === 'long') filtered = allVideos.filter(v => !isShort(v));
-  else if (['apego','narcisismo','trauma','ansiedade','burnout'].includes(tipo)) {
-    filtered = allVideos.filter(v => detectSerie(v.title) === tipo);
-  }
-  
-  renderizar(filtered);
-}
+function renderizar() {
+  let prontos = PRONTOS;
+  let render  = RENDER;
 
-function renderizar(videos) {
-  const gridMain = document.getElementById('grid-main');
-  const gridSeries = document.getElementById('grid-series');
-  const empty = document.getElementById('empty');
-  const sectionSeries = document.getElementById('section-series');
-  const sectionLabel = document.getElementById('section-main-label');
-  
-  gridMain.innerHTML = '';
-  gridSeries.innerHTML = '';
-  
-  if (videos.length === 0) {
-    empty.style.display = 'block';
-    sectionSeries.style.display = 'none';
-    sectionLabel.style.display = 'none';
-    return;
-  }
-  empty.style.display = 'none';
-  sectionLabel.style.display = 'flex';
-  
-  // Separar series dos standalone
-  const seriesVideos = videos.filter(v => detectSerie(v.title));
-  const soloVideos = videos.filter(v => !detectSerie(v.title));
-  
-  // Mostrar series agrupadas se filtro for 'all' ou 'series'
-  if ((filterAtivo === 'all' || filterAtivo === 'series') && seriesVideos.length > 0) {
-    sectionSeries.style.display = 'block';
-    seriesVideos.forEach((v, i) => gridSeries.appendChild(criarCard(v, i)));
-    if (filterAtivo === 'series') {
-      sectionLabel.style.display = 'none';
-      return;
+  if (FILTRO !== "all") {
+    if (FILTRO === "short") {
+      prontos = PRONTOS.filter(v => isShort(v.title));
+      render  = RENDER.filter(v => isShort(v.title));
+    } else if (FILTRO === "serie") {
+      prontos = PRONTOS.filter(v => isSerie(v.title));
+      render  = RENDER.filter(v => isSerie(v.title));
+    } else {
+      prontos = PRONTOS.filter(v => detectSerie(v.title) === FILTRO);
+      render  = RENDER.filter(v => detectSerie(v.title) === FILTRO);
     }
-  } else {
-    sectionSeries.style.display = 'none';
   }
-  
-  const mainList = filterAtivo === 'all' ? soloVideos : videos;
-  sectionLabel.textContent = filterAtivo === 'all' ? 'Videos Standalone' : 
-    (SERIES_MAP[filterAtivo]?.nome || 'Videos Filtrados');
-  
-  if (mainList.length === 0 && filterAtivo === 'all') {
-    sectionLabel.style.display = 'none';
-  } else {
-    mainList.forEach((v, i) => gridMain.appendChild(criarCard(v, i)));
+
+  const gP = document.getElementById("grid-prontos");
+  const gR = document.getElementById("grid-render");
+  const sP = document.getElementById("section-prontos");
+  const sR = document.getElementById("section-render");
+  const em = document.getElementById("empty");
+
+  gP.innerHTML = ""; gR.innerHTML = "";
+
+  if (prontos.length === 0 && render.length === 0) {
+    sP.style.display = "none"; sR.style.display = "none"; em.style.display = "block"; return;
   }
+  em.style.display = "none";
+
+  if (prontos.length > 0) {
+    sP.style.display = "block";
+    document.getElementById("count-prontos").textContent = prontos.length;
+    prontos.forEach((v, i) => { const c = mkCard(v, i); if (c) gP.appendChild(c); });
+  } else { sP.style.display = "none"; }
+
+  if (render.length > 0) {
+    sR.style.display = "block";
+    document.getElementById("count-render").textContent = render.length;
+    render.forEach(v => gR.appendChild(mkPending(v)));
+  } else { sR.style.display = "none"; }
 }
 
-function criarCard(v, index) {
-  const score = getScore(v);
-  const metodo = getMetodo(v);
-  const serie = detectSerie(v.title);
-  const serieInfo = serie ? SERIES_MAP[serie] : null;
-  const isQ = isQuantum(v);
-  const isS = isShort(v);
-  
-  const card = document.createElement('div');
-  card.className = 'vcard' + (isQ ? ' quantum' : '');
-  card.style.animationDelay = (index * 0.05) + 's';
-  
-  // Badge de tipo
-  let badgesHTML = '';
-  if (isQ) badgesHTML += '<span class="badge badge-quantum" style="font-size:8px">Flux+KB V2</span>';
-  if (score >= 95) badgesHTML += '<span class="badge badge-score" style="font-size:8px">' + score.toFixed(1) + '</span>';
-  if (isS) badgesHTML += '<span class="badge" style="background:rgba(245,158,11,.2);color:#fbbf24;font-size:8px;border:1px solid rgba(245,158,11,.3)">60s Short</span>';
-  if (serieInfo) badgesHTML += '<span class="badge" style="background:rgba(56,189,248,.15);color:#38bdf8;font-size:8px;border:1px solid rgba(56,189,248,.3)">' + serieInfo.emoji + ' ' + serieInfo.nome.substring(0,12) + '</span>';
-  
-  card.innerHTML = \`
-    <div class="vcard-thumb" onclick="abrirModal('\${v.id}', '\${(v.mp4_url||'').replace(/'/g,'')}',' \${(v.title||'').replace(/'/g,'').replace(/"/g,'')}')">
-      <div class="vcard-thumb-placeholder">
-        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" opacity="0.3">
-          <rect x="46" y="52" width="8" height="36" rx="4" fill="#7C3AED"/>
-          <path d="M20 20 C20 20 20 58 46 62" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" fill="none"/>
-          <path d="M80 20 C80 20 80 58 54 62" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" fill="none"/>
-          <rect x="16" y="16" width="68" height="8" rx="4" fill="#7C3AED"/>
-        </svg>
-      </div>
-      <div class="vcard-badges">\${badgesHTML}</div>
-      <div class="vcard-play"><div class="play-ico">▶</div></div>
+function mkCard(v, i) {
+  const s = score(v), serie = detectSerie(v.title), si = SERIES_INFO[serie];
+  const short = isShort(v.title), ep = isSerie(v.title);
+  const div = document.createElement("div");
+  div.className = "card quantum";
+  div.style.animationDelay = (i * 0.05) + "s";
+
+  const badges = [
+    `<span class="tb tb-q">Flux+KB V2</span>`,
+    s >= 90 ? `<span class="tb tb-s">${s.toFixed(1)}</span>` : "",
+    short    ? `<span class="tb tb-60">60s</span>` : "",
+    ep       ? `<span class="tb tb-se">Série</span>` : "",
+    v.youtube_url ? `<span class="tb tb-yt">▶ YT</span>` : "",
+  ].join("");
+
+  const sc = s >= 90 ? "hi" : s >= 80 ? "gld" : "acc";
+  const metas = [
+    s > 0 ? `<span class="cm ${sc}">${s.toFixed(1)} pts</span>` : "",
+    `<span class="cm acc">${si.emoji} ${si.nome.substring(0,14)}</span>`,
+    `<span class="cm">#${v.id}</span>`,
+  ].join("");
+
+  const actions = [
+    v.mp4_url  ? `<a href="${v.mp4_url}" download class="ca ca-dl">↓ MP4</a>` : "",
+    v.youtube_url ? `<a href="${v.youtube_url}" target="_blank" rel="noreferrer" class="ca ca-yt">▶ YouTube</a>` : "",
+    v.audio_url ? `<a href="${v.audio_url}" target="_blank" rel="noreferrer" class="ca ca-au">♪ Áudio</a>` : "",
+  ].join("");
+
+  div.innerHTML = `
+    <div class="thumb" onclick="play(${v.id},'${(v.mp4_url||"").replace(/'/g,"\\'")}','${(v.title||"").replace(/'/g,"\\'").replace(/"/g,"&quot;")}')">
+      <div class="thumb-bg"><div class="psi-bg">ψ</div></div>
+      <video src="${v.mp4_url}" muted preload="none" loop
+        onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0"></video>
+      <div class="thumb-overlay"><div class="play-btn">▶</div></div>
+      <div class="thumb-badges">${badges}</div>
     </div>
-    <div class="vcard-body">
-      <div class="vcard-title">\${v.title||'Sem titulo'}</div>
-      <div class="vcard-meta">
-        <span class="vmeta \${score>=95?'score-hi':''}">\${score>0?score.toFixed(1)+'pts':'sem score'}</span>
-        <span class="vmeta \${isQ?'quantum':''}">
-          \${isQ?'Flux.1+KB':'Playlist HTML'}
-        </span>
-        <span class="vmeta">#\${v.id}</span>
-        <span class="vmeta" style="color:\${v.status==='mp4_ready'?'#34d399':v.status==='published'?'#38bdf8':'#64748b'}">\${v.status}</span>
-      </div>
-      <div class="vcard-actions">
-        \${v.mp4_url?'<a href="'+v.mp4_url+'" download class="vbtn vbtn-dl">&#8595; MP4</a>':''}
-        \${v.youtube_url?'<a href="'+v.youtube_url+'" target="_blank" class="vbtn vbtn-yt">&#9654; YouTube</a>':''}
-        \${v.audio_url?'<a href="'+v.audio_url+'" target="_blank" class="vbtn">&#9836; Audio</a>':''}
-      </div>
+    <div class="cbody">
+      <div class="ctitle">${v.title}</div>
+      <div class="cmeta">${metas}</div>
+      <div class="cactions">${actions}</div>
+    </div>`;
+  return div;
+}
+
+function mkPending(v) {
+  const s = score(v), serie = detectSerie(v.title), si = SERIES_INFO[serie];
+  const d = document.createElement("div");
+  d.className = "pending-card";
+  d.innerHTML = `
+    <div class="pending-icon">${si.emoji}</div>
+    <div style="flex:1;min-width:0">
+      <div class="pending-title">${v.title}</div>
+      <div class="pending-meta">#${v.id} · ${si.nome} · Render Flux+KB em andamento</div>
     </div>
-  \`;
-  return card;
+    ${s > 0 ? `<div class="pending-score">${s.toFixed(1)}</div>` : ""}`;
+  return d;
 }
 
-function abrirModal(id, url, title) {
-  if (!url || url.trim() === '') return;
-  const modal = document.getElementById('modal');
-  document.getElementById('modal-video').src = url;
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-meta').innerHTML = '<span>#'+id+'</span><span>Flux.1 Schnell + Ken Burns 30fps 1080p</span><span>Psych2Go Quantico V2</span>';
-  modal.classList.add('open');
+function play(id, url, title) {
+  if (!url) return;
+  document.getElementById("mv").src = url;
+  document.getElementById("mt").textContent = title;
+  document.getElementById("mf-id").textContent = "#" + id;
+  document.getElementById("modal").classList.add("open");
 }
 
-function fecharModal(e, force) {
-  if (force || (e && e.target === document.getElementById('modal'))) {
-    document.getElementById('modal').classList.remove('open');
-    const vid = document.getElementById('modal-video');
-    vid.pause();
-    vid.src = '';
+function fechar(e, force) {
+  if (force || (e && e.target === document.getElementById("modal"))) {
+    const v = document.getElementById("mv");
+    v.pause(); v.src = "";
+    document.getElementById("modal").classList.remove("open");
   }
 }
 
-document.addEventListener('keydown', e => { if(e.key==='Escape') fecharModal(null,true); });
-
-carregarVideos();
-setInterval(carregarVideos, 60000);
+document.addEventListener("keydown", e => e.key === "Escape" && fechar(null, 1));
+load();
+setInterval(load, 90000);
 </script>
 </body>
 </html>
