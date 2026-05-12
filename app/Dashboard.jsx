@@ -25,7 +25,7 @@ const CANAL = {
   handle:  "@psicologiadoc",
   slogan:  "A psicologia que você vive — documentada.",
   bio2026: "@psicologiadoc | Psicologia documentada 🎬 | Saúde mental que você reconhece | Novos docs toda semana",
-  bio2027: "@psicologiadoc | Daniela Coelho, psicóloga 🧠 | CRP [NÚMERO] | Consultas online → link na bio",
+  bio2027: "@psicologiadoc | Daniela Coelho, psicóloga 🧠 |  [NÚMERO] | Consultas online → link na bio",
 };
 
 const JORNADA_INICIO = new Date("2026-04-15T00:00:00");
@@ -119,7 +119,7 @@ const SERIES_EPS = {
   burnout:["O Que é Burnout (não é Preguiça, não é Frescura)","Os 5 Estágios do Burnout — Em Qual Você Está?","Por Que Férias não Curam Burnout","O Plano de Recuperação Real — Semana a Semana","Como Nunca Mais Chegar ao Burnout"],
 };
 
-// ─── MONETIZAÇÃO CRP-COMPLIANT ──────────────────────────────────
+// ─── MONETIZAÇÃO -COMPLIANT ──────────────────────────────────
 const MONETIZACAO = [
   {fase:1,ic:"▶️",n:"YouTube AdSense",           v:"R$7-25/1K views",    t:"1K subs + 4K horas",    tipo:"passivo"},
   {fase:1,ic:"🤝",n:"Afiliados Zenklub/Vittude",  v:"R$30-80/cadastro",   t:"Link na bio dia 1",     tipo:"variável"},
@@ -188,7 +188,7 @@ async function fetchDailyCases(day,log){
 function getCanalTone(){
   const rev=(()=>{try{return localStorage.getItem("doc_revealed")==="1";}catch{return false;}})();
   if(rev)return "Canal: psicologia.doc | Criadora: Daniela Coelho, psicóloga | Tom: autoridade calorosa + expertise clínica. Mencione consultas quando relevante.";
-  return "Canal: psicologia.doc — canal de documentários de psicologia | Tom: narrador especialista anônimo. NUNCA use 'eu' ou mencione nome de pessoa. Use 'este documentário', 'a psicologia mostra', 'casos documentados revelam'. Público: 25-54 anos. CRP compliance total.";
+  return "Canal: psicologia.doc — canal de documentários de psicologia | Tom: narrador especialista anônimo. NUNCA use 'eu' ou mencione nome de pessoa. Use 'este documentário', 'a psicologia mostra', 'casos documentados revelam'. Público: 25-54 anos.  compliance total.";
 }
 
 // ─── GERA ROTEIRO HIPNÓTICO ──────────────────────────────────────
@@ -200,7 +200,7 @@ async function generateScript(topic,channel,day,topVideo,log){
   const topRef=topVideo?'"'+topVideo.title_en+'" ('+topVideo.views+' views, gancho: "'+(topVideo.hook||"")+'")':"vídeo viral de psicologia";
   log("📝 ["+channel.toUpperCase()+"] Roteiro hipnótico: \""+topic+"\"...","info");
 
-  const sys=getCanalTone()+"\nNUNCA mencione IA. CRP: zero diagnósticos, zero promessa de cura.\nTÉCNICAS OBRIGATÓRIAS:\n1. PNL Espelhamento: pessoa se VÊ no vídeo desde o 1º segundo\n2. Loop aberto: nunca feche a curiosidade até o fim\n3. Segunda pessoa ('você','seu') — direto e íntimo\n4. Cada ponto gera 'isso acontece comigo' ou 'conheço alguém assim'\n5. Vídeos LONGOS para YouTube (22-28min) — CPM 6x maior\n6. Último minuto: CTA forte + preview do próximo episódio\n7. Som cinematic: instrua ElevenLabs com pausas dramáticas [PAUSA] e ênfases *assim*\nBase: DSM-5, APA, CID-11."+(books.length?"\nINDEXAÇÃO SUTIL (não venda): "+books.map(b=>'"'+b.t+'" de '+b.a).join(", "):"");
+  const sys=getCanalTone()+"\nNUNCA mencione IA. : zero diagnósticos, zero promessa de cura.\nTÉCNICAS OBRIGATÓRIAS:\n1. PNL Espelhamento: pessoa se VÊ no vídeo desde o 1º segundo\n2. Loop aberto: nunca feche a curiosidade até o fim\n3. Segunda pessoa ('você','seu') — direto e íntimo\n4. Cada ponto gera 'isso acontece comigo' ou 'conheço alguém assim'\n5. Vídeos LONGOS para YouTube (22-28min) — CPM 6x maior\n6. Último minuto: CTA forte + preview do próximo episódio\n7. Som cinematic: instrua ElevenLabs com pausas dramáticas [PAUSA] e ênfases *assim*\nBase: DSM-5, APA, CID-11."+(books.length?"\nINDEXAÇÃO SUTIL (não venda): "+books.map(b=>'"'+b.t+'" de '+b.a).join(", "):"");
 
   const userYT="Crie roteiro documentário YouTube 22-28min sobre \""+topic+"\".\nInspire-se: "+topRef+"\nPadrão viral: '"+pat+"'\nGANCHO 0-30s: '"+hook+"'\n\n📌 SEO TITLE (keyword no início, 55-65 chars, sem nome de pessoa):\n📌 THUMBNAIL TEXT (CAPS emocional, máx 4 palavras):\n[GANCHO 0-30s]: adapte o hook para o tema\n[CONTEXTO 1-3min]: dado científico chocante + estatística\n[DESENVOLVIMENTO 5-8 pontos]: DSM-5/APA + casos anônimos reais\n[VIRADA EMOCIONAL]: 'Se você reconhece isso, há uma explicação'\n[SOLUÇÃO PARCIAL]: 3 ações baseadas em evidências\n[CTA WHATSAPP]: 'Continue essa conversa no grupo psicologia.doc — link na bio'\n[LOOP PRÓXIMO EP]: 'No próximo documentário vou revelar [TEMA] — que explica por que você [COMPORTAMENTO]'\n📄 DESCRIÇÃO YT (400+ palavras, SEO, link WhatsApp):\n🏷️ TAGS (25 tags PT+EN):\n📊 CHAPTERS (timestamps):"+(books.length?"\n💡 Indexe naturalmente: "+books[0].t+" de "+books[0].a:"");
 
@@ -213,7 +213,7 @@ async function generateScript(topic,channel,day,topVideo,log){
 async function validate(text){
   const[sr,er,sfr]=await Promise.all([
     callClaude("Validate DSM-5/APA/CID-11 compliance. ONLY JSON.",text.slice(0,500)+'\nRespond ONLY: {"score":88}'),
-    callClaude("Validate CRP ethics code. ONLY JSON.",text.slice(0,500)+'\nRespond ONLY: {"score":91}'),
+    callClaude("Validate  ethics code. ONLY JSON.",text.slice(0,500)+'\nRespond ONLY: {"score":91}'),
     callClaude("Audit for YouTube/TikTok/Instagram safety. Zero diagnoses, zero cure promises. ONLY JSON.",text.slice(0,500)+'\nRespond ONLY: {"safety":95}'),
   ]);
   let sc=85,et=90,sf=92;
@@ -231,7 +231,7 @@ async function validateLoop(script,log,max=4){
     log("🔄 Rodada "+round+"/"+max+" — Score:"+r.score+" Safety:"+r.safety,"info");
     if(r.score>=88&&r.safety>=ANTI_BAN.minSafety){log("✅ Sólido em "+round+" rodada(s)","success");return{...r,script:best,rounds:round};}
     if(r.score>bestScore)bestScore=r.score;
-    if(round<max){const ref=await callClaude("Revisor CRP. Melhore sem mudar tema. Fortaleça PNL e loop aberto. Remova diagnósticos implícitos.","CONTEÚDO:\n"+best.slice(0,2500)+"\n\nMELHORE e retorne completo:");if(ref?.length>200)best=ref;}
+    if(round<max){const ref=await callClaude("Revisor . Melhore sem mudar tema. Fortaleça PNL e loop aberto. Remova diagnósticos implícitos.","CONTEÚDO:\n"+best.slice(0,2500)+"\n\nMELHORE e retorne completo:");if(ref?.length>200)best=ref;}
   }
   return await validate(best).then(r=>({...r,script:best,rounds:max}));
 }
@@ -239,7 +239,7 @@ async function validateLoop(script,log,max=4){
 // ─── MOTOR 1000x ─────────────────────────────────────────────────
 async function generateVariationBlocks(topic,day,topVideo,log){
   log("🔁 Motor 1000x — gerando blocos para \""+topic+"\"...","info");
-  const sys=getCanalTone()+"\nCRP. Base: DSM-5. PNL espelhamento obrigatório.";
+  const sys=getCanalTone()+"\n. Base: DSM-5. PNL espelhamento obrigatório.";
   const topRef=topVideo?'"'+topVideo.title_en+'" ('+topVideo.views+' views)':"";
   const[ht,ct,ct2]=await Promise.all([
     callClaude(sys,topRef+"\nGere 10 HOOKS de 3-8s sobre \""+topic+"\". Gatilhos: choque, identificação, contradição, pergunta, urgência, promessa, exclusividade, empatia, estatística, loop-aberto.\nH1: [hook]\n...H10: [hook]"),
@@ -353,7 +353,7 @@ const STEPS=[
   {icon:"📅",label:"Selecionando tema — Playlist + séries ativas"},
   {icon:"📝",label:"Gerando roteiro hipnótico (PNL + loop aberto)"},
   {icon:"🔄",label:"Revisão em loop — até score ≥88 + safety ≥85"},
-  {icon:"🔒",label:"Filtro anti-ban + CRP compliance"},
+  {icon:"🔒",label:"Filtro anti-ban +  compliance"},
   {icon:"🎙️",label:"ElevenLabs — narração cinematic PT-BR"},
   {icon:"🎬",label:"HeyGen — avatar cinematográfico"},
   {icon:"📡",label:"Publicação: YouTube + Instagram + TikTok + Pinterest"},
@@ -846,7 +846,7 @@ function PageRevelacao(){
         </div>
         <div style={{background:C,border:B,borderRadius:"14px",padding:"16px"}}>
           <div style={{fontSize:"11px",textTransform:"uppercase",letterSpacing:"1px",color:"#64748b",marginBottom:"12px",fontWeight:600}}>🎭 Identidade Daniela</div>
-          {[["Nome","Daniela Coelho"],["Título","Psicóloga (NUNCA 'Dra.')"],["Canal","@psidanielacoelho"],["Email","psidanielacoelho1982@gmail.com"],["Canal ID","UCyCkIpsVgME9yCj_oXJFheA"],["Tom","Empático, científico, BR"],["Gate","95pts todas 10 dimensões"],["Frequência","5-7 longs + shorts diários"]].map(([k,v],i)=>(
+          {[["Nome","Daniela Coelho"],["Título","Psicologia (NUNCA 'Dra.')"],["Canal","@psidanielacoelho"],["Email","psidanielacoelho1982@gmail.com"],["Canal ID","UCyCkIpsVgME9yCj_oXJFheA"],["Tom","Empático, científico, BR"],["Gate","95pts todas 10 dimensões"],["Frequência","5-7 longs + shorts diários"]].map(([k,v],i)=>(
             <div key={i} style={{display:"flex",gap:"8px",padding:"7px",background:"#14142b",borderRadius:"8px",marginBottom:"5px"}}><span style={{fontSize:"11px",color:"#64748b",minWidth:"80px"}}>{k}</span><span style={{fontSize:"12px",fontWeight:600}}>{v}</span></div>
           ))}
         </div>
