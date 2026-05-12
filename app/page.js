@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
 export default function Home() {
-  redirect("/hub.html");
+  // Redirecionar para o Dashboard V11 (Central de Controle React)
+  redirect("/dashboard");
 }
