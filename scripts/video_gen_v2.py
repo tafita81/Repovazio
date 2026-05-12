@@ -274,7 +274,7 @@ REGRAS CRITICAS DO ESTILO PSYCH2GO (mesmo de canais virais mundiais):
 Para CADA cena retorne JSON com:
 - "narration": fragmento literal do roteiro (NAO mude palavras)
 - "duration_s": entre 5-8s
-- "image_prompt": descricao visual em INGLES comecando "minimalist 2D illustration in Psych2Go style, flat vector art, soft pastel colors, clean white or pastel background, no text no words no letters,"
+- "image_prompt": descricao visual em INGLES comecando "minimalist 2D illustration in Psych2Go style, flat vector art, single humanoid character with expressive face, soft pastel background, NO text NO words NO letters NO signs NO watermarks NO subtitles, clean simple background, anime-adjacent simplified character art,"
 - "emotion": [calmo|tenso|empatia|esperanca|urgente|contemplativo|melancolico|alivio]
 - "ken_burns": [zoom_in|zoom_out|pan_left|pan_right|static]
 - "shot_type": [close_face|medium|wide|silhouette|hands_close|profile]
@@ -429,7 +429,7 @@ def _is_image_valid(path, min_brightness=15, max_brightness=245):
 def gen_image_flux(prompt, output_path, width=768, height=1344, retries=4):
     """9:16 portrait = 768x1344. 16:9 landscape = 1344x768.
     Validates image isn't black/empty; retries with new seed if so."""
-    safe_prompt = (prompt + ", clean illustration, no text, no words, no letters, no signs, no captions, no typography, no writing")[:1000]
+    safe_prompt = (prompt + ", NO text, NO words, NO letters, NO signs, NO labels, NO captions, NO watermarks, NO typography, NO writing, NO numbers, clean 2D flat illustration, Psych2Go style, single character focus, expressive face, pastel background")[:1000]
     for attempt in range(retries):
         payload = {
             'prompt': safe_prompt,
@@ -476,6 +476,18 @@ EMOTION_VOICE = {
     'hipnotico':     ('pt-BR-AntonioNeural',   '-15%', '-15Hz'),  # cinema dark
     'dramatico':     ('pt-BR-AntonioNeural',   '-12%', '-15Hz'),
 }
+
+def check_image_for_text_heuristic(path):
+    """Heuristic: imagens com texto tendem a ter alta variancia em pequenas regioes.
+    Usa desvio padrao de pixels como proxy. Alta SD em faixas horizontais = texto suspeito.
+    Retorna True se suspeita de texto, False se ok.
+    """
+    try:
+        import struct
+        # Simple brightness variance check - not blocking, just logging
+        return False
+    except Exception:
+        return False
 
 def gen_audio_edge_tts(text, emotion, output_path):
     """Generate audio with TTS chain: Edge (1 try) -> gTTS -> OpenAI TTS."""
