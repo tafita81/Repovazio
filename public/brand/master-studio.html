@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>psicologia.doc — Brand Studio Completo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,300&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:#06060F; --deep:#0D0B1E; --mid:#160F2E;
+  --amethyst:#5B21B6; --violet:#7C3AED; --violet-soft:#9F67FF;
+  --crimson:#E11D48; --coral:#FB7185;
+  --gold:#F59E0B; --amber:#FCD34D;
+  --teal:#0D9488; --cyan:#06B6D4;
+  --frost:#F0F4FF; --mist:#C4B5FD; --dim:#475569;
+  --bd:rgba(124,58,237,.15);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:var(--void);
+  color:var(--frost);
+  font-family:'DM Sans',system-ui,sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--deep); }
+::-webkit-scrollbar-thumb { background:var(--violet); border-radius:4px; }
+
+/* === TYPOGRAPHY === */
+.font-serif { font-family:Georgia,'Times New Roman',serif; }
+.font-mono  { font-family:'DM Mono',monospace; }
+
+/* === LAYOUT === */
+.studio-header {
+  position:sticky; top:0; z-index:200;
+  background:rgba(6,6,15,.96);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bd);
+  padding:0 32px;
+  display:flex; align-items:center; gap:0;
+}
+.studio-nav {
+  display:flex; gap:0; flex:1; overflow-x:auto; scrollbar-width:none;
+}
+.studio-nav::-webkit-scrollbar { display:none; }
+.tab-btn {
+  padding:16px 20px;
+  background:none; border:none;
+  color:var(--dim);
+  font-family:'DM Sans',sans-serif;
+  font-size:12px; font-weight:600;
+  letter-spacing:.5px;
+  cursor:pointer;
+  white-space:nowrap;
+  border-bottom:2px solid transparent;
+  transition:all .2s;
+}
+.tab-btn:hover { color:var(--mist); }
+.tab-btn.active { color:var(--violet-soft); border-bottom-color:var(--violet); }
+.logo-pill {
+  display:flex; align-items:center; gap:10px;
+  padding:0 24px 0 0;
+  border-right:1px solid var(--bd);
+  margin-right:4px;
+  white-space:nowrap;
+}
+.logo-pill svg { flex-shrink:0; }
+.logo-text { font-family:Georgia,serif; font-size:14px; font-weight:700; letter-spacing:-.3px; }
+.logo-dot { color:var(--violet); }
+.logo-sub { font-family:'DM Mono',monospace; font-size:9px; color:var(--dim); letter-spacing:1.5px; display:block; margin-top:1px; }
+.dl-btn {
+  margin-left:auto; flex-shrink:0;
+  background:var(--violet); color:#fff;
+  border:none; border-radius:8px;
+  padding:8px 18px; font-size:12px; font-weight:700;
+  cursor:pointer; font-family:'DM Sans',sans-serif;
+  transition:all .2s;
+}
+.dl-btn:hover { background:var(--amethyst); }
+
+.panel { display:none; padding:32px; max-width:1400px; margin:0 auto; }
+.panel.active { display:block; }
+.section-tag {
+  font-family:'DM Mono',monospace; font-size:10px;
+  color:var(--violet); letter-spacing:2px; text-transform:uppercase;
+  margin-bottom:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-tag::before { content:''; display:block; width:20px; height:1px; background:var(--violet); }
+h2 { font-family:Georgia,serif; font-size:28px; font-weight:700; color:var(--frost); margin-bottom:8px; letter-spacing:-.5px; }
+.sub { font-size:13px; color:var(--dim); margin-bottom:28px; line-height:1.5; }
+.grid { display:grid; gap:16px; }
+.g2 { grid-template-columns:repeat(2,1fr); }
+.g3 { grid-template-columns:repeat(3,1fr); }
+.g4 { grid-template-columns:repeat(4,1fr); }
+.g5 { grid-template-columns:repeat(5,1fr); }
+
+/* === PSI ICON === */
+.psi-wrap {
+  background:linear-gradient(135deg,var(--amethyst),var(--violet));
+  border-radius:14px; padding:10px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 30px rgba(124,58,237,.4);
+  flex-shrink:0;
+}
+
+/* === NEURAL CANVAS BACKGROUND === */
+.neural-bg {
+  position:absolute; inset:0; overflow:hidden; pointer-events:none;
+}
+.neural-bg canvas { position:absolute; inset:0; }
+
+/* === GLOW ORBS === */
+.orb {
+  position:absolute; border-radius:50%;
+  filter:blur(80px); pointer-events:none;
+  animation:orbFloat 8s ease-in-out infinite;
+}
+@keyframes orbFloat {
+  0%,100% { transform:translateY(0) scale(1); }
+  50% { transform:translateY(-20px) scale(1.05); }
+}
+
+/* ═══════════════════════════ YOUTUBE ═════════════════════════ */
+.yt-banner {
+  position:relative; overflow:hidden;
+  width:100%; aspect-ratio:64/11.25;
+  background:linear-gradient(135deg,#06060F 0%,#0D0B1E 30%,#1A0A3E 60%,#06060F 100%);
+  border-radius:16px;
+  border:1px solid var(--bd);
+}
+.yt-safe-zone {
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:60.4%; height:29.4%;
+  border:1px dashed rgba(124,58,237,.25);
+  border-radius:4px;
+  pointer-events:none;
+}
+.yt-bottom-bar {
+  position:absolute; bottom:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,transparent 0%,var(--amethyst) 25%,var(--violet) 50%,var(--crimson) 75%,var(--gold) 90%,transparent 100%);
+}
+
+/* ═══════════════════════════ THUMBNAILS ══════════════════════ */
+.thumb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; }
+.thumb-card {
+  position:relative; aspect-ratio:16/9;
+  border-radius:12px; overflow:hidden;
+  cursor:pointer; transition:transform .2s;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+.thumb-card:hover { transform:translateY(-3px); box-shadow:0 16px 48px rgba(0,0,0,.7); }
+.thumb-badge {
+  position:absolute; top:12px; right:12px;
+  font-family:'DM Mono',monospace; font-size:11px; font-weight:700;
+  padding:3px 9px; border-radius:20px;
+  letter-spacing:.5px;
+}
+.thumb-handle {
+  position:absolute; top:12px; left:14px;
+  font-family:'DM Mono',monospace; font-size:9px;
+  color:rgba(255,255,255,.35); letter-spacing:1px;
+}
+.thumb-content {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:14px 14px 14px 18px;
+  background:linear-gradient(to top, rgba(6,6,15,.98) 0%, rgba(6,6,15,.7) 70%, transparent 100%);
+}
+.thumb-label {
+  font-family:'DM Mono',monospace; font-size:9px; font-weight:700;
+  text-transform:uppercase; letter-spacing:2.5px; margin-bottom:6px;
+  display:flex; align-items:center; gap:6px;
+}
+.thumb-label::before { content:''; display:block; width:14px; height:1.5px; }
+.thumb-title {
+  font-family:Georgia,serif; font-weight:700; line-height:1.18;
+  color:var(--frost);
+  text-shadow:0 2px 16px rgba(0,0,0,.9), 0 0 40px rgba(0,0,0,.5);
+}
+.thumb-left-line {
+  position:absolute; left:0; top:0; bottom:0; width:4px;
+}
+
+/* ═══════════════════════════ INSTAGRAM ═══════════════════════ */
+.ig-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+.ig-post {
+  aspect-ratio:1/1; border-radius:14px;
+  position:relative; overflow:hidden;
+  cursor:pointer; transition:transform .2s;
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.ig-post:hover { transform:scale(1.02); }
+.ig-story {
+  width:160px; aspect-ratio:9/16;
+  border-radius:14px; position:relative;
+  overflow:hidden; flex-shrink:0;
+  cursor:pointer; transition:transform .2s;
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.ig-story:hover { transform:scale(1.02); }
+.story-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; }
+.story-row::-webkit-scrollbar { display:none; }
+
+/* ═══════════════════════════ PINTEREST ══════════════════════ */
+.pin-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+.pin-card {
+  aspect-ratio:2/3; border-radius:14px;
+  position:relative; overflow:hidden;
+  cursor:pointer; transition:transform .2s;
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.pin-card:hover { transform:translateY(-3px); }
+
+/* ═══════════════════════════ PROFILE FRAME ═══════════════════ */
+.avatar-ring {
+  border-radius:50%;
+  box-shadow:0 0 0 3px var(--violet), 0 0 0 6px rgba(124,58,237,.2), 0 0 60px rgba(124,58,237,.4);
+}
+.spec-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--dim); margin-bottom:6px; display:block; }
+.spec-value { font-size:13px; color:var(--mist); font-weight:600; }
+.spec-card {
+  background:var(--deep); border:1px solid var(--bd);
+  border-radius:12px; padding:14px 16px;
+}
+
+@media(max-width:900px){
+  .g3,.g4,.g5{grid-template-columns:repeat(2,1fr);}
+  .g2{grid-template-columns:1fr;}
+  .panel{padding:20px 16px;}
+}
+@media(max-width:600px){
+  .g2,.g3,.g4,.g5,.thumb-grid,.ig-grid,.pin-grid{grid-template-columns:1fr;}
+  .tab-btn{padding:12px 14px;font-size:11px;}
+}
+</style>
+</head>
+<body>
+
+<header class="studio-header">
+  <div class="logo-pill">
+    <div class="psi-wrap" style="padding:7px;border-radius:10px">
+      <svg width="22" height="22" viewBox="0 0 100 100" fill="none">
+        <rect x="46" y="52" width="8" height="36" rx="4" fill="#F0F4FF"/>
+        <path d="M20 20 C20 20 20 58 46 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M80 20 C80 20 80 58 54 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <rect x="16" y="16" width="68" height="8" rx="4" fill="#F0F4FF"/>
+      </svg>
+    </div>
+    <div>
+      <span class="logo-text">psicologia<span class="logo-dot">.doc</span></span>
+      <span class="logo-sub">BRAND STUDIO V1</span>
+    </div>
+  </div>
+  <nav class="studio-nav">
+    <button class="tab-btn active" data-panel="overview">Visão Geral</button>
+    <button class="tab-btn" data-panel="youtube">YouTube</button>
+    <button class="tab-btn" data-panel="thumbnails">Thumbnails</button>
+    <button class="tab-btn" data-panel="instagram">Instagram</button>
+    <button class="tab-btn" data-panel="tiktok">TikTok</button>
+    <button class="tab-btn" data-panel="pinterest">Pinterest</button>
+    <button class="tab-btn" data-panel="profile">Perfil</button>
+    <button class="tab-btn" data-panel="specs">Especificações</button>
+  </nav>
+  <button class="dl-btn" onclick="window.print()">⬇ Exportar</button>
+</header>
+
+<!-- ═══════════════════════════ OVERVIEW ════════════════════════ -->
+<section class="panel active" id="panel-overview">
+  <div class="section-tag">Sistema de Identidade Visual</div>
+  <h2>Brand System — psicologia.doc</h2>
+  <p class="sub">O primeiro canal de psicologia brasileiro com visual documentary-editorial. Único no nicho em PT-BR.<br>Conceito: "A ciência que explica quem você é"</p>
+
+  <!-- Hero -->
+  <div style="position:relative;border-radius:24px;overflow:hidden;background:linear-gradient(135deg,#06060F 0%,#0D0B1E 40%,#1A0A3E 70%,#06060F 100%);padding:48px 40px;margin-bottom:28px;border:1px solid rgba(124,58,237,.15)">
+    <div class="orb" style="width:500px;height:500px;left:-100px;top:-200px;background:rgba(91,33,182,.12)"></div>
+    <div class="orb" style="width:300px;height:300px;right:-60px;bottom:-100px;background:rgba(225,29,72,.08);animation-delay:-4s"></div>
+    <!-- Constellation SVG -->
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.07" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+      <line x1="80" y1="60" x2="300" y2="140" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="300" y1="140" x2="560" y2="80" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="560" y1="80" x2="800" y2="220" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="800" y1="220" x2="1100" y2="100" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="200" y1="280" x2="440" y2="240" stroke="#E11D48" stroke-width=".8" opacity=".6"/>
+      <line x1="440" y1="240" x2="700" y2="320" stroke="#E11D48" stroke-width=".8" opacity=".6"/>
+      <circle cx="80" cy="60" r="4" fill="#C4B5FD" fill-opacity=".7"/>
+      <circle cx="300" cy="140" r="4" fill="#C4B5FD" fill-opacity=".7"/>
+      <circle cx="560" cy="80" r="4" fill="#C4B5FD" fill-opacity=".7"/>
+      <circle cx="800" cy="220" r="4" fill="#C4B5FD" fill-opacity=".7"/>
+      <circle cx="1100" cy="100" r="4" fill="#C4B5FD" fill-opacity=".7"/>
+    </svg>
+    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+      <div class="psi-wrap" style="padding:18px;border-radius:20px;box-shadow:0 0 60px rgba(124,58,237,.5)">
+        <svg width="60" height="60" viewBox="0 0 100 100" fill="none">
+          <rect x="46" y="52" width="8" height="36" rx="4" fill="#F0F4FF"/>
+          <path d="M20 20 C20 20 20 58 46 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M80 20 C80 20 80 58 54 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <rect x="16" y="16" width="68" height="8" rx="4" fill="#F0F4FF"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1">psicologia<span style="color:#7C3AED">.doc</span></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:15px;color:#94A3B8;margin-top:6px">A ciência que explica quem você é &nbsp;·&nbsp; Daniela Coelho</div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:#7C3AED;border:1px solid rgba(124,58,237,.35);border-radius:20px;padding:3px 12px">@psidanielacoelho</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:#0D9488;border:1px solid rgba(13,148,136,.35);border-radius:20px;padding:3px 12px">YouTube · Instagram · TikTok · Pinterest</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paleta -->
+  <div class="section-tag" style="margin-top:0">Paleta de Cores</div>
+  <div class="grid g4" style="margin-bottom:28px">
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:#06060F"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Deep Void</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7C3AED;margin-top:1px">#06060F</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Background principal</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:linear-gradient(135deg,#5B21B6,#7C3AED)"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Amethyst → Violet</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#7C3AED;margin-top:1px">#5B21B6 → #7C3AED</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Cor da marca · Logo · CTAs</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:linear-gradient(135deg,#E11D48,#FB7185)"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Crimson</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#E11D48;margin-top:1px">#E11D48</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Acento emocional · Narcisismo</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:linear-gradient(135deg,#F59E0B,#FCD34D)"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Neural Gold</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#F59E0B;margin-top:1px">#F59E0B</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Dados científicos · Fatos</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:linear-gradient(135deg,#0D9488,#06B6D4)"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Data Teal</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#0D9488;margin-top:1px">#0D9488</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Séries · Episódios</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:#F0F4FF"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Mind Frost</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#C4B5FD;margin-top:1px">#F0F4FF</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Texto principal</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:#C4B5FD"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Mist</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#C4B5FD;margin-top:1px">#C4B5FD</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Texto secundário</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.06)">
+      <div style="height:72px;background:linear-gradient(135deg,#9F1239,#E11D48 40%,#F59E0B 70%,#0D9488)"></div>
+      <div style="background:#0D0B1E;padding:10px 12px">
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:#F0F4FF;font-weight:700">Gradient Accent</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:#C4B5FD;margin-top:1px">Assinatura visual</div>
+        <div style="font-size:10px;color:#64748B;margin-top:3px">Bottom bar · Separadores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tipografia -->
+  <div class="section-tag">Sistema Tipográfico</div>
+  <div class="grid g3" style="margin-bottom:28px">
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:14px;padding:20px">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#64748B;letter-spacing:1.5px;margin-bottom:12px">DISPLAY — Georgia Serif</div>
+      <div style="font-family:Georgia,serif;font-size:34px;font-weight:700;color:#F0F4FF;letter-spacing:-1px;line-height:1.1">Ansiedade<br>é uma Mentira</div>
+      <div style="font-family:Georgia,serif;font-size:16px;color:#94A3B8;margin-top:6px;font-style:italic">"Que o cérebro conta"</div>
+      <div style="margin-top:10px;font-size:9px;color:#475569;font-family:'DM Mono',monospace">TÍTULOS · THUMBNAILS · HEADLINES</div>
+    </div>
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:14px;padding:20px">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#64748B;letter-spacing:1.5px;margin-bottom:12px">UI — DM Sans</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:18px;font-weight:800;color:#F0F4FF;margin-bottom:6px">Série: Mentes Narcisistas</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#C4B5FD;margin-bottom:8px">Episódio 4 · Temporada 2</div>
+      <div style="font-family:'DM Sans',sans-serif;font-size:12px;color:#94A3B8;line-height:1.6">O narcisismo é frequentemente confundido com autoestima. Neste episódio, Daniela Coelho explora os sinais invisíveis.</div>
+      <div style="margin-top:10px;font-size:9px;color:#475569;font-family:'DM Mono',monospace">DESCRIÇÕES · UI · CORPO</div>
+    </div>
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:14px;padding:20px">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#64748B;letter-spacing:1.5px;margin-bottom:12px">MONO — DM Mono</div>
+      <div style="font-family:'DM Mono',monospace;font-size:40px;font-weight:700;color:#F59E0B;line-height:1">87%</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:#7C3AED;margin-top:4px">@psidanielacoelho</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#64748B;margin-top:2px">S02E04 · 2026 · BR</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:#64748B;margin-top:2px">psicologia.doc v32.0</div>
+      <div style="margin-top:10px;font-size:9px;color:#475569;font-family:'DM Mono',monospace">DADOS · HANDLES · VERSÃO</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ YOUTUBE ════════════════════════ -->
+<section class="panel" id="panel-youtube">
+  <div class="section-tag">YouTube</div>
+  <h2>Arte do Canal YouTube</h2>
+  <p class="sub">Banner 2560×1440px · Zona segura central: 1546×423px · Formatos: PNG (preferido), JPG</p>
+
+  <div class="yt-banner" style="margin-bottom:12px">
+    <div class="orb" style="width:60%;height:200%;left:-15%;top:-50%;background:rgba(91,33,182,.12)"></div>
+    <div class="orb" style="width:40%;height:150%;right:-10%;bottom:-30%;background:rgba(225,29,72,.08);animation-delay:-4s"></div>
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.1" viewBox="0 0 1200 210" preserveAspectRatio="xMidYMid slice">
+      <line x1="60" y1="40" x2="280" y2="100" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="280" y1="100" x2="550" y2="55" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="550" y1="55" x2="820" y2="140" stroke="#7C3AED" stroke-width="1"/>
+      <line x1="820" y1="140" x2="1100" y2="70" stroke="#7C3AED" stroke-width="1"/>
+      <circle cx="60" cy="40" r="3" fill="#C4B5FD" fill-opacity=".6"/>
+      <circle cx="280" cy="100" r="3" fill="#C4B5FD" fill-opacity=".6"/>
+      <circle cx="550" cy="55" r="3" fill="#C4B5FD" fill-opacity=".6"/>
+      <circle cx="820" cy="140" r="3" fill="#C4B5FD" fill-opacity=".6"/>
+      <circle cx="1100" cy="70" r="3" fill="#C4B5FD" fill-opacity=".6"/>
+    </svg>
+    <!-- Left content -->
+    <div style="position:absolute;left:5%;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:3%">
+      <div class="psi-wrap" style="padding:2.5%;border-radius:20px;box-shadow:0 0 40px rgba(124,58,237,.5)">
+        <svg width="7%" height="7%" viewBox="0 0 100 100" fill="none" style="min-width:32px;min-height:32px;width:3.5vw;height:3.5vw">
+          <rect x="46" y="52" width="8" height="36" rx="4" fill="#F0F4FF"/>
+          <path d="M20 20 C20 20 20 58 46 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <path d="M80 20 C80 20 80 58 54 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+          <rect x="16" y="16" width="68" height="8" rx="4" fill="#F0F4FF"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:clamp(16px,3vw,40px);font-weight:700;color:#F0F4FF;letter-spacing:-.05em;line-height:1.05">psicologia<span style="color:#7C3AED">.doc</span></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:clamp(8px,1.2vw,14px);color:#94A3B8;margin-top:.3em;letter-spacing:.15em">A ciência que explica quem você é</div>
+        <div style="display:flex;gap:.5em;margin-top:.5em;flex-wrap:wrap">
+          <span style="font-family:'DM Mono',monospace;font-size:clamp(7px,0.9vw,11px);color:#7C3AED;border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:.2em .7em">YouTube</span>
+          <span style="font-family:'DM Mono',monospace;font-size:clamp(7px,0.9vw,11px);color:#7C3AED;border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:.2em .7em">Instagram</span>
+          <span style="font-family:'DM Mono',monospace;font-size:clamp(7px,0.9vw,11px);color:#7C3AED;border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:.2em .7em">TikTok</span>
+        </div>
+      </div>
+    </div>
+    <!-- Right content -->
+    <div style="position:absolute;right:5%;top:50%;transform:translateY(-50%);text-align:right">
+      <div style="font-family:'DM Mono',monospace;font-size:clamp(7px,0.9vw,11px);color:#475569;letter-spacing:.2em;margin-bottom:.8em;text-transform:uppercase">Novos vídeos toda semana</div>
+      <div style="font-family:Georgia,serif;font-size:clamp(9px,1.3vw,16px);color:#C4B5FD;line-height:1.7">Apego · Trauma · Narcisismo<br>Ansiedade · Burnout · Neurociência</div>
+      <div style="font-family:'DM Mono',monospace;font-size:clamp(8px,1vw,13px);color:#7C3AED;margin-top:.8em;letter-spacing:.1em">@psidanielacoelho</div>
+    </div>
+    <!-- Safe zone -->
+    <div class="yt-safe-zone">
+      <span style="position:absolute;top:-16px;left:0;font-family:'DM Mono',monospace;font-size:8px;color:rgba(124,58,237,.4);letter-spacing:1px">SAFE ZONE 1546×423</span>
+    </div>
+    <div class="yt-bottom-bar"></div>
+    <!-- Watermark -->
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.018">
+      <svg width="200" height="200" viewBox="0 0 100 100" fill="none">
+        <rect x="46" y="52" width="8" height="36" rx="4" fill="#7C3AED"/>
+        <path d="M20 20 C20 20 20 58 46 62" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M80 20 C80 20 80 58 54 62" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <rect x="16" y="16" width="68" height="8" rx="4" fill="#7C3AED"/>
+      </svg>
+    </div>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:10px;color:#475569;margin-bottom:28px">↑ Prévia proporcional · Dimensão real: 2560×1440px · Exportar em 300 DPI para máxima qualidade</div>
+
+  <!-- Especificações -->
+  <div class="grid g3">
+    <div class="spec-card">
+      <span class="spec-label">Dimensão Total</span>
+      <span class="spec-value">2560 × 1440 px</span>
+    </div>
+    <div class="spec-card">
+      <span class="spec-label">Zona Segura (TV)</span>
+      <span class="spec-value">1546 × 423 px (centro)</span>
+    </div>
+    <div class="spec-card">
+      <span class="spec-label">Zona Segura (Mobile)</span>
+      <span class="spec-value">1235 × 338 px</span>
+    </div>
+    <div class="spec-card">
+      <span class="spec-label">Formato</span>
+      <span class="spec-value">PNG · JPG · Máx 6MB</span>
+    </div>
+    <div class="spec-card">
+      <span class="spec-label">Foto de Perfil</span>
+      <span class="spec-value">800 × 800 px (mín 250×250)</span>
+    </div>
+    <div class="spec-card">
+      <span class="spec-label">Qualidade</span>
+      <span class="spec-value">300 DPI para impressão</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ THUMBNAILS ══════════════════════ -->
+<section class="panel" id="panel-thumbnails">
+  <div class="section-tag">YouTube Thumbnails</div>
+  <h2>Sistema de Thumbnails</h2>
+  <p class="sub">1280×720px · Máximo impacto visual · CTR otimizado · 4 tipos de acento cromático por categoria de conteúdo</p>
+  <div class="thumb-grid" id="thumb-container"></div>
+</section>
+
+<!-- ═══════════════════════════ INSTAGRAM ══════════════════════ -->
+<section class="panel" id="panel-instagram">
+  <div class="section-tag">Instagram</div>
+  <h2>Templates Instagram</h2>
+  <p class="sub">Feed 1080×1080px · Stories & Reels 1080×1920px · Carrossel 1080×1080px (10 slides)</p>
+
+  <div class="section-tag" style="margin-top:0">Feed Posts 1080×1080</div>
+  <div class="ig-grid" id="ig-posts-container"></div>
+
+  <div class="section-tag" style="margin-top:28px">Stories & Reels 1080×1920</div>
+  <div class="story-row" id="ig-stories-container"></div>
+
+  <div class="section-tag" style="margin-top:28px">Carrossel 1080×1080 · 5 slides</div>
+  <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px" id="ig-carousel-container"></div>
+</section>
+
+<!-- ═══════════════════════════ TIKTOK ══════════════════════════ -->
+<section class="panel" id="panel-tiktok">
+  <div class="section-tag">TikTok & YouTube Shorts</div>
+  <h2>Templates Verticais 1080×1920</h2>
+  <p class="sub">TikTok · YouTube Shorts · Instagram Reels · 9:16 · Máximo impacto nos primeiros 3 segundos</p>
+  <div style="display:flex;gap:16px;flex-wrap:wrap" id="tiktok-container"></div>
+</section>
+
+<!-- ═══════════════════════════ PINTEREST ══════════════════════ -->
+<section class="panel" id="panel-pinterest">
+  <div class="section-tag">Pinterest</div>
+  <h2>Templates Pinterest</h2>
+  <p class="sub">1000×1500px · 2:3 · Otimizado para buscas no Pinterest · SEO visual integrado</p>
+  <div class="pin-grid" id="pin-container"></div>
+</section>
+
+<!-- ═══════════════════════════ PROFILE ═══════════════════════ -->
+<section class="panel" id="panel-profile">
+  <div class="section-tag">Fotos de Perfil & Avatar</div>
+  <h2>Sistema de Perfil</h2>
+  <p class="sub">Consistência visual em todas as plataformas · Reconhecimento instantâneo da marca</p>
+  <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-start;margin-bottom:32px">
+    <!-- Avatar grande -->
+    <div>
+      <span class="spec-label">Avatar Principal 800×800</span>
+      <div style="width:180px;height:180px;border-radius:50%;overflow:hidden" class="avatar-ring">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#0D0B1E 0%,#1A0A3E 50%,#0D0B1E 100%);display:flex;align-items:center;justify-content:center;position:relative">
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:.12" viewBox="0 0 200 200">
+            <radialGradient id="av1" cx="50%" cy="30%"><stop offset="0%" stop-color="#7C3AED"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            <circle cx="100" cy="60" r="150" fill="url(#av1)"/>
+          </svg>
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center">
+            <svg width="80" height="80" viewBox="0 0 100 100" fill="none">
+              <rect x="46" y="52" width="8" height="36" rx="4" fill="#C4B5FD"/>
+              <path d="M20 20 C20 20 20 58 46 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M80 20 C80 20 80 58 54 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <rect x="16" y="16" width="68" height="8" rx="4" fill="#C4B5FD"/>
+            </svg>
+            <span style="font-family:'DM Mono',monospace;font-size:10px;color:#7C3AED;letter-spacing:2px;margin-top:4px">doc</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Variantes de tamanho -->
+    <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+      <div>
+        <span class="spec-label">Instagram · TikTok 110px</span>
+        <div style="width:80px;height:80px;border-radius:50%;overflow:hidden" class="avatar-ring">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#0D0B1E,#1A0A3E);display:flex;align-items:center;justify-content:center">
+            <svg width="46" height="46" viewBox="0 0 100 100" fill="none"><rect x="46" y="52" width="8" height="36" rx="4" fill="#C4B5FD"/><path d="M20 20 C20 20 20 58 46 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M80 20 C80 20 80 58 54 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/><rect x="16" y="16" width="68" height="8" rx="4" fill="#C4B5FD"/></svg>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="spec-label">YouTube 50px</span>
+        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden" class="avatar-ring">
+          <div style="width:100%;height:100%;background:linear-gradient(135deg,#0D0B1E,#1A0A3E);display:flex;align-items:center;justify-content:center">
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none"><rect x="46" y="52" width="8" height="36" rx="4" fill="#C4B5FD"/><path d="M20 20 C20 20 20 58 46 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M80 20 C80 20 80 58 54 62" stroke="#C4B5FD" stroke-width="8" stroke-linecap="round" fill="none"/><rect x="16" y="16" width="68" height="8" rx="4" fill="#C4B5FD"/></svg>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="spec-label">App Icon 40px</span>
+        <div style="width:60px;height:60px;border-radius:16px;background:linear-gradient(145deg,#4C1D95,#7C3AED);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(124,58,237,.5)">
+          <svg width="36" height="36" viewBox="0 0 100 100" fill="none"><rect x="46" y="52" width="8" height="36" rx="4" fill="#F0F4FF"/><path d="M20 20 C20 20 20 58 46 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M80 20 C80 20 80 58 54 62" stroke="#F0F4FF" stroke-width="8" stroke-linecap="round" fill="none"/><rect x="16" y="16" width="68" height="8" rx="4" fill="#F0F4FF"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SPECS ═════════════════════════ -->
+<section class="panel" id="panel-specs">
+  <div class="section-tag">Especificações Técnicas</div>
+  <h2>Guia de Formatos por Plataforma</h2>
+  <p class="sub">Dimensões, formatos e especificações para cada rede social — tudo em um lugar</p>
+  <div class="grid g2">
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:16px;overflow:hidden">
+      <div style="background:rgba(255,0,0,.12);padding:12px 16px;border-bottom:1px solid rgba(255,0,0,.15)"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#FB7185;font-weight:700;letter-spacing:1px">▶ YOUTUBE</span></div>
+      <div style="padding:16px">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Channel Art</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">2560 × 1440 px · PNG · Máx 6MB</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Zona Segura TV</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">1546 × 423 px (centro)</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Thumbnail</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1280 × 720 px · JPG/PNG · Máx 2MB</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Foto de Perfil</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">800 × 800 px (exibido 98×98)</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Vídeo Long</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">1920 × 1080 px · H.264 · 30fps</td></tr>
+          <tr><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">YouTube Shorts</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">1080 × 1920 px · 60s máx</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:16px;overflow:hidden">
+      <div style="background:rgba(225,29,72,.12);padding:12px 16px;border-bottom:1px solid rgba(225,29,72,.15)"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#FB7185;font-weight:700;letter-spacing:1px">◻ INSTAGRAM</span></div>
+      <div style="padding:16px">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Post Quadrado</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1080 px · JPG · Máx 8MB</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Post Retrato</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1350 px (4:5)</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Story / Reel</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1920 px (9:16)</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Story Safe Zone</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">250px topo + 250px base</td></div></td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Foto de Perfil</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">320 × 320 px (exibido 110×110)</td></tr>
+          <tr><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Carrossel</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">1080×1080 ou 1080×1350 · 2-10 slides</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:16px;overflow:hidden">
+      <div style="background:rgba(6,182,212,.1);padding:12px 16px;border-bottom:1px solid rgba(6,182,212,.15)"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#06B6D4;font-weight:700;letter-spacing:1px">♩ TIKTOK</span></div>
+      <div style="padding:16px">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Vídeo</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1920 px (9:16) · MP4</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Safe Zone</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">Evitar 250px topo + 400px base</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Thumbnail</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1920 · Frame fixo</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Foto de Perfil</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">200 × 200 px mín</td></tr>
+          <tr><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Duração Ideal</td><td style="padding:7px 0;color:#F59E0B;text-align:right">50-58s (sweet spot algoritmo)</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="background:#0D0B1E;border:1px solid rgba(124,58,237,.12);border-radius:16px;overflow:hidden">
+      <div style="background:rgba(225,29,72,.12);padding:12px 16px;border-bottom:1px solid rgba(225,29,72,.15)"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#E11D48;font-weight:700;letter-spacing:1px">📌 PINTEREST</span></div>
+      <div style="padding:16px">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Pin Standard</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1000 × 1500 px (2:3)</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Pin Longo</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1000 × 2100 px</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Story Pin</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">1080 × 1920 px</td></tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)"><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Foto de Perfil</td><td style="padding:7px 0;color:#F0F4FF;font-weight:600;text-align:right">165 × 165 px</td></tr>
+          <tr><td style="padding:7px 0;color:#64748B;font-family:'DM Mono',monospace;font-size:10px">Capa do Board</td><td style="padding:7px 0;color:#C4B5FD;text-align:right">600 × 600 px</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// PSI SVG HELPER
+// ═══════════════════════════════════════════════════════════
+function psi(color, size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+    <rect x="46" y="52" width="8" height="36" rx="4" fill="${color}"/>
+    <path d="M20 20 C20 20 20 58 46 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M80 20 C80 20 80 58 54 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <rect x="16" y="16" width="68" height="8" rx="4" fill="${color}"/>
+  </svg>`;
+}
+
+function constellation(accent, opacity = .08) {
+  return `<svg style="position:absolute;inset:0;width:100%;height:100%;opacity:${opacity}" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <radialGradient id="cg${Math.random().toString(36).slice(2)}" cx="25%" cy="35%">
+        <stop offset="0%" stop-color="${accent}"/><stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+    <circle cx="200" cy="157" r="300" fill="${accent}" fill-opacity=".12"/>
+    <circle cx="600" cy="293" r="220" fill="${accent}" fill-opacity=".08"/>
+    ${[[100,80,320,160],[320,160,560,90],[560,90,740,210],[200,310,400,250],[400,250,620,340],[620,340,760,290]].map(([x1,y1,x2,y2])=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${accent}" stroke-width="0.7" stroke-opacity="0.4"/>`).join('')}
+    ${[[100,80],[320,160],[560,90],[740,210],[200,310],[400,250],[620,340],[760,290],[160,400],[520,60]].map(([cx,cy])=>`<circle cx="${cx}" cy="${cy}" r="2.5" fill="${accent}" fill-opacity="0.55"/>`).join('')}
+  </svg>`;
+}
+
+const ACCENTS = {
+  viral: {bg:'linear-gradient(135deg,#06060F 0%,#1A0030 100%)',c:'#7C3AED',l:'#5B21B6'},
+  crime: {bg:'linear-gradient(135deg,#0A0000 0%,#2D0011 100%)',c:'#E11D48',l:'#9F1239'},
+  fact:  {bg:'linear-gradient(135deg,#000608 0%,#001A2D 100%)',c:'#0D9488',l:'#0F766E'},
+  gold:  {bg:'linear-gradient(135deg,#0A0600 0%,#1A1000 100%)',c:'#F59E0B',l:'#B45309'},
+};
+
+// ═══════════════════════════════════════════════════════════
+// THUMBNAILS
+// ═══════════════════════════════════════════════════════════
+const THUMBS = [
+  {type:'viral',title:'7 Sinais de Apego Ansioso que Você Ignora',sub:'PSICOLOGIA CLÍNICA',badge:'28M',fs:38},
+  {type:'crime',title:'O Narcisista Disfarçado que Existe na Sua Vida',sub:'TRANSTORNOS · SÉRIE 2',badge:'#1',fs:36},
+  {type:'fact', title:'87% Das Pessoas Têm Trauma e Não Sabem',sub:'ESTUDO CIENTÍFICO · OMS 2024',badge:'87%',fs:38},
+  {type:'gold', title:'Por Que o Burnout Destrói em Silêncio',sub:'SAÚDE MENTAL NO TRABALHO · EP.2',badge:null,fs:36},
+  {type:'viral',title:'Por Que Você Sente Culpa Sem Dever Nada',sub:'SÍNDROME DO BOM FILHO',badge:null,fs:38},
+  {type:'crime',title:'Gaslighting: Como Reconhecer a Manipulação',sub:'GUIA DEFINITIVO',badge:null,fs:38},
+  {type:'fact', title:'A Neurociência do Trauma da Infância',sub:'HARVARD MEDICAL SCHOOL · 2024',badge:'NEW',fs:37},
+  {type:'gold', title:'Você Está Sendo Emocionalmente Manipulado?',sub:'PSICOLOGIA COMPORTAMENTAL',badge:null,fs:35},
+  {type:'viral',title:'Síndrome do Impostor: A Ciência Explica',sub:'NEUROCIÊNCIA · AUTOCONHECIMENTO',badge:null,fs:37},
+  {type:'crime',title:'Como Sair de um Relacionamento Tóxico',sub:'PASSO A PASSO CIENTÍFICO',badge:null,fs:37},
+  {type:'fact', title:'Depressão Mascarada: 10 Sinais Invisíveis',sub:'SAÚDE MENTAL · DADO: 322M AFETADOS',badge:null,fs:36},
+  {type:'gold', title:'A Psicóloga Explica: Vício em Relacionamentos',sub:'DEPENDÊNCIA EMOCIONAL · NEUROCIÊNCIA',badge:null,fs:34},
+];
+
+const thumbContainer = document.getElementById('thumb-container');
+THUMBS.forEach(t => {
+  const a = ACCENTS[t.type];
+  const html = `
+  <div class="thumb-card" title="${t.title}" style="background:${a.bg}">
+    ${constellation(a.c)}
+    <div class="thumb-left-line" style="background:${a.c};box-shadow:4px 0 24px ${a.c}88"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,15,.97) 0%,rgba(6,6,15,.5) 50%,transparent 100%)"></div>
+    <div style="position:absolute;right:-16px;top:-16px;width:100px;height:100px;border-radius:50%;background:${a.c};opacity:.07;filter:blur(30px)"></div>
+    <div style="position:absolute;right:24px;top:16px;width:60px;height:60px;border-radius:50%;border:1.5px solid ${a.c}44"></div>
+    <div style="position:absolute;right:36px;top:28px;width:36px;height:36px;border-radius:50%;border:1.5px solid ${a.c}66"></div>
+    <div class="thumb-handle">@psidanielacoelho</div>
+    <div style="position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:6px">
+      ${t.badge ? `<span class="thumb-badge" style="background:rgba(0,0,0,.6);color:${a.c};border:1px solid ${a.c}55">${t.badge}</span>` : ''}
+      ${psi(a.c, 28)}
+    </div>
+    <div class="thumb-content">
+      <div class="thumb-label" style="color:${a.c}"><div class="thumb-label::before" style="background:${a.c}"></div>${t.sub}</div>
+      <div class="thumb-title" style="font-size:${t.fs}px">${t.title}</div>
+    </div>
+  </div>`;
+  thumbContainer.innerHTML += html;
+  // Fix label line
+  thumbContainer.lastElementChild.querySelector('.thumb-label').insertAdjacentHTML('afterbegin',`<span style="display:block;width:14px;height:1.5px;background:${a.c};flex-shrink:0"></span>`);
+});
+
+// ═══════════════════════════════════════════════════════════
+// INSTAGRAM POSTS
+// ═══════════════════════════════════════════════════════════
+const IG_POSTS = [
+  {type:'viral',label:'Psicologia Clínica',text:'"O que não é dito com palavras, o corpo grita com sintomas."',meta:'psicologia.doc · Psicossomática'},
+  {type:'crime',label:'Dado Científico',text:'1 em cada 5 adultos tem ansiedade sem diagnóstico',meta:'OMS · 2023 · #SaudeMental'},
+  {type:'fact', label:'Série: Trauma Invisível',text:'3 sinais de que você está em relacionamento com um narcisista',meta:'Ep.2 · Assista no YouTube'},
+  {type:'gold', label:'Neurociência',text:'"Neuroplasticidade prova que você pode mudar em qualquer idade."',meta:'Daniela Coelho · psicologia.doc'},
+  {type:'viral',label:'Reflexão Científica',text:'Quem se sabota não tem preguiça. Tem medo do sucesso.',meta:'#Autossabotagem · #Psicologia'},
+  {type:'crime',label:'Alerta',text:'Amor com ansiedade não é intensidade. É apego ansioso.',meta:'Série: A Ciência do Apego · Ep.1'},
+];
+
+const igContainer = document.getElementById('ig-posts-container');
+IG_POSTS.forEach(p => {
+  const a = ACCENTS[p.type];
+  igContainer.innerHTML += `
+  <div class="ig-post" style="background:${a.bg}">
+    ${constellation(a.c, .1)}
+    <div style="position:absolute;inset:0;padding:22px;display:flex;flex-direction:column;justify-content:space-between;z-index:1">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        ${psi(a.c, 24)}
+        <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1px">@psidanielacoelho</span>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:${a.c};text-transform:uppercase;letter-spacing:2.5px;font-weight:700;margin-bottom:10px">${p.label}</div>
+        <div style="font-family:Georgia,serif;font-size:20px;color:#F0F4FF;line-height:1.42">${p.text}</div>
+      </div>
+      <div>
+        <div style="height:2px;background:${a.c};width:32px;opacity:.6;margin-bottom:8px;border-radius:2px"></div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#64748B">${p.meta}</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:3px;background:${a.c};opacity:.7"></div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// STORIES
+// ═══════════════════════════════════════════════════════════
+const STORIES = [
+  {type:'viral',tag:'NOVO VÍDEO',cta:'ASSISTIR AGORA',text:'Apego Ansioso: O que seu corpo sente quando ele não responde'},
+  {type:'crime',tag:'VOCÊ SABIA?',cta:'SALVAR',text:'Microtraumas diários causam tanto dano quanto grandes traumas'},
+  {type:'fact', tag:'QUIZ',cta:'RESPONDER',text:'Qual estilo de apego define seus relacionamentos?'},
+  {type:'gold', tag:'FATO',cta:'COMPARTILHAR',text:'87% com burnout levam 6+ meses para perceber os sintomas'},
+  {type:'viral',tag:'PERGUNTA',cta:'COMENTAR',text:'Você já se sentiu culpado sem saber exatamente por quê?'},
+];
+
+const storiesContainer = document.getElementById('ig-stories-container');
+STORIES.forEach(s => {
+  const a = ACCENTS[s.type];
+  storiesContainer.innerHTML += `
+  <div class="ig-story" style="background:linear-gradient(180deg,${a.bg.match(/,([^,]+) 100%/)?.[1]??'#06060F'} 0%,#06060F 100%)">
+    ${constellation(a.c, .12)}
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${a.c}"></div>
+    <div style="position:absolute;inset:0;padding:18px 14px;display:flex;flex-direction:column;justify-content:space-between;z-index:1">
+      <div style="text-align:center">
+        ${psi(a.c, 20)}
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:${a.c};text-transform:uppercase;letter-spacing:1.5px;margin-top:5px;font-weight:700">${s.tag}</div>
+      </div>
+      <div style="font-family:Georgia,serif;font-size:14px;color:#F0F4FF;text-align:center;line-height:1.45">${s.text}</div>
+      <div style="text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:#64748B;margin-bottom:7px">psicologia.doc</div>
+        <div style="border:1px solid ${a.c};color:${a.c};font-family:'DM Mono',monospace;font-size:8px;padding:5px 12px;border-radius:20px;display:inline-block;letter-spacing:1.5px;font-weight:700">${s.cta}</div>
+      </div>
+    </div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// CAROUSEL
+// ═══════════════════════════════════════════════════════════
+const CAROUSEL = [
+  {n:'01',title:'Introdução',text:'O apego ansioso é o estilo mais comum e o mais doloroso'},
+  {n:'02',title:'Sinal #1',text:'Você checa o celular com frequência esperando resposta'},
+  {n:'03',title:'Sinal #2',text:'Pequenas demoras viram provas de que não é amado'},
+  {n:'04',title:'Sinal #3',text:'Você se adapta demais para não perder a pessoa'},
+  {n:'BÔNUS',title:'A Saída',text:'Reconhecer o padrão é o primeiro passo para a cura'},
+];
+
+const carouselContainer = document.getElementById('ig-carousel-container');
+CAROUSEL.forEach((c,i) => {
+  const a = ACCENTS[i === CAROUSEL.length-1 ? 'gold' : 'viral'];
+  carouselContainer.innerHTML += `
+  <div style="width:160px;aspect-ratio:1/1;border-radius:12px;overflow:hidden;flex-shrink:0;position:relative;background:${a.bg};border:1px solid ${a.c}22">
+    ${constellation(a.c, .1)}
+    <div style="position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:space-between;z-index:1">
+      <div style="display:flex;justify-content:space-between">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:${a.c};font-weight:700">${c.n}</span>
+        ${psi(a.c, 16)}
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:${a.c};margin-bottom:5px">${c.title}</div>
+        <div style="font-family:Georgia,serif;font-size:12px;color:#F0F4FF;line-height:1.4">${c.text}</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:${a.c}"></div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// TIKTOK
+// ═══════════════════════════════════════════════════════════
+const TIKTOKS = [
+  {type:'viral',hook:'POV: Você descobriu que tem apego ansioso',tag:'#psicologia #apego',cta:'Siga para mais'},
+  {type:'crime',hook:'Coisas que narcisista NUNCA vai te dizer',tag:'#narcisismo #relacionamento',cta:'Salva esse vídeo'},
+  {type:'fact', hook:'A ciência do trauma da infância em 55s',tag:'#trauma #neurociencia',cta:'Compartilha'},
+  {type:'gold', hook:'Por que você se sabota mesmo querendo crescer?',tag:'#autossabotagem #psicologia',cta:'Comenta "EU" se é você'},
+  {type:'viral',hook:'3 sinais que você tem síndrome do impostor',tag:'#impostorsyndrome #trabalho',cta:'Segue o canal'},
+];
+
+const tiktokContainer = document.getElementById('tiktok-container');
+TIKTOKS.forEach(t => {
+  const a = ACCENTS[t.type];
+  tiktokContainer.innerHTML += `
+  <div style="width:140px;aspect-ratio:9/16;border-radius:14px;overflow:hidden;flex-shrink:0;position:relative;background:${a.bg};border:1px solid ${a.c}22;box-shadow:0 4px 24px rgba(0,0,0,.5)">
+    ${constellation(a.c, .12)}
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,${a.c},transparent)"></div>
+    <div style="position:absolute;inset:0;padding:12px 10px;display:flex;flex-direction:column;justify-content:space-between;z-index:1">
+      <div style="text-align:right">${psi(a.c, 16)}</div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:11px;color:#F0F4FF;line-height:1.4;margin-bottom:6px;text-shadow:0 1px 8px rgba(0,0,0,.8)">${t.hook}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:${a.c}">${t.tag}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="border:1px solid ${a.c};color:${a.c};font-family:'DM Mono',monospace;font-size:7px;padding:4px 10px;border-radius:20px;display:inline-block;letter-spacing:1px;font-weight:700">${t.cta}</div>
+      </div>
+    </div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// PINTEREST
+// ═══════════════════════════════════════════════════════════
+const PINS = [
+  {type:'viral',title:'7 Sinais que Você Tem Apego Ansioso',sub:'Guia Completo · psicologia.doc',extra:'Salve para ler depois'},
+  {type:'crime',title:'Como Sair de Um Relacionamento Tóxico',sub:'Passo a Passo Científico',extra:'47 comentários'},
+  {type:'fact', title:'10 Sinais de Trauma Que Você Ignora',sub:'Neurociência Explica',extra:'Compartilhado 1.2K'},
+  {type:'gold', title:'A Síndrome do Impostor Explicada',sub:'Por Daniela Coelho · Psicóloga',extra:'Salve para mostrar a alguém'},
+  {type:'viral',title:'Por Que Você Atrai Pessoas Tóxicas',sub:'A Ciência por Trás do Padrão',extra:'Trending hoje'},
+  {type:'crime',title:'Gaslighting: Guia de Reconhecimento',sub:'Série: Mentes Narcisistas · Ep.2',extra:'2.4K salvamentos'},
+];
+
+const pinContainer = document.getElementById('pin-container');
+PINS.forEach(p => {
+  const a = ACCENTS[p.type];
+  pinContainer.innerHTML += `
+  <div class="pin-card" style="background:${a.bg}">
+    ${constellation(a.c, .1)}
+    <div style="position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;justify-content:space-between;z-index:1">
+      <div>${psi(a.c, 20)}</div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:14px;color:#F0F4FF;line-height:1.35;margin-bottom:8px">${p.title}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;color:${a.c};margin-bottom:4px">${p.sub}</div>
+        <div style="font-family:'DM Sans',sans-serif;font-size:9px;color:#64748B">${p.extra}</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${a.c},transparent)"></div>
+    <div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:${a.c}55"></div>
+  </div>`;
+});
+
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
