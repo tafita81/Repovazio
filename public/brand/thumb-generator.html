@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Thumbnail Generator - psicologia.doc</title>
+<style>
+:root{
+  --void:#06060F;--deep:#0D0B1E;--purple:#5B21B6;--violet:#7C3AED;
+  --crimson:#E11D48;--coral:#FB7185;--gold:#F59E0B;--teal:#0D9488;
+  --cyan:#06B6D4;--frost:#F0F4FF;--mist:#C4B5FD;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;font-family:-apple-system,sans-serif;color:#fff;padding:20px}
+h1{font-size:16px;color:#7C3AED;margin-bottom:20px;font-family:monospace;letter-spacing:2px}
+.thumb{
+  width:1280px;height:720px;
+  background:var(--void);
+  position:relative;overflow:hidden;
+  border-radius:8px;
+  transform-origin:top left;
+  transform:scale(0.5);
+  margin-bottom:-360px;
+}
+.neural{position:absolute;inset:0;opacity:.08}
+.line-left{position:absolute;left:0;top:0;bottom:0;width:6px}
+.gradient-bottom{position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,rgba(6,6,15,.98),transparent)}
+.glow-circle{position:absolute;border-radius:50%;filter:blur(60px)}
+.handle{position:absolute;top:24px;left:28px;font-family:monospace;font-size:13px;color:#475569;letter-spacing:1px}
+.psi{position:absolute;top:24px;right:28px}
+.stat-badge{position:absolute;top:24px;right:60px;font-family:monospace;font-weight:700;font-size:16px}
+.content{position:absolute;bottom:48px;left:28px;right:28px;z-index:2}
+.label{font-family:monospace;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:3px;margin-bottom:10px}
+.title{font-family:Georgia,serif;font-weight:700;line-height:1.15;color:var(--frost);text-shadow:0 2px 20px rgba(0,0,0,.9)}
+.deco-ring{position:absolute;border-radius:50%;border:2px solid}
+</style>
+</head>
+<body>
+<h1>THUMBNAIL GENERATOR — psicologia.doc</h1>
+<div id="thumbs"></div>
+<script>
+const ACCENTS = {
+  viral: {bg:'linear-gradient(135deg,#06060F 0%,#1A0030 100%)',color:'#7C3AED',line:'#5B21B6'},
+  crime: {bg:'linear-gradient(135deg,#0A0000 0%,#2D0011 100%)',color:'#E11D48',line:'#9F1239'},
+  fact:  {bg:'linear-gradient(135deg,#00060F 0%,#001A2D 100%)',color:'#0D9488',line:'#0F766E'},
+  gold:  {bg:'linear-gradient(135deg,#0A0600 0%,#1A1000 100%)',color:'#F59E0B',line:'#B45309'},
+};
+
+const VIDEOS = [
+  {type:'viral',title:'7 Sinais de Apego Ansioso que Você Ignora',sub:'PSICOLOGIA CLÍNICA',stat:null},
+  {type:'crime',title:'O Narcisista Disfarçado que Existe na Sua Vida',sub:'TRANSTORNOS DE PERSONALIDADE',stat:'#1'},
+  {type:'fact', title:'87% Das Pessoas Têm Trauma e Não Sabem',sub:'DADO CIENTÍFICO · 2024',stat:'87%'},
+  {type:'gold', title:'Como o Burnout Destrói Silenciosamente',sub:'SÉRIE: SAÚDE MENTAL NO TRABALHO · EP.2',stat:null},
+  {type:'viral',title:'Por Que Você Sente Culpa Sem Dever Nada',sub:'SÍNDROME DO BOM FILHO',stat:null},
+  {type:'crime',title:'Gaslighting: Como Reconhecer a Manipulação',sub:'GUIA COMPLETO',stat:null},
+  {type:'fact', title:'A Neurociência do Trauma de Infância',sub:'ESTUDO · HARVARD MEDICAL SCHOOL',stat:'NEW'},
+  {type:'gold', title:'Você Está Sendo Emocionalmente Manipulado?',sub:'PSICOLOGIA COMPORTAMENTAL',stat:null},
+];
+
+function psiSVG(color, size=40) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" fill="none">
+    <rect x="46" y="52" width="8" height="36" rx="4" fill="${color}"/>
+    <path d="M20 20 C20 20 20 58 46 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M80 20 C80 20 80 58 54 62" stroke="${color}" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <rect x="16" y="16" width="68" height="8" rx="4" fill="${color}"/>
+  </svg>`;
+}
+
+const container = document.getElementById('thumbs');
+VIDEOS.forEach((v, i) => {
+  const a = ACCENTS[v.type];
+  const titleSize = v.title.length > 45 ? 52 : v.title.length > 35 ? 62 : 72;
+  container.innerHTML += `
+  <div style="margin-bottom:10px;font-size:10px;color:#555;font-family:monospace">${i+1}. ${v.type.toUpperCase()} — ${v.title.substring(0,40)}...</div>
+  <div class="thumb" style="background:${a.bg}">
+    <svg class="neural" viewBox="0 0 1280 720" preserveAspectRatio="xMidYMid slice">
+      <radialGradient id="ng${i}a" cx="25%" cy="35%"><stop offset="0%" stop-color="${a.color}"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      <radialGradient id="ng${i}b" cx="75%" cy="65%"><stop offset="0%" stop-color="${a.line}"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      <circle cx="320" cy="252" r="280" fill="url(#ng${i}a)"/>
+      <circle cx="960" cy="468" r="220" fill="url(#ng${i}b)"/>
+      ${[[120,80,400,200],[400,200,720,120],[720,120,1000,280],[240,400,520,340],[520,340,800,440],[800,440,1100,360]].map(([x1,y1,x2,y2])=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${a.color}" stroke-width="0.8" stroke-opacity="0.4"/>`).join('')}
+      ${[[120,80],[400,200],[720,120],[1000,280],[240,400],[520,340],[800,440],[1100,360],[180,500],[640,80]].map(([cx,cy])=>`<circle cx="${cx}" cy="${cy}" r="3.5" fill="${a.color}" fill-opacity="0.5"/>`).join('')}
+    </svg>
+    <div class="line-left" style="background:${a.color};box-shadow:4px 0 30px ${a.color}88"></div>
+    <div class="gradient-bottom"></div>
+    <div class="glow-circle" style="width:500px;height:500px;right:-80px;top:-120px;background:${a.color};opacity:0.08"></div>
+    <div class="deco-ring" style="width:180px;height:180px;right:80px;top:40px;border-color:${a.color}44"></div>
+    <div class="deco-ring" style="width:100px;height:100px;right:120px;top:80px;border-color:${a.color}66"></div>
+    <div class="handle">@psidanielacoelho</div>
+    <div class="psi">${psiSVG(a.color, 44)}</div>
+    ${v.stat?`<div class="stat-badge" style="color:${a.color};text-shadow:0 0 20px ${a.color}">${v.stat}</div>`:''}
+    <div class="content">
+      <div class="label" style="color:${a.color}">${v.sub}</div>
+      <div class="title" style="font-size:${titleSize}px">${v.title}</div>
+    </div>
+  </div>`;
+});
+</script>
+</body>
+</html>
