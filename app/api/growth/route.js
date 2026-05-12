@@ -1,55 +1,42 @@
 import { createClient } from "@supabase/supabase-js";
 
-// Forçar renderização dinâmica (não pré-renderizar no build)
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    const supabaseUrl = process.env.SUPABASE_URL || "https://tpjvalzwkqwttvmszvie.supabase.co";
-    const supabaseKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    const sbUrl = process.env.SUPABASE_URL || "https://tpjvalzwkqwttvmszvie.supabase.co";
+    const sbKey = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    if (!sbKey) return Response.json({ error: "SUPABASE_KEY nao configurada" }, { status: 500 });
 
-    if (!supabaseKey) {
-      return Response.json({ error: "SUPABASE_SERVICE_KEY não configurada" }, { status: 500 });
-    }
+    const sb = createClient(sbUrl, sbKey);
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Pipeline status
+    const { data: pipe } = await sb.from("content_pipeline").select("status").limit(2000);
+    const cnt = {};
+    (pipe || []).forEach(r => { cnt[r.status] = (cnt[r.status] || 0) + 1; });
 
-    const [snaps, pub, mp4, series] = await Promise.all([
-      supabase.from("channel_snapshots").select("*").order("snapshot_at", { ascending: false }).limit(1),
-      supabase.from("content_pipeline").select("id").eq("status", "published"),
-      supabase.from("content_pipeline").select("id").eq("status", "mp4_ready"),
-      supabase.from("content_pipeline").select("status,metadata").not("metadata->>serie", "is", null).neq("status", "archived")
-    ]);
+    // Canal (ultimo snapshot)
+    const { data: snaps } = await sb.from("channel_snapshots").select("subscribers,views_28d,ctr_28d,total_views,watch_time_hrs,delta_subs,days_to_1k_est,snapshot_at").order("snapshot_at", { ascending: false }).limit(1);
 
-    const snapshot = snaps.data?.[0] || {};
-    const seriesData = {};
-    for (const r of (series.data || [])) {
-      const s = r.metadata?.serie;
-      if (s) {
-        if (!seriesData[s]) seriesData[s] = { total: 0, published: 0 };
-        seriesData[s].total++;
-        if (r.status === "published") seriesData[s].published++;
-      }
-    }
+    // Series
+    const { data: seriesRows } = await sb.from("content_pipeline").select("metadata").not("metadata->>serie", "is", null).limit(500);
+    const series = {};
+    (seriesRows || []).forEach(r => { const s = r.metadata?.serie; if (s) series[s] = (series[s] || 0) + 1; });
+
+    // Ultimos publicados
+    const { data: ultimos } = await sb.from("content_pipeline").select("id,title,youtube_url,mp4_url,audio_url,thumbnail_url").eq("status", "published").order("id", { ascending: false }).limit(10);
 
     return Response.json({
-      snapshot,
-      publicados: pub.data?.length || 0,
-      mp4_ready: mp4.data?.length || 0,
-      series: seriesData,
-      pipeline: {
-        published: pub.data?.length || 0,
-        mp4_ready: mp4.data?.length || 0
-      },
-      ts: new Date().toISOString()
-    }, {
-      headers: {
-        "Cache-Control": "no-store, max-age=0",
-        "Access-Control-Allow-Origin": "*"
-      }
+      publicados: cnt.published || 0,
+      mp4_ready: cnt.mp4_ready || 0,
+      pipeline: cnt,
+      series: Object.keys(series),
+      canal: snaps?.[0] || {},
+      ultimos_publicados: ultimos || [],
+      timestamp: new Date().toISOString()
     });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 });
   }
 }
