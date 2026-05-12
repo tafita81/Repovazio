@@ -1,159 +1,126 @@
 import { createClient } from "@supabase/supabase-js";
 export const dynamic = "force-dynamic";
 
-// ============================================================
-// GERADOR VIRAL V1 — psicologia.doc
-// Engenharia de atenção máxima + 7 Atos + Cases Reais + Ken Burns hipnótico
-// ============================================================
+// ================================================================
+// GERADOR VIRAL V2 — Consulta memória eterna antes de gerar
+// /api/memoria é chamado para carregar padrões em tempo real
+// Garante que TODOS os vídeos seguem os padrões eternos
+// ================================================================
 
 const SBU = process.env.SUPABASE_URL || "https://tpjvalzwkqwttvmszvie.supabase.co";
 const SBK = process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// CASES REAIS — base de credibilidade e espelho emocional
-const CASES_REAIS = {
-  apego_ansioso: [
-    { personagem: "Marina, 29 anos, São Paulo", situacao: "Verificava o celular 80 vezes por dia esperando mensagem do namorado", dado: "67% das pessoas com apego ansioso sentem ansiedade física quando não recebem resposta em até 15 minutos (Universidade de Stanford)", reviravolta: "O problema não era o namorado. Era o pai ausente quando ela tinha 7 anos." },
-    { personagem: "Estudo com 4.000 adultos", fonte: "Journal of Personality and Social Psychology, 2021", dado: "72% das pessoas com apego ansioso formado na infância repetem exatamente o mesmo padrão em todos os relacionamentos adultos", choque: "Sem trabalhar a raiz, trocar de parceiro 10 vezes produz exatamente a mesma dor" }
-  ],
-  narcisismo: [
-    { personagem: "Estudo longitudinal — Harvard Medical School", dado: "Narcisistas passam em média 7 anos em um relacionamento antes de a vítima conseguir se desvencilhar", choque: "89% das vítimas levam mais 2 anos para parar de justificar o comportamento do narcisista após sair" },
-    { personagem: "Lucas, 38 anos, engenheiro", situacao: "Era considerado o homem perfeito — generoso, atencioso. Mas só quando as câmeras estavam ligadas", dado: "Psicólogos chamam de janela de amor — o período que o narcisista usa para criar dependência antes do ciclo de desvalorização" }
-  ],
-  trauma: [
-    { personagem: "Dr. Bessel van der Kolk", fonte: "O Corpo Guarda as Marcas — 2 milhões de cópias", dado: "Trauma não é só o que aconteceu com você. É o que acontece DENTRO de você quando seu sistema nervoso não consegue processar a experiência", choque: "Você pode ter trauma de algo que para outra pessoa seria completamente normal" },
-    { personagem: "ACE Study — CDC e Kaiser Permanente — 17.000 participantes", dado: "4+ experiências adversas na infância = 390% mais chance de depressão + 20 anos a menos de vida em média", choque: "A maioria nunca conecta os problemas do presente com o que viveu antes dos 12 anos" }
-  ],
-  ansiedade: [
-    { personagem: "Experimento do botão — Universidade de Virginia, 2014", dado: "67% dos homens preferiram se chocar eletricamente a ficarem sozinhos com os próprios pensamentos por 15 minutos", choque: "A mente ansiosa literalmente foge de si mesma" },
-    { personagem: "Sofia, 26 anos, professora", situacao: "Sorridente no trabalho, prestativa com todos. Dormia 2 horas por noite planejando como as coisas poderiam dar errado", dado: "Ansiedade de alto funcionamento — a maioria ao redor nunca percebe", reviravolta: "Seu cérebro aprendeu que estar alerta era a única forma de sobreviver" }
-  ],
-  burnout: [
-    { personagem: "Pesquisa Gallup 2023", dado: "76% dos trabalhadores experimentam burnout. 28% sempre ou frequentemente. A maioria só percebe DEPOIS de sair da situação.", choque: "No meio do burnout, achavam que era normal se sentir assim" },
-    { personagem: "Rafael, 33 anos, desenvolvedor", situacao: "Mal conseguia sair da cama. Não de preguiça — seus músculos simplesmente não obedeciam", dado: "Burnout destrói fisicamente o nucleus accumbens — região responsável por motivação e prazer. Apagamento neurológico real.", reviravolta: "Tentava trabalhar mais para resolver, sem saber que era isso que destruía sua neurologia" }
-  ],
-  perfeccionismo: [
-    { personagem: "Brené Brown — 10.000 participantes ao longo de 20 anos", dado: "Perfeccionismo não é sobre excelência. É sobre evitar vergonha, julgamento e crítica", choque: "O perfeccionista não tem medo de falhar. Tem medo de que, se falhar, as pessoas descobrirão que ele não é bom o suficiente" }
-  ]
-};
+async function consultarMemoriaEterna(tema) {
+  try {
+    // Buscar padrões diretamente do Supabase em tempo real
+    const sb = createClient(SBU, SBK);
+    const [
+      { data: regras },
+      { data: padroes }
+    ] = await Promise.all([
+      sb.from("regras_eternas").select("*").order("prioridade", { ascending: false }),
+      sb.from("padroes_virais").select("*").eq("ativo", true).order("prioridade", { ascending: false })
+    ]);
+    return { regras: regras || [], padroes: padroes || [] };
+  } catch { return { regras: [], padroes: [] }; }
+}
 
-// HOOKS VIRAIS — Os primeiros 5 segundos que determinam tudo
-const HOOKS = {
-  espelho_dor: [
-    "Você já sentiu que a outra pessoa está sempre a um passo de te abandonar?",
-    "Você checa o celular compulsivamente esperando uma resposta?",
-    "Você trabalha sem parar mas se sente cada vez mais vazio?",
-    "Você já se pegou justificando comportamentos que te machucaram?"
-  ],
-  dado_chocante: [
-    "72% das pessoas repetem o mesmo padrão em todos os relacionamentos — sem perceber.",
-    "Seu cérebro não consegue distinguir rejeição emocional de dor física.",
-    "Burnout destrói fisicamente regiões do cérebro. Literalmente.",
-    "67% das pessoas preferem se machucar a ficarem sozinhas com os próprios pensamentos."
-  ],
-  curiosidade_aberta: [
-    "Existe um padrão específico que explica por que você escolhe sempre as mesmas pessoas.",
-    "A ciência encontrou o exato momento em que o amor vira dependência.",
-    "Há uma frase que a maioria dos pais diz que programa o filho para o medo do abandono.",
-    "Psicólogos identificaram os 5 minutos de uma conversa que revelam tudo sobre o vínculo."
-  ]
-};
+function detectarEmocao(tema) {
+  const t = tema.toLowerCase();
+  if (t.includes("apego")||t.includes("abandono")||t.includes("dependência")||t.includes("burnout")) return "melancolico";
+  if (t.includes("narcis")||t.includes("manipula")||t.includes("abuso")) return "tenso";
+  if (t.includes("trauma")||t.includes("cura")) return "calmo";
+  if (t.includes("ansied")||t.includes("pânico")||t.includes("medo")) return "urgente";
+  return "contemplativo";
+}
 
-// KEN BURNS HIPNÓTICO — Parâmetros de movimento por emoção
-const KEN_BURNS_PARAMS = {
-  melancolico: { zoom_start: 1.0, zoom_end: 1.15, pan_speed: 0.02, style: "slow_zoom_in", flash_cuts: [8, 22, 38], pause_frames: [5, 28, 50] },
-  tenso:       { zoom_start: 0.9, zoom_end: 1.25, pan_speed: 0.04, style: "fast_impact",  flash_cuts: [3, 20, 42], pause_frames: [11, 35] },
-  calmo:       { zoom_start: 1.0, zoom_end: 1.08, pan_speed: 0.01, style: "very_slow",    flash_cuts: [14, 29],    pause_frames: [5, 20, 44] },
-  urgente:     { zoom_start: 1.0, zoom_end: 1.20, pan_speed: 0.05, style: "irregular",    flash_cuts: [4, 15, 40], pause_frames: [27, 50] },
-  contemplativo:{ zoom_start: 1.0, zoom_end: 1.10, pan_speed: 0.015, style: "meditative", flash_cuts: [12, 35],   pause_frames: [8, 25, 48] }
-};
+function detectarTemaKey(tema) {
+  const t = tema.toLowerCase();
+  if (t.includes("apego")) return "apego_ansioso";
+  if (t.includes("narcis")) return "narcisismo";
+  if (t.includes("trauma")) return "trauma";
+  if (t.includes("ansied")) return "ansiedade";
+  if (t.includes("burnout")||t.includes("esgotamento")) return "burnout";
+  if (t.includes("depend")||t.includes("amor")) return "dependencia_emocional";
+  if (t.includes("perfec")||t.includes("impostor")) return "perfeccionismo";
+  return null;
+}
 
-function buildMegaPromptViral(tema, formato, caseReal) {
-  const isShort = formato.includes("60s") || formato.includes("short");
-  const duracaoStr = isShort
-    ? "55-60 segundos — máximo 130 palavras na narração"
-    : "8-12 minutos — 800-1.200 palavras com desenvolvimento profundo";
+function buildMegaPromptViral(tema, formato, memoriaEterna, emoção, temaKey) {
+  const isShort = formato.includes("60s")||formato.includes("short");
+  const duracao = isShort ? "55-60 segundos | máximo 130 palavras" : "8-12 minutos | 800-1.200 palavras";
 
+  // Extrair regras absolutas da memória eterna
+  const regrasAbsolutas = (memoriaEterna.regras||[])
+    .filter(r => r.prioridade === 10 && ["script","imagem","canal"].includes(r.categoria))
+    .map(r => `${r.codigo}: ${r.regra}`)
+    .join("\n");
+
+  // Extrair case real
+  const casesPadrao = memoriaEterna.padroes?.find(p => p.chave === "biblioteca_cases_reais");
+  const caseReal = temaKey ? casesPadrao?.conteudo?.[temaKey]?.[0] : null;
   const caseStr = caseReal
-    ? `
-CASE REAL OBRIGATÓRIO A INCLUIR:
-- ${caseReal.personagem || caseReal.fonte || ""}
-- Situação/Dado: ${caseReal.situacao || caseReal.dado || ""}
-- Reviravolta/Choque: ${caseReal.reviravolta || caseReal.choque || ""}
-`
+    ? `\nCASE REAL OBRIGATÓRIO:\n- ${caseReal.personagem||caseReal.fonte||""}\n- ${caseReal.situacao||caseReal.dado||""}\n- Reviravolta: ${caseReal.reviravolta||caseReal.choque||""}`
     : "";
 
-  return `Você é um roteirista especialista em conteúdo viral de psicologia. Seu trabalho: criar roteiros que fazem a pessoa PARAR DE ROLAR O FEED e assistir até o final.
+  // Extrair hook recomendado
+  const hooksPadrao = memoriaEterna.padroes?.find(p => p.chave === "formulas_hook_por_tipo");
+  const hooksExemplos = hooksPadrao?.conteudo?.tipos?.espelho_dor?.exemplos || [];
+
+  return `Você é o sistema cerebral autônomo psicologia.doc.
+Sua missão: gerar roteiros que hipnotizam o viewer e maximizam retenção.
 
 TEMA: ${tema}
-FORMATO: ${formato} | ${duracaoStr}
+FORMATO: ${formato} | ${duracao}
+EMOÇÃO PRINCIPAL: ${emoção}
 ${caseStr}
 
-═══════════════ REGRAS DE OURO — ENGENHARIA DE ATENÇÃO ═══════════════
+═══════ REGRAS ABSOLUTAS DA MEMÓRIA ETERNA (NUNCA VIOLAR) ═══════
+${regrasAbsolutas}
+════════════════════════════════════════════════════════════════
 
-1. HOOK [0-5s]: Comece com UMA CENA ESPECÍFICA. NÃO uma afirmação genérica.
-   ✅ "Você checa o celular. Cinco vezes em dez minutos."
-   ❌ "Hoje vamos falar sobre apego ansioso."
+EXEMPLOS DE HOOK (escolher ou adaptar):
+${hooksExemplos.slice(0,3).map((h,i) => `${i+1}. "${h}"`).join("\n")}
 
-2. DADOS REAIS: Todo dado com fonte real (universidade, pesquisador, ano).
-3. ESPELHO EMOCIONAL: Cada cena reflete EXATAMENTE o que está sendo narrado.
-4. CURIOSIDADE EM LOOP: Cada seção responde 1 pergunta mas abre outra.
-5. SENSAÇÕES FÍSICAS: Descreva no corpo, não em abstrações.
-   ✅ "Aquela dor no peito quando ele não responde"
-   ❌ "Sofrimento emocional causado pela incerteza"
-6. ZERO JULGAMENTO: Validar primeiro, explicar depois.
-7. ANCORAGEM FINAL: Criar desejo de compartilhar — nunca pedir like diretamente.
-
-═══════════════ ESTRUTURA DOS 7 ATOS ═══════════════
-
+ESTRUTURA DOS 7 ATOS OBRIGATÓRIA:
 [ATO 1 — HOOK — 0-5s]
-Narrador: [2 frases curtas e impactantes — cena específica]
-Cena visual: [o que o personagem está fazendo + expressão facial + ambiente/fundo]
+Narrador: [cena específica — 2 frases impactantes]
+Visual: [personagem + expressão + ambiente]
 
 [ATO 2 — AMPLIFICAÇÃO — 5-15s]
-Narrador: [dado real com fonte + implicação que choca]
-Cena visual: [personagem reagindo ao dado + composição que amplifica]
+Narrador: [dado com fonte real + implicação chocante]
+Visual: [personagem reagindo ao dado]
 
 [ATO 3 — CASO REAL — 15-25s]
-Narrador: [nome+idade+profissão comum + situação específica contraditória]
-Cena visual: [personagem em situação do caso + detalhe humano]
+Narrador: [nome + idade + profissão + situação específica]
+Visual: [personagem em situação do caso]
 
 [ATO 4 — VIRADA CIENTÍFICA — 25-35s]
 Narrador: [mecanismo simples + analogia visual]
-Cena visual: [personagem com expressão de revelação/insight]
+Visual: [expressão de insight/revelação]
 
 [ATO 5 — CUSTO REAL — 35-45s]
-Narrador: [o que acontece se nada mudar — sem alarmar + o que se perde]
-Cena visual: [dois personagens ou personagem no futuro]
+Narrador: [consequência sem alarmar + o que se perde]
+Visual: [cenário futuro ou dois personagens]
 
 [ATO 6 — CAMINHO — 45-55s]
-Narrador: [o que é possível mudar + primeiro insight concreto]
-Cena visual: [personagem com expressão de alívio ou determinação]
+Narrador: [esperança concreta + insight específico]
+Visual: [expressão de determinação ou alívio]
 
 [ATO 7 — ANCORAGEM — 55-60s]
-Narrador: [frase final que cria desejo de compartilhar — identificação com próximo]
-Cena visual: [expressão de esperança + elemento visual que fica na memória]
+Narrador: [cria desejo de compartilhar — identidade coletiva]
+Visual: [expressão de esperança ou insight suave]
 
-CHECKLIST:
+CHECKLIST ANTES DE FINALIZAR:
 □ Hook começa com cena específica
 □ Pelo menos 1 dado com fonte real
-□ Pelo menos 1 personagem específico
-□ Sensações físicas descritas
-□ Pelo menos 1 cliffhanger de curiosidade
-□ Zero pedido de like/inscrição
-□ Último frame: esperança ou insight
+□ Pelo menos 1 personagem com nome+idade
+□ Sensações físicas no corpo (não abstrações)
+□ Pelo menos 1 gancho de curiosidade
+□ Zero pedido de like/inscrição direto
+□ ZERO indicação de texto nas descrições de imagem
 
 GERE O ROTEIRO AGORA:`;
-}
-
-function detectTema(tema) {
-  const t = tema.toLowerCase();
-  if (t.includes("apego")) return { emocao: "melancolico", caseKey: "apego_ansioso" };
-  if (t.includes("narcis")) return { emocao: "tenso", caseKey: "narcisismo" };
-  if (t.includes("trauma")) return { emocao: "calmo", caseKey: "trauma" };
-  if (t.includes("ansied")) return { emocao: "urgente", caseKey: "ansiedade" };
-  if (t.includes("burnout") || t.includes("esgotamento")) return { emocao: "melancolico", caseKey: "burnout" };
-  if (t.includes("perfec") || t.includes("impostor")) return { emocao: "contemplativo", caseKey: "perfeccionismo" };
-  return { emocao: "contemplativo", caseKey: null };
 }
 
 export async function GET(request) {
@@ -163,60 +130,62 @@ export async function GET(request) {
   const formato = url.searchParams.get("formato") || "short_60s";
 
   if (action === "gerar" && tema) {
-    const { emocao, caseKey } = detectTema(tema);
-    const caseReal = caseKey ? CASES_REAIS[caseKey]?.[0] : null;
-    const kbParams = KEN_BURNS_PARAMS[emocao] || KEN_BURNS_PARAMS.contemplativo;
-    const megaPrompt = buildMegaPromptViral(tema, formato, caseReal);
+    // CONSULTAR MEMÓRIA ETERNA EM TEMPO REAL
+    const memoriaEterna = await consultarMemoriaEterna(tema);
+    const emoção = detectarEmocao(tema);
+    const temaKey = detectarTemaKey(tema);
+
+    // Ken Burns da memória eterna
+    const kbPadrao = memoriaEterna.padroes?.find(p => p.chave === "movimento_por_emocao");
+    const kbParams = kbPadrao?.conteudo?.perfis?.[emoção] || {};
+
+    // Case real
+    const casesPadrao = memoriaEterna.padroes?.find(p => p.chave === "biblioteca_cases_reais");
+    const caseReal = temaKey ? casesPadrao?.conteudo?.[temaKey]?.[0] : null;
+
+    // Imagem params
+    const imgPadrao = memoriaEterna.padroes?.find(p => p.chave === "prompts_flux_por_emocao");
+    const imagemParams = {
+      sufixo: imgPadrao?.conteudo?.sufixo_obrigatorio,
+      paleta: imgPadrao?.conteudo?.paletas_por_emocao?.[emoção],
+      shots: imgPadrao?.conteudo?.shots_por_contexto,
+      personagens: imgPadrao?.conteudo?.personagens_rotativos
+    };
+
+    const megaPrompt = buildMegaPromptViral(tema, formato, memoriaEterna, emoção, temaKey);
 
     return Response.json({
-      tema, formato, emocao,
+      ok: true,
+      tema, formato, emocao: emoção, tema_key: temaKey,
+      fonte: "memoria_eterna_supabase_tempo_real",
+      total_regras_carregadas: memoriaEterna.regras.length,
+      total_padroes_carregados: memoriaEterna.padroes.length,
       mega_prompt_script: megaPrompt,
-      case_real_injetado: caseReal,
-      ken_burns_params: kbParams,
-      hooks_sugeridos: HOOKS,
-      instrucao: "Passe mega_prompt_script ao LLM (Groq/DeepSeek) para gerar o roteiro viral completo"
+      case_real: caseReal,
+      ken_burns: kbParams,
+      imagem: imagemParams,
+      checklist: [
+        "ZERO texto nas imagens",
+        "Flat 2D vector style",
+        "Hook com cena específica",
+        "Dado com fonte real",
+        "Case real com nome+idade",
+        "Sensações físicas no corpo",
+        "Ken Burns por emoção",
+        "Canal UCyCkIpsVgME9yCj_oXJFheA"
+      ]
     });
   }
 
-  if (action === "hooks") {
-    const { emocao, caseKey } = detectTema(tema || "apego");
-    return Response.json({ emocao, hooks: HOOKS, cases: caseKey ? CASES_REAIS[caseKey] : null });
-  }
-
-  if (action === "cases") {
-    return Response.json({ cases: CASES_REAIS });
-  }
-
-  // Status e demo
-  const demo = detectTema("apego ansioso — medo do abandono");
   return Response.json({
-    sistema: "Gerador Viral V1 — psicologia.doc",
-    versao: "1.0",
-    descricao: "Engenharia de atenção máxima: 7 atos, cases reais, Ken Burns hipnótico, hooks por emoção",
+    sistema: "Gerador Viral V2 — Integrado com Memória Eterna",
+    versao: "2.0",
+    diferencial: "Consulta Supabase em tempo real antes de cada geração",
     acoes: {
-      "gerar_script": "/api/gerar-viral?action=gerar&tema=apego+ansioso&formato=short_60s",
-      "gerar_long_form": "/api/gerar-viral?action=gerar&tema=trauma+invisivel&formato=long_8min",
-      "ver_hooks": "/api/gerar-viral?action=hooks&tema=narcisismo",
-      "ver_cases": "/api/gerar-viral?action=cases",
-    },
-    estrategia_viral: {
-      "hook_science": "Primeiros 3-5s determinam 70% da retenção — cena específica, nunca afirmação genérica",
-      "7_atos": ["Hook-ferida", "Amplificação-dado", "Caso-real", "Virada-científica", "Custo-real", "Caminho", "Ancoragem"],
-      "ken_burns_hipnotico": "Movimento calculado por emoção — zoom/pan espelha o arco narrativo",
-      "curiosidade_em_loop": "Cada seção responde 1 pergunta e abre outra — espectador não consegue parar",
-      "espelho_emocional": "Imagem reflete exatamente o que o narrador está dizendo — sincronização perfeita",
-      "cases_reais": "Dados com fonte real + personagem específico = credibilidade + identificação",
-      "zero_julgamento": "Validar a experiência primeiro — nunca culpar — o espectador deve se sentir visto",
-      "ancoragem_compartilhamento": "Último frame cria desejo de compartilhar sem pedir — identidade coletiva"
-    },
-    demo_emocao: demo.emocao,
-    demo_case: CASES_REAIS[demo.caseKey]?.[0]?.personagem || "—",
-    referencias_virais: [
-      "Psych2Go — 28M views — Covert Narcissist",
-      "Psych2Go — 22M views — Abandonment Issues",
-      "BrainCraft — mecanismo + animação científica",
-      "Therapy in a Nutshell — validação + explicação simples",
-      "MedCircle — dados reais + casos clínicos"
-    ]
+      "gerar_short": "/api/gerar-viral?action=gerar&tema=apego+ansioso&formato=short_60s",
+      "gerar_long": "/api/gerar-viral?action=gerar&tema=trauma+invisivel&formato=long_8min",
+      "ver_memoria": "/api/memoria",
+      "ver_memoria_geracao": "/api/memoria?action=padroes_geracao&tema=apego+ansioso"
+    }
   });
 }
