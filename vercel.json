@@ -5,10 +5,11 @@
   "regions": [
     "iad1"
   ],
-  "rewrites": [
+  "redirects": [
     {
       "source": "/",
-      "destination": "/index.html"
+      "destination": "/hub.html",
+      "permanent": false
     }
   ],
   "crons": [
