@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>&#968; Galeria &#8212; Vídeos Prontos</title>
+<title>&#968; Galeria &#8212; Ordem de Publicacao</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -24,42 +24,38 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
   backdrop-filter:blur(14px);transition:.15s}
 .home:hover{border-color:rgba(196,181,253,.55)}
 
-/* top bar */
 #topbar{position:sticky;top:0;z-index:500;background:rgba(6,6,15,.97);
   backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);
   padding:9px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .logo{font-size:15px;font-weight:800;color:var(--m)}
 .logo small{font-size:8px;font-family:"DM Mono",monospace;color:var(--t3);margin-left:5px;font-weight:400}
 
-/* storage gauge */
 .sg{display:flex;align-items:center;gap:8px;background:var(--s1);
-  border:1px solid var(--bd);border-radius:999px;padding:5px 12px;flex:1;min-width:160px;max-width:300px}
+  border:1px solid rgba(220,38,38,.3);border-radius:999px;padding:5px 12px;flex:1;min-width:160px;max-width:300px}
 .sg-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
-.sg-fill{height:100%;border-radius:3px;transition:width .8s ease;background:linear-gradient(90deg,#dc2626,#ef4444)}
+.sg-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#dc2626,#ef4444)}
 .sg-lbl{font-family:"DM Mono",monospace;font-size:9px;white-space:nowrap;color:#f87171}
 
-/* stats */
 .st{text-align:center}
 .st-n{font-size:16px;font-weight:900;font-family:"DM Mono",monospace;display:block;line-height:1}
 .st-l{font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);display:block;margin-top:2px}
 
-/* canal */
 .canal{display:flex;align-items:center;gap:5px;background:var(--ra);
   border:1px solid rgba(225,29,72,.28);border-radius:999px;padding:5px 12px;
   font-size:10px;font-weight:700;color:#FCA5A5;text-decoration:none;margin-right:148px}
-.dot{width:7px;height:7px;border-radius:50%;background:#ff2222;flex-shrink:0;
-  animation:blink 1.4s infinite}
+.dot{width:7px;height:7px;border-radius:50%;background:#ff2222;flex-shrink:0;animation:blink 1.4s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* alertas */
+.a-crit{margin:8px 22px 0;border-radius:9px;padding:9px 16px;font-size:11px;line-height:1.6;
+  display:flex;gap:8px;align-items:flex-start;
+  background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);color:#fca5a5}
+.a-crit strong{color:var(--t1);display:block}
+.a-crit a{color:var(--g);font-weight:600;text-decoration:none}
+
 .a-red{margin:8px 22px 0;border-radius:9px;padding:8px 16px;font-size:11px;line-height:1.6;
   display:flex;gap:8px;align-items:flex-start;
   background:rgba(225,29,72,.08);border:1px solid rgba(225,29,72,.22);color:#FCA5A5}
 .a-red strong{color:var(--t1)}.a-red a{color:var(--g);font-weight:600;text-decoration:none}
-.a-crit{margin:8px 22px 0;border-radius:9px;padding:10px 16px;font-size:11px;line-height:1.6;
-  display:flex;gap:8px;align-items:flex-start;
-  background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);color:#fca5a5}
-.a-crit strong{color:var(--t1);display:block;margin-bottom:3px}.a-crit a{color:var(--g);font-weight:600;text-decoration:none}
 
 /* filtros */
 .filters{padding:9px 22px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;
@@ -73,7 +69,7 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
   border-radius:7px;padding:5px 10px;font-size:10px;font-family:"DM Mono",monospace;cursor:pointer}
 
 /* lista */
-.wrap{max-width:860px;margin:0 auto;padding:14px 22px 100px}
+.wrap{max-width:880px;margin:0 auto;padding:14px 22px 100px}
 .lhdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;
   padding-bottom:8px;border-bottom:1px solid var(--bd)}
 .lhdr-t{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:var(--t3)}
@@ -81,20 +77,37 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
 
 .vlist{display:flex;flex-direction:column;gap:3px}
 
-.vrow{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:10px;
-  background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:9px 13px;
-  transition:.15s}
+/* ROW - 5 colunas: num | tipo | info | status | ações */
+.vrow{
+  display:grid;
+  grid-template-columns:32px 62px 1fr auto auto;
+  align-items:center;gap:10px;
+  background:var(--s1);border:1px solid var(--bd);
+  border-radius:10px;padding:9px 13px;transition:.15s;
+}
 .vrow:hover{border-color:rgba(124,58,237,.35);background:var(--s2)}
 
-.vnum{font-family:"DM Mono",monospace;font-size:10px;font-weight:700;color:var(--t3);
-  width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.04);
+.vnum{font-family:"DM Mono",monospace;font-size:11px;font-weight:900;color:var(--t3);
+  width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.04);
   border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* TIPO badge — destaque visual */
+.vtype{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.type-short{
+  font-size:9px;font-weight:800;font-family:"DM Mono",monospace;
+  padding:4px 9px;border-radius:6px;white-space:nowrap;letter-spacing:.04em;
+  background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3);
+}
+.type-long{
+  font-size:9px;font-weight:800;font-family:"DM Mono",monospace;
+  padding:4px 9px;border-radius:6px;white-space:nowrap;letter-spacing:.04em;
+  background:rgba(124,58,237,.15);color:var(--m);border:1px solid rgba(124,58,237,.3);
+}
 
 .vinfo{min-width:0}
 .vtitle{font-size:13px;font-weight:700;color:var(--t1);line-height:1.3;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vtags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
-
 .chip{font-size:8px;font-family:"DM Mono",monospace;padding:2px 6px;border-radius:5px}
 .cs{background:var(--va);color:var(--m);border:1px solid rgba(124,58,237,.22)}
 .cp{background:var(--grna);color:var(--grn);border:1px solid rgba(16,185,129,.2)}
@@ -116,7 +129,7 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
 .bdl:hover{background:var(--va);color:var(--m)}
 .bplay{width:38px;height:38px;border-radius:50%;
   background:var(--va);border:1px solid rgba(124,58,237,.4);
-  color:var(--m);font-size:15px;cursor:pointer;
+  color:var(--m);font-size:16px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
 .bplay:hover{background:var(--v);border-color:var(--v);color:#fff;
   transform:scale(1.1);box-shadow:0 0 18px rgba(124,58,237,.55)}
@@ -152,13 +165,13 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
 .macts{margin-left:auto;display:flex;gap:7px}
 .mact{font-size:10px;font-weight:700;padding:6px 14px;border-radius:8px;
   text-decoration:none;cursor:pointer;font-family:"DM Sans",sans-serif;transition:.15s}
-.ma-dl{background:var(--va);color:var(--m);border:1px solid rgba(124,58,237,.3)}
+.ma-dl {background:var(--va);color:var(--m);border:1px solid rgba(124,58,237,.3)}
 .ma-pub{background:var(--ra);color:#FCA5A5;border:1px solid rgba(225,29,72,.28)}
-.ma-yt{background:var(--grna);color:var(--grn);border:1px solid rgba(16,185,129,.22)}
+.ma-yt {background:var(--grna);color:var(--grn);border:1px solid rgba(16,185,129,.22)}
 @media(max-width:640px){
+  .vrow{grid-template-columns:28px 56px 1fr auto}
   .vstatus,.bdl{display:none}
   .canal{margin-right:140px}
-  .vtitle{font-size:12px}
 }
 </style>
 </head>
@@ -167,12 +180,12 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
 <a class="home" href="/hub.html">&#968; Hub</a>
 
 <div id="topbar">
-  <div class="logo">Galeria <small>PR&#201;-PUBLICA&#199;&#195;O V42</small></div>
+  <div class="logo">Galeria <small>ORDEM DE PUBLICA&#199;&#195;O</small></div>
   <div class="sg">
-    <div class="sg-track"><div class="sg-fill" id="sgfill" style="width:100%"></div></div>
-    <span class="sg-lbl">1.87 GB / 1 GB &#8212; EXCEDIDO</span>
+    <div class="sg-track"><div class="sg-fill" style="width:100%"></div></div>
+    <span class="sg-lbl">1.87 GB / 1 GB &#8212; EXCEDIDO 187%</span>
   </div>
-  <div class="st"><span class="st-n" id="s-mp4" style="color:var(--m)">&#8211;</span><span class="st-l">MP4s</span></div>
+  <div class="st"><span class="st-n" id="s-mp4" style="color:var(--m)">&#8211;</span><span class="st-l">V&#237;deos</span></div>
   <div class="st"><span class="st-n" id="s-pub" style="color:var(--grn)">&#8211;</span><span class="st-l">No YT</span></div>
   <div class="st"><span class="st-n" id="s-wait" style="color:var(--r)">&#8211;</span><span class="st-l">Aguard.</span></div>
   <a class="canal" href="https://www.youtube.com/@psidanielacoelho" target="_blank">
@@ -183,14 +196,13 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
 <div class="a-crit">
   <span style="font-size:18px;flex-shrink:0">&#128308;</span>
   <div><strong>Storage CRÍTICO: 1.87 GB de 1 GB grátis (187%)</strong>
-  Você está 0.87 GB acima do limite free tier.
-  <a href="https://app.supabase.com/project/tpjvalzwkqwttvmszvie/settings/billing" target="_blank">Upgrade Pro US$25/mês (100 GB)</a> ou deletar vídeos já publicados para liberar espaço.</div>
+  <a href="https://app.supabase.com/project/tpjvalzwkqwttvmszvie/settings/billing" target="_blank">Upgrade Pro US$25/m&#234;s (100 GB)</a> ou deletar v&#237;deos j&#225; publicados.</div>
 </div>
 
 <div class="a-red">
   <span>&#128308;</span>
   <div><strong>Publisher bloqueado &#8212; YT_REFRESH_TOKEN expirado.</strong>
-  Renovar: <a href="/oauth.html">oauth.html</a> &#8594;
+  <a href="/oauth.html">oauth.html</a> &#8594;
   <a href="https://github.com/tafita81/Repovazio/settings/secrets/actions/YT_REFRESH_TOKEN" target="_blank">GitHub Secret</a> &#8594;
   <a href="https://github.com/tafita81/Repovazio/actions/workflows/youtube-publisher.yml" target="_blank">publisher.yml</a></div>
 </div>
@@ -209,23 +221,21 @@ body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-h
   <span class="flbl" style="margin-left:6px">Tipo</span>
   <div class="ftag" onclick="F(this,'sh')">&#128241; Shorts</div>
   <div class="ftag" onclick="F(this,'lo')">&#127909; Long</div>
-  <span class="flbl" style="margin-left:6px">Status</span>
-  <div class="ftag" onclick="F(this,'wait')">&#8987; Aguardando</div>
-  <div class="ftag" onclick="F(this,'ok')">&#9989; Publicado</div>
   <select class="fsel" onchange="SORT=this.value;render()">
-    <option value="seo">&#8595; SEO Score</option>
-    <option value="id">&#8595; Mais recente</option>
+    <option value="pub">&#9660; Ordem estrat&#233;gica</option>
+    <option value="seo">&#9660; SEO Score</option>
+    <option value="id">&#9660; Mais recente</option>
     <option value="plat">Plataforma</option>
   </select>
 </div>
 
 <div class="wrap">
   <div class="lhdr">
-    <span class="lhdr-t">&#127916; V&#237;deos &#8212; clique &#9654; para assistir</span>
+    <span class="lhdr-t">&#127916; Ordem estrat&#233;gica de publica&#231;&#227;o &#8212; clique &#9654; para assistir</span>
     <span id="cnt">carregando&#8230;</span>
   </div>
   <div class="vlist" id="vlist">
-    <div class="empty">&#128280; Conectando ao Supabase&#8230;</div>
+    <div class="empty">&#9749; Conectando ao Supabase&#8230;</div>
   </div>
 </div>
 
@@ -266,20 +276,19 @@ const SM={narcis:'Narcisismo',gaslight:'Narcisismo',manipul:'Narcisismo',
 
 function serie(t){
   const s=(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  for(const[k,v]of Object.entries(SM))
-    if(s.includes(k))return v;
+  for(const[k,v]of Object.entries(SM)) if(s.includes(k)) return v;
   return'Psicologia';
 }
 
-let ALL=[],FA='t',SORT='seo',FIL=[],IDX=0;
+let ALL=[],FA='t',SORT='pub',FIL=[],IDX=0;
 
 async function load(){
   document.getElementById('vlist').innerHTML='<div class="empty">&#9749; Carregando v\u00eddeos&#8230;</div>';
   try{
     const r=await fetch(
       SB+'/rest/v1/content_pipeline?mp4_url=not.is.null'+
-      '&select=id,title,youtube_title,mp4_url,youtube_video_id,seo_score,target_platform,status'+
-      '&order=seo_score.desc,id.desc&limit=200',
+      '&select=id,title,youtube_title,mp4_url,youtube_video_id,seo_score,target_platform,status,pub_order'+
+      '&order=pub_order.asc.nullslast,seo_score.desc,id.desc&limit=200',
       {headers:{apikey:AK,Authorization:'Bearer '+AK},signal:AbortSignal.timeout(10000)}
     );
     if(!r.ok){const e=await r.json();throw new Error(e.message||'HTTP '+r.status);}
@@ -292,8 +301,9 @@ async function load(){
   }catch(e){
     document.getElementById('vlist').innerHTML=
       '<div class="empty">&#10060; '+e.message+'<br><br>'+
-      '<button onclick="load()" style="padding:8px 18px;background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);'+
-      'color:#C4B5FD;border-radius:8px;cursor:pointer;font-size:12px">Tentar novamente</button></div>';
+      '<button onclick="load()" style="padding:8px 18px;background:rgba(124,58,237,.2);'+
+      'border:1px solid rgba(124,58,237,.4);color:#C4B5FD;border-radius:8px;cursor:pointer;font-size:12px">'+
+      'Tentar novamente</button></div>';
   }
 }
 
@@ -302,23 +312,28 @@ function F(el,f){
   el.classList.add('on');FA=f;render();
 }
 
+function isShort(v){return(v.target_platform||'').toLowerCase().includes('short')}
+
 function render(){
   let vs=[...ALL];
   if(FA!=='t'){
     vs=vs.filter(v=>{
       const sr=serie(v.youtube_title||v.title||'');
-      const plt=(v.target_platform||'').toLowerCase();
       const pub=!!v.youtube_video_id;
-      if(FA==='sh')return plt.includes('short');
-      if(FA==='lo')return plt.includes('long');
+      if(FA==='sh')return isShort(v);
+      if(FA==='lo')return!isShort(v);
       if(FA==='wait')return!pub;
       if(FA==='ok')return pub;
       return sr.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
         .includes(FA.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
     });
   }
-  if(SORT==='seo')vs.sort((a,b)=>(b.seo_score||0)-(a.seo_score||0));
-  if(SORT==='id')vs.sort((a,b)=>b.id-a.id);
+  if(SORT==='pub')vs.sort((a,b)=>{
+    const pa=a.pub_order??9999, pb=b.pub_order??9999;
+    return pa!==pb?pa-pb:(b.seo_score||0)-(a.seo_score||0);
+  });
+  if(SORT==='seo') vs.sort((a,b)=>(b.seo_score||0)-(a.seo_score||0));
+  if(SORT==='id')  vs.sort((a,b)=>b.id-a.id);
   if(SORT==='plat')vs.sort((a,b)=>(a.target_platform||'').localeCompare(b.target_platform||''));
   FIL=vs;
   document.getElementById('cnt').textContent=vs.length+' v\u00eddeo'+(vs.length!==1?'s':'');
@@ -329,23 +344,27 @@ function render(){
   document.getElementById('vlist').innerHTML=vs.map((v,i)=>{
     const t=v.youtube_title||v.title||'Sem t\u00edtulo';
     const sr=serie(t);
-    const plt=(v.target_platform||'long').replace('youtube_','');
+    const short=isShort(v);
     const pub=!!v.youtube_video_id;
+    const num=v.pub_order!=null?v.pub_order:(i+1);
+    const typeHtml=short
+      ?'<span class="type-short">&#128241; SHORT</span>'
+      :'<span class="type-long">&#127909; LONG</span>';
     return'<div class="vrow">'+
-      '<div class="vnum">'+(i+1)+'</div>'+
+      '<div class="vnum">'+num+'</div>'+
+      '<div class="vtype">'+typeHtml+'</div>'+
       '<div class="vinfo">'+
         '<div class="vtitle" title="'+t.replace(/"/g,'&quot;')+'">'+t+'</div>'+
         '<div class="vtags">'+
           '<span class="chip cs">'+sr+'</span>'+
-          '<span class="chip cl">'+plt+'</span>'+
           '<span class="chip cp">SEO '+v.seo_score+'</span>'+
           '<span class="chip cl">#'+v.id+'</span>'+
-          (pub?'<span class="chip ck">&#10003; YouTube</span>':'')+
+          (pub?'<span class="chip ck">&#10003; YT</span>':'')+
         '</div>'+
       '</div>'+
       '<div class="vstatus"><span class="'+(pub?'sd':'sw')+'">'+(pub?'&#10003; Publicado':'&#8987; Aguardando')+'</span></div>'+
       '<div class="vacts">'+
-        '<a class="bdl" href="'+v.mp4_url+'" download="psi_'+v.id+'.mp4">&#8595; DL</a>'+
+        '<a class="bdl" href="'+v.mp4_url+'" download="psi_'+v.id+'.mp4">&#8595;</a>'+
         '<button class="bplay" onclick="openModal('+i+')" title="Assistir">&#9654;</button>'+
       '</div>'+
     '</div>';
@@ -353,17 +372,17 @@ function render(){
 }
 
 function openModal(idx){
-  IDX=idx;
-  const v=FIL[idx];
+  IDX=idx;const v=FIL[idx];
   const t=v.youtube_title||v.title||'Sem t\u00edtulo';
   const sr=serie(t);
-  const plt=(v.target_platform||'long').replace('youtube_','');
+  const short=isShort(v);
   const pub=!!v.youtube_video_id;
   const yt=pub?'https://youtube.com/watch?v='+v.youtube_video_id:'https://www.youtube.com/@psidanielacoelho';
   document.getElementById('mt').textContent=t;
   document.getElementById('mm').innerHTML=
+    (short?'<span class="chip" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)">&#128241; SHORT</span>'
+          :'<span class="chip" style="background:rgba(124,58,237,.15);color:#C4B5FD;border:1px solid rgba(124,58,237,.3)">&#127909; LONG</span>')+
     '<span class="chip cs">'+sr+'</span>'+
-    '<span class="chip cl">'+plt+'</span>'+
     '<span class="chip cp">SEO '+v.seo_score+'</span>'+
     '<span class="chip cl">#'+v.id+'</span>'+
     (pub?'<span class="chip ck">&#10003; YouTube</span>':'');
@@ -386,10 +405,7 @@ function closeModal(){
   document.body.style.overflow='';
 }
 
-function nav(dir){
-  const n=IDX+dir;
-  if(n>=0&&n<FIL.length)openModal(n);
-}
+function nav(dir){const n=IDX+dir;if(n>=0&&n<FIL.length)openModal(n);}
 
 document.addEventListener('keydown',e=>{
   if(!document.getElementById('modal').classList.contains('open'))return;
