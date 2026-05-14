@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Analytics — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,.07),transparent)}
+.hdr{padding:14px 24px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px}
+.logo{font-size:18px;font-weight:800;color:var(--mist)}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:1}
+h2{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:"DM Mono",monospace;margin-bottom:14px}
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px;text-align:center;position:relative}
+.kpi-n{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-l{font-size:9px;color:var(--t3);font-family:"DM Mono",monospace}
+.kpi-trend{font-size:10px;margin-top:4px}
+.t-up{color:var(--grn)}.t-down{color:var(--crim)}.t-neu{color:var(--t3)}
+/* META PROGRESS */
+.meta-bar-wrap{height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;margin:8px 0}
+.meta-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--acc),var(--grn));transition:width 1s}
+/* CHARTS */
+.chart-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:20px;margin-bottom:20px}
+.chart-svg{width:100%;height:120px;overflow:visible}
+.chart-line{fill:none;stroke:var(--acc);stroke-width:2}
+.chart-area{fill:url(#areaGrad)}
+/* VIDEOS TABLE */
+.vt{width:100%;border-collapse:collapse}
+.vt th{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:"DM Mono",monospace;padding:8px;text-align:left;border-bottom:1px solid var(--bd)}
+.vt td{padding:8px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.03)}
+.vt tr:hover td{background:rgba(255,255,255,.02)}
+/* FASE */
+.fase-card{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(225,29,72,.08));border:1px solid rgba(124,58,237,.25);border-radius:14px;padding:20px;margin-bottom:24px}
+.fase-n{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--mist);font-family:"DM Mono",monospace}
+.fase-title{font-size:24px;font-weight:800;color:var(--t1);margin:6px 0}
+.fase-meta{font-size:12px;color:var(--t2)}
+</style></head>
+<body>
+<header class="hdr">
+  <div class="logo">📊 Analytics</div>
+  <span style="font-size:10px;color:var(--t3);font-family:monospace">@psidanielacoelho · UCyCkIpsVgME9yCj_oXJFheA</span>
+  <button onclick="load()" style="margin-left:auto;background:rgba(124,58,237,.2);color:var(--mist);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:5px 14px;font-size:11px;cursor:pointer;font-weight:600">⟳ Atualizar</button>
+</header>
+
+<div class="wrap">
+  <!-- FASE ATUAL -->
+  <div class="fase-card" id="fase-card">
+    <div class="fase-n">FASE ATUAL</div>
+    <div class="fase-title">🚀 Fase 1 — Lançamento (0→1K inscritos)</div>
+    <div class="fase-meta">Meta: 1.000 inscritos para ativar monetização · Ads Google Discovery R$250/mês recomendado</div>
+    <div class="meta-bar-wrap"><div class="meta-bar-fill" id="meta-bar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);font-family:monospace">
+      <span id="meta-inscritos">0 inscritos</span>
+      <span>Meta: 1.000</span>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi"><div class="kpi-n" style="color:var(--mist)" id="k-inscritos">0</div><div class="kpi-l">Inscritos</div><div class="kpi-trend t-neu" id="k-inscritos-d"></div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--teal)" id="k-views">0</div><div class="kpi-l">Views Total</div><div class="kpi-trend" id="k-views-d"></div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--gold)" id="k-ctr">0%</div><div class="kpi-l">CTR Médio</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--crim)" id="k-revenue">R$0</div><div class="kpi-l">Receita</div></div>
+    <div class="kpi"><div class="kpi-n" style="color:var(--grn)" id="k-videos">17</div><div class="kpi-l">Vídeos Prontos</div></div>
+  </div>
+
+  <!-- GRÁFICO DE CRESCIMENTO -->
+  <div class="chart-wrap">
+    <h2>Histórico de Inscritos</h2>
+    <svg class="chart-svg" id="chart-svg" viewBox="0 0 800 120" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:0.3"/>
+          <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0"/>
+        </linearGradient>
+      </defs>
+      <path id="chart-area" class="chart-area" d=""/>
+      <path id="chart-line" class="chart-line" d=""/>
+    </svg>
+  </div>
+
+  <!-- TOP VÍDEOS -->
+  <div class="chart-wrap">
+    <h2>Top Vídeos (por score viral · prontos para publicar)</h2>
+    <table class="vt">
+      <thead><tr><th>#</th><th>Título</th><th>Score Viral</th><th>CTR Est.</th><th>SEO</th><th>Status</th></tr></thead>
+      <tbody id="top-videos"></tbody>
+    </table>
+  </div>
+
+  <!-- PIPELINE ATUAL -->
+  <div class="chart-wrap">
+    <h2>Estado do Pipeline</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px">
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:800;color:var(--mist)" id="p-fila">-</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">Na Fila LLM</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:800;color:var(--crim)" id="p-mp4">17</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">MP4 Prontos</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:800;color:var(--gold)" id="p-render">-</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">Renderizando</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:26px;font-weight:800;color:var(--grn)" id="p-pub">-</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">Publicados YT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://tpjvalzwkqwttvmszvie.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
+
+async function sb(table, params='') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  });
+  return r.json();
+}
+
+async function load() {
+  const [analytics, pipeline, viral] = await Promise.all([
+    sb('youtube_analytics_daily','select=*&order=data_ref.desc&limit=30'),
+    sb('content_pipeline','select=status,youtube_video_id&limit=1000'),
+    sb('vw_proximas_publicacoes','select=id,titulo,viral_total,predicao_ctr,seo_score,has_mp4&limit=8')
+  ]);
+
+  // KPIs
+  const last = analytics[0] || {};
+  const subs = last.canal_inscritos || 0;
+  const views = last.canal_views_dia || 0;
+  const ctr = last.canal_ctr_percent || 0;
+  const rev = last.canal_revenue_brl || 0;
+
+  document.getElementById('k-inscritos').textContent = subs.toLocaleString('pt-BR');
+  document.getElementById('k-views').textContent = views.toLocaleString('pt-BR');
+  document.getElementById('k-ctr').textContent = ctr + '%';
+  document.getElementById('k-revenue').textContent = 'R$' + rev;
+  
+  // Meta progress
+  const pct = Math.min((subs/1000)*100, 100);
+  document.getElementById('meta-bar').style.width = pct + '%';
+  document.getElementById('meta-inscritos').textContent = subs + ' inscritos';
+  
+  // Gráfico (últimos 14 dias)
+  const d14 = analytics.slice(0,14).reverse();
+  if (d14.length > 1) {
+    const vals = d14.map(x => x.canal_inscritos || 0);
+    const mx = Math.max(...vals) || 1;
+    const w = 800, h = 100, pad = 10;
+    const xs = d14.map((_,i) => pad + i*(w-2*pad)/(d14.length-1));
+    const ys = vals.map(v => h - pad - (v/mx)*(h-2*pad));
+    const line = xs.map((x,i)=>`${i===0?'M':'L'}${x},${ys[i]}`).join(' ');
+    const area = line + ` L${xs[xs.length-1]},${h} L${xs[0]},${h} Z`;
+    document.getElementById('chart-line').setAttribute('d', line);
+    document.getElementById('chart-area').setAttribute('d', area);
+  }
+
+  // Pipeline
+  const cnt = {};
+  pipeline.forEach(x => cnt[x.status] = (cnt[x.status]||0)+1);
+  const pub = pipeline.filter(x => x.youtube_video_id).length;
+  document.getElementById('p-fila').textContent = (cnt['pending_generation']||0).toLocaleString();
+  document.getElementById('p-mp4').textContent = cnt['pending_credentials']||0;
+  document.getElementById('p-render').textContent = (cnt['rendering']||0)+(cnt['audio_ready']||0);
+  document.getElementById('p-pub').textContent = pub;
+
+  // Top vídeos
+  document.getElementById('top-videos').innerHTML = (viral||[]).map((v,i) => `
+    <tr>
+      <td style="font-weight:800;color:${i<3?'var(--crim)':'var(--t3)'}">#${i+1}</td>
+      <td style="color:var(--t1)">${(v.titulo||'').substring(0,45)}</td>
+      <td style="font-weight:800;color:var(--gold)">${v.viral_total||0}/100</td>
+      <td style="color:var(--teal)">~${v.predicao_ctr||0}%</td>
+      <td style="color:var(--grn)">${v.seo_score||0}</td>
+      <td>${v.has_mp4?'<span style="color:var(--grn)">MP4 ✓</span>':'<span style="color:var(--t3)">-</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+load();
+setInterval(load, 60000);
+</script>
+</body></html>
