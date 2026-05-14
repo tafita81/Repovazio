@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Galeria Eterna — Ranking Anual + Cérebro Evolutivo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0D0D1C;--s2:#111128;--v:#7C3AED;--m:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+.home{position:fixed;top:14px;right:16px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(6,6,15,.93);border:1px solid rgba(196,181,253,.22);border-radius:10px;padding:7px 15px;color:var(--m);font-size:11px;font-weight:700;text-decoration:none;backdrop-filter:blur(14px)}
+#topbar{position:sticky;top:0;z-index:500;background:rgba(6,6,15,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:10px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-size:13px;font-weight:800;color:var(--m);white-space:nowrap}
+.logo small{font-size:8px;font-family:"DM Mono",monospace;color:var(--t3);margin-left:4px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tab{font-size:10px;font-weight:700;padding:6px 11px;border-radius:7px;border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--t2);cursor:pointer;transition:.15s;white-space:nowrap}
+.tab.on{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:var(--m)}
+.tab:hover:not(.on){background:rgba(255,255,255,.07)}
+.wrap{max-width:1050px;margin:0 auto;padding:14px 20px 100px}
+.panel{display:none}.panel.on{display:block}
+.fcard{border-radius:11px;border:1px solid;padding:12px;transition:.15s;cursor:default}
+.fcard:hover{transform:translateY(-2px)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:10px}
+.srow{display:grid;grid-template-columns:1fr 42px 42px 42px 48px 75px;align-items:center;gap:5px;padding:6px 9px;background:var(--s1);border:1px solid var(--bd);border-radius:7px;margin-bottom:3px}
+.srow:hover{border-color:rgba(124,58,237,.3)}
+.shdr{display:grid;grid-template-columns:1fr 42px 42px 42px 48px 75px;gap:5px;padding:4px 9px;margin-bottom:3px}
+.cstep{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--s1);border:1px solid var(--bd);border-radius:9px;margin-bottom:5px}
+.cnum{width:26px;height:26px;border-radius:7px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--m);flex-shrink:0}
+.csec-t{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--bd);margin-top:14px}
+.lbox{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:rgba(225,29,72,.07);border:1px solid rgba(225,29,72,.18);border-radius:10px;padding:11px 15px;margin-bottom:13px}
+.lv{text-align:center}.lv-n{font-size:16px;font-weight:900;font-family:"DM Mono",monospace;display:block}.lv-l{font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
+.hrow{background:var(--s1);border:1px solid var(--bd);border-radius:9px;padding:10px 13px;margin-bottom:5px}
+.mstat{display:flex;align-items:center;gap:6px;padding:7px 11px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);border-radius:9px;margin-bottom:5px}
+</style>
+</head>
+<body>
+<a class="home" href="/hub.html">ψ Hub</a>
+
+<div id="topbar">
+  <div class="logo">🌌 Galeria Eterna <small>@psidanielacoelho · Estratégia Autônoma</small></div>
+  <div class="tabs">
+    <button class="tab on" onclick="show('ranking',this)">📅 Ranking Anual</button>
+    <button class="tab" onclick="show('series',this)">📚 20 Séries</button>
+    <button class="tab" onclick="show('horarios',this)">⏰ Horários</button>
+    <button class="tab" onclick="show('cerebro',this)">🧠 Cérebro</button>
+    <button class="tab" onclick="show('mundo',this)">🌍 Cases Mundiais</button>
+    <a class="tab on" href="/galeria-videos.html" style="text-decoration:none;color:#C4B5FD;margin-left:6px">▶ 17 MP4 Prontos</a>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="lbox">
+  <div class="lv"><span class="lv-n" style="color:#E11D48">17</span><span class="lv-l">MP4 prontos</span></div>
+  <div class="lv"><span class="lv-n" style="color:#F59E0B">52</span><span class="lv-l">semanas plan.</span></div>
+  <div class="lv"><span class="lv-n" style="color:#10B981">20</span><span class="lv-l">séries eternas</span></div>
+  <div class="lv"><span class="lv-n" style="color:#C4B5FD">463+</span><span class="lv-l">scripts fila</span></div>
+  <div class="lv"><span class="lv-n" style="color:#fff">18</span><span class="lv-l">cases mundiais</span></div>
+  <div style="flex:1;min-width:150px">
+    <div style="font-size:8px;color:var(--t3);margin-bottom:3px">META: 250K inscritos · 52 semanas · R$50K/mês</div>
+    <div style="height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden"><div style="height:100%;width:0.5%;background:linear-gradient(90deg,#7C3AED,#E11D48)"></div></div>
+    <div style="font-size:8px;color:var(--t3);margin-top:2px">Semana 1 · 0 publicados · início da jornada</div>
+  </div>
+</div>
+
+<div id="panel-ranking" class="panel on">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:10px">9 Fases · 52 Semanas · Estratégia Baseada nos Maiores Canais de Psicologia do Mundo</div>
+  <div class="fgrid"><div class="fcard" style="border-color:#7C3AED40;background:rgba(124,58,237,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#7C3AED;margin-bottom:5px">S1-S4 · Identidade</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">0→500</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">3/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">2S+1L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#7C3AED">R$0/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">Canal nasce</div>
+</div><div class="fcard" style="border-color:#E11D4840;background:rgba(225,29,72,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#E11D48;margin-bottom:5px">S5-S8 · Aceleração</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">500→2K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">4/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">2S+2L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#E11D48">R$0→200/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">🎉 1K · AdSense</div>
+</div><div class="fcard" style="border-color:#0D948840;background:rgba(13,148,136,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#0D9488;margin-bottom:5px">S9-S12 · Crescimento</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">2K→5.5K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">5/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">3S+2L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#0D9488">R$200→900/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">5K inscritos</div>
+</div><div class="fcard" style="border-color:#F59E0B40;background:rgba(245,158,11,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#F59E0B;margin-bottom:5px">S13-S16 · Escala</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">5.5K→13K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">5-6/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">3S+2-3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#F59E0B">R$600→1800/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">🎉 10K · MARCO</div>
+</div><div class="fcard" style="border-color:#6366F140;background:rgba(99,102,241,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#6366F1;margin-bottom:5px">S17-S20 · Autoridade</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">13K→26K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">6/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">3S+3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#6366F1">R$1200→3500/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">25K inscritos</div>
+</div><div class="fcard" style="border-color:#10B98140;background:rgba(16,185,129,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#10B981;margin-bottom:5px">S21-S24 · Monetização</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">26K→50K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">6-7/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">4S+3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#10B981">R$2500→6500/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">🎉 50K inscritos</div>
+</div><div class="fcard" style="border-color:#F9731640;background:rgba(249,115,22,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#F97316;margin-bottom:5px">S25-S30 · Expansão</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">50K→100K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">7/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">4S+3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#F97316">R$5K→15K/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">🏆 100K BOTÃO DOURADO</div>
+</div><div class="fcard" style="border-color:#EC489940;background:rgba(236,72,153,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#EC4899;margin-bottom:5px">S31-S37 · Plena</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">100K→250K</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">7/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">4S+3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#EC4899">R$12K→50K/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">Sponsor + Curso</div>
+</div><div class="fcard" style="border-color:#C4B5FD40;background:rgba(196,181,253,.1)">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#C4B5FD;margin-bottom:5px">S38-S52 · Escalamento</div>
+  <div style="font-size:12px;font-weight:900;color:#E2E8F0">250K+</div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:7px">inscritos</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:7px">
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">vídeos/sem</div><div style="font-size:11px;font-weight:800;color:#E2E8F0">7/sem</div></div>
+    <div style="background:rgba(255,255,255,.04);border-radius:5px;padding:4px 6px"><div style="font-size:7px;color:#64748B">formato</div><div style="font-size:10px;font-weight:700;color:#C4B5FD">4S+3L</div></div>
+  </div>
+  <div style="font-size:9px;font-weight:700;color:#C4B5FD">R$30K+/mês</div>
+  <div style="font-size:8px;color:#475569;margin-top:2px">Pipeline 100% autônomo</div>
+</div></div>
+  
+  <div style="margin-top:16px;padding:12px 14px;background:var(--s1);border:1px solid var(--bd);border-radius:11px">
+    <div style="font-size:10px;font-weight:800;color:var(--t1);margin-bottom:10px">📈 Marcos e Receita Estimada</div>
+    <div style="display:grid;gap:5px">
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Semana 6 · 1K subs</span><span style="color:#10B981;font-weight:700">✅ AdSense ativo</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Semana 15 · 10K subs</span><span style="color:#10B981;font-weight:700">R$900-1.500/mês</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Semana 24 · 50K subs</span><span style="color:#F59E0B;font-weight:700">R$4.000-6.500/mês + 1º Sponsor</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Semana 30 · 100K subs</span><span style="color:#E11D48;font-weight:700">🏆 R$9K-15K/mês + Botão Dourado</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--bd)"><span style="color:var(--t2)">Semana 32 · 130K subs</span><span style="color:#C4B5FD;font-weight:700">🎓 1º Curso Online (R$197-497)</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;padding:5px 0"><span style="color:var(--t2)">Semana 37 · 250K subs</span><span style="color:#fff;font-weight:800">🚀 R$30K-50K/mês</span></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-series" class="panel">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:7px">20 Séries Eternas · Expansão Automática Pelo Cérebro</div>
+  <div class="shdr"><span style="font-size:8px;color:var(--t3)">Série</span><span style="font-size:8px;color:var(--t3);text-align:center">Total</span><span style="font-size:8px;color:var(--t3);text-align:center">MP4</span><span style="font-size:8px;color:var(--t3);text-align:center">Pub</span><span style="font-size:8px;color:var(--t3);text-align:center">Ref</span><span style="font-size:8px;color:var(--t3)">Prioridade</span></div>
+  <div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔴 Narcisismo</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">86</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">5</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">28M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:6%;background:#E11D48"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#E11D48">P1</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">💜 Apego Ansioso</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">42</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">5</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">6</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">22M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:14%;background:#E11D48"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#E11D48">P1</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🟣 Trauma</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">34</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">3</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">19M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:9%;background:#E11D48"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#E11D48">P2</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🤝 Relacionamentos</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">59</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">11M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:3%;background:#E11D48"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#E11D48">P2</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔵 Ansiedade</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">35</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">1</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">15M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:6%;background:#E11D48"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#E11D48">P2</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">😔 Depressão</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">21</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">1</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">18M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:5%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P3</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">⚫ Burnout</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">28</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">12M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:7%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P3</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🕊️ Luto</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">21</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">3</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">9M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:14%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P3</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">💛 Autoestima</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">29</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">3</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">15M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:10%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P3</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">💰 Dinheiro</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">3</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">1</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">1</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">8M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:33%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P4</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧠 Int. Emocional</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">17</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">7M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P4</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🎭 Vícios</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">15</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">6M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P4</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👨‍👩‍👧 Família</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">6</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">9M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#0D9488"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#0D9488">P5</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🧬 Personalidade</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">14</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">5M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#0D9488"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#0D9488">P5</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">⚡ Motivação</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">2</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">11M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P4</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">😰 Ans.Social</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">15M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#F59E0B"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#F59E0B">P4</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔄 Trauma Ger.</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">8M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#0D9488"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#0D9488">P5</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔍 Forense</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">4M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#475569"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#475569">P6</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔬 Neurociência</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">6M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#475569"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#475569">P6</span>
+  </div>
+</div><div class="srow">
+  <div style="font-size:10px;font-weight:700;color:#E2E8F0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👶 Parentalidade</div>
+  <div style="font-size:9px;font-family:monospace;color:#94A3B8;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#10B981;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#C4B5FD;text-align:center">0</div>
+  <div style="font-size:9px;font-family:monospace;color:#E11D48;text-align:center">7M</div>
+  <div style="display:flex;align-items:center;gap:4px">
+    <div style="flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden"><div style="height:100%;width:0%;background:#475569"></div></div>
+    <span style="font-size:8px;font-family:monospace;color:#475569">P6</span>
+  </div>
+</div>
+  <div style="margin-top:10px;padding:11px 13px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);border-radius:9px">
+    <div style="font-size:9px;font-weight:700;color:var(--m);margin-bottom:5px">🔄 Expansão Automática</div>
+    <div style="font-size:9px;color:var(--t2);line-height:1.6">
+      A cada 5 publicados → Cérebro gera 10 novos scripts para a série.<br>
+      A cada semana → Cérebro propõe 2 novos temas com base nos cases mundiais.<br>
+      Series Planejadas → promovidas para Ativa quando têm referência &gt;5M views.
+    </div>
+  </div>
+</div>
+
+<div id="panel-horarios" class="panel">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:7px">Melhor Estratégia Mundial de Horários (horário de Brasília)</div>
+  
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px;margin-bottom:12px">
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(16,185,129,.25);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#10B981">18h</div><div style="font-size:8px;color:var(--t3)">SAB ⭐ melhor</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(196,181,253,.2);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#C4B5FD">12h</div><div style="font-size:8px;color:var(--t3)">SAB 2º</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(255,255,255,.07);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#E2E8F0">12h</div><div style="font-size:8px;color:var(--t3)">DOM bom</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(255,255,255,.07);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#E2E8F0">12h</div><div style="font-size:8px;color:var(--t3)">SEG almoço</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(255,255,255,.07);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#E2E8F0">18h</div><div style="font-size:8px;color:var(--t3)">QUA retorno</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(255,255,255,.07);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#E2E8F0">12h</div><div style="font-size:8px;color:var(--t3)">SEX início FDS</div></div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid rgba(225,29,72,.2);border-radius:8px"><div style="font-size:16px;font-weight:900;color:#E11D48">❌</div><div style="font-size:8px;color:var(--t3)">TER evitar</div></div>
+  </div>
+  
+  <div class="hrow"><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:4px">Fase 0-1K · Semanas 1-5 · 3 vídeos/semana</div><div style="font-size:9px;color:#94A3B8;margin-bottom:2px">2 Shorts + 1 Long</div><div style="font-size:9px;color:#94A3B8;font-family:monospace;margin-bottom:2px">⏰ Sáb 18h · Seg 12h · Qua 18h</div><div style="font-size:8px;color:var(--t3)">Hook máximo sábado · Short segunda · Long quarta converte em inscrito</div></div>
+  <div class="hrow"><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:4px">Fase 1K-5K · Semanas 6-12 · 4 vídeos/semana</div><div style="font-size:9px;color:#94A3B8;margin-bottom:2px">2 Shorts + 2 Longs</div><div style="font-size:9px;color:#94A3B8;font-family:monospace;margin-bottom:2px">⏰ Sáb 18h · Seg 12h · Qua 18h · Sex 12h</div><div style="font-size:8px;color:var(--t3)">Sexta entra para cobrir 4 dias · AdSense ativo na semana 6</div></div>
+  <div class="hrow"><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:4px">Fase 5K-13K · Semanas 13-16 · 5 vídeos/semana</div><div style="font-size:9px;color:#94A3B8;margin-bottom:2px">3 Shorts + 2 Longs</div><div style="font-size:9px;color:#94A3B8;font-family:monospace;margin-bottom:2px">⏰ Sáb 18h · Dom 12h · Seg 12h · Qua 18h · Sex 12h</div><div style="font-size:8px;color:var(--t3)">Domingo ativado · fim de semana duplo = +30% alcance</div></div>
+  <div class="hrow"><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:4px">Fase 13K-50K · Semanas 17-24 · 6 vídeos/semana</div><div style="font-size:9px;color:#94A3B8;margin-bottom:2px">3 Shorts + 3 Longs</div><div style="font-size:9px;color:#94A3B8;font-family:monospace;margin-bottom:2px">⏰ Sáb 18h · Dom 12h · Seg 12h · Ter 18h · Qui 12h · Sex 18h</div><div style="font-size:8px;color:var(--t3)">6 dias cobertos · terça e quinta entram · Sponsor começa no 30K</div></div>
+  <div class="hrow"><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:4px">Fase 50K+ · Semanas 25+ · 7 vídeos/semana</div><div style="font-size:9px;color:#94A3B8;margin-bottom:2px">4 Shorts + 3 Longs</div><div style="font-size:9px;color:#94A3B8;font-family:monospace;margin-bottom:2px">⏰ Todos os dias · rotação de horários</div><div style="font-size:8px;color:var(--t3)">Canal full · algoritmo máximo · pipeline 100% autônomo</div></div>
+  
+  <div style="margin-top:10px;padding:10px 13px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.18);border-radius:9px">
+    <div style="font-size:9px;font-weight:700;color:#fbbf24;margin-bottom:5px">⚡ 6 Regras de Ouro dos Maiores Canais</div>
+    <div style="display:grid;gap:3px">
+      <div style="font-size:9px;color:var(--t2)">→ Nunca 2 vídeos no mesmo dia nas primeiras 6 semanas</div>
+      <div style="font-size:9px;color:var(--t2)">→ Sábado 18h = horário de ouro para psicologia BR</div>
+      <div style="font-size:9px;color:var(--t2)">→ SHORT 1-3 dias antes do LONG da mesma série = funil perfeito</div>
+      <div style="font-size:9px;color:var(--t2)">→ Responder TODOS comentários nas primeiras 2h = boost imediato</div>
+      <div style="font-size:9px;color:var(--t2)">→ Fim de semana = 30-40% mais alcance orgânico</div>
+      <div style="font-size:9px;color:var(--t2)">→ Evitar terça-feira: menor audiência orgânica do Brasil</div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-cerebro" class="panel">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:7px">🧠 Arquitetura do Cérebro Autônomo Evolutivo</div>
+  
+  <div class="csec-t" style="margin-top:0">CICLO DIÁRIO — 3h da manhã, automático, $0 custo</div>
+  <div class="cstep"><div class="cnum">01</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Consultar Cases Mundiais</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Lê cases_mundiais_expansao · identifica temas com +10M views sem equivalente BR</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">SELECT * FROM cases_mundiais_expansao WHERE ja_produzido = false ORDER BY prioridade</div></div></div>
+  <div class="cstep"><div class="cnum">02</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Expandir Séries Automaticamente</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Se série tem &lt;10 scripts → gera 10 novos via LLM · Se publicou 5 → gera mais 10</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">CALL cerebro_expand_series() → INSERT content_pipeline</div></div></div>
+  <div class="cstep"><div class="cnum">03</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Propor Novos Temas</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Analisa trending do nicho · propõe 2 novas séries por semana com ref &gt;5M views</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">INSERT INTO series_eternas (status='planejada')</div></div></div>
+  <div class="cstep"><div class="cnum">04</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Verificar Fila da Semana</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Checa annual_publication_plan · sinaliza gaps de vídeos não gerados</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">SELECT * FROM annual_publication_plan WHERE semana = current_week()</div></div></div>
+  <div class="cstep"><div class="cnum">05</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Priorizar Geração de MP4</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Scripts com pub_order sem mp4_url → enfileira render V2 por viral_score</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">SELECT enqueue_v2_rerender(id) FROM content_pipeline WHERE pub_order IS NOT NULL AND mp4_url IS NULL</div></div></div>
+  <div class="cstep"><div class="cnum">06</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Atualizar Galerias</div><div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Regenera galeria-videos.html e galeria-eterna.html com dados atuais</div><div style="font-size:8px;font-family:monospace;color:#7C3AED">POST /api/galeria-update → commit GitHub → Vercel auto</div></div></div>
+
+  <div class="csec-t">CICLO SEMANAL — domingo 23h</div>
+  <div class="cstep"><div class="cnum">★</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Análise de Performance</div><div style="font-size:8px;color:#94A3B8">Registra métricas 48h dos vídeos publicados · ajusta prioridades das séries · reordena pub_order baseado em engajamento real</div></div></div>
+  <div class="cstep"><div class="cnum">★</div><div><div style="font-size:10px;font-weight:700;color:#E2E8F0;margin-bottom:2px">Evolução da Estratégia</div><div style="font-size:8px;color:#94A3B8">Séries com 3x mais comentários → dobra scripts · Séries sem engajamento → reduz frequência · Ciclo evolutivo contínuo</div></div></div>
+
+  <div style="margin-top:10px;padding:11px 13px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.18);border-radius:9px">
+    <div style="font-size:9px;font-weight:700;color:var(--m);margin-bottom:5px">🔧 Stack Técnica — $0/mês</div>
+    <div style="display:grid;gap:3px">
+      <div style="font-size:9px;color:var(--t2)"><span style="color:var(--m)">LLM:</span> NVIDIA Qwen3-80B → DeepSeek V4 → Groq Llama 3.3 → GPT-4o-mini</div>
+      <div style="font-size:9px;color:var(--t2)"><span style="color:var(--m)">TTS:</span> Edge TTS Microsoft (AntonioNeural · FranciscaNeural · ThalitaMultilingual)</div>
+      <div style="font-size:9px;color:var(--t2)"><span style="color:var(--m)">Vídeo:</span> Flux.1 Schnell + Ken Burns 30fps H.264 1080p · ~10MB · $0/mês</div>
+      <div style="font-size:9px;color:var(--t2)"><span style="color:var(--m)">Infra:</span> Supabase · GitHub Actions · Vercel · 51 crons ativos</div>
+      <div style="font-size:9px;color:var(--t2)"><span style="color:var(--m)">DB:</span> 463+ scripts · 20 séries · 52 semanas · 18 cases mundiais</div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-mundo" class="panel">
+  <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:7px">18 Cases Mundiais — Consultados Diariamente pelo Cérebro</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-bottom:12px">
+    <div class="mstat"><span style="font-size:14px;font-weight:900;color:#E11D48;min-width:45px">28M</span><div><div style="font-size:9px;font-weight:700;color:#E2E8F0">Narcisismo Encoberto</div><div style="font-size:8px;color:var(--t3)">Psych2Go · maior CTR do nicho</div></div></div>
+    <div class="mstat"><span style="font-size:14px;font-weight:900;color:#C4B5FD;min-width:45px">22M</span><div><div style="font-size:9px;font-weight:700;color:#E2E8F0">Apego Ansioso</div><div style="font-size:8px;color:var(--t3)">Psych2Go · identificação universal</div></div></div>
+    <div class="mstat"><span style="font-size:14px;font-weight:900;color:#7C3AED;min-width:45px">19M</span><div><div style="font-size:9px;font-weight:700;color:#E2E8F0">Trauma Infância</div><div style="font-size:8px;color:var(--t3)">Psych2Go · dor + revelação</div></div></div>
+    <div class="mstat"><span style="font-size:14px;font-weight:900;color:#0D9488;min-width:45px">18M</span><div><div style="font-size:9px;font-weight:700;color:#E2E8F0">Depressão Funcional</div><div style="font-size:8px;color:var(--t3)">Psych2Go · validação + alívio</div></div></div>
+  </div>
+  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Covert Narcissist Signs</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">28M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + perigo oculto</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 N Sinais de Narcisista Encoberto</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Anxious Attachment Signs</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">22M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + você tem</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 7 Sinais de Apego Ansioso (e Não Sabe)</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Childhood Trauma Signs</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">19M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + infância</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 9 Sinais de Trauma na Infância em Adultos</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">High Function Depression</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">18M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + escondido</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 8 Sinais de Depressão Silenciosa</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Narcissist When Exposed</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">18M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Charisma</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Revelação + poder</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 O Que Narcisista Faz Quando Descoberto</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Not Lazy — Brain Stuck</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">15M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Improvement Pill</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Não é X é Y</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 Você Não É Preguiçoso — Cérebro Travado</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Narcissist Exposed</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">9M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">DoctorRamani</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Comportamento + alerta</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 A Raiva do Narcisista: O Que Fazer</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Why No Motivation</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">11M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Mark Manson</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Pergunta direta + resposta</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 Por Que Você Não Tem Motivação</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Toxic Parents Phrases</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">12M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Charisma</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Como X causa Y</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 6 Frases de Pais Tóxicos Que Destroem Filhos</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Anxious Avoidant Signs</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">11M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + padrão</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 6 Sinais de Apego Evitativo</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Silent Treatment Abuse</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">8M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">DoctorRamani</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Revelação + abuso</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 Silêncio Punitivo: Arma do Narcisista</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Signs of Dissociation</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">7M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + desconhecido</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 7 Sinais Que Você Está se Dissociando</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">BPD Signs Mistaken</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">6M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Various</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + diagnóstico</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 8 Sinais de TPB Que Confunde Com Drama</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Dopamine Detox</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">5M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Various</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Explicação + solução</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 Detox de Dopamina: O Reset Mental</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Grief Not Linear</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">4M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Kati Morton</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Desconstrução + verdade</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 As Fases do Luto Que Ninguém Passa em Ordem</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Narcissistic Rage</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">6M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">DoctorRamani</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Explicação + alerta</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 A Raiva do Narcisista — A Ciência</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Social Anxiety Signs</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">15M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Psych2Go</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: N sinais + social</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 7 Sinais de Ansiedade Social (Não É Timidez)</div>
+</div><div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:9px 12px;margin-bottom:4px">
+  <div style="display:flex;justify-content:space-between;gap:6px;margin-bottom:3px">
+    <div style="font-size:10px;font-weight:700;color:#E2E8F0">Complex PTSD vs PTSD</div>
+    <div style="font-size:9px;font-weight:800;color:#E11D48;white-space:nowrap">5M</div>
+  </div>
+  <div style="font-size:8px;color:#94A3B8;margin-bottom:3px">Various</div>
+  <div style="font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(245,158,11,.1);color:#fbbf24;display:inline-block;margin-bottom:4px">Fórmula: Comparação + educação</div>
+  <div style="font-size:9px;color:#7C3AED;font-weight:600">🇧🇷 PTSD vs PTSD Complexo: A Diferença</div>
+</div>
+</div>
+
+</div>
+<script>
+function show(p,btn){
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tabs .tab').forEach(x=>x.classList.remove('on'));
+  document.getElementById('panel-'+p).classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+</script>
+</body></html>
