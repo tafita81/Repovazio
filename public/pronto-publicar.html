@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Pronto para Publicar — 16 Vídeos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 50% at 10% 0%,rgba(124,58,237,.1),transparent),
+  radial-gradient(ellipse 50% 40% at 90% 100%,rgba(225,29,72,.07),transparent)}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(6,6,15,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bd);padding:14px 28px;display:flex;align-items:center;gap:14px}
+.logo{font-size:18px;font-weight:800;color:var(--mist)}
+.badge{font-size:10px;font-family:"DM Mono",monospace;background:rgba(16,185,129,.15);
+  color:var(--grn);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:3px 12px}
+.stat-bar{display:flex;gap:10px;margin-left:auto;align-items:center}
+.stat{font-size:11px;font-family:"DM Mono",monospace;color:var(--t3)}
+.stat span{color:var(--t1);font-weight:700}
+.wrap{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:32px 24px 80px}
+.section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-hdr h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:"DM Mono",monospace}
+.section-hdr .cnt{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3);
+  border-radius:20px;padding:2px 10px;font-size:10px;font-family:"DM Mono",monospace}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px;margin-bottom:40px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;
+  transition:.18s;cursor:pointer}
+.card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.card-top{padding:16px 16px 12px}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.fmt-tag{font-size:9px;font-family:"DM Mono",monospace;padding:2px 8px;border-radius:10px;font-weight:700;border:1px solid}
+.long{background:rgba(124,58,237,.12);color:var(--mist);border-color:rgba(124,58,237,.3)}
+.short{background:rgba(56,189,248,.1);color:#38BDF8;border-color:rgba(56,189,248,.3)}
+.cine{background:rgba(245,158,11,.1);color:var(--gold);border-color:rgba(245,158,11,.3)}
+.card-id{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;margin-left:auto}
+.gate-ok{display:flex;align-items:center;gap:4px;background:rgba(16,185,129,.1);
+  color:var(--grn);border:1px solid rgba(16,185,129,.25);border-radius:8px;padding:2px 8px;
+  font-size:10px;font-family:"DM Mono",monospace;font-weight:700}
+.card-title{font-size:14px;font-weight:800;color:var(--t1);line-height:1.35;margin-bottom:4px;
+  letter-spacing:-.3px}
+.card-en{font-size:11px;color:var(--t3);font-style:italic;margin-bottom:10px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scores{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sc{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:3px 8px;
+  font-size:10px;font-family:"DM Mono",monospace;display:flex;gap:4px;align-items:center}
+.sc-label{color:var(--t3)}
+.sc-val{font-weight:700}
+.sc-val.max{color:var(--grn)}
+.sc-val.hi{color:var(--teal)}
+.sc-val.ok{color:var(--mist)}
+.card-links{border-top:1px solid var(--bd);padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.link-btn{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:6px 12px;
+  font-size:11px;font-weight:700;text-decoration:none;transition:.15s;cursor:pointer}
+.btn-mp4{background:rgba(124,58,237,.15);color:var(--mist);border:1px solid rgba(124,58,237,.3)}
+.btn-mp4:hover{background:rgba(124,58,237,.3)}
+.btn-yt{background:rgba(225,29,72,.12);color:#E11D48;border:1px solid rgba(225,29,72,.25)}
+.btn-yt:hover{background:rgba(225,29,72,.25)}
+.top-notice{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.2);border-radius:14px;
+  padding:20px 24px;margin-bottom:28px;display:flex;gap:16px;align-items:flex-start}
+.notice-icon{font-size:24px;flex-shrink:0;line-height:1}
+.notice-title{font-size:14px;font-weight:800;color:var(--grn);margin-bottom:6px}
+.notice-text{font-size:12px;color:var(--t2);line-height:1.6}
+.blocker-box{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:12px;
+  padding:16px 20px;margin-bottom:28px}
+.blocker-title{font-size:12px;font-weight:800;color:var(--gold);margin-bottom:8px}
+.blocker-steps{display:flex;flex-direction:column;gap:6px}
+.blocker-step{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.5}
+.step-num{background:rgba(245,158,11,.2);color:var(--gold);width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px}
+code{background:var(--s2);border:1px solid var(--bd);border-radius:4px;padding:1px 6px;
+  font-family:"DM Mono",monospace;font-size:10px;color:var(--teal)}
+</style></head>
+<body>
+<header class="hdr">
+  <div class="logo">ψ Pronto para Publicar</div>
+  <span class="badge">16 / 16 ✅ GATE APROVADO</span>
+  <div class="stat-bar">
+    <span class="stat">Bugs corrigidos <span>✅</span></span>
+    <span class="stat">37 sinais injetados <span>✅</span></span>
+    <span class="stat">EN+ES <span>✅</span></span>
+    <span class="stat">Thumbnails <span>✅</span></span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- BLOQUEADOR ÚNICO -->
+  <div class="blocker-box">
+    <div class="blocker-title">⚠️ Um único bloqueador para publicação automática dos 16 vídeos</div>
+    <div class="blocker-steps">
+      <div class="blocker-step"><span class="step-num">1</span>
+        <div>Acessar <strong>YouTube OAuth Playground</strong>: <code>accounts.google.com/o/oauth2/auth</code> com o email <code>psidanielacoelho1982@gmail.com</code></div>
+      </div>
+      <div class="blocker-step"><span class="step-num">2</span>
+        <div>Gerar refresh_token com scope <code>youtube.upload</code> + <code>youtube.force-ssl</code></div>
+      </div>
+      <div class="blocker-step"><span class="step-num">3</span>
+        <div>Colar no Supabase: <code>UPDATE ia_cache SET value='SEU_TOKEN' WHERE cache_key='secret:YOUTUBE_REFRESH_TOKEN'</code></div>
+      </div>
+      <div class="blocker-step"><span class="step-num">4</span>
+        <div>O pipeline publica os 16 vídeos automaticamente na ordem de viral_score — sem mais nenhuma ação manual</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LONG-FORMS -->
+  <div class="section-hdr">
+    <h2>Long-form (Documentários)</h2>
+    <span class="cnt">8 vídeos</span>
+  </div>
+  <div class="grid" id="grid-long">
+
+    <!-- ID 693 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag long">Long-form</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#693</span>
+        </div>
+        <div class="card-title">Gaslighting: A Manipulação Que Faz Você Duvidar da Sua Própria Mente</div>
+        <div class="card-en">Gaslighting: The Manipulation That Makes You Doubt Your Own Mind</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val max">97</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val max">97</span></div>
+          <div class="sc"><span class="sc-label">Binge</span><span class="sc-val hi">94</span></div>
+          <div class="sc"><span class="sc-label">Tags</span><span class="sc-val hi">51</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778706024_Gaslighting_a_manipulao_invisv_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 694 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag long">Long-form</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#694</span>
+        </div>
+        <div class="card-title">Negligência Emocional: O Trauma que Você Nem Sabe que Tem</div>
+        <div class="card-en">Emotional Neglect: The Invisible Childhood Trauma Nobody Talks About</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val max">97</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">Binge</span><span class="sc-val hi">92</span></div>
+          <div class="sc"><span class="sc-label">Tags</span><span class="sc-val hi">45</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778705984_Negligncia_emocional_o_trauma__v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 695 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag long">Long-form</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#695</span>
+        </div>
+        <div class="card-title">Relacionamento Tóxico: Os Sinais Que Você Está Normalizando Sem Perceber</div>
+        <div class="card-en">Toxic Relationship: 7 Signs You Are In One Right Now</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">96</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">Binge</span><span class="sc-val hi">91</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778705967_Sinais_de_um_relacionamento_tx_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 692 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag long">Long-form</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#692</span>
+        </div>
+        <div class="card-title">Apego Ansioso: O Medo de Abandono Que Controla Cada Relacionamento</div>
+        <div class="card-en">Anxious Attachment: The Fear of Abandonment That Controls Every Relationship</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">96</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">94</span></div>
+          <div class="sc"><span class="sc-label">Binge</span><span class="sc-val hi">92</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778705685_Apego_Ansioso_o_medo_do_abando_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 696 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag long">Long-form</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#696</span>
+        </div>
+        <div class="card-title">Psicologia do Dinheiro: Por Que o Dinheiro Foge de Você</div>
+        <div class="card-en">Money Psychology: Why You Keep Ending Up Broke</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">96</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">91</span></div>
+          <div class="sc"><span class="sc-label">Binge</span><span class="sc-val hi">89</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778705982_Crenas_limitantes_por_que_dinh_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 690 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag cine">Cinematic</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#690</span>
+        </div>
+        <div class="card-title">Por Que Você Escolhe Sempre as Mesmas Pessoas Erradas</div>
+        <div class="card-en">Why You Keep Choosing the Wrong People (Your Brain Is Wired This Way)</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">91</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778634393_A_cincia_por_trs_de_escolher_s_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 691 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag cine">Cinematic</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#691</span>
+        </div>
+        <div class="card-title">Trauma de Abandono: Por Que Nunca Se Sente Seguro em Relacionamentos</div>
+        <div class="card-en">Abandonment Trauma: Why You Never Feel Safe in Relationships</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val ok">90</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778634437_Trauma_de_abandono_por_que_voc_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 686 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag cine">Cinematic</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#686</span>
+        </div>
+        <div class="card-title">O Que o Trauma Silencioso Faz no Seu Corpo — A Ciência Descobriu</div>
+        <div class="card-en">Psychological Trauma: What It Does to Your Brain (Science Explains)</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val ok">90</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778634352_O_que_o_trauma_silencioso_faz__v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+  </div><!-- /grid-long -->
+
+  <!-- SHORTS -->
+  <div class="section-hdr">
+    <h2>Shorts (60s)</h2>
+    <span class="cnt">8 vídeos</span>
+  </div>
+  <div class="grid" id="grid-shorts">
+
+    <!-- ID 91 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#91</span>
+        </div>
+        <div class="card-title">Apego Ansioso: 7 Sinais Que Você Tem (e Não Sabe)</div>
+        <div class="card-en">Anxious Attachment: Why You're Always Afraid of Being Left</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val max">100</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">94</span></div>
+          <div class="sc"><span class="sc-label">Tags</span><span class="sc-val hi">50</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/v2/pipeline_91_1778565294.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 683 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#683</span>
+        </div>
+        <div class="card-title">Narcisismo: 3 Sinais Que Você Está Ignorando Agora Mesmo</div>
+        <div class="card-en">Narcissism: 3 Signs You Are Ignoring Right Now</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val max">96</span></div>
+          <div class="sc"><span class="sc-label">Tags</span><span class="sc-val hi">33</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778680583_Narcisismo_encoberto_3_sinais__v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 684 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#684</span>
+        </div>
+        <div class="card-title">Ansiedade: O Sinal Silencioso Que 9 em 10 Pessoas Ignoram</div>
+        <div class="card-en">Anxiety: The Silent Sign That 9 in 10 People Miss</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">93</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778634218_Sofia_dormia_2_horas_por_noite_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 682 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#682</span>
+        </div>
+        <div class="card-title">Você Checa o Celular 80 Vezes por Dia? Não é Vício — É Apego Ansioso</div>
+        <div class="card-en">Checking Your Phone 80 Times a Day? Not Addiction — Anxious Attachment</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">93</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778681220_Voc_checa_o_celular_80_vezes_a_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 689 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#689</span>
+        </div>
+        <div class="card-title">Perfeccionista Não Tem Medo de Falhar — Tem Medo de Ser Descoberto</div>
+        <div class="card-en">Perfectionists Are Not Afraid to Fail — They Fear Being Discovered</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">92</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778634177_O_perfeccionista_no_tem_medo_d_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 685 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#685</span>
+        </div>
+        <div class="card-title">Você Sabota Tudo Quando Está Prestes a Ser Feliz?</div>
+        <div class="card-en">You Sabotage Everything When You Are About to Be Happy</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">92</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778681009_Por_que_voc_sabota_tudo_quando_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 687 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#687</span>
+        </div>
+        <div class="card-title">Quando Você Confunde Amor Com Necessidade — A Neurociência</div>
+        <div class="card-en">When You Confuse Love With Need — Neuroscience Explains</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val hi">91</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778680994_Isabela_achava_que_era_amor__e_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+    <!-- ID 688 -->
+    <div class="card">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="fmt-tag short">Short</span>
+          <span class="gate-ok">✅ GATE</span>
+          <span class="card-id">#688</span>
+        </div>
+        <div class="card-title">Depressão: Não Era Preguiça. Era o Cérebro Desligando</div>
+        <div class="card-en">Depression: It Was Not Laziness. It Was the Brain Shutting Down</div>
+        <div class="scores">
+          <div class="sc"><span class="sc-label">Q</span><span class="sc-val hi">95</span></div>
+          <div class="sc"><span class="sc-label">SEO</span><span class="sc-val max">99</span></div>
+          <div class="sc"><span class="sc-label">Viral</span><span class="sc-val ok">90</span></div>
+        </div>
+      </div>
+      <div class="card-links">
+        <a href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/1778680853_Rafael_no_conseguia_sair_da_ca_v8.mp4" target="_blank" class="link-btn btn-mp4">▶ Testar MP4</a>
+      </div>
+    </div>
+
+  </div><!-- /grid-shorts -->
+
+</div>
+
+<footer style="text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);font-family:'DM Mono',monospace;line-height:1.8;position:relative;z-index:1">
+ψ psicologia.doc · @psidanielacoelho · 16 vídeos aprovados · 37 sinais de algoritmo · Gate eterno ativo<br>
+Referências: DoctorRamani 2.3M · Psych2Go 10.5M · Therapy in a Nutshell 1.2M · Luana Marinho 2.1M BR
+</footer>
+</body></html>
