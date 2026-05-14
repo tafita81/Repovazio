@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="300"> <!-- Auto-reload a cada 5 min -->
+<title>ψ Monitor R$50K — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0D0D1C;--s2:#111128;--v:#7C3AED;--m:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+.home{position:fixed;top:14px;right:16px;z-index:9999;display:flex;align-items:center;gap:7px;background:rgba(6,6,15,.93);border:1px solid rgba(196,181,253,.22);border-radius:10px;padding:7px 15px;color:var(--m);font-size:11px;font-weight:700;text-decoration:none;backdrop-filter:blur(14px)}
+#topbar{position:sticky;top:0;z-index:500;background:rgba(6,6,15,.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-size:13px;font-weight:800;color:var(--m)}
+.logo small{font-size:8px;font-family:"DM Mono",monospace;color:var(--t3);margin-left:4px}
+.live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#10B981;font-family:"DM Mono",monospace}
+.dot{width:6px;height:6px;border-radius:50%;background:#10B981;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.rjclock{font-size:11px;font-weight:700;font-family:"DM Mono",monospace;color:#C4B5FD;padding:4px 10px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:7px}
+.wrap{max-width:1000px;margin:0 auto;padding:14px 18px 80px}
+.big-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.meta-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;text-align:center}
+.meta-label{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:8px;display:block}
+.meta-big{font-size:28px;font-weight:900;line-height:1;display:block;margin-bottom:4px}
+.meta-sub{font-size:10px;color:var(--t2)}
+.progress-outer{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin:8px 0}
+.progress-inner{height:100%;border-radius:4px;transition:.5s}
+/* SEMANAS */
+.sem-grid{display:grid;gap:6px}
+.sem-row{display:grid;grid-template-columns:36px 80px 1fr 80px 80px 80px 90px;align-items:center;gap:8px;padding:8px 11px;background:var(--s1);border:1px solid var(--bd);border-radius:9px;font-size:10px}
+.sem-row:hover{border-color:rgba(124,58,237,.3)}
+.sem-n{font-weight:900;font-family:"DM Mono",monospace;font-size:11px}
+.status-badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:5px;white-space:nowrap;font-family:"DM Mono",monospace}
+.st-ac{background:rgba(16,185,129,.12);color:#10B981;border:1px solid rgba(16,185,129,.25)}
+.st-nr{background:rgba(124,58,237,.12);color:#C4B5FD;border:1px solid rgba(124,58,237,.25)}
+.st-at{background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+.st-cr{background:rgba(225,29,72,.12);color:#FCA5A5;border:1px solid rgba(225,29,72,.25)}
+.st-pe{background:rgba(255,255,255,.06);color:#94A3B8;border:1px solid var(--bd)}
+/* MARCOS */
+.marco-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s1);border:1px solid var(--bd);border-radius:9px;margin-bottom:5px}
+.marco-row.atingido{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.05)}
+.marco-sem{font-size:9px;font-weight:800;font-family:"DM Mono",monospace;color:var(--t3);min-width:30px}
+.marco-desc{flex:1;font-size:10px;color:#E2E8F0}
+.marco-meta{font-size:10px;font-weight:800;white-space:nowrap}
+/* FORM entrada manual */
+.form-card{background:var(--s1);border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.form-t{font-size:10px;font-weight:700;color:var(--m);margin-bottom:10px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.form-group label{font-size:8px;font-weight:700;color:var(--t3);text-transform:uppercase;display:block;margin-bottom:3px}
+.form-group input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:6px;padding:6px 9px;color:var(--t1);font-size:11px;font-family:"DM Mono",monospace;outline:none}
+.form-group input:focus{border-color:rgba(124,58,237,.5)}
+.btn-save{margin-top:10px;padding:8px 18px;border-radius:8px;background:rgba(124,58,237,.2);border:1px solid rgba(124,58,237,.4);color:var(--m);font-size:10px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif}
+.btn-save:hover{background:rgba(124,58,237,.35)}
+.sec-t{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--t3);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+#msg{font-size:10px;color:#10B981;margin-top:8px;display:none}
+</style>
+</head>
+<body>
+<a class="home" href="/hub.html">ψ Hub</a>
+
+<div id="topbar">
+  <div class="logo">💰 Monitor R$50K <small>@psidanielacoelho · Meta: Semana 28 · Nov/2026</small></div>
+  <div class="live"><span class="dot"></span>Ao vivo · Supabase</div>
+  <div class="rjclock" id="rjclock">--:--:--</div>
+</div>
+
+<div class="wrap">
+
+  <!-- MEGA STATS -->
+  <div class="big-meta" id="big-meta">
+    <div class="meta-card">
+      <span class="meta-label">Inscritos Atuais</span>
+      <span class="meta-big" style="color:#C4B5FD" id="stat-subs">--</span>
+      <span class="meta-sub">Meta S28: 150.000</span>
+      <div class="progress-outer"><div class="progress-inner" id="bar-subs" style="background:#7C3AED;width:0%"></div></div>
+      <span style="font-size:9px;color:#94A3B8" id="pct-subs">0% da meta</span>
+    </div>
+    <div class="meta-card">
+      <span class="meta-label">Receita Total/Mês</span>
+      <span class="meta-big" style="color:#10B981" id="stat-receita">R$ --</span>
+      <span class="meta-sub">Meta S28: R$50.000/mês</span>
+      <div class="progress-outer"><div class="progress-inner" id="bar-receita" style="background:#10B981;width:0%"></div></div>
+      <span style="font-size:9px;color:#94A3B8" id="pct-receita">0% da meta</span>
+    </div>
+  </div>
+  
+  <!-- STATS EXTRAS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;margin-bottom:16px" id="stats-extras">
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid var(--bd);border-radius:8px">
+      <span style="font-size:16px;font-weight:900;color:#E11D48;display:block" id="s-semana">S1</span>
+      <span style="font-size:8px;color:var(--t3)">semana atual</span>
+    </div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid var(--bd);border-radius:8px">
+      <span style="font-size:16px;font-weight:900;color:#F59E0B;display:block" id="s-vpub">0</span>
+      <span style="font-size:8px;color:var(--t3)">publicados total</span>
+    </div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid var(--bd);border-radius:8px">
+      <span style="font-size:16px;font-weight:900;color:#0D9488;display:block" id="s-rpm">--</span>
+      <span style="font-size:8px;color:var(--t3)">RPM real</span>
+    </div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid var(--bd);border-radius:8px">
+      <span style="font-size:16px;font-weight:900;color:#C4B5FD;display:block" id="s-status">--</span>
+      <span style="font-size:8px;color:var(--t3)">status geral</span>
+    </div>
+    <div style="text-align:center;padding:8px;background:var(--s1);border:1px solid var(--bd);border-radius:8px">
+      <span style="font-size:16px;font-weight:900;color:#fff;display:block" id="s-semfalta">27</span>
+      <span style="font-size:8px;color:var(--t3)">sem. p/ R$50K</span>
+    </div>
+  </div>
+
+  <!-- ENTRADA MANUAL DE MÉTRICAS -->
+  <div class="form-card">
+    <div class="form-t">📝 Registrar Métricas da Semana Atual (após publicar, registre aqui)</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Semana #</label><input type="number" id="f-sem" placeholder="1" min="1" max="52"></div>
+      <div class="form-group"><label>Inscritos Agora</label><input type="number" id="f-subs" placeholder="0"></div>
+      <div class="form-group"><label>Vídeos Publicados</label><input type="number" id="f-vpub" placeholder="0"></div>
+      <div class="form-group"><label>Views Semana</label><input type="number" id="f-views" placeholder="0"></div>
+      <div class="form-group"><label>Watch Time (h)</label><input type="number" id="f-wt" placeholder="0"></div>
+      <div class="form-group"><label>AdSense (R$)</label><input type="number" id="f-ads" placeholder="0" step="0.01"></div>
+      <div class="form-group"><label>Sponsors (R$)</label><input type="number" id="f-sp" placeholder="0" step="0.01"></div>
+      <div class="form-group"><label>Curso (R$)</label><input type="number" id="f-curso" placeholder="0" step="0.01"></div>
+    </div>
+    <button class="btn-save" onclick="salvarMetricas()">💾 Salvar Métricas</button>
+    <div id="msg">✅ Salvo! Cérebro irá avaliar na próxima segunda-feira.</div>
+  </div>
+
+  <!-- MARCOS -->
+  <div class="sec-t" style="margin-bottom:10px">🏆 12 Marcos de Monetização</div>
+  <div id="marcos-container" style="margin-bottom:16px">
+    <div style="font-size:10px;color:var(--t3)">Carregando marcos...</div>
+  </div>
+
+  <!-- HISTÓRICO SEMANAL -->
+  <div class="sec-t" style="margin-bottom:8px">📊 Histórico Semanal</div>
+  <div style="display:grid;grid-template-columns:36px 80px 1fr 80px 80px 80px 90px;gap:8px;padding:4px 11px;margin-bottom:4px">
+    <span style="font-size:8px;color:var(--t3)">#</span>
+    <span style="font-size:8px;color:var(--t3)">Período</span>
+    <span style="font-size:8px;color:var(--t3)">Foco Cérebro</span>
+    <span style="font-size:8px;color:var(--t3);text-align:center">Subs</span>
+    <span style="font-size:8px;color:var(--t3);text-align:center">Views</span>
+    <span style="font-size:8px;color:var(--t3);text-align:center">Receita</span>
+    <span style="font-size:8px;color:var(--t3);text-align:center">Status</span>
+  </div>
+  <div class="sem-grid" id="sem-grid">
+    <div style="font-size:10px;color:var(--t3);padding:10px">Carregando dados do Supabase...</div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzUyOTMsImV4cCI6MjA5MTYxMTI5M30.UEgUo0Mw15ihQZykLAY5QApRzgTXkfIewZFzIgwao3Q';
+
+// Relógio RJ
+function updateClock() {
+  const rj = new Date(new Date().toLocaleString('en', {timeZone:'America/Sao_Paulo'}));
+  const h = String(rj.getHours()).padStart(2,'0');
+  const m = String(rj.getMinutes()).padStart(2,'0');
+  const s = String(rj.getSeconds()).padStart(2,'0');
+  document.getElementById('rjclock').textContent = h+':'+m+':'+s+' BRT';
+}
+updateClock(); setInterval(updateClock, 1000);
+
+// Calcular semana atual
+const startDate = new Date('2026-05-16');
+const today = new Date();
+const diffDays = Math.floor((today - startDate) / (1000*60*60*24));
+const semanaAtual = Math.max(1, Math.floor(diffDays/7) + 1);
+document.getElementById('s-semana').textContent = 'S' + semanaAtual;
+document.getElementById('s-semfalta').textContent = Math.max(0, 28 - semanaAtual);
+document.getElementById('f-sem').value = semanaAtual;
+
+// Carregar dados
+async function load() {
+  const headers = { 'apikey': AK, 'Authorization': 'Bearer ' + AK };
+  
+  // Semanas
+  const r = await fetch(SB_URL + '/rest/v1/monetizacao_semanal?order=semana.desc&limit=10', {headers});
+  const data = await r.json();
+  
+  if (data.length > 0) {
+    const latest = data[0];
+    document.getElementById('stat-subs').textContent = (latest.inscritos_fim || 0).toLocaleString('pt-BR');
+    
+    const totalReceita = (latest.adsense_r||0) + (latest.sponsors_r||0) + (latest.curso_r||0) + (latest.membros_r||0);
+    document.getElementById('stat-receita').textContent = 'R$ ' + totalReceita.toLocaleString('pt-BR');
+    
+    const pctSubs = Math.min(100, Math.round((latest.inscritos_fim||0) / 150000 * 100));
+    const pctRec = Math.min(100, Math.round(totalReceita / 50000 * 100));
+    document.getElementById('bar-subs').style.width = pctSubs + '%';
+    document.getElementById('bar-receita').style.width = pctRec + '%';
+    document.getElementById('pct-subs').textContent = pctSubs + '% da meta (150K subs)';
+    document.getElementById('pct-receita').textContent = pctRec + '% da meta (R$50K)';
+    
+    const vids = data.reduce((a,s) => a + (s.videos_publicados||0), 0);
+    document.getElementById('s-vpub').textContent = vids;
+    document.getElementById('s-rpm').textContent = latest.rpm_real ? 'R$'+latest.rpm_real : '--';
+    
+    const statusMap = {'acelerado':'🚀','no_rumo':'✅','atrasado':'⚠️','critico':'🔴','pendente':'⏳'};
+    document.getElementById('s-status').textContent = statusMap[latest.status_geral] || '⏳';
+  }
+  
+  const grid = document.getElementById('sem-grid');
+  if (data.length === 0) { grid.innerHTML = '<div style="font-size:10px;color:var(--t3);padding:10px">Nenhuma semana registrada ainda. Publique o vídeo #1 e registre as métricas acima.</div>'; return; }
+  
+  grid.innerHTML = data.map(s => {
+    const stMap = {'acelerado':'st-ac 🚀 Acelerado','no_rumo':'st-nr ✅ No rumo','atrasado':'st-at ⚠️ Atrasado','critico':'st-cr 🔴 Crítico','pendente':'st-pe ⏳ Pendente'};
+    const stParts = (stMap[s.status_geral] || 'st-pe ⏳ Pendente').split(' ');
+    const stClass = stParts[0];
+    const stLabel = stParts.slice(1).join(' ');
+    const total = (s.adsense_r||0)+(s.sponsors_r||0)+(s.curso_r||0)+(s.membros_r||0);
+    const inicio = s.data_inicio ? s.data_inicio.slice(5).replace('-','/') : '--';
+    return `<div class="sem-row">
+      <div class="sem-n" style="color:#C4B5FD">S${s.semana}</div>
+      <div style="font-size:9px;font-family:monospace;color:#94A3B8">${inicio}</div>
+      <div style="font-size:9px;color:#E2E8F0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.proximo_foco || '—'}</div>
+      <div style="text-align:center;font-size:10px;font-weight:700;color:#C4B5FD">${(s.inscritos_fim||0).toLocaleString()}</div>
+      <div style="text-align:center;font-size:10px;color:#94A3B8">${(s.views_semana||0).toLocaleString()}</div>
+      <div style="text-align:center;font-size:10px;font-weight:700;color:#10B981">${total > 0 ? 'R$'+total.toLocaleString('pt-BR') : '—'}</div>
+      <div style="text-align:center"><span class="status-badge ${stClass}">${stLabel}</span></div>
+    </div>`;
+  }).join('');
+  
+  // Marcos
+  const mr = await fetch(SB_URL + '/rest/v1/monetizacao_marcos?order=semana_alvo.asc', {headers});
+  const marcos = await mr.json();
+  document.getElementById('marcos-container').innerHTML = marcos.map(m => {
+    const atClass = m.atingido ? 'atingido' : '';
+    const icon = m.atingido ? '✅' : (m.semana_alvo <= semanaAtual + 4 ? '🎯' : '⏳');
+    const col = m.atingido ? '#10B981' : (m.semana_alvo <= semanaAtual + 2 ? '#E11D48' : '#94A3B8');
+    return `<div class="marco-row ${atClass}">
+      <span class="marco-sem">S${m.semana_alvo}</span>
+      <span style="font-size:14px">${icon}</span>
+      <span class="marco-desc">${m.descricao}</span>
+      <span class="marco-meta" style="color:${col}">${m.meta_subs ? m.meta_subs.toLocaleString()+' subs' : ''}</span>
+      <span class="marco-meta" style="color:#10B981">${m.meta_valor > 0 ? 'R$'+m.meta_valor.toLocaleString() : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+async function salvarMetricas() {
+  const sem = parseInt(document.getElementById('f-sem').value) || semanaAtual;
+  const subs = parseInt(document.getElementById('f-subs').value) || 0;
+  const vpub = parseInt(document.getElementById('f-vpub').value) || 0;
+  const views = parseInt(document.getElementById('f-views').value) || 0;
+  const wt = parseFloat(document.getElementById('f-wt').value) || 0;
+  const ads = parseFloat(document.getElementById('f-ads').value) || 0;
+  const sp = parseFloat(document.getElementById('f-sp').value) || 0;
+  const curso = parseFloat(document.getElementById('f-curso').value) || 0;
+  const total = ads + sp + curso;
+  const rpm = views > 0 ? Math.round((ads / views) * 1000 * 100) / 100 : 0;
+  
+  const startDate = new Date('2026-05-16');
+  const semInicio = new Date(startDate);
+  semInicio.setDate(startDate.getDate() + (sem-1)*7);
+  const semFim = new Date(semInicio);
+  semFim.setDate(semInicio.getDate() + 6);
+  
+  const r = await fetch(SB_URL + '/rest/v1/monetizacao_semanal', {
+    method: 'POST',
+    headers: {
+      'apikey': AK, 'Authorization': 'Bearer ' + AK,
+      'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
+    },
+    body: JSON.stringify({
+      semana: sem,
+      data_inicio: semInicio.toISOString().split('T')[0],
+      data_fim: semFim.toISOString().split('T')[0],
+      inscritos_fim: subs, inscritos_ganhos: subs,
+      videos_publicados: vpub, views_semana: views, watch_time_horas: wt,
+      adsense_r: ads, sponsors_r: sp, curso_r: curso,
+      total_receita_r: total, rpm_real: rpm
+    })
+  });
+  
+  document.getElementById('msg').style.display = 'block';
+  setTimeout(() => { document.getElementById('msg').style.display = 'none'; load(); }, 2000);
+}
+
+load();
+</script>
+</body></html>
