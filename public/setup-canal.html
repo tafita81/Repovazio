@@ -1,202 +1,264 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Setup OAuth @psidanielacoelho · Passo a Passo</title>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Setup do Canal — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#fff;padding:18px;max-width:900px;margin:0 auto;line-height:1.55}
-  h1{font-size:24px;margin-bottom:8px;background:linear-gradient(90deg,#ff6b9d,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-  h2{font-size:18px;margin:24px 0 10px;color:#a855f7;border-bottom:2px solid #a855f7;padding-bottom:6px}
-  h3{font-size:14px;color:#fbbf24;margin:14px 0 6px}
-  .alert{background:#3d1a1a;border-left:4px solid #ef4444;padding:14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px}
-  .alert strong{color:#fca5a5}
-  .ok{background:#1a3d1a;border-left:4px solid #4ade80;padding:14px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px}
-  .step{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:16px;margin:12px 0}
-  .step .num{display:inline-block;width:28px;height:28px;background:#a855f7;color:#fff;border-radius:50%;text-align:center;line-height:28px;font-weight:700;font-size:13px;margin-right:8px}
-  .step .title{display:inline-block;font-weight:700;font-size:15px;color:#fff;vertical-align:middle}
-  .step .body{margin-top:10px;font-size:13px;color:#ccc}
-  .step .body ul{margin-left:18px;margin-top:6px}
-  .step .body li{margin:4px 0}
-  code{background:#222;color:#fbbf24;padding:2px 7px;border-radius:3px;font-size:11px;font-family:Menlo,monospace}
-  .code-block{background:#0d0d0d;border:1px solid #333;border-radius:6px;padding:12px;margin:8px 0;font-family:Menlo,monospace;font-size:11px;overflow-x:auto;color:#a8e6a8;white-space:pre}
-  a{color:#60a5fa;text-decoration:none}
-  a:hover{text-decoration:underline}
-  .btn{display:inline-block;background:#a855f7;color:#fff;padding:8px 14px;border-radius:6px;font-size:12px;text-decoration:none;margin-top:6px;font-weight:600}
-  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px;background:#161616;border-radius:6px;overflow:hidden}
-  th,td{padding:8px;text-align:left;border-bottom:1px solid #222}
-  th{background:#222;color:#a855f7}
-  .receita-tier{background:linear-gradient(135deg,#1a0a2a,#0a1a2a);border:1px solid #4ade80;border-radius:8px;padding:14px;margin:8px 0}
-</style>
-</head>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,.08),transparent)}
+.hdr{padding:20px 32px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px}
+.logo{font-size:20px;font-weight:800;color:var(--mist)}
+.wrap{max-width:900px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
+h2{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:"DM Mono",monospace;margin-bottom:16px}
+.platform{margin-bottom:40px}
+.platform-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.platform-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.platform-name{font-size:18px;font-weight:800;color:var(--t1)}
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:.15s}
+.check-item:hover{border-color:rgba(124,58,237,.3)}
+.check-item.done{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)}
+.check-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--t3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;margin-top:1px}
+.check-item.done .check-box{background:var(--grn);border-color:var(--grn);color:#fff}
+.check-title{font-size:13px;font-weight:700;color:var(--t1)}
+.check-detail{font-size:12px;color:var(--t2);line-height:1.5;margin-top:3px}
+.check-copy{font-family:"DM Mono",monospace;font-size:11px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:8px 10px;margin-top:6px;color:var(--teal);white-space:pre-wrap;cursor:text}
+.tag-section{margin-bottom:6px;font-size:11px;font-weight:700;color:var(--t3)}
+.progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:4px;margin-bottom:24px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7C3AED,#0D9488);border-radius:4px;transition:.4s}
+.progress-txt{font-size:11px;color:var(--t3);font-family:"DM Mono",monospace;margin-bottom:6px}
+.copy-btn{background:rgba(13,148,136,.15);color:var(--teal);border:1px solid rgba(13,148,136,.3);border-radius:6px;padding:3px 10px;font-size:10px;cursor:pointer;margin-top:4px;font-weight:600}
+.copy-btn:hover{background:rgba(13,148,136,.3)}
+</style></head>
 <body>
+<header class="hdr">
+  <div class="logo">ψ Setup do Canal</div>
+  <span style="font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-left:auto">@psidanielacoelho · Canal ID: UCyCkIpsVgME9yCj_oXJFheA</span>
+</header>
 
-<h1>🔑 Setup OAuth @psidanielacoelho</h1>
-<p style="color:#aaa;font-size:13px">Como dar permissão pra publicação automática no canal novo</p>
+<div class="wrap">
+  <p class="progress-txt" id="prog-txt">0 / 0 itens concluídos</p>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
 
-<div class="alert">
-<strong>⚠️ Situação atual:</strong> As credenciais YouTube no GitHub Secrets pertencem a <code>tafita81@gmail.com</code> (canal antigo bloqueado). Servem APENAS pra LER dados públicos de qualquer canal. Pra <strong>PUBLICAR</strong> em <code>@psidanielacoelho</code> (de <code>psidanielacoelho1982@gmail.com</code>), preciso de NOVAS credenciais OAuth.
+  <!-- YOUTUBE -->
+  <div class="platform">
+    <div class="platform-hdr">
+      <div class="platform-icon" style="background:rgba(255,0,0,.12)">▶️</div>
+      <div class="platform-name">YouTube Studio</div>
+    </div>
+    <h2>Personalização → Arte do canal</h2>
+    <div class="checklist">
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Upload do Banner (2560×1440px)</div>
+          <div class="check-detail">Baixar em <a href="/brand.html" style="color:var(--acc)">brand.html</a> → seção Banner → Download SVG → converter para PNG (Inkscape, Figma, ou ferramenta online)</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Foto do canal (Avatar 800×800px)</div>
+          <div class="check-detail">Baixar avatar em <a href="/brand.html" style="color:var(--acc)">brand.html</a> → seção Avatars → YouTube → Download</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Nome do canal</div>
+          <div class="check-copy">Daniela Coelho | Psicologia</div>
+          <button class="copy-btn" onclick="cp('Daniela Coelho | Psicologia')">Copiar</button>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Descrição do canal</div>
+          <div class="check-copy">Psicologia para entender quem você é.
+
+Toda semana: documentários sobre apego ansioso, narcisismo, trauma, ansiedade e relacionamentos — com base científica.
+
+📚 Séries exclusivas:
+• A Ciência do Apego
+• Mentes Narcisistas  
+• Trauma Invisível
+• Ansiedade e Pânico
+• Psicologia do Dinheiro
+
+🔔 Ative o sininho para não perder nenhum episódio.
+
+📸 Instagram: @psidanielacoelho
+🎵 TikTok: @psidanielacoelho
+
+⚠️ Conteúdo educacional. Não substitui acompanhamento profissional.</div>
+          <button class="copy-btn" onclick="cp(document.querySelectorAll('.check-copy')[2].textContent)">Copiar descrição</button>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Palavras-chave do canal (SEO)</div>
+          <div class="check-copy">psicologia, saúde mental, apego ansioso, narcisismo, trauma, ansiedade, burnout, relacionamentos, psicologia do dinheiro, autoconhecimento, apego, gaslighting, PTSD, self-improvement, mental health, psychology</div>
+          <button class="copy-btn" onclick="cp(document.querySelectorAll('.check-copy')[3].textContent)">Copiar</button>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Links do canal (até 5)</div>
+          <div class="check-copy">Instagram: https://instagram.com/psidanielacoelho
+TikTok: https://tiktok.com/@psidanielacoelho
+Pinterest: https://pinterest.com/psidanielacoelho
+Comunidade WhatsApp: [link após criar grupo]</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Marca d'água de vídeo (ψ)</div>
+          <div class="check-detail">Upload → marca d'água → usar o avatar ψ (800×800) → configurar para aparecer nos últimos 5s do vídeo</div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <h2>Monetização</h2>
+    <div class="checklist">
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Inscrever no Programa de Parceiros do YouTube</div>
+          <div class="check-detail">Requisito: 1.000 inscritos + 4.000h assistidas ou 10M de views em Shorts nos últimos 12 meses</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Tela final padrão</div>
+          <div class="check-detail">Usar template: assinar + próximo vídeo + playlist recomendada. Aplicar em todos os vídeos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTAGRAM -->
+  <div class="platform">
+    <div class="platform-hdr">
+      <div class="platform-icon" style="background:rgba(225,48,108,.12)">📸</div>
+      <div class="platform-name">Instagram @psidanielacoelho</div>
+    </div>
+    <div class="checklist">
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Foto de perfil (avatar crimson+violeta)</div>
+          <div class="check-detail">Baixar em /brand.html → Avatars → Instagram → 320×320px</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Nome do perfil</div>
+          <div class="check-copy">Daniela Coelho | Psicologia</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Bio (89 chars)</div>
+          <div class="check-copy">Psicologia para entender quem você é 🧠
+Apego · Trauma · Narcisismo · Ansiedade
+Novos vídeos toda semana ↓</div>
+          <button class="copy-btn" onclick="cp(document.querySelectorAll('.check-copy')[6].textContent)">Copiar bio</button>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Link na bio → YouTube</div>
+          <div class="check-copy">https://youtube.com/@psidanielacoelho</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Categoria do perfil</div>
+          <div class="check-copy">Educação</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIKTOK -->
+  <div class="platform">
+    <div class="platform-hdr">
+      <div class="platform-icon" style="background:rgba(0,0,0,.3)">🎵</div>
+      <div class="platform-name">TikTok @psidanielacoelho</div>
+    </div>
+    <div class="checklist">
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Foto de perfil (avatar cyan)</div>
+          <div class="check-detail">Baixar em /brand.html → Avatars → TikTok → 200×200px</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this)">
+        <div class="check-box">✓</div>
+        <div>
+          <div class="check-title">Bio TikTok (80 chars)</div>
+          <div class="check-copy">Psicologia para entender quem você é 🧠
+Apego | Narcisismo | Trauma
+🔗 @psidanielacoelho no YouTube</div>
+          <button class="copy-btn" onclick="cp(document.querySelectorAll('.check-copy')[9].textContent)">Copiar bio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<h2>📋 Passo a Passo (15 minutos)</h2>
+<script>
+function toggle(el) {
+  el.classList.toggle('done');
+  const box = el.querySelector('.check-box');
+  box.textContent = el.classList.contains('done') ? '✓' : '';
+  updateProgress();
+  saveProgress();
+}
 
-<div class="step">
-<div><span class="num">1</span><span class="title">Acessar Google Cloud Console</span></div>
-<div class="body">
-Faça login com <code>psidanielacoelho1982@gmail.com</code> no Google Cloud:
-<a class="btn" href="https://console.cloud.google.com/" target="_blank">Abrir Console →</a>
-</div>
-</div>
+function updateProgress() {
+  const all = document.querySelectorAll('.check-item');
+  const done = document.querySelectorAll('.check-item.done');
+  const pct = Math.round(done.length / all.length * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = done.length + ' / ' + all.length + ' itens concluídos (' + pct + '%)';
+}
 
-<div class="step">
-<div><span class="num">2</span><span class="title">Criar Projeto Novo</span></div>
-<div class="body">
-Topo da página: clique no seletor de projeto → <strong>Novo Projeto</strong>:
-<ul>
-<li>Nome: <code>psidanielacoelho-publisher</code></li>
-<li>Organização: vazio</li>
-<li>Salvar e selecionar este projeto</li>
-</ul>
-</div>
-</div>
+function saveProgress() {
+  const states = Array.from(document.querySelectorAll('.check-item')).map(el => el.classList.contains('done'));
+  try { localStorage.setItem('canal-setup-progress', JSON.stringify(states)); } catch(e){}
+}
 
-<div class="step">
-<div><span class="num">3</span><span class="title">Habilitar YouTube Data API v3</span></div>
-<div class="body">
-Menu lateral → <strong>APIs &amp; Services → Library</strong> → buscar <strong>YouTube Data API v3</strong> → <strong>Enable</strong>
-<a class="btn" href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank">Direto pra API →</a>
-</div>
-</div>
+function loadProgress() {
+  try {
+    const states = JSON.parse(localStorage.getItem('canal-setup-progress') || '[]');
+    document.querySelectorAll('.check-item').forEach((el, i) => {
+      if (states[i]) { el.classList.add('done'); el.querySelector('.check-box').textContent = '✓'; }
+    });
+  } catch(e){}
+  updateProgress();
+}
 
-<div class="step">
-<div><span class="num">4</span><span class="title">Configurar OAuth Consent Screen</span></div>
-<div class="body">
-Menu lateral → <strong>APIs &amp; Services → OAuth consent screen</strong>:
-<ul>
-<li>User Type: <strong>External</strong></li>
-<li>App name: <code>Psi Daniela Coelho Publisher</code></li>
-<li>User support email: <code>psidanielacoelho1982@gmail.com</code></li>
-<li>Developer contact email: <code>psidanielacoelho1982@gmail.com</code></li>
-<li>Scopes: adicionar <code>https://www.googleapis.com/auth/youtube.upload</code> e <code>https://www.googleapis.com/auth/youtube</code></li>
-<li>Test users: adicione <code>psidanielacoelho1982@gmail.com</code></li>
-<li>Status: deixar como <strong>Testing</strong> (refresh tokens duram 7 dias se Testing, perpétuos se Production — ver passo 7)</li>
-</ul>
-</div>
-</div>
+function cp(text) {
+  navigator.clipboard?.writeText(text.trim()).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
 
-<div class="step">
-<div><span class="num">5</span><span class="title">Criar OAuth Client ID</span></div>
-<div class="body">
-Menu lateral → <strong>APIs &amp; Services → Credentials</strong>:
-<ul>
-<li>Clicar <strong>+ Create Credentials → OAuth Client ID</strong></li>
-<li>Application type: <strong>Web application</strong></li>
-<li>Name: <code>psi-daniela-publisher</code></li>
-<li>Authorized redirect URIs: adicionar <code>https://developers.google.com/oauthplayground</code></li>
-<li>Save → <strong>copiar Client ID e Client Secret</strong></li>
-</ul>
-</div>
-</div>
-
-<div class="step">
-<div><span class="num">6</span><span class="title">Gerar Refresh Token via OAuth Playground</span></div>
-<div class="body">
-<a class="btn" href="https://developers.google.com/oauthplayground" target="_blank">OAuth Playground →</a>
-<ul>
-<li>Topo direito: <strong>⚙️ Settings</strong> → marcar <strong>Use your own OAuth credentials</strong></li>
-<li>Colar Client ID e Client Secret do passo 5 → Close</li>
-<li>Esquerda: rolar até <strong>YouTube Data API v3</strong> → marcar <code>youtube</code> e <code>youtube.upload</code></li>
-<li>Clicar <strong>Authorize APIs</strong></li>
-<li>Login com <code>psidanielacoelho1982@gmail.com</code> (a conta DO CANAL!)</li>
-<li>Aceitar warning "App não verificado" → Continue</li>
-<li>Voltar pro Playground → clicar <strong>Exchange authorization code for tokens</strong></li>
-<li><strong>Copiar o Refresh token</strong> (começa com <code>1//</code>)</li>
-</ul>
-</div>
-</div>
-
-<div class="step">
-<div><span class="num">7</span><span class="title">⚡ IMPORTANTE: Publish App (refresh token perpétuo)</span></div>
-<div class="body">
-Volta no Console → <strong>OAuth consent screen</strong> → clica <strong>PUBLISH APP</strong> → Confirmar.<br>
-<em>Sem isso, o refresh token expira em 7 dias.</em> Depois de publicar, fica perpétuo (até o usuário revogar manualmente).
-</div>
-</div>
-
-<div class="step">
-<div><span class="num">8</span><span class="title">Me enviar as 3 credenciais</span></div>
-<div class="body">
-Cola aqui na conversa o que copiou:
-<div class="code-block">YT_CLIENT_ID_NEW=...
-YT_CLIENT_SECRET_NEW=...
-YT_REFRESH_TOKEN_NEW=1//...</div>
-Eu adiciono automaticamente no GitHub Secrets + Supabase. Imediatamente o pipeline passa a publicar TUDO em <strong>@psidanielacoelho</strong>.
-</div>
-</div>
-
-<h2>💰 O Que Você Vai Ganhar (estratégia já implementada)</h2>
-
-<div class="ok">
-<strong>✅ CONFIRMADO via pesquisa oficial YouTube + dados reais Psych2Go:</strong><br>
-Vídeos de 5+ min PAGAM SIM, mas vídeos de <strong>8min+</strong> ganham <strong>+50% a +100% MAIS</strong> via mid-roll ads.
-</div>
-
-<h3>4 Tiers de Vídeo (estratégia balanceada)</h3>
-<table>
-<tr><th>Tier</th><th>Duração</th><th>Mid-roll</th><th>Receita</th><th>% produção</th><th>Quando usar</th></tr>
-<tr><td><strong>SHORT</strong></td><td>50-58s</td><td>—</td><td>0.3x</td><td>Maior volume</td><td>Subs rápidos · path 10M views/90d</td></tr>
-<tr><td><strong>CURTO</strong></td><td>5-7min</td><td>❌ não</td><td>1.0x</td><td>30%</td><td>Alta retenção · viralização (Psych2Go usa muito)</td></tr>
-<tr><td style="color:#4ade80"><strong>ÓTIMO</strong></td><td>8-10min</td><td>✅ SIM</td><td><strong>1.5x</strong></td><td><strong>50%</strong></td><td><strong>Sweet spot · mesma performance que 5-7min mas paga 50% mais</strong></td></tr>
-<tr><td><strong>PREMIUM</strong></td><td>12-15min</td><td>✅ múltiplos</td><td><strong>2.0x</strong></td><td>20%</td><td>Tópicos densos · listas grandes · tutoriais</td></tr>
-</table>
-
-<div class="receita-tier">
-<strong>📊 Por que 8-10min é ótimo:</strong><br>
-Dados reais Psych2Go (top 120 vídeos, fetched HOJE via YouTube API):
-<ul style="margin-top:6px;margin-left:18px;font-size:12px;color:#bbb">
-<li>47 vídeos de 5-7min: avg <strong>109K views</strong></li>
-<li>10 vídeos de 8-12min: avg <strong>111K views</strong> (performance IDÊNTICA)</li>
-<li>Mas os de 8-12min ganham <strong>+50% receita</strong> via mid-roll que o YouTube libera</li>
-<li>Conclusão: Psych2Go DEIXA DINHEIRO NA MESA. Nossa estratégia maximiza isso.</li>
-</ul>
-</div>
-
-<h3>📅 Programação Diária (quando OAuth estiver ativo)</h3>
-<table>
-<tr><th>Tier</th><th>Por dia</th><th>Por semana</th><th>Receita esperada/dia</th></tr>
-<tr><td>SHORT</td><td>3 vids</td><td>21 vids</td><td>~$0.50</td></tr>
-<tr><td>CURTO 5-7min</td><td>0.3 vids</td><td>2 vids</td><td>~$2</td></tr>
-<tr><td><strong>ÓTIMO 8-10min</strong></td><td><strong>0.5 vids</strong></td><td><strong>3-4 vids</strong></td><td><strong>~$5</strong></td></tr>
-<tr><td>PREMIUM 12-15min</td><td>0.2 vids</td><td>1-2 vids</td><td>~$3</td></tr>
-<tr><td colspan=2><strong>Total semanal:</strong></td><td><strong>~28 vídeos</strong></td><td><strong>~$70/semana após YPP</strong></td></tr>
-</table>
-
-<h3>📈 Projeção realista após OAuth ativo</h3>
-<table>
-<tr><th>Marco</th><th>Tempo</th><th>Receita/mês</th></tr>
-<tr><td>YPP early access (500 subs + 3K hours)</td><td>30-45 dias</td><td>$50-200 (Super Thanks, Memberships)</td></tr>
-<tr><td>YPP full ads (1k subs + 4k hours)</td><td>60-90 dias</td><td>$300-800</td></tr>
-<tr><td>10k subs</td><td>3-4 meses</td><td>$800-2k</td></tr>
-<tr><td>100k subs + auto-dub EN</td><td>9-12 meses</td><td>$5-12k</td></tr>
-<tr><td>1M subs</td><td>24-36 meses</td><td>$25k+</td></tr>
-</table>
-
-<h2>🚀 O Que Já Está Pronto (sem precisar do OAuth)</h2>
-<ul style="margin-left:18px;font-size:13px;color:#bbb">
-<li>✅ Estratégia 4 tiers (SHORT/CURTO/<strong>ÓTIMO 8-10min</strong>/PREMIUM) com mid-roll otimizado</li>
-<li>✅ Função <code>generate_video_balanced(topico, tier)</code> testada — 4 pipelines de exemplo criados</li>
-<li>✅ 12 fórmulas de hook reais Psych2Go traduzidas PT-BR</li>
-<li>✅ 18 insights gravados no cérebro autônomo (RPM real, padrões, frequência)</li>
-<li>✅ Pipeline V2 Psych2Go-clone produz vídeos 100% originais (zero risco copyright)</li>
-<li>✅ Edge TTS PT-BR + Flux Schnell + ffmpeg ($0/mês shorts, $0.012/long monetizado)</li>
-</ul>
-
-<p style="text-align:center;margin-top:30px;color:#888;font-size:11px">
-Galeria: <a href="https://repovazio.vercel.app/v2.html">v2.html</a> · 
-Blueprint: <a href="https://repovazio.vercel.app/canal-oficial.html">canal-oficial.html</a><br>
-Última atualização: 2026-05-10
-</p>
-
-</body>
-</html>
+loadProgress();
+</script>
+</body></html>
