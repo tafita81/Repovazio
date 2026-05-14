@@ -1,5 +1,48 @@
 # ψ SETUP.md — Configuração Completa psicologia.doc
 
+
+## 🔴 CRÍTICO: Regenerar YT_REFRESH_TOKEN (expirado!)
+
+**Erro detectado:** `invalid_grant — Token has been expired or revoked`
+
+### Passo a passo para renovar o token:
+
+**Opção A — Google OAuth Playground (mais fácil):**
+1. Acesse: https://developers.google.com/oauthplayground
+2. Clique no ícone ⚙️ (canto superior direito)
+3. Marque "Use your own OAuth credentials"
+4. Insira:
+   - OAuth Client ID: (mesmo do YT_CLIENT_ID no GitHub)
+   - OAuth Client Secret: (mesmo do YT_CLIENT_SECRET)
+5. Feche as configurações
+6. No campo "Select & authorize APIs":
+   - Cole: `https://www.googleapis.com/auth/youtube.upload`
+   - Clique "Authorize APIs"
+7. Faça login com a conta `psidanielacoelho1982@gmail.com`
+8. Aceite as permissões
+9. Clique "Exchange authorization code for tokens"
+10. **Copie o `refresh_token`** que aparece na resposta
+
+**Atualizar o GitHub Secret:**
+1. Acesse: https://github.com/tafita81/Repovazio/settings/secrets/actions
+2. Clique em `YT_REFRESH_TOKEN`
+3. Cole o novo refresh_token
+4. Clique "Update secret"
+
+**Redisparar o Publisher:**
+```bash
+# Depois de atualizar o secret:
+curl -X POST \
+  -H "Authorization: Bearer GH_PAT" \
+  -H "Accept: application/vnd.github+json" \
+  "https://api.github.com/repos/tafita81/Repovazio/actions/workflows/youtube-publisher.yml/dispatches" \
+  -d '{"ref":"main"}'
+```
+
+**Verificar no YouTube Studio:**
+- https://studio.youtube.com/channel/UCyCkIpsVgME9yCj_oXJFheA
+
+
 ## 🔴 PASSO 1: Deletar Edge Functions Orphan (BLOQUEADOR CRÍTICO)
 
 Acesse: https://app.supabase.com/project/tpjvalzwkqwttvmszvie/functions
