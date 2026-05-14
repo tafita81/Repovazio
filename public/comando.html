@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ψ Command Center — psicologia.doc → R$50K/mês</title>
+<title>ψ Command Center V37 — psicologia.doc → R$50K/mês</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.1);--acc:#7C3AED;--mist:#C4B5FD;--gold:#F59E0B;--crim:#E11D48;--teal:#0D9488;--cyan:#38BDF8;--grn:#10B981;--frost:#F0F4FF;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569}
 *{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(124,58,237,.14),transparent),
-radial-gradient(ellipse 60% 40% at 85% 20%,rgba(225,29,72,.08),transparent),
-radial-gradient(ellipse 70% 50% at 50% 110%,rgba(14,148,130,.08),transparent)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(124,58,237,.14),transparent),radial-gradient(ellipse 60% 40% at 85% 20%,rgba(225,29,72,.08),transparent),radial-gradient(ellipse 70% 50% at 50% 110%,rgba(14,148,130,.08),transparent)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -18,131 +15,143 @@ radial-gradient(ellipse 70% 50% at 50% 110%,rgba(14,148,130,.08),transparent)}
 .badge{font-size:9px;color:var(--gold);font-family:'DM Mono',monospace;background:rgba(245,158,11,.12);padding:3px 10px;border-radius:20px;border:1px solid rgba(245,158,11,.25);font-weight:600}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 1.8s infinite;display:inline-block}
 .live{font-size:10px;color:var(--t2);display:flex;align-items:center;gap:5px}
-.hnav{margin-left:auto;display:flex;gap:6px}
+.hnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
 .hbtn{padding:5px 14px;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;color:var(--t2);border:1px solid var(--bd);transition:.15s;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif}
 .hbtn:hover{color:var(--frost);border-color:var(--bd2)}.hbtn.p{background:var(--acc);color:#fff;border-color:transparent}
 .wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:28px 28px 80px}
 
 /* HERO */
-.hero{margin-bottom:28px;animation:fadeUp .4s ease}
-.hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.hero-left h1{font-size:clamp(28px,4vw,52px);font-weight:800;letter-spacing:-2px;color:var(--frost);line-height:1.05;margin-bottom:10px}
-.hero-left h1 em{font-style:normal;background:linear-gradient(90deg,#C084FC,#38BDF8,#10B981);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-sub{font-size:14px;color:var(--t2);max-width:620px;line-height:1.7;margin-bottom:18px}
-.hero-tags{display:flex;gap:8px;flex-wrap:wrap}
-.htag{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;padding:3px 10px;background:rgba(255,255,255,.04);border-radius:20px;border:1px solid var(--bd)}
-.htag.ok{color:var(--grn);background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2)}
-.htag.warn{color:var(--gold);background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2)}
-.htag.acc{color:var(--mist);background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.2)}
-.yt-cta{background:linear-gradient(135deg,rgba(225,29,72,.15),rgba(225,29,72,.06));border:1px solid rgba(225,29,72,.25);border-radius:16px;padding:20px 24px;min-width:260px;text-align:center}
+.hero{margin-bottom:24px;animation:fadeUp .4s ease}
+.hero-top{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+.hl h1{font-size:clamp(28px,4vw,52px);font-weight:800;letter-spacing:-2px;color:var(--frost);line-height:1.05;margin-bottom:10px}
+.hl h1 em{font-style:normal;background:linear-gradient(90deg,#C084FC,#38BDF8,#10B981);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hl p{font-size:14px;color:var(--t2);max-width:620px;line-height:1.7;margin-bottom:18px}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;padding:3px 10px;background:rgba(255,255,255,.04);border-radius:20px;border:1px solid var(--bd)}
+.tag.ok{color:var(--grn);background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2)}
+.tag.warn{color:var(--gold);background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2)}
+.tag.err{color:var(--crim);background:rgba(225,29,72,.08);border-color:rgba(225,29,72,.2)}
+.tag.acc{color:var(--mist);background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.2)}
+.yt-box{background:linear-gradient(135deg,rgba(225,29,72,.15),rgba(225,29,72,.06));border:1px solid rgba(225,29,72,.3);border-radius:16px;padding:20px 24px;min-width:250px;text-align:center;flex-shrink:0}
 .yt-icon{font-size:36px;margin-bottom:8px}
 .yt-name{font-size:14px;font-weight:700;color:var(--frost);margin-bottom:4px}
-.yt-handle{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:14px}
-.yt-btn{display:block;background:var(--crim);color:#fff;text-decoration:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;margin-bottom:8px;transition:.15s}
+.yt-h{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:14px}
+.yt-btn{display:block;background:var(--crim);color:#fff;text-decoration:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;margin-bottom:10px;transition:.15s}
 .yt-btn:hover{background:#BE123C}
-.yt-subs{font-size:22px;font-weight:800;font-family:'DM Mono',monospace;color:var(--gold);line-height:1}
+.yt-n{font-size:22px;font-weight:800;font-family:'DM Mono',monospace;color:var(--gold);line-height:1}
 .yt-sl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px}
 
-/* ROADMAP MONETIZAÇÃO */
-.roadmap{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:24px 28px;margin-bottom:24px;animation:fadeUp .4s .05s ease both}
-.rm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-.rm-title{font-size:14px;font-weight:700;color:var(--frost)}
-.rm-sub{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace}
-.phases{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}
-.phase{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:16px;position:relative;overflow:hidden}
-.phase.current{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.06);animation:glow 3s ease-in-out infinite}
-.phase.done{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.05)}
-.phase.locked{opacity:.5}
+/* ROADMAP */
+.roadmap{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:24px 28px;margin-bottom:20px;animation:fadeUp .4s .05s ease both}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.sec-title{font-size:14px;font-weight:700;color:var(--frost)}
+.sec-sub{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace}
+.phases{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:14px}
+.phase{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px;position:relative}
+.phase.now{border-color:rgba(124,58,237,.5);background:rgba(124,58,237,.06);animation:glow 3s ease-in-out infinite}
+.phase.locked{opacity:.45}
 .ph-tag{position:absolute;top:10px;right:10px;font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:'DM Mono',monospace}
-.pt-now{background:rgba(124,58,237,.2);color:var(--mist)}
-.pt-next{background:rgba(245,158,11,.15);color:var(--gold)}
-.pt-lock{background:rgba(71,85,105,.3);color:var(--t3)}
-.pt-done{background:rgba(16,185,129,.15);color:var(--grn)}
-.ph-n{font-size:24px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:4px}
-.ph-l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:6px}
-.ph-desc{font-size:11px;color:var(--t2);line-height:1.5}
-.ph-action{font-size:10px;font-weight:700;margin-top:8px;padding:5px 10px;border-radius:7px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left}
-.pa-now{background:rgba(124,58,237,.2);color:var(--mist)}
-.pa-next{background:rgba(245,158,11,.12);color:var(--gold)}
-.prog-wrap{margin-top:16px}
-.prog-row{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-bottom:5px;font-family:'DM Mono',monospace}
-.pbar{height:8px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden}
+.pnow{background:rgba(124,58,237,.2);color:var(--mist)}
+.pnxt{background:rgba(245,158,11,.15);color:var(--gold)}
+.plck{background:rgba(71,85,105,.3);color:var(--t3)}
+.pv{font-size:22px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px}
+.pl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:5px}
+.pd{font-size:11px;color:var(--t2);line-height:1.45}
+.ph-action{font-size:10px;font-weight:700;margin-top:8px;padding:5px 10px;border-radius:7px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;text-align:left;transition:.15s}
+.pa-now{background:rgba(124,58,237,.2);color:var(--mist)}.pa-now:hover{background:rgba(124,58,237,.3)}
+.pa-next{background:rgba(245,158,11,.12);color:var(--gold)}.pa-next:hover{background:rgba(245,158,11,.2)}
+.pbar{height:8px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden;margin-top:14px}
 .pfill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--acc),var(--cyan),var(--grn));transition:width 1.5s ease}
 
 /* MÉTRICAS */
-.mrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:24px;animation:fadeUp .4s .1s ease both}
-.mc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;transition:.2s}
+.mrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:20px;animation:fadeUp .4s .1s ease both}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px;transition:.2s;cursor:default}
 .mc:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px)}
-.mcn{font-size:30px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px}
+.mcn{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:2px}
 .mcl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
-.mcs{font-size:9px;color:var(--t3);margin-top:3px;font-family:'DM Mono',monospace}
+.mcs{font-size:9px;color:var(--t3);margin-top:2px;font-family:'DM Mono',monospace}
 .ca{color:var(--mist)}.cg{color:var(--grn)}.cgo{color:var(--gold)}.cc{color:var(--cyan)}.ct{color:var(--teal)}.ccr{color:var(--crim)}
 
-/* AÇÕES IMEDIATAS */
-.actions{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(225,29,72,.05));border:1px solid rgba(245,158,11,.2);border-radius:16px;padding:20px 24px;margin-bottom:24px;animation:fadeUp .4s .15s ease both}
-.act-h{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.act-title{font-size:14px;font-weight:700;color:var(--frost)}
-.act-badge{font-size:9px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.2);font-weight:700}
-.act-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.act{display:flex;align-items:flex-start;gap:12px;background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:12px;padding:14px}
-.act-num{font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--gold);flex-shrink:0;width:28px}
-.act-text{font-size:12px;color:var(--t2);line-height:1.5;flex:1}
-.act-text strong{color:var(--frost)}
-.act-tag{font-size:8px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;display:inline-block;margin-top:4px}
-.at-now{background:rgba(225,29,72,.15);color:var(--crim)}
-.at-soon{background:rgba(245,158,11,.15);color:var(--gold)}
-.at-aut{background:rgba(124,58,237,.15);color:var(--mist)}
+/* CÉREBRO AUTÔNOMO */
+.cerebro{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(91,33,182,.06));border:1px solid rgba(124,58,237,.25);border-radius:18px;padding:20px 24px;margin-bottom:20px;animation:fadeUp .4s .15s ease both}
+.cron-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin-top:14px}
+.cron{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.cron-freq{font-size:9px;font-family:'DM Mono',monospace;color:var(--gold);background:rgba(245,158,11,.1);padding:2px 7px;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.cron-desc{font-size:11px;color:var(--t2);flex:1;line-height:1.4}
+.cron.warn{border-color:rgba(225,29,72,.2);background:rgba(225,29,72,.04)}
+.cron.warn .cron-freq{color:var(--crim);background:rgba(225,29,72,.1)}
 
-/* GRID PÁGINAS */
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+/* ESTRATÉGIA QUÂNTICA */
+.quantica{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:20px 24px;margin-bottom:20px;animation:fadeUp .4s .2s ease both}
+.dim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:14px}
+.dim{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.dim-name{font-size:11px;font-weight:700;color:var(--frost);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.dim-score{font-size:9px;font-family:'DM Mono',monospace;color:var(--gold);padding:1px 6px;background:rgba(245,158,11,.1);border-radius:4px}
+.dim-desc{font-size:10px;color:var(--t3);line-height:1.5}
+.hooks-list{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hook{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--t2)}
+
+/* AÇÕES URGENTES */
+.actions{background:linear-gradient(135deg,rgba(225,29,72,.1),rgba(245,158,11,.05));border:1px solid rgba(225,29,72,.25);border-radius:16px;padding:20px 24px;margin-bottom:20px;animation:fadeUp .4s .25s ease both}
+.act-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:14px}
+.act{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;gap:12px}
+.an{font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--gold);width:24px;flex-shrink:0}
+.at{font-size:12px;color:var(--t2);line-height:1.5;flex:1}
+.at strong{color:var(--frost)}
+.atag{font-size:8px;font-weight:700;padding:1px 6px;border-radius:4px;font-family:'DM Mono',monospace;display:inline-block;margin-top:4px}
+.at-hot{background:rgba(225,29,72,.15);color:var(--crim)}
+.at-w{background:rgba(245,158,11,.15);color:var(--gold)}
+.at-a{background:rgba(124,58,237,.15);color:var(--mist)}
+
+/* REDES */
+.redes{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px 24px;margin-bottom:20px;animation:fadeUp .4s .3s ease both}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:14px}
+.rede{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
+.ri{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.rname{font-size:13px;font-weight:700;color:var(--t1)}
+.rstatus{font-size:9px;color:var(--t3);font-family:'DM Mono',monospace;margin-top:2px}
+.rdot{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.dlive{background:var(--grn);animation:pulse 2s infinite}.dpend{background:var(--gold)}
+
+/* LINKS */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
 @media(max-width:1100px){.grid3{grid-template-columns:1fr 1fr}}@media(max-width:680px){.grid3{grid-template-columns:1fr}}
-.panel{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;animation:fadeUp .4s .2s ease both}
+.panel{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;animation:fadeUp .4s .35s ease both}
 .ph{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
 .pt{font-size:12px;font-weight:700;color:var(--t1);flex:1}
 .pbadge{font-size:9px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;font-weight:700}
 .pgr{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.2)}
 .pgo{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
 .pac{background:rgba(124,58,237,.15);color:var(--mist);border:1px solid rgba(124,58,237,.2)}
-.pcr{background:rgba(225,29,72,.15);color:var(--crim);border:1px solid rgba(225,29,72,.2)}
 .pb{padding:12px 16px}
 .lnk{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;text-decoration:none;color:var(--t2);border:1px solid transparent;transition:.15s;margin-bottom:5px}
 .lnk:last-child{margin-bottom:0}.lnk:hover{background:rgba(255,255,255,.04);border-color:var(--bd);color:var(--t1)}
 .li{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.lt{flex:1;min-width:0}
 .ln{font-size:12px;font-weight:600;color:var(--t1);display:block;margin-bottom:1px}
 .ld{font-size:10px;color:var(--t3);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* REDES */
-.redes{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px 24px;margin-bottom:24px;animation:fadeUp .4s .25s ease both}
-.rh{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.rt{font-size:14px;font-weight:700;color:var(--frost)}
-.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-.rede{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px}
-.ric{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.rn{font-size:13px;font-weight:700;color:var(--t1)}
-.rs{font-size:9px;color:var(--t3);font-family:'DM Mono',monospace}
-.rdot{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0}
-.dlive{background:var(--grn);animation:pulse 2s infinite}.dpend{background:var(--gold)}.doff{background:var(--t3)}
-
 /* PIPELINE */
-.pipe-panel{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px 24px;margin-bottom:24px;animation:fadeUp .4s .3s ease both}
-.ps-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.pipe-panel{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px 24px;margin-bottom:20px;animation:fadeUp .4s .4s ease both}
+.ps-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
 .ps{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 14px;text-align:center;flex:1;min-width:90px}
-.psn{font-size:24px;font-weight:800;font-family:'DM Mono',monospace;line-height:1}
+.psn{font-size:22px;font-weight:800;font-family:'DM Mono',monospace;line-height:1}
 .psl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 .tick{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.15);border-radius:10px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
+.tick.warn{background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.15)}
+.tick.err{background:rgba(225,29,72,.05);border-color:rgba(225,29,72,.15)}
 .tick:last-child{margin-bottom:0}
 .tt{font-size:11px;color:var(--t2);flex:1;line-height:1.5}
 .tm{font-size:9px;color:var(--t3);font-family:'DM Mono',monospace;flex-shrink:0;margin-top:1px}
 .rbar{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--bd);font-size:10px;color:var(--t3);font-family:'DM Mono',monospace}
 .spin{width:11px;height:11px;border:1.5px solid var(--bd2);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
-
 footer{text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);font-family:'DM Mono',monospace;line-height:1.8}
-@media(max-width:700px){.wrap{padding:16px 16px 60px}.hero-top{flex-direction:column}.yt-cta{width:100%}.phases{grid-template-columns:1fr 1fr}.mrow{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.wrap{padding:16px 16px 60px}.hero-top{flex-direction:column}.yt-box{width:100%}.phases{grid-template-columns:1fr 1fr}.mrow{grid-template-columns:repeat(3,1fr)}.hooks-list{grid-template-columns:1fr}.cron-grid{grid-template-columns:1fr}}
 </style></head><body>
 <header class="hdr">
 <div class="logo">ψ <span>psicologia.doc</span></div>
 <div class="badge">COMMAND CENTER V37</div>
-<div class="live"><span class="dot"></span> Sistema Ativo · $0/mês</div>
+<div class="live"><span class="dot"></span> 38 crons · Cérebro ativo · $0/mês</div>
 <nav class="hnav">
 <a href="/qg.html" class="hbtn">QG</a>
 <a href="/series.html" class="hbtn">Séries</a>
@@ -156,176 +165,237 @@ footer{text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:
 <!-- HERO -->
 <div class="hero">
 <div class="hero-top">
-<div class="hero-left">
-<h1>Rota para <em>R$ 50.000/mês</em><br>via YouTube + 4 redes</h1>
-<p class="hero-sub">psicologia.doc — Sistema autônomo 24/7 · Cadeia LLM 8 modelos grátis (Qwen3 Next 80B default) · Edge TTS Microsoft · Render v8 Cinematic · 20 séries · 140 episódios planejados · Custo $0/mês.</p>
-<div class="hero-tags">
-<span class="htag ok">🟢 Cérebro V37 Ativo</span>
-<span class="htag acc">⚡ Qwen3 Default</span>
-<span class="htag ok" id="ht-mp4">⏳ Carregando...</span>
-<span class="htag warn">⚠️ OAuth Meta/TikTok Pendente</span>
-<span class="htag">📅 Meta: Jan/2027</span>
+<div class="hl">
+<h1>Rota para <em>R$ 50.000/mês</em><br>via YouTube + 4 redes sociais</h1>
+<p>psicologia.doc — 38 crons autônomos 24/7 · Cérebro V37 decide e otimiza a cada minuto · Cadeia LLM 8 modelos grátis (Qwen3 Next 80B) · Gate Quântico 95pts · 20 séries · Custo $0/mês</p>
+<div class="tags">
+<span class="tag ok">🟢 Cérebro ativo a cada minuto</span>
+<span class="tag acc">⚡ Qwen3 Next 80B default</span>
+<span class="tag ok" id="ht-mp4">⏳ Carregando...</span>
+<span class="tag warn">⚠️ OAuth Meta/TikTok pendente</span>
+<span class="tag err" id="ht-err">⏳</span>
 </div>
 </div>
-<div class="yt-cta">
+<div class="yt-box">
 <div class="yt-icon">▶️</div>
 <div class="yt-name">Canal Oficial</div>
-<div class="yt-handle">@psidanielacoelho</div>
+<div class="yt-h">@psidanielacoelho</div>
 <a href="https://youtube.com/@psidanielacoelho" target="_blank" class="yt-btn">🚀 Abrir Canal YouTube</a>
-<div class="yt-subs" id="yt-subs">0</div>
-<div class="yt-sl">inscritos atuais</div>
+<div class="yt-n" id="yt-subs">0</div>
+<div class="yt-sl">inscritos · meta: 1.000</div>
 </div>
 </div>
 </div>
 
-<!-- ROADMAP MONETIZAÇÃO -->
+<!-- ROADMAP -->
 <div class="roadmap">
-<div class="rm-hdr">
-<div class="rm-title">🗺️ Roadmap Monetização · 6 Fases até R$50.000/mês</div>
-<div class="rm-sub" id="rm-current">Calculando fase atual...</div>
+<div class="sec-hdr">
+<div class="sec-title">🗺️ Roadmap · 6 Fases até R$50.000/mês</div>
+<div class="sec-sub" id="fase-atual">Calculando fase atual...</div>
 </div>
 <div class="phases">
-<div class="phase current">
-<div class="ph-tag pt-now">AGORA</div>
-<div class="ph-n ca" id="ph-subs">0</div>
-<div class="ph-l">Inscritos YT</div>
-<div class="ph-desc">Publicar 17 vídeos prontos · Google Ads R$200 (R$4,67/dia) · Organic viral shorts</div>
-<button class="ph-action pa-now" onclick="location.href='/canal-oficial.html'">→ Configurar publicação</button>
+<div class="phase now">
+<div class="ph-tag pnow">AGORA</div>
+<div class="pv ca" id="subs-n">0</div>
+<div class="pl">Inscritos YT</div>
+<div class="pd">Publicar 17 MP4s prontos · Google Ads R$200 (R$4,67/dia) · Shorts virais primeiros</div>
+<button class="ph-action pa-now" onclick="location.href='/canal-oficial.html'">→ Configurar publicação YT</button>
 </div>
 <div class="phase">
-<div class="ph-tag pt-next">FASE 2</div>
-<div class="ph-n cgo">1.000</div>
-<div class="ph-l">Inscritos</div>
-<div class="ph-desc">Ativar Instagram · TikTok · Pinterest · WhatsApp → tráfego cruzado entre redes</div>
+<div class="ph-tag pnxt">FASE 2</div>
+<div class="pv cgo">1.000</div>
+<div class="pl">Inscritos</div>
+<div class="pd">OAuth Meta/TikTok/Pinterest · distribuição automática cron 30min · tráfego cruzado</div>
 <button class="ph-action pa-next" onclick="location.href='/conectores.html'">→ Setup OAuth redes</button>
 </div>
 <div class="phase">
-<div class="ph-tag pt-next">FASE 3</div>
-<div class="ph-n cc">4.000h</div>
-<div class="ph-l">Watch Time</div>
-<div class="ph-desc">Long-form 12min+ (5x/semana) = 4.000h em 3 meses para elegibilidade AdSense</div>
-<button class="ph-action pa-next" onclick="location.href='/series.html'">→ Ver 20 séries</button>
+<div class="ph-tag pnxt">FASE 3</div>
+<div class="pv cc">4.000h</div>
+<div class="pl">Watch Time</div>
+<div class="pd">Long-form 15-20min (5x/semana) = 4.000h em 3 meses · elegibilidade AdSense</div>
+<button class="ph-action pa-next" onclick="location.href='/series.html'">→ Ver 20 séries · 140 eps</button>
 </div>
 <div class="phase locked">
-<div class="ph-tag pt-lock">FASE 4</div>
-<div class="ph-n" style="color:var(--t3)">R$1K</div>
-<div class="ph-l">AdSense ON</div>
-<div class="ph-desc">50K views/mês × RPM R$22 = R$1.100/mês · Ativar após 1K subs + 4Kh</div>
+<div class="ph-tag plck">FASE 4</div>
+<div class="pv" style="color:var(--t3)">R$1K</div>
+<div class="pl">AdSense ON</div>
+<div class="pd">50K views/mês × RPM R$22 = R$1.100/mês · requer 1K subs + 4Kh</div>
 </div>
 <div class="phase locked">
-<div class="ph-tag pt-lock">FASE 5</div>
-<div class="ph-n" style="color:var(--t3)">R$22K</div>
-<div class="ph-l">1M views/mês</div>
-<div class="ph-desc">160 vídeos × 6K views × RPM R$22 + receita TikTok/Meta/Pinterest</div>
+<div class="ph-tag plck">FASE 5</div>
+<div class="pv" style="color:var(--t3)">R$22K</div>
+<div class="pl">1M views/mês</div>
+<div class="pd">160 vídeos × 6K views × RPM R$22 + TikTok/Meta/Pinterest</div>
 </div>
 <div class="phase locked">
-<div class="ph-tag pt-lock">META</div>
-<div class="ph-n" style="color:var(--gold)">R$50K</div>
-<div class="ph-l">Jan/2027</div>
-<div class="ph-desc">400+ vídeos × RPM R$28 + sponsorship + cursos + afiliados psicologia</div>
+<div class="ph-tag plck">META JAN/2027</div>
+<div class="pv cgo">R$50K</div>
+<div class="pl">2M views/mês</div>
+<div class="pd">400+ vídeos × RPM R$28 + sponsorships + cursos + afiliados</div>
 </div>
 </div>
-<div class="prog-wrap">
-<div class="prog-row"><span>Progresso rota R$50K/mês</span><span id="prog-pct">0% · Fase 1 de 6</span></div>
 <div class="pbar"><div class="pfill" id="pfill" style="width:3%"></div></div>
 </div>
-</div>
 
-<!-- MÉTRICAS TEMPO REAL -->
+<!-- MÉTRICAS -->
 <div class="mrow">
 <div class="mc"><div class="mcn cg" id="mt-mp4">17</div><div class="mcl">MP4 Prontos</div><div class="mcs">Para publicar agora</div></div>
-<div class="mc"><div class="mcn cgo" id="mt-pend">23</div><div class="mcl">Pending OAuth</div><div class="mcs">Aguardando setup redes</div></div>
-<div class="mc"><div class="mcn ca">20</div><div class="mcl">Séries</div><div class="mcs">140 episódios planejados</div></div>
-<div class="mc"><div class="mcn cc">5</div><div class="mcl">Priority 10</div><div class="mcs">34 eps · Publicar primeiro</div></div>
+<div class="mc"><div class="mcn cgo" id="mt-pend">23</div><div class="mcl">Pending OAuth</div><div class="mcs">Aguardando redes sociais</div></div>
+<div class="mc"><div class="mcn" style="color:#F59E0B" id="mt-gen">471</div><div class="mcl">Na Fila Geração</div><div class="mcs">Fila LLM Qwen3</div></div>
+<div class="mc"><div class="mcn cc">20</div><div class="mcl">Séries</div><div class="mcs">140 episódios planejados</div></div>
+<div class="mc"><div class="mcn ca">38</div><div class="mcl">Crons Ativos</div><div class="mcs">Cérebro 24/7</div></div>
+<div class="mc"><div class="mcn cg" id="mt-pub">0</div><div class="mcl">Publicados</div><div class="mcs">Canal YouTube</div></div>
 <div class="mc"><div class="mcn" style="color:#F472B6">$0</div><div class="mcl">Custo Mensal</div><div class="mcs">100% grátis</div></div>
-<div class="mc"><div class="mcn cg" id="mt-pub">0</div><div class="mcl">Publicados</div><div class="mcs">Canal YouTube ativo</div></div>
+<div class="mc"><div class="mcn ccr" id="mt-block">38</div><div class="mcl">Blocked Safety</div><div class="mcs">Conteúdo sensível</div></div>
 </div>
 
-<!-- AÇÕES IMEDIATAS -->
+<!-- CÉREBRO AUTÔNOMO -->
+<div class="cerebro">
+<div class="sec-hdr">
+<div class="sec-title">🧠 Cérebro Autônomo — O Que Acontece Automaticamente</div>
+<div class="sec-sub">38 crons · Ciclo completo a cada minuto · Aprendizado contínuo</div>
+</div>
+<div class="cron-grid">
+<div class="cron"><span class="cron-freq">1 min</span><span class="cron-desc">cerebro_ciclo_completo() — decide próximo vídeo, prioridades, estratégia</span></div>
+<div class="cron"><span class="cron-freq">1 min</span><span class="cron-desc">intelligence-engine?tick — aprendizado contínuo, adapta estratégia</span></div>
+<div class="cron"><span class="cron-freq">1 min</span><span class="cron-desc">optimize_brain_priorities() — reordena fila por score viral</span></div>
+<div class="cron"><span class="cron-freq">1 min</span><span class="cron-desc">llm_collect_responses() — coleta scripts gerados pelo Qwen3</span></div>
+<div class="cron"><span class="cron-freq">2 min</span><span class="cron-desc">assemble_multipart_scripts() + apply_completed_scripts()</span></div>
+<div class="cron"><span class="cron-freq">3 min</span><span class="cron-desc">run_quantum_gate_cycle(10) — gate de qualidade 95pts em 10 dimensões</span></div>
+<div class="cron"><span class="cron-freq">3 min</span><span class="cron-desc">auto_enqueue_script_generations(5) — enfileira novos scripts Qwen3</span></div>
+<div class="cron"><span class="cron-freq">5 min</span><span class="cron-desc">master_orchestrator() — orquestrador geral do pipeline</span></div>
+<div class="cron"><span class="cron-freq">5 min</span><span class="cron-desc">auto_iterate_next_pipeline() + analytics_collector</span></div>
+<div class="cron"><span class="cron-freq">10 min</span><span class="cron-desc">audit_and_gate_videos() — auditoria e reprovação de vídeos ruins</span></div>
+<div class="cron"><span class="cron-freq">15 min</span><span class="cron-desc">cross_platform_repurpose() — converte long→shorts/reels automaticamente</span></div>
+<div class="cron"><span class="cron-freq">30 min</span><span class="cron-desc">social_distribute_ready_videos() — distribui nas redes (aguarda OAuth)</span></div>
+<div class="cron"><span class="cron-freq">30 min</span><span class="cron-desc">brain-learn-30min → learn_and_adapt — ajusta estratégia com dados reais</span></div>
+<div class="cron"><span class="cron-freq">30 min</span><span class="cron-desc">cerebro_process_viral_learning() — aprende com 18 virais referência (28M views)</span></div>
+<div class="cron"><span class="cron-freq">1 hora</span><span class="cron-desc">videos-page-publisher → atualiza /videos-prontos.html automaticamente</span></div>
+<div class="cron"><span class="cron-freq">Diário 4h</span><span class="cron-desc">profile-optimizer-daily → ajusta bios/perfis nas 5 redes (quando OAuth ativo)</span></div>
+<div class="cron"><span class="cron-freq">Diário 7h</span><span class="cron-desc">eternal_brain otimização estratégica (duração, hooks, tópicos quentes)</span></div>
+<div class="cron"><span class="cron-freq">Diário 9h</span><span class="cron-desc">monitorar_canal_youtube() — coleta métricas do canal</span></div>
+<div class="cron"><span class="cron-freq">Diário</span><span class="cron-desc">analise_crescimento_diario() + limpar_videos_ruins() + cases research</span></div>
+<div class="cron"><span class="cron-freq">Semanal</span><span class="cron-desc">cerebro_validate_knowledge_by_performance() — valida estratégia com dados reais</span></div>
+<div class="cron warn"><span class="cron-freq">⚠️ DESATIVAR</span><span class="cron-desc">auto-dispatch-renders/tts a cada 10min — dispara workflows que FALHAM. Desativar no Supabase Dashboard → Database → Cron Jobs</span></div>
+</div>
+</div>
+
+<!-- ESTRATÉGIA QUÂNTICA -->
+<div class="quantica">
+<div class="sec-hdr">
+<div class="sec-title">⚛️ Estratégia Quântica — Gate Extremo 95pts · 10 Dimensões</div>
+<div class="sec-sub">Cada vídeo avaliado em 10 dimensões · Nenhum vídeo publicado abaixo de 95pts em qualquer dimensão</div>
+</div>
+<div class="dim-grid">
+<div class="dim"><div class="dim-name">🎣 Hook 3s <span class="dim-score">peso 20%</span></div><div class="dim-desc">Paradoxo irresistível na primeira frase · palavra de identidade (você/seu) · curiosidade ou medo em 3s</div></div>
+<div class="dim"><div class="dim-name">📣 CTA Loops <span class="dim-score">peso 13%</span></div><div class="dim-desc">CTA entre 12-15min · loop da intro fechado só no final · 3 micro-CTAs de retenção · cliffhanger para próximo ep</div></div>
+<div class="dim"><div class="dim-name">🧲 Hipnose PNL <span class="dim-score">peso 12%</span></div><div class="dim-desc">Técnica espelho · loops abertos · ancoragem emocional · voice of certainty · reframing 3+ momentos</div></div>
+<div class="dim"><div class="dim-name">⏱️ Duração <span class="dim-score">peso 12%</span></div><div class="dim-desc">15-20min · 4-5 mid-rolls naturais · revelação a cada 3-4min · sem pausas mortas</div></div>
+<div class="dim"><div class="dim-name">🎙️ Áudio <span class="dim-score">peso 10%</span></div><div class="dim-desc">4+ categorias de emoção por vídeo · Edge TTS variação a cada 3-5 parágrafos · EBU R128 -16 LUFS</div></div>
+<div class="dim"><div class="dim-name">🔬 Ciência <span class="dim-score">peso 10%</span></div><div class="dim-desc">Mín 3 referências (autor+ano) · 1 estudo com dados numéricos · DSM-5/ICD-11 · Bowlby, Polyvagal, CBT</div></div>
+<div class="dim"><div class="dim-name">🧬 PNL Trauma <span class="dim-score">peso 8%</span></div><div class="dim-desc">Linguagem dissociativa para trauma · future pacing · Milton Erickson · reframing em 3+ momentos</div></div>
+<div class="dim"><div class="dim-name">👁️ Retenção <span class="dim-score">peso 5%</span></div><div class="dim-desc">Hook renovado a cada 2-3min · pico emocional antes dos mid-rolls · revelação surpresa após 50%</div></div>
+<div class="dim"><div class="dim-name">🎬 Vídeo <span class="dim-score">peso 5%</span></div><div class="dim-desc">Flux.1: ZERO texto visível · Ken Burns 30fps · paleta por emoção (azul=ansiedade, vermelho=alerta)</div></div>
+<div class="dim"><div class="dim-name">✨ Originalidade <span class="dim-score">peso 5%</span></div><div class="dim-desc">Ângulo diferente dos 18 virais referência · perspectiva brasileira · metáfora original por vídeo</div></div>
+</div>
+<div style="margin-top:16px">
+<div style="font-size:12px;font-weight:700;color:var(--frost);margin-bottom:10px">🪝 Hooks Hipnóticos Validados</div>
+<div class="hooks-list">
+<div class="hook">"Por que Você [VERBO] Quando [SITUAÇÃO]"</div>
+<div class="hook">"[N] Sinais que Você Tem [CONDIÇÃO] (e Não Sabe)"</div>
+<div class="hook">"Por que Você Atrai [TIPO PROBLEMÁTICO]"</div>
+<div class="hook">"Isso Não é [ERRADO]. É [CAUSA REAL]"</div>
+<div class="hook">"O [TIPO] Mais Perigoso Parece [OPOSTO]"</div>
+<div class="hook">"O que Acontece com Seu Cérebro Quando [SITUAÇÃO]"</div>
+</div>
+</div>
+</div>
+
+<!-- AÇÕES URGENTES -->
 <div class="actions">
-<div class="act-h"><span>⚡</span><span class="act-title">Próximas Ações — Desbloqueie a Monetização</span><span class="act-badge">PRIORIDADE MÁXIMA</span></div>
-<div class="act-list">
-<div class="act"><div class="act-num">01</div><div class="act-text"><strong>Publicar 17 MP4s no YouTube</strong> — via youtube-publisher.yml · OAuth token já configurado (103 chars) · Shorts virais primeiro (50-58s) depois long-form (12min+)<span class="act-tag at-now">HOJE</span></div></div>
-<div class="act"><div class="act-num">02</div><div class="act-text"><strong>Google Ads R$200 → 1K inscritos</strong> — R$4,67/dia · Segmentar: ansiedade, trauma, narcisismo · BR mulheres 22-45 anos · ROI esperado: 200 subs por R$100<span class="act-tag at-now">ESTA SEMANA</span></div></div>
-<div class="act"><div class="act-num">03</div><div class="act-text"><strong>OAuth Meta (Instagram/Facebook)</strong> — SETUP.md → conectores.html · Desbloqueia 23 pipelines em pending_credentials para distribuição automática<span class="act-tag at-soon">PRÓXIMOS 3 DIAS</span></div></div>
-<div class="act"><div class="act-num">04</div><div class="act-text"><strong>OAuth TikTok + Pinterest</strong> — TikTok tem algoritmo viral orgânico potente para psicologia · Pinterest drive tráfego contínuo sem pagar<span class="act-tag at-soon">PRÓXIMOS 3 DIAS</span></div></div>
-<div class="act"><div class="act-num">05</div><div class="act-text"><strong>Gerar 135 episódios restantes</strong> — via Qwen3 Next 80B · 5 séries Priority 10 primeiro (apego, narcisismo, trauma, vínculos, dinheiro) · Depois Reserve 7<span class="act-tag at-aut">AUTO (Qwen3)</span></div></div>
-<div class="act"><div class="act-num">06</div><div class="act-text"><strong>Deletar ~62 EFs orphan</strong> — Supabase Dashboard → Edge Functions → deletar versões v9-v12 antigas · Desbloqueia deploys de novas EFs sem upgrade Pro<span class="act-tag at-soon">QUANDO POSSÍVEL</span></div></div>
+<div class="sec-hdr">
+<div class="sec-title">⚡ Ações Imediatas — Desbloqueie a Monetização</div>
+<div class="sec-sub">Em ordem de impacto · Prioridade máxima</div>
 </div>
-</div>
-
-<!-- PÁGINAS DO SISTEMA -->
-<div class="grid3">
-<div class="panel">
-<div class="ph"><span>🎯</span><span class="pt">Estratégia & Controle</span><span class="pbadge pac">Command</span></div>
-<div class="pb">
-<a href="/qg.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">🧠</div><div style="flex:1"><span class="ln">QG V37 — Quartel General</span><span class="ld">Cadeia LLM · Decisões · Pipeline RT</span></div></a>
-<a href="/estrategia.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🗺️</div><div style="flex:1"><span class="ln">Estratégia V37</span><span class="ld">Roadmap unificado · Painel executivo</span></div></a>
-<a href="/growth.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">📈</div><div style="flex:1"><span class="ln">Growth Plan</span><span class="ld">0→1K→10K→100K subs · Fases</span></div></a>
-<a href="/hub.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🏠</div><div style="flex:1"><span class="ln">Hub Master</span><span class="ld">Portal unificado · 20 páginas</span></div></a>
-<a href="/admin.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">⚙️</div><div style="flex:1"><span class="ln">Admin Panel</span><span class="ld">Controles avançados do sistema</span></div></a>
-<a href="/dashboard" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📊</div><div style="flex:1"><span class="ln">Dashboard V11</span><span class="ld">16 páginas operacionais</span></div></a>
-</div>
-</div>
-<div class="panel">
-<div class="ph"><span>🎬</span><span class="pt">Conteúdo & Vídeos</span><span class="pbadge pgr">17 MP4s</span></div>
-<div class="pb">
-<a href="/videos-prontos.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">🎬</div><div style="flex:1"><span class="ln">Vídeos Prontos</span><span class="ld">17 MP4s · Player HTML5 · Download</span></div></a>
-<a href="/series.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📚</div><div style="flex:1"><span class="ln">Séries V37</span><span class="ld">20 séries · 140 episódios planejados</span></div></a>
-<a href="/galeria-quantica.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🌌</div><div style="flex:1"><span class="ln">Galeria Quântica</span><span class="ld">Flux+KB V2 · Score 95+ · Curado</span></div></a>
-<a href="/producao.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🏭</div><div style="flex:1"><span class="ln">Produção</span><span class="ld">Pipeline status · Renders · TTS</span></div></a>
-<a href="/videos-analise.html" class="lnk"><div class="li" style="background:rgba(14,148,130,.1)">🔬</div><div style="flex:1"><span class="ln">Análise de Vídeos</span><span class="ld">Métricas · Scores · Performance</span></div></a>
-<a href="/mapa.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">🗂️</div><div style="flex:1"><span class="ln">Mapa de Conteúdo</span><span class="ld">Calendário editorial · Tópicos</span></div></a>
-</div>
-</div>
-<div class="panel">
-<div class="ph"><span>📡</span><span class="pt">Canal & Distribuição</span><span class="pbadge pgo">Pendente OAuth</span></div>
-<div class="pb">
-<a href="https://youtube.com/@psidanielacoelho" target="_blank" class="lnk"><div class="li" style="background:rgba(225,29,72,.15)">▶️</div><div style="flex:1"><span class="ln">YouTube @psidanielacoelho ↗</span><span class="ld">Canal oficial · UCyCkIpsVgME9yCj...</span></div></a>
-<a href="/canal-oficial.html" class="lnk"><div class="li" style="background:rgba(255,80,80,.1)">📺</div><div style="flex:1"><span class="ln">Canal Oficial (config)</span><span class="ld">Setup publicação · SEO · Thumbnails</span></div></a>
-<a href="/conectores.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.15)">🔌</div><div style="flex:1"><span class="ln">Conectores OAuth ⚠️</span><span class="ld">Meta · TikTok · Pinterest · Setup</span></div></a>
-<a href="/setup-canal.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">🛠️</div><div style="flex:1"><span class="ln">Setup Canal</span><span class="ld">Configuração inicial · Checklist</span></div></a>
-<a href="/daniela.html" class="lnk"><div class="li" style="background:rgba(196,181,253,.1)">👩</div><div style="flex:1"><span class="ln">Daniela Coelho</span><span class="ld">Persona · Bio · @psidanielacoelho</span></div></a>
-<a href="/oauth-callback.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🔑</div><div style="flex:1"><span class="ln">OAuth Callback</span><span class="ld">Autenticação redes sociais</span></div></a>
-</div>
+<div class="act-grid">
+<div class="act"><div class="an">01</div><div class="at"><strong>Publicar 17 MP4s no YouTube</strong> — youtube-publisher.yml · OAuth token YT já configurado (103 chars) · Shorts virais primeiro depois long-form 15-20min<span class="atag at-hot">HOJE</span></div></div>
+<div class="act"><div class="an">02</div><div class="at"><strong>Google Ads R$200 → 1K inscritos</strong> — R$4,67/dia · Target: BR mulheres 22-45 anos · Tópicos: ansiedade, trauma, narcisismo · ROI esperado: 200 subs por R$100<span class="atag at-hot">ESTA SEMANA</span></div></div>
+<div class="act"><div class="an">03</div><div class="at"><strong>OAuth Meta Business API</strong> — Instagram/Facebook · Desbloqueia 23 pipelines em pending_credentials · Cron distribui automaticamente a cada 30min<span class="atag at-w">3 DIAS</span></div></div>
+<div class="act"><div class="an">04</div><div class="at"><strong>OAuth TikTok + Pinterest</strong> — TikTok tem algoritmo viral orgânico potente · Pinterest drive tráfego contínuo sem custo<span class="atag at-w">3 DIAS</span></div></div>
+<div class="act"><div class="an">05</div><div class="at"><strong>Desativar crons problemáticos</strong> — Supabase Dashboard → Database → Cron Jobs → desativar: auto-dispatch-renders-every-10min e auto-dispatch-tts-every-10min (disparam workflows que falham)<span class="atag at-w">MANUAL</span></div></div>
+<div class="act"><div class="an">06</div><div class="at"><strong>Gerar 135 episódios restantes</strong> — 471 na fila waiting Qwen3 · 5 séries Priority 10 primeiro · cérebro enfileira automaticamente<span class="atag at-a">AUTO Qwen3</span></div></div>
 </div>
 </div>
 
 <!-- REDES SOCIAIS -->
 <div class="redes">
-<div class="rh"><span>📡</span><span class="rt">Redes Sociais — Status de Distribuição</span></div>
-<div class="rgrid">
-<div class="rede"><div class="ric" style="background:rgba(255,0,0,.12)">▶️</div><div><div class="rn">YouTube</div><div class="rs">@psidanielacoelho · OAuth ✓ · 0 subs</div></div><div class="rdot dlive"></div></div>
-<div class="rede"><div class="ric" style="background:rgba(225,48,108,.12)">📸</div><div><div class="rn">Instagram</div><div class="rs">Pendente OAuth Meta Business</div></div><div class="rdot dpend"></div></div>
-<div class="rede"><div class="ric" style="background:rgba(1,1,1,.3)">🎵</div><div><div class="rn">TikTok</div><div class="rs">Pendente OAuth TikTok For Business</div></div><div class="rdot dpend"></div></div>
-<div class="rede"><div class="ric" style="background:rgba(230,0,35,.12)">📌</div><div><div class="rn">Pinterest</div><div class="rs">Pendente OAuth Pinterest API</div></div><div class="rdot dpend"></div></div>
-<div class="rede"><div class="ric" style="background:rgba(37,211,102,.12)">💬</div><div><div class="rn">WhatsApp</div><div class="rs">8 grupos · Pendente link grupos</div></div><div class="rdot dpend"></div></div>
+<div class="sec-hdr">
+<div class="sec-title">📡 Redes Sociais — Ajuste Automático pelo Cérebro</div>
+<div class="sec-sub">profile-optimizer-daily (4h diário) atualiza bios/perfis · social-distribute (30min) distribui vídeos · cross_platform_repurpose (15min) converte formatos</div>
+</div>
+<div class="rg">
+<div class="rede"><div class="ri" style="background:rgba(255,0,0,.12)">▶️</div><div style="flex:1"><div class="rname">YouTube</div><div class="rstatus">@psidanielacoelho · OAuth ✓ · 0 subs · pronto p/ publicar</div></div><div class="rdot dlive"></div></div>
+<div class="rede"><div class="ri" style="background:rgba(225,48,108,.12)">📸</div><div style="flex:1"><div class="rname">Instagram</div><div class="rstatus">Bio config. · Pendente OAuth Meta Business API</div></div><div class="rdot dpend"></div></div>
+<div class="rede"><div class="ri" style="background:rgba(1,1,1,.3)">🎵</div><div style="flex:1"><div class="rname">TikTok</div><div class="rstatus">Bio config. · Pendente OAuth TikTok For Business</div></div><div class="rdot dpend"></div></div>
+<div class="rede"><div class="ri" style="background:rgba(230,0,35,.12)">📌</div><div style="flex:1"><div class="rname">Pinterest</div><div class="rstatus">Bio config. · Pendente OAuth Pinterest API</div></div><div class="rdot dpend"></div></div>
+<div class="rede"><div class="ri" style="background:rgba(37,211,102,.12)">💬</div><div style="flex:1"><div class="rname">WhatsApp</div><div class="rstatus">Comunidade configurada · 8 grupos pendentes link</div></div><div class="rdot dpend"></div></div>
 </div>
 </div>
 
-<!-- PIPELINE LIVE -->
+<!-- LINKS -->
+<div class="grid3">
+<div class="panel"><div class="ph"><span>🎯</span><span class="pt">Controle Operacional</span><span class="pbadge pac">Command</span></div>
+<div class="pb">
+<a href="/qg.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">🧠</div><div class="lt"><span class="ln">QG V37 — Quartel General</span><span class="ld">Cadeia LLM · Decisões · Pipeline tempo real</span></div></a>
+<a href="/estrategia.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🗺️</div><div class="lt"><span class="ln">Estratégia V37</span><span class="ld">Roadmap unificado · Painel executivo</span></div></a>
+<a href="/growth.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">📈</div><div class="lt"><span class="ln">Growth Plan</span><span class="ld">0→1K→10K→100K subs · Fases semana a semana</span></div></a>
+<a href="/dashboard" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📊</div><div class="lt"><span class="ln">Dashboard V11</span><span class="ld">16 páginas operacionais</span></div></a>
+<a href="/admin.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">⚙️</div><div class="lt"><span class="ln">Admin Panel</span><span class="ld">Controles avançados</span></div></a>
+<a href="/hub.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🏠</div><div class="lt"><span class="ln">Hub Master</span><span class="ld">Portal · 20 páginas</span></div></a>
+</div></div>
+<div class="panel"><div class="ph"><span>🎬</span><span class="pt">Conteúdo & Vídeos</span><span class="pbadge pgr">17 MP4s</span></div>
+<div class="pb">
+<a href="/videos-prontos.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">🎬</div><div class="lt"><span class="ln">Vídeos Prontos</span><span class="ld">17 MP4s · Player HTML5 · Auto-update 1h</span></div></a>
+<a href="/series.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📚</div><div class="lt"><span class="ln">Séries V37</span><span class="ld">20 séries · 140 episódios planejados</span></div></a>
+<a href="/galeria-quantica.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🌌</div><div class="lt"><span class="ln">Galeria Quântica</span><span class="ld">Flux+KB V2 · Score 95+ · Curado</span></div></a>
+<a href="/producao.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🏭</div><div class="lt"><span class="ln">Produção</span><span class="ld">Pipeline status · Renders · TTS</span></div></a>
+<a href="/videos-analise.html" class="lnk"><div class="li" style="background:rgba(14,148,130,.1)">🔬</div><div class="lt"><span class="ln">Análise de Vídeos</span><span class="ld">Métricas · Scores · Performance</span></div></a>
+<a href="/mapa.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">🗂️</div><div class="lt"><span class="ln">Mapa de Conteúdo</span><span class="ld">Calendário editorial · Tópicos virais</span></div></a>
+</div></div>
+<div class="panel"><div class="ph"><span>📡</span><span class="pt">Canal & Distribuição</span><span class="pbadge pgo">Pendente OAuth</span></div>
+<div class="pb">
+<a href="https://youtube.com/@psidanielacoelho" target="_blank" class="lnk"><div class="li" style="background:rgba(225,29,72,.15)">▶️</div><div class="lt"><span class="ln">YouTube @psidanielacoelho ↗</span><span class="ld">Canal oficial · UCyCkIpsVgME9yCj...</span></div></a>
+<a href="/canal-oficial.html" class="lnk"><div class="li" style="background:rgba(255,80,80,.1)">📺</div><div class="lt"><span class="ln">Canal Oficial (config)</span><span class="ld">Setup publicação · SEO · Thumbnails</span></div></a>
+<a href="/conectores.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.15)">🔌</div><div class="lt"><span class="ln">Conectores OAuth ⚠️</span><span class="ld">Meta · TikTok · Pinterest · SETUP.md</span></div></a>
+<a href="/setup-canal.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">🛠️</div><div class="lt"><span class="ln">Setup Canal</span><span class="ld">Configuração inicial · Checklist completo</span></div></a>
+<a href="/daniela.html" class="lnk"><div class="li" style="background:rgba(196,181,253,.1)">👩</div><div class="lt"><span class="ln">Daniela Coelho</span><span class="ld">Persona · Bio · @psidanielacoelho</span></div></a>
+<a href="/oauth-callback.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🔑</div><div class="lt"><span class="ln">OAuth Callback</span><span class="ld">Autenticação redes sociais</span></div></a>
+</div></div>
+</div>
+
+<!-- PIPELINE -->
 <div class="pipe-panel">
-<div class="ph" style="border:none;padding:0 0 16px 0"><span>🔄</span><span class="pt" style="font-size:14px">Pipeline Tempo Real</span><span class="pbadge pac" id="pipe-last" style="margin-left:auto">—</span></div>
+<div style="padding:0 0 14px 0;display:flex;align-items:center;gap:8px"><span>🔄</span><span style="font-size:14px;font-weight:700;color:var(--frost)">Pipeline Tempo Real</span><span class="pbadge pac" id="pipe-last" style="margin-left:auto">—</span></div>
 <div class="ps-row">
 <div class="ps"><div class="psn cg" id="ps-mp4">17</div><div class="psl">MP4 Prontos</div></div>
 <div class="ps"><div class="psn cgo" id="ps-pend">23</div><div class="psl">Pending OAuth</div></div>
-<div class="ps"><div class="psn cc" id="ps-rend">0</div><div class="psl">Rendering</div></div>
-<div class="ps"><div class="psn ca" id="ps-aud">0</div><div class="psl">Audio Ready</div></div>
-<div class="ps"><div class="psn ct" id="ps-scr">0</div><div class="psl">Script Ready</div></div>
-<div class="ps"><div class="psn ccr" id="ps-pub">0</div><div class="psl">Publicados</div></div>
+<div class="ps"><div class="psn cc" id="ps-gen">471</div><div class="psl">Fila Geração</div></div>
+<div class="ps"><div class="psn ccr" id="ps-blk">38</div><div class="psl">Safety Block</div></div>
+<div class="ps"><div class="psn ca" id="ps-rend">0</div><div class="psl">Rendering</div></div>
+<div class="ps"><div class="psn cg" id="ps-pub">0</div><div class="psl">Publicados</div></div>
 </div>
-<div class="tick"><span>🎬</span><span class="tt"><strong>17 MP4s prontos</strong> para publicação — 10 top10 + 5 pilotos V37 (Qwen3 + Edge TTS) + 2 outros. Distribuição bloqueada por OAuth.</span><span class="tm">live</span></div>
-<div class="tick"><span>📚</span><span class="tt"><strong>20 séries · 5 priority:</strong> Apego (8ep) · Narcisistas (6ep) · Trauma (8ep) · Vínculos Tóxicos (6ep) · Psicologia do Dinheiro (6ep) — pilotos gerados, 135 eps restantes na fila.</span><span class="tm">live</span></div>
-<div class="tick" style="background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.15)"><span>⚠️</span><span class="tt"><strong>Bloqueio principal:</strong> Configurar OAuth Meta Business API + TikTok For Business + Pinterest API via /conectores.html. YouTube já tem refresh_token (103 chars). Após setup: 23 vídeos entram em distribuição automática cron 30min.</span><span class="tm">pendente</span></div>
+<div class="tick"><span>🎬</span><span class="tt"><strong>17 MP4s prontos</strong> — 10 top10 + 5 pilotos V37 (Qwen3+Edge TTS+Render v8) + 2 outros. Distribuição bloqueada aguardando OAuth Meta/TikTok/Pinterest. YouTube já tem token.</span><span class="tm">live</span></div>
+<div class="tick"><span>🤖</span><span class="tt"><strong>Cérebro gerando scripts automaticamente:</strong> 471 na fila de geração via Qwen3 Next 80B. Auto-enqueue a cada 3min, collect a cada minuto, quantum gate 95pts a cada 3min.</span><span class="tm">live</span></div>
+<div class="tick warn"><span>⚠️</span><span class="tt"><strong>Ação manual necessária:</strong> Desativar crons "auto-dispatch-renders-every-10min" e "auto-dispatch-tts-every-10min" no Supabase Dashboard → Database → Cron Jobs. Estão disparando workflows que falham e desperdiçando GitHub Actions.</span><span class="tm">pendente</span></div>
+<div class="tick warn"><span>⚠️</span><span class="tt"><strong>38 blocked_safety:</strong> Scripts bloqueados por conteúdo clínico sensível (menção de suicídio/automutilação em contexto psicológico). Revisar e ajustar prompts para contexto educacional.</span><span class="tm">pendente</span></div>
 <div class="rbar"><span>Última: <span id="last-time">—</span></span><span><span class="spin"></span> Auto-sync 30s</span></div>
 </div>
 
-</div><!-- /wrap -->
-
+</div>
 <footer>
 ψ psicologia.doc · @psidanielacoelho · Canal UCyCkIpsVgME9yCj_oXJFheA<br>
-Command Center V37 · Qwen3 Next 80B · 20 séries · 140 episódios · $0/mês · Meta R$50K/mês jan/2027<br>
-Stack: NVIDIA NIM + Gemini + Groq | Edge TTS MS pt-BR | Flux+KB V2 | GitHub Actions 22 workflows | Supabase | Vercel
+Command Center V37 · 38 Crons Ativos · Gate Quântico 95pts · 10 Dimensões · Qwen3 Next 80B<br>
+20 séries · 140 episódios · $0/mês · Meta R$50K/mês jan/2027 · profile-optimizer-daily ajusta redes automaticamente
 </footer>
 
 <script>
@@ -340,27 +410,26 @@ async function loadPipeline(){
     const d=await r.json();
     if(!Array.isArray(d))return;
     const c={};let mp4=0,pub=0;
-    d.forEach(v=>{c[v.status]=(c[v.status]||0)+1;if(v.mp4_url)mp4++;if(v.youtube_video_id)pub++;});
-    s("mt-mp4",mp4);s("mt-pend",c.pending_credentials||0);s("mt-pub",pub);
+    d.forEach(v=>{c[v.status]=(c[v.status]||0)+1;if(v.mp4_url)mp4++;if(v.youtube_video_id)pub++});
+    s("mt-mp4",mp4);s("mt-pend",c.pending_credentials||0);
+    s("mt-gen",c.pending_generation||0);s("mt-block",c.blocked_safety||0);s("mt-pub",pub);
     s("ps-mp4",mp4);s("ps-pend",c.pending_credentials||0);
-    s("ps-rend",c.rendering||0);s("ps-aud",c.audio_ready||0);
-    s("ps-scr",c.script_ready||0);s("ps-pub",pub);
-    s("ph-subs",pub);s("yt-subs",pub);
-    s("ht-mp4","✓ "+mp4+" vídeos prontos");
-    document.getElementById("ht-mp4")?.classList.add("ok");
-    // Calcular fase
-    const fase = pub>=1000?"Fase 4: AdSense ON":pub>=10?"Fase 3: Watch Time":pub>=1?"Fase 2: 1K inscritos":"Fase 1: Publicar primeiros vídeos";
-    const pct = pub>=1000?60:pub>=100?40:pub>=10?20:pub>=1?8:3;
-    s("rm-current",`${pub} publicados · ${fase}`);
-    s("prog-pct",`${pct}% · ${fase}`);
-    document.getElementById("pfill").style.width=pct+"%";
+    s("ps-gen",c.pending_generation||0);s("ps-blk",c.blocked_safety||0);
+    s("ps-rend",c.rendering||0);s("ps-pub",pub);
+    s("subs-n",pub);s("yt-subs",pub);
+    s("ht-mp4","✓ "+mp4+" MP4s prontos");
+    document.getElementById("ht-mp4")?.classList.replace("warn","ok");
+    const blk=c.blocked_safety||0;
+    s("ht-err",blk>0?"⚠️ "+blk+" blocked_safety":"✓ sem bloqueios");
+    document.getElementById("ht-err")?.classList.replace("ok",blk>0?"err":"ok");
+    const fase=pub>=1000?"Fase 4: AdSense ON":pub>=10?"Fase 3: Watch Time":pub>=1?"Fase 2: 1K inscritos":"Fase 1: Publicar primeiros vídeos";
+    const pct=pub>=1000?60:pub>=100?40:pub>=10?20:pub>=1?8:3;
+    s("fase-atual",`${pub} publicados · ${fase}`);
+    const pfill=document.getElementById("pfill");if(pfill)pfill.style.width=pct+"%";
     const t=new Date().toLocaleTimeString("pt-BR");
     s("pipe-last","Atualizado "+t);s("last-time",t);
   }catch(e){console.log(e)}
 }
-
 function sync(){loadPipeline()}
-loadPipeline();
-setInterval(loadPipeline,30000);
-</script>
-</body></html>
+loadPipeline();setInterval(loadPipeline,30000);
+</script></body></html>
