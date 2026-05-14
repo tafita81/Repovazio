@@ -1,130 +1,130 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<title>ψ Séries — psicologia.doc</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="20 séries · 140 episódios sobre psicologia, trauma, apego, narcisismo e neurociência. Conteúdo em produção 24/7 com IA quântica.">
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ 20 Séries · 200 Episódios — psicologia.doc · @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#06060F; --bg2:#0B0B1A; --bg3:#11112B;
-  --violet:#7C3AED; --amethyst:#5B21B6; --crimson:#E11D48;
-  --gold:#F59E0B; --teal:#0D9488; --frost:#F0F4FF;
-  --mist:#C4B5FD; --line:rgba(196,181,253,.15);
-  --txt:#E5E7EB; --txt2:#9CA3AF;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--txt);font-family:'DM Sans',system-ui,-apple-system,sans-serif;min-height:100vh}
-body{
-  background-image:
-    radial-gradient(900px 600px at 10% -10%, rgba(124,58,237,.18), transparent 60%),
-    radial-gradient(700px 500px at 95% 10%, rgba(225,29,72,.12), transparent 60%),
-    radial-gradient(800px 600px at 50% 110%, rgba(13,148,136,.10), transparent 60%);
-}
-.wrap{max-width:1240px;margin:0 auto;padding:32px 24px 80px}
-.psi{font-family:Georgia,serif;color:var(--violet);font-size:42px;line-height:1}
-header{display:flex;align-items:center;gap:16px;margin-bottom:8px}
-.bcr{display:inline-block;padding:4px 10px;font-size:11px;border:1px solid var(--line);border-radius:999px;color:var(--mist);letter-spacing:.06em;text-transform:uppercase}
-h1{font-family:Georgia,serif;font-size:44px;font-weight:400;letter-spacing:-.02em;margin:8px 0 4px;color:var(--frost)}
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--bd:rgba(196,181,253,.12);--acc:#7C3AED;--mist:#C4B5FD;--gold:#F59E0B;--crim:#E11D48;--teal:#0D9488;--frost:#F0F4FF;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--grn:#10B981}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(900px 600px at 10% -10%,rgba(124,58,237,.18),transparent 60%),radial-gradient(700px 500px at 95% 10%,rgba(225,29,72,.12),transparent 60%),radial-gradient(800px 600px at 50% 110%,rgba(13,148,136,.10),transparent 60%)}
+.hdr{position:sticky;top:0;z-index:100;background:rgba(6,6,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd);padding:0 28px;height:56px;display:flex;align-items:center;gap:14px}
+.logo{font-size:20px;font-weight:800;letter-spacing:-1.5px;color:var(--frost)}.logo span{color:var(--mist)}
+.hnav{margin-left:auto;display:flex;gap:6px}
+.hbtn{padding:5px 14px;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;color:var(--t2);border:1px solid rgba(255,255,255,.07);transition:.15s}
+.hbtn:hover{color:var(--frost)}.hbtn.p{background:var(--crim);color:#fff;border-color:transparent}
+.wrap{position:relative;z-index:1;max-width:1440px;margin:0 auto;padding:32px 28px 80px}
+h1{font-size:clamp(32px,4vw,52px);font-weight:800;letter-spacing:-2px;color:var(--frost);line-height:1.05;margin-bottom:8px}
 h1 em{font-style:normal;color:var(--mist)}
-.sub{color:var(--txt2);font-size:15px;max-width:680px;margin-bottom:32px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:40px}
-.stat{padding:18px;background:var(--bg2);border:1px solid var(--line);border-radius:12px}
-.stat .v{font-family:'DM Mono',Consolas,monospace;font-size:30px;color:var(--gold);line-height:1}
-.stat .l{font-size:11px;color:var(--txt2);letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
-.legend{display:flex;flex-wrap:wrap;gap:18px;margin-bottom:24px;padding:14px 18px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--txt2)}
-.legend b{color:var(--frost);font-weight:600}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
-h2{font-family:Georgia,serif;font-size:24px;font-weight:400;color:var(--frost);margin:32px 0 16px;display:flex;align-items:center;gap:12px}
-h2 .b{font-size:12px;padding:3px 8px;background:var(--bg3);border:1px solid var(--line);border-radius:6px;color:var(--mist);letter-spacing:.05em;font-family:'DM Mono',monospace}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px}
-.card{background:linear-gradient(180deg,var(--bg2),var(--bg3));border:1px solid var(--line);border-radius:14px;padding:22px;transition:.2s}
-.card.priority{border-color:rgba(124,58,237,.4);box-shadow:0 4px 24px -8px rgba(124,58,237,.25)}
-.card.reserve7{border-color:rgba(13,148,136,.3)}
-.card:hover{transform:translateY(-3px);border-color:var(--mist)}
-.card .tt{font-family:Georgia,serif;font-size:20px;color:var(--frost);margin-bottom:10px;line-height:1.25}
-.card .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:11px;color:var(--txt2);letter-spacing:.06em;text-transform:uppercase}
-.card .meta .pri{font-family:'DM Mono',monospace;background:var(--bg);padding:3px 8px;border-radius:5px;color:var(--mist)}
-.eps{list-style:none;padding:0;margin:0}
-.eps li{padding:8px 0;border-top:1px solid rgba(196,181,253,.08);font-size:13px;color:var(--txt);display:flex;align-items:flex-start;gap:8px}
-.eps li:first-child{border-top:none}
-.eps li .n{font-family:'DM Mono',monospace;color:var(--gold);min-width:24px;font-size:11px;padding-top:2px}
-footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--line);text-align:center;color:var(--txt2);font-size:12px}
-footer a{color:var(--mist);text-decoration:none}
-footer a:hover{color:var(--violet)}
-nav{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px;justify-content:center}
-nav a{display:inline-block;padding:8px 14px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;color:var(--mist);text-decoration:none;font-size:13px;transition:.2s}
-nav a:hover{border-color:var(--violet);color:var(--frost)}
-@media (max-width:560px){h1{font-size:32px}.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="wrap">
-
-<header>
-  <span class="psi">ψ</span>
-  <span class="bcr">psicologia.doc</span>
+.sub{color:var(--t2);font-size:14px;max-width:700px;line-height:1.7;margin-bottom:24px}
+.mrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:28px}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px}
+.mcn{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px}
+.mcl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.cg{color:var(--grn)}.cgo{color:var(--gold)}.ca{color:var(--mist)}.ct{color:var(--teal)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;padding:12px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:10px;font-size:12px;color:var(--t2)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.sec-h{font-size:18px;font-weight:700;color:var(--frost);margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.sec-b{font-size:10px;font-family:'DM Mono',monospace;padding:3px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--mist)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:8px}
+.card{background:linear-gradient(180deg,var(--s1),var(--s2));border:1px solid var(--bd);border-radius:16px;padding:20px;transition:.2s;cursor:default}
+.card.p10{border-color:rgba(124,58,237,.4);box-shadow:0 4px 24px -8px rgba(124,58,237,.2)}
+.card.p7{border-color:rgba(13,148,136,.3)}
+.card:hover{transform:translateY(-2px);border-color:var(--mist)}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.card-title{font-size:17px;font-weight:700;color:var(--frost);line-height:1.3;flex:1}
+.card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font-size:9px;padding:3px 8px;border-radius:12px;font-family:'DM Mono',monospace}
+.cp{background:rgba(124,58,237,.15);color:var(--mist);border:1px solid rgba(124,58,237,.25)}
+.ce{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.cstd{background:rgba(16,185,129,.08);color:var(--grn);border:1px solid rgba(16,185,129,.15)}
+.eps-list{list-style:none}
+.ep{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-top:1px solid rgba(196,181,253,.06);font-size:12px;color:var(--t2);line-height:1.4}
+.ep:first-child{border-top:none}
+.ep-n{font-family:'DM Mono',monospace;color:var(--gold);min-width:24px;font-size:10px;flex-shrink:0;padding-top:2px}
+.ep-title{flex:1}
+footer{text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);font-family:'DM Mono',monospace;line-height:1.8;margin-top:32px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.wrap{padding:16px 16px 60px}}
+</style></head><body>
+<header class="hdr">
+<div class="logo">ψ <span>psicologia.doc</span></div>
+<nav class="hnav">
+<a href="/comando.html" class="hbtn">Home</a>
+<a href="/videos-prontos.html" class="hbtn">Vídeos</a>
+<a href="/qg.html" class="hbtn">QG</a>
+<a href="https://youtube.com/@psidanielacoelho" target="_blank" class="hbtn p">▶️ Canal</a>
+</nav>
 </header>
-
-<h1>20 Séries <em>· 140 Episódios</em></h1>
-<p class="sub">Conteúdo científico produzido 24/7 com cadeia de IA quântica (Qwen3 Next 80B → DeepSeek V4 Pro → Llama 3.3 70B → Gemini → Groq). Cases brasileiros + fontes acadêmicas (van der Kolk, Bowlby, Schore, Porges, Tatkin, APA, DSM-5, CDC).</p>
-
-<div class="stats">
-  <div class="stat"><div class="v">20</div><div class="l">Séries totais</div></div>
-  <div class="stat"><div class="v">140</div><div class="l">Episódios planejados</div></div>
-  <div class="stat"><div class="v">5</div><div class="l">Séries prioridade 10</div></div>
-  <div class="stat"><div class="v">10</div><div class="l">Vídeos prontos</div></div>
-  <div class="stat"><div class="v">$0</div><div class="l">Custo mensal</div></div>
+<div class="wrap">
+<h1>20 Séries <em>· 200 Episódios</em></h1>
+<p class="sub">Conteúdo científico produzido 24/7 — Qwen3 Next 80B + Edge TTS pt-BR + Render v8 Cinematic. 10 episódios por série (padrão global Psych2Go, MrBeast, Therapy in a Nutshell). Cases brasileiros + fontes: van der Kolk, Bowlby, DSM-5, Polyvagal Theory. Gate Quântico 95pts em 10 dimensões. Canal: @psidanielacoelho.</p>
+<div class="mrow">
+<div class="mc"><div class="mcn ca">20</div><div class="mcl">Séries</div></div>
+<div class="mc"><div class="mcn cgo">200</div><div class="mcl">Episódios</div></div>
+<div class="mc"><div class="mcn cg">5</div><div class="mcl">Priority 10</div></div>
+<div class="mc"><div class="mcn ct">10</div><div class="mcl">Eps por série</div></div>
+<div class="mc"><div class="mcn" style="color:#F472B6">$0</div><div class="mcl">Custo</div></div>
 </div>
-
 <div class="legend">
-  <span><span class="dot" style="background:var(--violet)"></span><b>Priority 10</b> · publicação imediata</span>
-  <span><span class="dot" style="background:var(--teal)"></span><b>Reserve 7</b> · próxima onda</span>
-  <span><span class="dot" style="background:var(--mist)"></span><b>Reserve 3</b> · longo prazo</span>
+<span><span class="dot" style="background:var(--acc)"></span><b>Priority 10</b> — publicação imediata</span>
+<span><span class="dot" style="background:var(--teal)"></span><b>Reserve 7</b> — próxima onda</span>
+<span><span class="dot" style="background:var(--mist)"></span><b>Reserve 3</b> — longo prazo</span>
+<span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)">15-20min longs · 50-58s shorts · Gate 95pts</span>
 </div>
-
-<h2>🔥 Prioridade 10 <span class="b">5 séries · 34 episódios</span></h2>
-<div class="grid" id="prio10"></div>
-
-<h2>⚡ Reserve 7 <span class="b">5 séries · 38 episódios</span></h2>
-<div class="grid" id="prio7"></div>
-
-<h2>🌊 Reserve 3 <span class="b">10 séries · 68 episódios</span></h2>
-<div class="grid" id="prio3"></div>
-
+<div class="sec-h">🔥 Prioridade 10 <span class="sec-b">5 séries · 50 episódios</span></div>
+<div class="grid" id="p10"></div>
+<div class="sec-h">⚡ Reserve 7 <span class="sec-b">5 séries · 50 episódios</span></div>
+<div class="grid" id="p7"></div>
+<div class="sec-h">🌊 Reserve 3 <span class="sec-b">10 séries · 100 episódios</span></div>
+<div class="grid" id="p3"></div>
+</div>
 <footer>
-  <div>psicologia.doc · @psidanielacoelho · Canal UCyCkIpsVgME9yCj_oXJFheA</div>
-  <nav>
-    <a href="/">Home</a>
-    <a href="/hub.html">Hub</a>
-    <a href="/videos-prontos.html">Vídeos prontos</a>
-    <a href="/galeria-quantica.html">Galeria quântica</a>
-    <a href="/growth.html">Growth</a>
-    <a href="/admin.html">Admin</a>
-  </nav>
+ψ psicologia.doc · @psidanielacoelho · UCyCkIpsVgME9yCj_oXJFheA<br>
+20 séries · 200 episódios · 10 eps/série · $0/mês · Meta R$50K/mês jan/2027<br>
+Qwen3 Next 80B · Edge TTS pt-BR · Flux.1+Ken Burns v8 Cinematic · Gate Quântico 95pts
 </footer>
-
-</div>
 <script>
-const SERIES = [{"id": 1, "title": "A Ciência do Apego", "status": "priority", "topics": ["Apego Ansioso: O medo do abandono", "Apego Evitativo: O muro invisível", "Apego Desorganizado: Caos emocional", "Como o apego se forma na infância", "Relacionamentos tóxicos e padrões de apego", "Como reprogramar seu estilo de apego", "Apego seguro: O que todos querem", "Feridas de apego e cura emocional"], "priority": 10, "total_episodes": 8, "published_episodes": 0}, {"id": 2, "title": "Mentes Narcisistas", "status": "priority", "topics": ["O que é narcisismo: além do espelho", "Gaslighting: A manipulação invisível", "Love bombing e idealização", "O ciclo narcisista: idealizar-desvalorizar-descartar", "Filhos de narcisistas", "Como se libertar de um narcisista"], "priority": 10, "total_episodes": 6, "published_episodes": 0}, {"id": 3, "title": "Trauma Invisível", "status": "priority", "topics": ["O que é trauma complexo", "Negligência emocional: o trauma silencioso", "Parentificação: quando a criança cuida dos pais", "Inner child: a criança ferida dentro de você", "Respostas ao trauma: luta, fuga, congelamento, submissão", "TEPT complexo vs TEPT simples", "Neurociência do trauma", "Caminhos de cura: do trauma ao crescimento pós-traumático"], "priority": 10, "total_episodes": 8, "published_episodes": 0}, {"id": 8, "title": "Vínculos Tóxicos", "status": "priority", "topics": ["Sinais de um relacionamento tóxico", "Manipulação emocional: como identificar", "Codependência: quando o amor vira veneno", "Ciclo do abuso emocional", "Como romper vínculos tóxicos", "Recuperação pós-relacionamento tóxico"], "priority": 10, "total_episodes": 6, "published_episodes": 0}, {"id": 18, "title": "Psicologia do Dinheiro", "status": "priority", "topics": ["Crenças limitantes sobre dinheiro", "Trauma financeiro da infância", "Mentalidade de abundância vs escassez", "Auto-sabotagem financeira", "Dinheiro e autoestima", "Como construir relação saudável com dinheiro"], "priority": 10, "total_episodes": 6, "published_episodes": 0}, {"id": 5, "title": "Relacionamentos Documentados", "status": "reserve", "topics": ["História real: o casal que se reencontrou após trauma", "História real: pais que reconstruíram a relação com o filho", "História real: amizade que sobreviveu à traição", "História real: irmãos rivais que viraram melhores amigos", "História real: casamento que renasceu na crise", "História real: divórcio com cura mútua", "História real: amor após perda", "História real: reconciliação com pais idosos"], "priority": 7, "total_episodes": 8, "published_episodes": 0}, {"id": 6, "title": "Ansiedade e Pânico", "status": "reserve", "topics": ["O que é ansiedade vs medo", "Síndrome do pânico: o medo do medo", "Ansiedade generalizada (TAG)", "Ansiedade social: além da timidez", "Fobias específicas", "Como o corpo expressa ansiedade", "Técnicas comprovadas para reduzir ansiedade", "Quando buscar ajuda profissional"], "priority": 7, "total_episodes": 8, "published_episodes": 0}, {"id": 7, "title": "Depressão: Além da Tristeza", "status": "reserve", "topics": ["Depressão não é fraqueza", "Sintomas físicos da depressão", "Distimia: a depressão crônica", "Depressão pós-parto", "Depressão masculina (silenciosa)", "Neurociência da depressão", "Tratamentos baseados em evidência", "Caminho da recuperação"], "priority": 7, "total_episodes": 8, "published_episodes": 0}, {"id": 15, "title": "Transtornos da Personalidade", "status": "reserve", "topics": ["Cluster A: paranoides, esquizoides, esquizotípicos", "Cluster B: antissociais, borderline, histriônicos, narcisistas", "Cluster C: evitativos, dependentes, obsessivo-compulsivos", "Borderline: a dor de existir", "Antissocial vs psicopatia", "Transtorno histriônico", "Como conviver com transtornos de personalidade", "Mitos e estigma"], "priority": 7, "total_episodes": 8, "published_episodes": 0}, {"id": 19, "title": "Vícios e Dependências", "status": "reserve", "topics": ["Neuroquímica do vício", "Dependência química vs psicológica", "Vícios comportamentais (jogo, sexo, comida)", "Codependência: o vício de cuidar", "Recuperação: 12 passos e alternativas", "Recaída como parte do processo"], "priority": 7, "total_episodes": 6, "published_episodes": 0}, {"id": 4, "title": "Psicologia do Sucesso", "status": "reserve", "topics": ["O que separa pessoas bem-sucedidas", "Síndrome do impostor", "Mentalidade de crescimento (Carol Dweck)", "Foco e disciplina (James Clear)", "Falha como combustível", "Resiliência: a chave do sucesso"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 9, "title": "Inteligência Emocional na Prática", "status": "reserve", "topics": ["Os 5 pilares da IE (Goleman)", "Autoconhecimento emocional", "Auto-regulação: ser dono das emoções", "Empatia: ler outras pessoas", "Habilidades sociais avançadas", "Motivação intrínseca", "IE no trabalho", "IE em relacionamentos"], "priority": 3, "total_episodes": 8, "published_episodes": 0}, {"id": 10, "title": "Psicologia Comportamental", "status": "reserve", "topics": ["Condicionamento clássico (Pavlov)", "Reforço positivo e negativo (Skinner)", "Hábitos: como o cérebro forma rotinas", "Como quebrar hábitos ruins", "Modelagem de comportamento", "Mudança comportamental sustentável"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 11, "title": "Neurociência da Mente", "status": "reserve", "topics": ["Como o cérebro funciona", "Plasticidade neural: você pode mudar", "Memória e identidade", "Sistema límbico: as emoções", "Default Mode Network e ruminação", "Neuroquímica: dopamina, serotonina, oxitocina", "Sono e cérebro", "Como meditação muda o cérebro"], "priority": 3, "total_episodes": 8, "published_episodes": 0}, {"id": 12, "title": "Desenvolvimento na Infância", "status": "reserve", "topics": ["0-2 anos: o cérebro em construção", "Apego seguro: a base de tudo", "Linguagem e cognição (Vygotsky)", "Estágios de Piaget revisitados", "Trauma infantil e suas marcas", "Educação positiva", "Sinais de problemas no desenvolvimento", "Como reparar feridas da infância (na vida adulta)"], "priority": 3, "total_episodes": 8, "published_episodes": 0}, {"id": 13, "title": "Luto e Perdas", "status": "reserve", "topics": ["Os 5 estágios de Kübler-Ross revisitados", "Luto antecipatório", "Luto complicado: quando a dor não passa", "Luto não reconhecido", "Como apoiar alguém em luto", "Pós-luto: crescimento e ressignificação"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 14, "title": "Saúde Mental no Trabalho", "status": "reserve", "topics": ["Burnout: as 3 fases", "Síndrome de Boreout", "Assédio moral no trabalho", "Como impor limites profissionais", "Equilíbrio vida-trabalho real", "Quando trocar de emprego (sinais)"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 16, "title": "Psicologia das Relações Sociais", "status": "reserve", "topics": ["Por que precisamos de pertencimento", "Solidão epidêmica moderna", "Amizades adultas: por que são raras", "Influência social (Asch, Milgram)", "Como construir comunidade", "Redes sociais e saúde mental"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 17, "title": "Mindfulness e Presença", "status": "reserve", "topics": ["O que é mindfulness (não é o que parece)", "Neurociência da meditação", "Atenção plena no dia a dia", "Body scan: presença no corpo", "Mindfulness para ansiedade", "Vipassana e tradições contemplativas"], "priority": 3, "total_episodes": 6, "published_episodes": 0}, {"id": 20, "title": "Identidade e Autoconhecimento", "status": "reserve", "topics": ["Quem você acredita que é vs quem você é", "Eneagrama, MBTI e personalidade", "Self verdadeiro vs falso self (Winnicott)", "Como você se construiu (e pode reconstruir)", "Crise de identidade", "Self-compassion: relacionar-se consigo mesmo", "Propósito de vida", "Integração de sombras (Jung)"], "priority": 3, "total_episodes": 8, "published_episodes": 0}];
+const SERIES=[
+{id:1,t:"A Ciência do Apego",p:10,c:'p10',eps:["Apego Ansioso: o medo do abandono que controla sua vida","Apego Evitativo: o muro invisível que você construiu","Apego Desorganizado: quando amor e medo se confundem","Como o apego se forma nos primeiros 2 anos de vida","Trauma bonding: por que você fica com quem te machuca","Como reprogramar seu estilo de apego na vida adulta","Apego seguro: o que todos querem mas poucos têm","Feridas de apego e os relacionamentos adultos","Neurociência do apego: o que Bowlby não sabia","Apego e autoestima: a conexão invisível"]},
+{id:2,t:"Mentes Narcisistas",p:10,c:'p10',eps:["O que é narcisismo: além do espelho","Gaslighting: a manipulação invisível que destrói sua sanidade","Love bombing: quando o amor parece perfeito demais","O ciclo narcisista: idealizar, desvalorizar, descartar","Triangulação: o jogo de ciúmes e comparações","Filhos de narcisistas: as marcas invisíveis","Como se libertar de um narcisista de vez","Narcisismo encoberto: os sinais que você está ignorando","DARVO: quando o abusador vira vítima","Recuperação pós-narcisismo: reconstruindo quem você é"]},
+{id:3,t:"Trauma Invisível",p:10,c:'p10',eps:["O que é trauma complexo (C-PTSD)","Negligência emocional: o trauma silencioso que ninguém vê","Parentificação: quando a criança cuida dos pais","Inner child: a criança ferida dentro de você","Respostas ao trauma: luta, fuga, congelamento, submissão","Flashbacks emocionais: o passado que invade o presente","Neurociência do trauma: o que acontece no seu cérebro","Teoria Polivagal: seu sistema nervoso e o trauma","Caminhos de cura: do trauma ao crescimento pós-traumático","Trauma e relacionamentos: por que você repete padrões"]},
+{id:8,t:"Vínculos Tóxicos",p:10,c:'p10',eps:["Sinais de um relacionamento tóxico que você está ignorando","Manipulação emocional: como identificar e se proteger","Codependência: quando o amor vira veneno","Ciclo do abuso emocional: como funciona e como sair","Como romper vínculos tóxicos de forma definitiva","Recuperação pós-relacionamento tóxico","Limites saudáveis: como impor sem culpa","Por que você tolera o intolerável","O papel da família de origem nos vínculos tóxicos","Reconstruindo a confiança após traições repetidas"]},
+{id:18,t:"Psicologia do Dinheiro",p:10,c:'p10',eps:["Crenças limitantes sobre dinheiro: de onde vieram","Trauma financeiro da infância e seus efeitos","Mentalidade de abundância vs. escassez","Auto-sabotagem financeira: por que você faz isso","Dinheiro e autoestima: a conexão que ninguém te contou","Como construir uma relação saudável com dinheiro","Psicologia do gasto compulsivo","Medo de riqueza: síndrome do sucesso","Dinheiro em relacionamentos: conversas difíceis","Herança emocional financeira: o que seus pais te ensinaram"]},
+{id:5,t:"Relacionamentos Documentados",p:7,c:'p7',eps:["O casal que sobreviveu ao trauma juntos","Pais e filhos: a reconciliação que parecia impossível","Amizade que sobreviveu à maior traição","Irmãos rivais que viraram melhores amigos","Casamento que renasceu na maior crise","Divórcio com cura mútua: como foi possível","Amor após perda: recomeçar quando tudo acabou","Reconciliação com pais idosos: é tarde demais?","Amizade adulta: como construir do zero","O relacionamento que mudou quem eu era"]},
+{id:6,t:"Ansiedade e Pânico",p:7,c:'p7',eps:["O que é ansiedade vs. medo: diferença crucial","Síndrome do pânico: o medo do medo","Ansiedade generalizada (TAG): quando tudo assusta","Ansiedade social: além da timidez","Como o corpo expressa ansiedade que a mente esconde","Teoria Polivagal e regulação do sistema nervoso","Técnicas comprovadas para reduzir ansiedade agora","Ansiedade noturna: por que piora à noite","Ansiedade e relacionamentos: como afeta os dois","Quando buscar ajuda profissional de verdade"]},
+{id:7,t:"Depressão: Além da Tristeza",p:7,c:'p7',eps:["Depressão não é fraqueza: o que a ciência diz","Sintomas físicos da depressão que você não vê","Distimia: a depressão crônica que passa despercebida","Depressão pós-parto: além do baby blues","Depressão masculina: o sofrimento silencioso","Neurociência da depressão: o que acontece no cérebro","Tratamentos baseados em evidência","Antidepressivos: mitos e verdades","Depressão e relacionamentos: como um afeta o outro","Caminho da recuperação: o que ninguém te conta"]},
+{id:15,t:"Transtornos da Personalidade",p:7,c:'p7',eps:["Cluster A: os incompreendidos","Cluster B: emoções intensas e relacionamentos caóticos","Cluster C: medo e evitação","Borderline: a dor de existir entre extremos","Antissocial vs. psicopatia: a diferença real","Transtorno histriônico: a busca por atenção","Como conviver com transtornos de personalidade","Estigma e diagnóstico: o que muda na vida real","TDN: entre grandiosidade e vulnerabilidade","Tratamento eficaz para transtornos de personalidade"]},
+{id:19,t:"Vícios e Dependências",p:7,c:'p7',eps:["Neuroquímica do vício: como o cérebro é sequestrado","Dependência química vs. psicológica","Vícios comportamentais: jogo, sexo, comida, telas","Codependência: o vício de cuidar do viciado","Recuperação: 12 passos e alternativas eficazes","Recaída como parte do processo","Por que algumas pessoas viciam mais que outras","Álcool: o vício mais normalizado","Nicotina: por que é tão difícil parar","Recuperação a longo prazo: vida depois do vício"]},
+{id:4,t:"Psicologia do Sucesso",p:3,c:'p3',eps:["O que realmente separa pessoas bem-sucedidas","Síndrome do impostor: você não é uma fraude","Mentalidade de crescimento (Carol Dweck)","Foco e disciplina: a ciência dos hábitos","Falha como combustível: como reprocessar fracassos","Resiliência: a chave do sucesso real","Medo do sucesso: sabotagem no momento decisivo","Procrastinação: a ciência por trás","Perfeccionismo paralisante vs. saudável","Propósito de vida: como encontrar o seu"]},
+{id:9,t:"Inteligência Emocional na Prática",p:3,c:'p3',eps:["Os 5 pilares da IE (Daniel Goleman)","Autoconhecimento emocional: lendo seus próprios sinais","Auto-regulação: ser dono das suas emoções","Empatia: como realmente entender o outro","Habilidades sociais avançadas","Motivação intrínseca: de onde vem","IE no trabalho: o diferencial invisível","IE em relacionamentos: o fator mais importante","Regulação emocional em crises","Como desenvolver IE na prática diária"]},
+{id:10,t:"Psicologia Comportamental",p:3,c:'p3',eps:["Condicionamento clássico (Pavlov): você e seus gatilhos","Reforço positivo e negativo (Skinner)","Hábitos: como o cérebro forma rotinas automáticas","Loop do hábito: gatilho, rotina, recompensa","Como quebrar hábitos ruins de verdade","Modelagem de comportamento: aprender observando","Mudança comportamental sustentável","Comportamento e ambiente: o papel do contexto","Punição vs. consequência natural","Aplicando behaviorismo na vida real"]},
+{id:11,t:"Neurociência da Mente",p:3,c:'p3',eps:["Como o cérebro funciona: guia simples","Plasticidade neural: você pode mudar","Memória e identidade: quem você acredita que é","Sistema límbico: as emoções no comando","Default Mode Network e ruminação mental","Dopamina: o sistema de recompensa","Serotonina, ocitocina e cortisol","Sono e cérebro: por que é essencial","Como meditação literalmente muda o cérebro","Neuroquímica das emoções: como o corpo sente"]},
+{id:12,t:"Desenvolvimento na Infância",p:3,c:'p3',eps:["0-2 anos: o cérebro em construção","Apego seguro: a base de tudo na infância","Linguagem e cognição (Vygotsky)","Estágios de Piaget e o desenvolvimento cognitivo","Trauma infantil e suas marcas invisíveis","Educação positiva: o que a ciência diz","Sinais de problemas no desenvolvimento","Como reparar feridas da infância na vida adulta","Parentalidade consciente: o que muda","Resiliência infantil: como construir"]},
+{id:13,t:"Luto e Perdas",p:3,c:'p3',eps:["Os estágios do luto: além de Kübler-Ross","Luto antecipatório: chorar antes da perda","Luto complicado: quando a dor não passa","Luto não reconhecido: perdas que ninguém valida","Como apoiar alguém em luto de verdade","Pós-luto: crescimento e ressignificação","Luto por relacionamentos: o fim que dói","Luto ambíguo: quando não há corpo, não há despedida","Crianças e luto: como conversar","Reconstruindo a vida após perda"]},
+{id:14,t:"Saúde Mental no Trabalho",p:3,c:'p3',eps:["Burnout: as 3 fases que ninguém te conta","Síndrome de Boreout: tédio que adoece","Assédio moral no trabalho: identificar e agir","Como impor limites profissionais sem culpa","Equilíbrio vida-trabalho real (não Instagram)","Quando trocar de emprego: sinais claros","Workaholic: vício em trabalho","Perfeccionismo no trabalho e suas consequências","Comunicação assertiva no ambiente corporativo","Recuperação do burnout: o processo real"]},
+{id:16,t:"Psicologia das Relações Sociais",p:3,c:'p3',eps:["Por que precisamos de pertencimento","Solidão epidêmica: por que estamos mais sós","Amizades adultas: por que são tão raras","Influência social (Asch, Milgram, Zimbardo)","Como construir comunidade verdadeira","Redes sociais e saúde mental: a pesquisa real","Conformidade vs. autenticidade","Grupismo: quando pertencer nos destrói","Dinâmicas de poder nos grupos sociais","Como fazer amigos na vida adulta"]},
+{id:17,t:"Mindfulness e Presença",p:3,c:'p3',eps:["O que é mindfulness (não é o que parece)","Neurociência da meditação: o que muda no cérebro","Atenção plena no dia a dia: como praticar","Body scan: presença no corpo","Mindfulness para ansiedade e ruminação","Vipassana e tradições contemplativas","Meditação e sistema nervoso","Mindfulness nos relacionamentos","Mindfulness no trabalho: foco real","Começando do zero: guia prático"]},
+{id:20,t:"Identidade e Autoconhecimento",p:3,c:'p3',eps:["Quem você acredita que é vs. quem você é","Eneagrama, MBTI e personalidade: usar com cuidado","Self verdadeiro vs. falso self (Winnicott)","Como você se construiu e pode reconstruir","Crise de identidade: quando tudo parece vazio","Self-compassion: relacionar-se consigo mesmo","Propósito de vida: a busca real","Integração de sombras (Jung)","Identidade e trauma: quem eu seria sem isso","Autoconhecimento como prática contínua"]}
+];
 
 function card(s){
-  const cls = s.priority === 10 ? 'priority' : (s.priority === 7 ? 'reserve7' : '');
-  const eps = (s.topics || []).map((t,i)=>`<li><span class="n">${String(i+1).padStart(2,'0')}</span><span>${t}</span></li>`).join('');
+  const cls = s.p===10?'p10':s.p===7?'p7':'';
+  const ptag = s.p===10?'PRIORITY 10':s.p===7?'RESERVE 7':'RESERVE 3';
+  const eps = s.eps.map((e,i)=>`<li class="ep"><span class="ep-n">${String(i+1).padStart(2,'0')}</span><span class="ep-title">${e}</span></li>`).join('');
   return `<article class="card ${cls}">
-    <div class="meta"><span>${s.total_episodes} episódios · ${s.published_episodes} publicados</span><span class="pri">P${s.priority}</span></div>
-    <h3 class="tt">${s.title}</h3>
-    <ul class="eps">${eps}</ul>
+  <div class="card-header">
+    <h3 class="card-title">${s.t}</h3>
+  </div>
+  <div class="card-meta">
+    <span class="chip cp">${ptag}</span>
+    <span class="chip ce">10 episódios</span>
+    <span class="chip cstd">15-20min cada</span>
+    <span class="chip" style="background:rgba(56,189,248,.08);color:#38BDF8;border-color:rgba(56,189,248,.15)">Gate 95pts</span>
+  </div>
+  <ul class="eps-list">${eps}</ul>
   </article>`;
 }
 
-const p10 = SERIES.filter(s=>s.priority===10);
-const p7  = SERIES.filter(s=>s.priority===7);
-const p3  = SERIES.filter(s=>s.priority===3);
-
-document.getElementById('prio10').innerHTML = p10.map(card).join('');
-document.getElementById('prio7').innerHTML  = p7.map(card).join('');
-document.getElementById('prio3').innerHTML  = p3.map(card).join('');
+SERIES.filter(s=>s.c==='p10').forEach(s=>document.getElementById('p10').insertAdjacentHTML('beforeend',card(s)));
+SERIES.filter(s=>s.c==='p7').forEach(s=>document.getElementById('p7').insertAdjacentHTML('beforeend',card(s)));
+SERIES.filter(s=>s.c==='p3').forEach(s=>document.getElementById('p3').insertAdjacentHTML('beforeend',card(s)));
 </script>
-</body>
-</html>
+</body></html>
