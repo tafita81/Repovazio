@@ -1,61 +1,253 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>psicologia.doc — Vídeos Prontos</title>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Vídeos Prontos — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--v:#7C3AED;--r:#E11D48;--g:#F59E0B;--t:#0D9488;--grn:#10B981;--m:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;color:#fff;padding:20px}
-header{max-width:1400px;margin:0 auto 40px;text-align:center;padding:30px 20px;background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border-radius:20px;border:1px solid rgba(255,255,255,0.1)}
-h1{font-size:2.5rem;margin-bottom:10px;background:linear-gradient(90deg,#00f2fe,#4facfe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.subtitle{opacity:0.8;font-size:1.1rem}
-.stats{display:flex;justify-content:center;gap:30px;margin-top:20px;flex-wrap:wrap}
-.stat{background:rgba(0,242,254,0.1);padding:15px 25px;border-radius:12px;border:1px solid rgba(0,242,254,0.3)}
-.stat strong{display:block;font-size:2rem;color:#00f2fe}
-.stat span{font-size:0.85rem;opacity:0.8}
-.channel-link{display:inline-block;margin-top:15px;padding:12px 24px;background:#ff0000;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;transition:all 0.2s}
-.channel-link:hover{background:#cc0000;transform:translateY(-2px)}
-main{max-width:1400px;margin:0 auto}
-.warning{background:rgba(255,193,7,0.15);border:1px solid rgba(255,193,7,0.4);padding:20px;border-radius:12px;margin-bottom:30px;text-align:center}
-.warning strong{color:#ffc107}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:25px}
-.card{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;transition:all 0.3s;position:relative;overflow:hidden}
-.card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,242,254,0.2);border-color:rgba(0,242,254,0.4)}
-.badge{position:absolute;top:15px;right:15px;background:#00f2fe;color:#0f0c29;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:bold;z-index:2}
-.card h2{font-size:1.15rem;margin-bottom:15px;padding-right:60px;line-height:1.3}
-.card video{width:100%;border-radius:10px;background:#000;aspect-ratio:16/9}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.chip{background:rgba(255,255,255,0.08);padding:5px 12px;border-radius:16px;font-size:0.75rem;opacity:0.85}
-.links{display:flex;gap:10px;flex-wrap:wrap}
-.links a{flex:1;min-width:120px;text-align:center;padding:10px;background:rgba(0,242,254,0.15);color:#00f2fe;text-decoration:none;border-radius:8px;font-size:0.85rem;font-weight:500;transition:all 0.2s;border:1px solid rgba(0,242,254,0.3)}
-.links a:hover{background:rgba(0,242,254,0.3);transform:scale(1.02)}
-footer{text-align:center;padding:40px 20px;opacity:0.6;font-size:0.85rem}
-@media(max-width:600px){h1{font-size:1.8rem}.stat strong{font-size:1.5rem}.grid{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<header>
-<h1>🧠 psicologia.doc</h1>
-<p class="subtitle">Vídeos prontos · gerados pelo sistema autônomo 24/7</p>
-<div class="stats">
-<div class="stat"><strong>0</strong><span>Vídeos prontos</span></div>
-<div class="stat"><strong>0</strong><span>No YouTube ainda</span></div>
-<div class="stat"><strong>~6/dia</strong><span>Limite YT quota</span></div>
-</div>
-<a href="https://www.youtube.com/channel/UCSH63tBfY6wEIdkC4u4zKdg" target="_blank" class="channel-link">📺 Canal de destino: Rafael Rodrigues</a>
-</header>
-<main>
-<div class="warning">
-<strong>⏳ Status da publicação no YouTube:</strong> Quota da YouTube Data API esgotou hoje (10.000 unidades). O cron <code>youtube-publisher-hourly</code> vai publicar automaticamente quando resetar (~05h BRT). Em 3-4 dias todos os vídeos estarão no canal acima.
-</div>
-<div class="grid">
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,.07),transparent)}
 
+/* HEADER */
+.hdr{padding:16px 24px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.96);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-size:18px;font-weight:800;color:var(--m)}
+.canal-badge{display:flex;align-items:center;gap:6px;background:rgba(225,29,72,.1);border:1px solid rgba(225,29,72,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:#FCA5A5;text-decoration:none;transition:.15s}
+.canal-badge:hover{background:rgba(225,29,72,.2)}
+.canal-badge .dot{width:7px;height:7px;border-radius:50%;background:#ff0000;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* STATS */
+.stats-bar{background:var(--s1);border-bottom:1px solid var(--bd);padding:12px 24px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.sb-item{text-align:center}
+.sb-n{font-size:22px;font-weight:900;line-height:1;display:block}
+.sb-l{font-size:8px;color:var(--t3);font-family:"DM Mono",monospace}
+
+/* ALERT */
+.alert-token{background:rgba(225,29,72,.06);border:1px solid rgba(225,29,72,.2);border-radius:10px;padding:12px 16px;margin:16px 24px 0;font-size:11px;color:#FCA5A5;line-height:1.6}
+.alert-token strong{color:#fff}.alert-token a{color:var(--g)}
+
+/* WRAP */
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px 80px}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+.sec-ttl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--t2)}
+.sec-sub{font-size:8px;color:var(--t3);font-family:"DM Mono",monospace;margin-left:auto}
+
+/* GRID DE VÍDEOS */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+
+/* CARD DE VÍDEO */
+.vcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:.2s;position:relative}
+.vcard:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.vcard-video{width:100%;aspect-ratio:16/9;background:#000;display:block;object-fit:cover}
+.vcard-body{padding:14px}
+.vcard-title{font-size:13px;font-weight:700;color:var(--t1);line-height:1.3;margin-bottom:8px}
+.vcard-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:8px;font-family:"DM Mono",monospace;padding:2px 7px;border-radius:8px;background:rgba(255,255,255,.07);color:var(--t2)}
+.chip-ok{background:rgba(16,185,129,.1);color:var(--grn);border:1px solid rgba(16,185,129,.2)}
+.chip-hot{background:rgba(225,29,72,.1);color:#FCA5A5;border:1px solid rgba(225,29,72,.2)}
+.chip-v{background:rgba(124,58,237,.1);color:var(--m);border:1px solid rgba(124,58,237,.2)}
+.vcard-actions{display:flex;gap:7px}
+.btn-dl{flex:1;text-align:center;padding:8px;background:rgba(124,58,237,.15);color:var(--m);text-decoration:none;border-radius:8px;font-size:11px;font-weight:700;border:1px solid rgba(124,58,237,.3);transition:.15s}
+.btn-dl:hover{background:rgba(124,58,237,.3)}
+.btn-pub{flex:1;text-align:center;padding:8px;background:rgba(225,29,72,.15);color:#FCA5A5;text-decoration:none;border-radius:8px;font-size:11px;font-weight:700;border:1px solid rgba(225,29,72,.3);transition:.15s}
+.btn-pub:hover{background:rgba(225,29,72,.3)}
+.btn-yt{flex:1;text-align:center;padding:8px;background:rgba(16,185,129,.12);color:var(--grn);text-decoration:none;border-radius:8px;font-size:11px;font-weight:700;border:1px solid rgba(16,185,129,.25);transition:.15s}
+.btn-yt:hover{background:rgba(16,185,129,.25)}
+.vcard-badge{position:absolute;top:10px;right:10px;font-size:8px;font-family:"DM Mono",monospace;font-weight:700;padding:2px 7px;border-radius:8px}
+.vb-mp4{background:rgba(16,185,129,.2);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+.vb-pub{background:rgba(255,0,0,.2);color:#ff4444;border:1px solid rgba(255,0,0,.3)}
+
+/* CANAL DESTINO CARD */
+.canal-card{background:linear-gradient(135deg,rgba(225,29,72,.08),rgba(124,58,237,.06));border:1px solid rgba(225,29,72,.2);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cc-icon{font-size:32px}
+.cc-info{flex:1}
+.cc-title{font-size:14px;font-weight:800;color:var(--t1);margin-bottom:2px}
+.cc-sub{font-size:10px;color:var(--t2);font-family:"DM Mono",monospace}
+.cc-blocked{font-size:9px;background:rgba(225,29,72,.15);color:#FCA5A5;border:1px solid rgba(225,29,72,.3);border-radius:6px;padding:2px 8px;font-family:"DM Mono",monospace;margin-top:4px;display:inline-block}
+.cc-ok{font-size:9px;background:rgba(16,185,129,.12);color:var(--grn);border:1px solid rgba(16,185,129,.25);border-radius:6px;padding:2px 8px;font-family:"DM Mono",monospace;margin-top:4px;display:inline-block}
+
+/* VAZIO */
+.empty{text-align:center;padding:60px 20px;color:var(--t3)}
+
+@media(max-width:600px){.grid{grid-template-columns:1fr}.hdr{padding:12px 16px}}
+</style>
+</head><body>
+
+<header class="hdr">
+  <a href="/hub.html" style="font-size:20px;font-weight:900;color:var(--m);font-family:serif;text-decoration:none">ψ</a>
+  <div class="logo">Vídeos Prontos</div>
+  <a class="canal-badge" href="https://www.youtube.com/@psidanielacoelho" target="_blank">
+    <span class="dot"></span>
+    Canal: @psidanielacoelho
+  </a>
+  <a href="https://studio.youtube.com/channel/UCyCkIpsVgME9yCj_oXJFheA" target="_blank"
+     style="font-size:10px;color:var(--t3);font-family:monospace;padding:4px 10px;border:1px solid var(--bd);border-radius:6px;text-decoration:none;margin-left:auto">
+    🎬 YouTube Studio
+  </a>
+</header>
+
+<div class="stats-bar">
+  <div class="sb-item"><span class="sb-n" id="s-total" style="color:var(--m)">0</span><span class="sb-l">TOTAL MP4</span></div>
+  <div class="sb-item"><span class="sb-n" id="s-pub" style="color:var(--grn)">0</span><span class="sb-l">PUBLICADOS YT</span></div>
+  <div class="sb-item"><span class="sb-n" id="s-wait" style="color:var(--r)">0</span><span class="sb-l">AGUARDANDO</span></div>
+  <div class="sb-item"><span class="sb-n" style="color:var(--g)">99</span><span class="sb-l">SEO SCORE</span></div>
+  <span style="margin-left:auto;font-size:9px;color:var(--t3);font-family:monospace" id="s-update">Carregando...</span>
 </div>
-</main>
-<footer>
-<p>🤖 Sistema autônomo psicologia.doc · Última atualização: 14/05/2026, 17:00:08</p>
-<p style="margin-top:10px">Supabase Storage · GitHub Actions · Vercel · YouTube Data API</p>
+
+<div class="alert-token">
+  🔴 <strong>Publisher bloqueado:</strong>
+  O <code>YT_REFRESH_TOKEN</code> está expirado — vídeos prontos mas não publicam.
+  Renovar em <a href="/oauth.html">oauth.html</a> (3 min) →
+  depois atualizar <a href="https://github.com/tafita81/Repovazio/settings/secrets/actions/YT_REFRESH_TOKEN" target="_blank">GitHub Secret</a> →
+  redisparar <a href="https://github.com/tafita81/Repovazio/actions/workflows/youtube-publisher.yml" target="_blank">YouTube Publisher</a>.
+</div>
+
+<div class="wrap">
+  <!-- CANAL DESTINO (apenas @psidanielacoelho) -->
+  <div class="canal-card">
+    <div class="cc-icon">📺</div>
+    <div class="cc-info">
+      <div class="cc-title">Canal de Destino: @psidanielacoelho</div>
+      <div class="cc-sub">UCyCkIpsVgME9yCj_oXJFheA · psidanielacoelho1982@gmail.com</div>
+      <span class="cc-ok">✓ CANAL ATIVO — todas as publicações vão aqui</span>
+    </div>
+    <a href="https://www.youtube.com/@psidanielacoelho" target="_blank"
+       style="background:rgba(225,29,72,.15);color:#FCA5A5;border:1px solid rgba(225,29,72,.3);border-radius:8px;padding:8px 16px;font-size:11px;font-weight:700;text-decoration:none">
+      ▶ Abrir Canal
+    </a>
+  </div>
+
+  <!-- AVISO: CANAL BLOQUEADO -->
+  <div style="background:rgba(255,50,50,.05);border:1px solid rgba(255,50,50,.15);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:10px;color:#FF6B6B;font-family:monospace">
+    🚫 CANAL BLOQUEADO (NUNCA PUBLICAR): UCSH63tBfY6wEIdkC4u4zKdg — removido permanentemente em 2026-05-07. O publisher verifica e bloqueia automaticamente.
+  </div>
+
+  <!-- GRID DE VÍDEOS -->
+  <div class="sec-hdr">
+    <span class="sec-ttl">🎬 Todos os Vídeos com MP4</span>
+    <span class="sec-sub" id="grid-count">carregando...</span>
+  </div>
+  <div class="grid" id="grid">
+    <div class="empty">⏳ Carregando vídeos do Supabase...</div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:30px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd)">
+  🤖 psicologia.doc · Canal exclusivo @psidanielacoelho · Atualização automática a cada 60s
+  <br><br>
+  <a href="/hub.html" style="color:var(--m)">← Hub Principal</a> ·
+  <a href="/publicar.html" style="color:var(--r)">🚀 Publicar</a> ·
+  <a href="/oauth.html" style="color:var(--g)">🔐 Renovar Token</a>
 </footer>
-</body>
-</html>
+
+<script>
+const SB = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
+
+// CANAL ATIVO — NUNCA ALTERAR PARA OUTRO
+const CANAL_ATIVO = 'UCyCkIpsVgME9yCj_oXJFheA';
+const CANAL_BLOQUEADO = 'UCSH63tBfY6wEIdkC4u4zKdg'; // Rafael Rodrigues — BLOQUEADO
+
+const SERIE_MAP = {
+  narcis:'Narcisismo',gaslight:'Gaslighting',manipul:'Manipulação',
+  apego:'Apego Ansioso',abandono:'Apego Ansioso',
+  trauma:'Trauma',negligên:'Trauma',
+  ansied:'Ansiedade',pânico:'Ansiedade',
+  burnout:'Burnout',esgotamento:'Burnout',
+  autoestima:'Autoestima',impost:'Síndrome Impostor',sabota:'Autoestima',
+  relacionamento:'Relacionamentos',amor:'Relacionamentos',tóxico:'Relacionamentos',
+  depress:'Depressão',
+  dinheiro:'Psicologia do Dinheiro',finanças:'Psicologia do Dinheiro',
+  familia:'Família',pais:'Família',
+};
+
+function detectSerie(title) {
+  const t = (title||'').toLowerCase();
+  for (const [key, serie] of Object.entries(SERIE_MAP)) {
+    if (t.includes(key)) return serie;
+  }
+  return 'Psicologia';
+}
+
+function formatDuration(url) {
+  return ''; // sem player duration
+}
+
+async function load() {
+  try {
+    // Buscar TODOS os vídeos com mp4_url
+    const r = await fetch(
+      `${SB}/rest/v1/content_pipeline?mp4_url=not.is.null&select=id,title,youtube_title,topic,mp4_url,youtube_video_id,seo_score,target_platform,status,published_at&order=id.desc&limit=100`,
+      { headers: { 'apikey': K, 'Authorization': 'Bearer ' + K } }
+    );
+    const videos = await r.json();
+
+    const withMp4 = videos.filter(v => v.mp4_url);
+    const published = withMp4.filter(v => v.youtube_video_id);
+    const waiting = withMp4.filter(v => !v.youtube_video_id);
+
+    // Stats
+    document.getElementById('s-total').textContent = withMp4.length;
+    document.getElementById('s-pub').textContent = published.length;
+    document.getElementById('s-wait').textContent = waiting.length;
+    document.getElementById('s-update').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+    document.getElementById('grid-count').textContent = withMp4.length + ' vídeos · ' + published.length + ' publicados · ' + waiting.length + ' aguardando token YT';
+
+    if (withMp4.length === 0) {
+      document.getElementById('grid').innerHTML = '<div class="empty">Nenhum vídeo com MP4 encontrado.<br><br>O pipeline está gerando — aguarde o Render V2.</div>';
+      return;
+    }
+
+    // Renderizar cards
+    document.getElementById('grid').innerHTML = withMp4.map(v => {
+      const title = v.youtube_title || v.title || 'Sem título';
+      const serie = detectSerie(v.topic || v.title || '');
+      const isPub = !!v.youtube_video_id;
+      const platform = v.target_platform || 'youtube_long';
+      const seo = v.seo_score || 0;
+      const ytUrl = v.youtube_video_id
+        ? `https://youtube.com/watch?v=${v.youtube_video_id}`
+        : `https://www.youtube.com/@psidanielacoelho`;
+
+      return `
+        <div class="vcard">
+          <span class="vcard-badge ${isPub ? 'vb-pub' : 'vb-mp4'}">${isPub ? '✓ PUBLICADO' : 'MP4 PRONTO'}</span>
+          <video class="vcard-video" controls preload="metadata"
+            src="${v.mp4_url}"
+            poster=""
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          </video>
+          <div style="display:none;align-items:center;justify-content:center;aspect-ratio:16/9;background:rgba(0,0,0,.3);color:var(--t3);font-size:11px">
+            ⚠️ Vídeo não carregou
+          </div>
+          <div class="vcard-body">
+            <div class="vcard-title">${title.substring(0, 80)}${title.length > 80 ? '...' : ''}</div>
+            <div class="vcard-meta">
+              <span class="chip chip-v">${serie}</span>
+              <span class="chip">${platform.replace('youtube_','')}</span>
+              <span class="chip chip-ok">SEO ${seo}</span>
+              <span class="chip">ID ${v.id}</span>
+            </div>
+            <div class="vcard-actions">
+              <a class="btn-dl" href="${v.mp4_url}" download="video_${v.id}.mp4">⬇ Download</a>
+              <a class="btn-pub" href="/publicar.html">🚀 Publicar</a>
+              ${isPub
+                ? `<a class="btn-yt" href="${ytUrl}" target="_blank">▶ Ver no YT</a>`
+                : `<a class="btn-yt" href="https://www.youtube.com/@psidanielacoelho" target="_blank">📺 @psidanielacoelho</a>`
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch(e) {
+    document.getElementById('grid').innerHTML = `<div class="empty">❌ Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+load();
+setInterval(load, 60000);
+</script>
+</body></html>
