@@ -1,0 +1,98 @@
+name: 🧠 Cérebro — Monitor Monetização Semanal
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'  # Toda segunda-feira 9h BRT (12h UTC)
+  workflow_dispatch:
+    inputs:
+      semana:
+        description: 'Número da semana a avaliar (deixar vazio = automático)'
+        required: false
+
+jobs:
+  monitorar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📊 Avaliar progresso e ajustar estratégia
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          # Calcular semana atual baseado em 16/mai/2026 como S1
+          START_DATE="2026-05-16"
+          TODAY=$(date +%Y-%m-%d)
+          DAYS_DIFF=$(( ($(date -d "$TODAY" +%s) - $(date -d "$START_DATE" +%s)) / 86400 ))
+          SEMANA_ATUAL=$(( DAYS_DIFF / 7 + 1 ))
+          
+          if [ "${{ github.event.inputs.semana }}" != "" ]; then
+            SEMANA_ATUAL="${{ github.event.inputs.semana }}"
+          fi
+          
+          echo "=== Cérebro Monetização — Semana $SEMANA_ATUAL ==="
+          
+          # 1. Criar registro da semana se não existir
+          SEMANA_INICIO=$(date -d "$START_DATE + $(( (SEMANA_ATUAL-1)*7 )) days" +%Y-%m-%d)
+          SEMANA_FIM=$(date -d "$START_DATE + $(( SEMANA_ATUAL*7 - 1 )) days" +%Y-%m-%d)
+          
+          # Calcular metas por fase
+          if [ $SEMANA_ATUAL -le 6 ]; then
+            META_SUBS=$((SEMANA_ATUAL * 200))
+            META_VIEWS=$((SEMANA_ATUAL * 15000))
+            META_RECEITA=0
+            META_VIDEOS=3
+          elif [ $SEMANA_ATUAL -le 12 ]; then
+            META_SUBS=$((1000 + (SEMANA_ATUAL - 6) * 1200))
+            META_VIEWS=$((80000 + (SEMANA_ATUAL - 6) * 30000))
+            META_RECEITA=$(( (SEMANA_ATUAL - 6) * 250 ))
+            META_VIDEOS=4
+          elif [ $SEMANA_ATUAL -le 20 ]; then
+            META_SUBS=$((8200 + (SEMANA_ATUAL - 12) * 2500))
+            META_VIEWS=$((250000 + (SEMANA_ATUAL - 12) * 80000))
+            META_RECEITA=$((1500 + (SEMANA_ATUAL - 12) * 1200))
+            META_VIDEOS=5
+          else
+            META_SUBS=$((28000 + (SEMANA_ATUAL - 20) * 6000))
+            META_VIEWS=$((890000 + (SEMANA_ATUAL - 20) * 200000))
+            META_RECEITA=$((11100 + (SEMANA_ATUAL - 20) * 4500))
+            META_VIDEOS=6
+          fi
+          
+          # Inserir/atualizar semana
+          curl -s -X POST "$SUPABASE_URL/rest/v1/monetizacao_semanal" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: resolution=merge-duplicates" \
+            -d "{
+              \"semana\": $SEMANA_ATUAL,
+              \"data_inicio\": \"$SEMANA_INICIO\",
+              \"data_fim\": \"$SEMANA_FIM\",
+              \"meta_inscritos\": $META_SUBS,
+              \"meta_views\": $META_VIEWS,
+              \"meta_receita_r\": $META_RECEITA,
+              \"meta_videos\": $META_VIDEOS
+            }"
+          
+          echo ""
+          echo "✅ Semana $SEMANA_ATUAL registrada: Meta $META_SUBS inscritos / R$$META_RECEITA receita"
+          echo "📅 Período: $SEMANA_INICIO a $SEMANA_FIM"
+          echo "🎯 Meta de vídeos: $META_VIDEOS/semana"
+          
+          # 2. Buscar métricas da semana anterior para avaliar
+          SEMANA_PREV=$((SEMANA_ATUAL - 1))
+          if [ $SEMANA_PREV -ge 1 ]; then
+            METRICS=$(curl -s "$SUPABASE_URL/rest/v1/monetizacao_semanal?semana=eq.$SEMANA_PREV&select=inscritos_fim,total_receita_r,videos_publicados,status_geral,meta_inscritos,meta_receita_r" \
+              -H "apikey: $SUPABASE_KEY" \
+              -H "Authorization: Bearer $SUPABASE_KEY")
+            echo "📊 Semana anterior ($SEMANA_PREV): $METRICS"
+          fi
+          
+          # 3. Verificar marcos atingidos
+          MARCOS=$(curl -s "$SUPABASE_URL/rest/v1/monetizacao_marcos?atingido=eq.false&semana_alvo=lte.$SEMANA_ATUAL&select=descricao,meta_subs,tipo" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY")
+          echo "🏆 Marcos pendentes: $MARCOS"
+          
+          echo ""
+          echo "=== Cérebro concluiu avaliação da Semana $SEMANA_ATUAL ==="
+          echo "👉 Acesse: https://repovazio.vercel.app/calendario-anual.html"
