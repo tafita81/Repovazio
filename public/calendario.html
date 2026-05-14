@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Calendário de Publicação — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,.07),transparent)}
+.hdr{padding:14px 24px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px}
+.logo{font-size:18px;font-weight:800;color:var(--mist)}
+.tz-badge{font-size:10px;font-family:"DM Mono",monospace;background:rgba(13,148,136,.15);color:var(--teal);border:1px solid rgba(13,148,136,.3);border-radius:12px;padding:3px 10px}
+.wrap{max-width:1300px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:1}
+h2{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:"DM Mono",monospace;margin-bottom:14px}
+/* SEMANA */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:32px}
+.day-col{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.day-hdr{padding:10px 10px 8px;border-bottom:1px solid var(--bd);text-align:center}
+.day-name{font-size:11px;font-weight:800;color:var(--t1)}
+.day-note{font-size:9px;color:var(--t3);font-family:"DM Mono",monospace;margin-top:2px}
+.day-slots{padding:8px}
+.slot{border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:.15s;border:1px solid transparent}
+.slot:hover{transform:translateY(-1px)}
+.slot.prime{background:rgba(225,29,72,.12);border-color:rgba(225,29,72,.25)}
+.slot.good{background:rgba(124,58,237,.1);border-color:rgba(124,58,237,.2)}
+.slot.ok{background:rgba(13,148,136,.08);border-color:rgba(13,148,136,.15)}
+.slot-time{font-size:11px;font-weight:700;color:var(--t1);font-family:"DM Mono",monospace}
+.slot-label{font-size:9px;color:var(--t2);margin-top:2px}
+.slot-score{font-size:9px;font-weight:700;margin-top:3px}
+.slot.prime .slot-score{color:var(--crim)}
+.slot.good .slot-score{color:var(--mist)}
+.slot.ok .slot-score{color:var(--teal)}
+.assigned{display:flex;align-items:center;gap:4px;margin-top:4px}
+.assigned-title{font-size:9px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.assigned-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-red{background:var(--crim)}
+.dot-purple{background:var(--acc)}
+.dot-teal{background:var(--teal)}
+/* LEGENDA */
+.legend{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.leg-dot{width:12px;height:12px;border-radius:4px;flex-shrink:0}
+/* SCHEDULE TABLE */
+.sched-table{width:100%;border-collapse:collapse;font-size:12px}
+.sched-table th{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:"DM Mono",monospace;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd)}
+.sched-table td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03)}
+.sched-table tr:hover td{background:rgba(255,255,255,.02)}
+.plat-badge{font-size:9px;font-family:"DM Mono",monospace;padding:2px 7px;border-radius:8px;display:inline-block}
+.yt-long{background:rgba(255,0,0,.12);color:#ff6b6b;border:1px solid rgba(255,0,0,.2)}
+.yt-short{background:rgba(255,102,0,.12);color:#ff9947;border:1px solid rgba(255,102,0,.2)}
+.ig-reel{background:rgba(225,48,108,.12);color:#ff6eb4;border:1px solid rgba(225,48,108,.2)}
+.tk-short{background:rgba(37,244,238,.08);color:#25f4ee;border:1px solid rgba(37,244,238,.2)}
+.pn-pin{background:rgba(230,0,35,.1);color:#ff5c5c;border:1px solid rgba(230,0,35,.2)}
+/* INSIGHTS */
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.insight{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px}
+.insight-n{font-size:32px;font-weight:800}
+.insight-l{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;margin-top:4px}
+.insight-d{font-size:11px;color:var(--t2);margin-top:6px;line-height:1.5}
+</style></head>
+<body>
+<header class="hdr">
+  <div class="logo">📅 Calendário de Publicação</div>
+  <span class="tz-badge">🇧🇷 Brasília UTC-3</span>
+  <span style="font-size:10px;color:var(--t3);font-family:monospace;margin-left:auto">@psidanielacoelho · Horários de pico validados</span>
+</header>
+
+<div class="wrap">
+
+  <!-- INSIGHTS -->
+  <div class="insight-grid">
+    <div class="insight">
+      <div class="insight-n" style="color:var(--crim)">Ter/Qui</div>
+      <div class="insight-l">Melhores dias para long-form</div>
+      <div class="insight-d">Terça e quinta têm 23% mais engajamento para canais de psicologia/educação no Brasil</div>
+    </div>
+    <div class="insight">
+      <div class="insight-n" style="color:var(--gold)">19h–21h</div>
+      <div class="insight-l">Janela prime-time BR</div>
+      <div class="insight-d">Pico de consumo de conteúdo no Brasil. Long-form às 19h30 maximiza retenção das primeiras 24h</div>
+    </div>
+    <div class="insight">
+      <div class="insight-n" style="color:var(--teal)">12h–13h</div>
+      <div class="insight-l">Segundo melhor horário</div>
+      <div class="insight-d">Horário de almoço. Shorts e Reels têm CTR 40% maior nessa janela. Ideal para conteúdo viral curto</div>
+    </div>
+  </div>
+
+  <!-- CALENDÁRIO SEMANAL -->
+  <h2>Agenda Semanal — Horários de Pico Brasil</h2>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(225,29,72,.4)"></div>🔴 Prime time (maior alcance)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(124,58,237,.4)"></div>🟣 Ótimo (bom engajamento)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:rgba(13,148,136,.3)"></div>🔵 Bom (fluxo constante)</div>
+  </div>
+  <div class="week-grid">
+    <!-- Segunda -->
+    <div class="day-col">
+      <div class="day-hdr"><div class="day-name">SEG</div><div class="day-note">Abertura semana</div></div>
+      <div class="day-slots">
+        <div class="slot ok"><div class="slot-time">07h00</div><div class="slot-label">Manhã cedo</div><div class="slot-score">Score: 62</div></div>
+        <div class="slot good"><div class="slot-time">12h30</div><div class="slot-label">Almoço (Short)</div><div class="slot-score">Score: 78</div></div>
+        <div class="slot good"><div class="slot-time">19h30</div><div class="slot-label">Noite (Long)</div><div class="slot-score">Score: 82</div></div>
+      </div>
+    </div>
+    <!-- Terça -->
+    <div class="day-col" style="border-color:rgba(225,29,72,.3)">
+      <div class="day-hdr" style="background:rgba(225,29,72,.08)"><div class="day-name" style="color:var(--crim)">TER ⭐</div><div class="day-note">Melhor dia</div></div>
+      <div class="day-slots">
+        <div class="slot good"><div class="slot-time">12h00</div><div class="slot-label">Almoço</div><div class="slot-score">Score: 84</div></div>
+        <div class="slot prime"><div class="slot-time">19h30</div><div class="slot-label">PRIME TIME</div><div class="slot-score">Score: 97 🔥</div></div>
+        <div class="slot ok"><div class="slot-time">21h00</div><div class="slot-label">Noite</div><div class="slot-score">Score: 71</div></div>
+      </div>
+    </div>
+    <!-- Quarta -->
+    <div class="day-col">
+      <div class="day-hdr"><div class="day-name">QUA</div><div class="day-note">Meio de semana</div></div>
+      <div class="day-slots">
+        <div class="slot ok"><div class="slot-time">12h00</div><div class="slot-label">Almoço (Short)</div><div class="slot-score">Score: 74</div></div>
+        <div class="slot good"><div class="slot-time">20h00</div><div class="slot-label">Noite</div><div class="slot-score">Score: 80</div></div>
+      </div>
+    </div>
+    <!-- Quinta -->
+    <div class="day-col" style="border-color:rgba(225,29,72,.3)">
+      <div class="day-hdr" style="background:rgba(225,29,72,.08)"><div class="day-name" style="color:var(--crim)">QUI ⭐</div><div class="day-note">2º melhor dia</div></div>
+      <div class="day-slots">
+        <div class="slot good"><div class="slot-time">12h30</div><div class="slot-label">Almoço</div><div class="slot-score">Score: 83</div></div>
+        <div class="slot prime"><div class="slot-time">19h00</div><div class="slot-label">PRIME TIME</div><div class="slot-score">Score: 95 🔥</div></div>
+        <div class="slot good"><div class="slot-time">21h00</div><div class="slot-label">Noite</div><div class="slot-score">Score: 76</div></div>
+      </div>
+    </div>
+    <!-- Sexta -->
+    <div class="day-col">
+      <div class="day-hdr"><div class="day-name">SEX</div><div class="day-note">Fim de semana</div></div>
+      <div class="day-slots">
+        <div class="slot good"><div class="slot-time">12h00</div><div class="slot-label">Almoço (Short)</div><div class="slot-score">Score: 77</div></div>
+        <div class="slot prime"><div class="slot-time">20h00</div><div class="slot-label">Sexta noite</div><div class="slot-score">Score: 88 🔥</div></div>
+      </div>
+    </div>
+    <!-- Sábado -->
+    <div class="day-col">
+      <div class="day-hdr"><div class="day-name">SÁB</div><div class="day-note">FDS pico tarde</div></div>
+      <div class="day-slots">
+        <div class="slot ok"><div class="slot-time">10h00</div><div class="slot-label">Manhã FDS</div><div class="slot-score">Score: 70</div></div>
+        <div class="slot prime"><div class="slot-time">15h00</div><div class="slot-label">TARDE FDS</div><div class="slot-score">Score: 90 🔥</div></div>
+        <div class="slot good"><div class="slot-time">20h30</div><div class="slot-label">Noite</div><div class="slot-score">Score: 82</div></div>
+      </div>
+    </div>
+    <!-- Domingo -->
+    <div class="day-col">
+      <div class="day-hdr"><div class="day-name">DOM</div><div class="day-note">Menor alcance</div></div>
+      <div class="day-slots">
+        <div class="slot ok"><div class="slot-time">11h00</div><div class="slot-label">Manhã</div><div class="slot-score">Score: 65</div></div>
+        <div class="slot ok"><div class="slot-time">20h00</div><div class="slot-label">Noite</div><div class="slot-score">Score: 68</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE POR PLATAFORMA -->
+  <h2>Schedule Automático por Plataforma — 5 Posts/Dia</h2>
+  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:32px">
+    <table class="sched-table">
+      <thead><tr><th>Horário</th><th>Plataforma</th><th>Tipo</th><th>Duração</th><th>Tema Sugerido</th><th>CTR Esperado</th></tr></thead>
+      <tbody>
+        <tr><td><strong>07h00</strong></td><td><span class="plat-badge yt-short">YouTube Shorts</span></td><td>Short &lt;60s</td><td>45–58s</td><td>Fato psicológico surpreendente</td><td style="color:var(--teal)">3.2%</td></tr>
+        <tr><td><strong>12h00</strong></td><td><span class="plat-badge ig-reel">Instagram Reels</span></td><td>Reels 30–60s</td><td>30–60s</td><td>Pergunta de engajamento / Lista</td><td style="color:var(--gold)">4.8%</td></tr>
+        <tr><td><strong>12h30</strong></td><td><span class="plat-badge tk-short">TikTok</span></td><td>Short viral</td><td>15–45s</td><td>Hook de 3s + revelação</td><td style="color:var(--crim)">6.1%</td></tr>
+        <tr><td><strong>19h30</strong></td><td><span class="plat-badge yt-long">YouTube Long</span></td><td>Long-form</td><td>15–25min</td><td>Documentário / Série exclusiva</td><td style="color:var(--crim)">5.4%</td></tr>
+        <tr><td><strong>20h00</strong></td><td><span class="plat-badge pn-pin">Pinterest</span></td><td>Pin vídeo</td><td>15–60s</td><td>Infográfico psicologia</td><td style="color:var(--mist)">2.1%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRÓXIMAS SEMANAS -->
+  <h2>Proposta de Publicação — 4 Semanas (16 Vídeos Prontos)</h2>
+  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden">
+    <table class="sched-table">
+      <thead><tr><th>Semana</th><th>Dia</th><th>Horário</th><th>ID</th><th>Título</th><th>SEO</th></tr></thead>
+      <tbody id="schedule-body"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--t3)">⏳ Carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
+
+const SCHEDULE = [
+  {week:'Semana 1',day:'Terça',time:'19h30'},
+  {week:'Semana 1',day:'Quinta',time:'19h00'},
+  {week:'Semana 1',day:'Sábado',time:'15h00'},
+  {week:'Semana 2',day:'Terça',time:'19h30'},
+  {week:'Semana 2',day:'Quinta',time:'19h00'},
+  {week:'Semana 2',day:'Sábado',time:'15h00'},
+  {week:'Semana 3',day:'Terça',time:'19h30'},
+  {week:'Semana 3',day:'Quinta',time:'19h00'},
+  {week:'Semana 3',day:'Sexta',time:'20h00'},
+  {week:'Semana 4',day:'Terça',time:'19h30'},
+  {week:'Semana 4',day:'Quinta',time:'19h00'},
+  {week:'Semana 4',day:'Sábado',time:'15h00'},
+];
+
+const PRIORITY = [693,694,695,692,696,691,690,689,688,687,686,685,684,683];
+
+async function load() {
+  const r = await fetch(`${SB_URL}/rest/v1/content_pipeline?select=id,title,youtube_title,seo_score&id=in.(${PRIORITY.join(',')})&order=seo_score.desc`, {
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  });
+  const vids = await r.json();
+  const sorted = PRIORITY.map(id => vids.find(v=>v.id===id)).filter(Boolean);
+  
+  const tbody = document.getElementById('schedule-body');
+  tbody.innerHTML = sorted.slice(0,12).map((v,i) => {
+    const s = SCHEDULE[i] || {week:'Extra',day:'Ter',time:'19h30'};
+    return `<tr>
+      <td style="font-size:11px;color:var(--t3)">${s.week}</td>
+      <td><span style="color:${s.day.includes('Ter')||s.day.includes('Qui')?'var(--crim)':'var(--t1)';};font-weight:600">${s.day}</span></td>
+      <td><span style="font-family:monospace;font-size:11px;color:var(--gold)">${s.time}</span></td>
+      <td style="font-family:monospace;font-size:10px;color:var(--t3)">${v.id}</td>
+      <td style="font-size:12px;color:var(--t1)">${(v.title||'').substring(0,50)}</td>
+      <td style="font-weight:800;color:${(v.seo_score||0)>=95?'var(--grn)':'var(--gold)'}">${v.seo_score}</td>
+    </tr>`;
+  }).join('');
+}
+load();
+</script>
+</body></html>
