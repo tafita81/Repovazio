@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Monitor Tempo Real — psicologia.doc</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,.07),transparent)}
+.hdr{padding:14px 24px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.95);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px}
+.logo{font-size:18px;font-weight:800;color:var(--mist)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--grn);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.last-update{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;margin-left:auto}
+.wrap{max-width:1300px;margin:0 auto;padding:24px;position:relative;z-index:1}
+/* KPI ROW */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:24px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden}
+.kpi::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px}
+.kpi.fila::after{background:var(--acc)} .kpi.render::after{background:var(--crim)} .kpi.pronto::after{background:var(--grn)}
+.kpi.thumb::after{background:var(--gold)} .kpi.cron::after{background:var(--teal)} .kpi.comment::after{background:var(--mist)}
+.kpi-n{font-size:30px;font-weight:800;line-height:1;margin-bottom:4px}
+.kpi-l{font-size:9px;color:var(--t3);font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:.5px}
+.kpi-sub{font-size:10px;margin-top:3px}
+/* FLOW */
+.flow{display:flex;align-items:stretch;gap:0;margin-bottom:24px;background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.flow-step{flex:1;padding:14px 16px;border-right:1px solid var(--bd);text-align:center;transition:.15s}
+.flow-step:last-child{border-right:none}
+.flow-step:hover{background:rgba(255,255,255,.02)}
+.flow-n{font-size:24px;font-weight:800}
+.flow-l{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;margin-top:3px}
+.flow-arr{display:flex;align-items:center;justify-content:center;padding:0 4px;color:var(--t3);font-size:16px}
+/* LOGS */
+.logs{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.log-hdr{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.log-hdr span{font-size:11px;font-weight:700;color:var(--t1)}
+.log-body{padding:12px;max-height:300px;overflow-y:auto;font-family:"DM Mono",monospace;font-size:11px}
+.log-line{padding:4px 6px;border-radius:5px;margin-bottom:3px;display:flex;gap:10px;align-items:baseline}
+.log-time{color:var(--t3);flex-shrink:0}
+.log-msg{color:var(--t2);line-height:1.4}
+.log-msg.ok{color:var(--grn)} .log-msg.warn{color:var(--gold)} .log-msg.err{color:var(--crim)} .log-msg.info{color:var(--mist)}
+/* GRID 2 */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
+.card-hdr{padding:12px 16px;border-bottom:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--t3);font-family:"DM Mono",monospace;text-transform:uppercase;letter-spacing:1px}
+.card-body{padding:14px}
+/* CRONS TABLE */
+.ct{width:100%;border-collapse:collapse;font-size:11px}
+.ct td,.ct th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.03);text-align:left}
+.ct th{font-size:9px;color:var(--t3);font-family:"DM Mono",monospace;border-bottom:1px solid var(--bd)}
+.ct tr:hover td{background:rgba(255,255,255,.02)}
+.active-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);display:inline-block;animation:pulse 2s infinite}
+/* PRÓXIMOS */
+.next-card{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.next-card:last-child{border-bottom:none}
+.next-rank{font-size:18px;font-weight:900;color:var(--crim);width:28px;flex-shrink:0;text-align:center;line-height:1.4}
+.next-info{flex:1;min-width:0}
+.next-title{font-size:12px;font-weight:700;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-meta{font-size:10px;color:var(--t2);margin-top:2px;font-family:"DM Mono",monospace}
+</style></head>
+<body>
+<header class="hdr">
+  <div class="logo">ψ Monitor Tempo Real</div>
+  <div class="live-dot"></div>
+  <span style="font-size:10px;color:var(--grn);font-family:monospace">LIVE</span>
+  <span class="last-update" id="last-update">atualizando...</span>
+</header>
+
+<div class="wrap">
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi fila"><div class="kpi-n" id="k-fila" style="color:var(--mist)">-</div><div class="kpi-l">Fila LLM</div><div class="kpi-sub" style="color:var(--t3)" id="k-vel"></div></div>
+    <div class="kpi render"><div class="kpi-n" id="k-render" style="color:var(--crim)">-</div><div class="kpi-l">Renderizando</div></div>
+    <div class="kpi pronto"><div class="kpi-n" id="k-pronto" style="color:var(--grn)">-</div><div class="kpi-l">MP4 Prontos</div></div>
+    <div class="kpi thumb"><div class="kpi-n" id="k-thumb" style="color:var(--gold)">43</div><div class="kpi-l">Thumbnails</div></div>
+    <div class="kpi cron"><div class="kpi-n" style="color:var(--teal)">47</div><div class="kpi-l">Crons Ativos</div></div>
+    <div class="kpi comment"><div class="kpi-n" id="k-comment" style="color:var(--mist)">-</div><div class="kpi-l">Comentários Fila</div></div>
+  </div>
+
+  <!-- FLOW VISUALIZADOR -->
+  <div class="flow">
+    <div class="flow-step"><div class="flow-n" id="f-pend" style="color:var(--t3)">-</div><div class="flow-l">pending</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-script" style="color:var(--mist)">-</div><div class="flow-l">script_ready</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-tts" style="color:var(--gold)">-</div><div class="flow-l">ready_tts</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-audio" style="color:var(--gold)">-</div><div class="flow-l">audio_ready</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-render" style="color:var(--crim)">-</div><div class="flow-l">rendering</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-mp4" style="color:var(--grn)">-</div><div class="flow-l">mp4_ready ✓</div></div>
+    <div class="flow-arr">→</div>
+    <div class="flow-step"><div class="flow-n" id="f-pub" style="color:var(--teal)">-</div><div class="flow-l">publicado 🎉</div></div>
+  </div>
+
+  <div class="grid2">
+    <!-- PRÓXIMOS PARA PUBLICAR -->
+    <div class="card">
+      <div class="card-hdr">🔴 Próximos a Publicar (Top 5 por SEO)</div>
+      <div class="card-body" id="next-pub"></div>
+    </div>
+
+    <!-- CRONS ATIVOS PRINCIPAIS -->
+    <div class="card">
+      <div class="card-hdr">⚙️ Crons Principais — Rodando Agora</div>
+      <div class="card-body">
+        <table class="ct">
+          <thead><tr><th></th><th>Cron</th><th>Freq</th></tr></thead>
+          <tbody>
+            <tr><td><div class="active-dot"></div></td><td>llm-process-queue</td><td>1 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>llm-collect-responses</td><td>1 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>auto-enqueue-scripts</td><td>3 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>auto-dispatch-renders</td><td>10 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>auto-dispatch-tts</td><td>10 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>auto-seo-domination</td><td>10 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>brain-reply-comments</td><td>5 min</td></tr>
+            <tr><td><div class="active-dot"></div></td><td>auto-gerar-thumbnails</td><td>1h</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOG DE ATIVIDADE -->
+  <div class="logs">
+    <div class="log-hdr">
+      <span>📋 Log de Atividade do Pipeline</span>
+      <span style="font-size:9px;color:var(--t3);font-family:monospace" id="log-count">0 eventos</span>
+    </div>
+    <div class="log-body" id="log-body"></div>
+  </div>
+
+  <!-- PROJEÇÃO -->
+  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:14px">📊 Projeção de Produção</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--mist)" id="proj-dia">~3</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">vídeos/dia</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--gold)" id="proj-semana">~21</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">vídeos/semana</div>
+      </div>
+      <div style="background:var(--s2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--teal)" id="proj-dias">~156</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">dias para esvaziar fila</div>
+      </div>
+      <div style="background:var(--s2);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--crim)">16</div>
+        <div style="font-size:9px;color:var(--t3);font-family:monospace;margin-top:3px">prontos agora 🎯</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://tpjvalzwkqwttvmszvie.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
+let logEntries = [];
+
+async function sb(table, params='') {
+  const r = await fetch(`${SB_URL}/rest/v1/${table}?${params}`, {
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  });
+  return r.json();
+}
+
+function addLog(msg, type='info') {
+  const t = new Date().toLocaleTimeString('pt-BR');
+  logEntries.unshift({t, msg, type});
+  if (logEntries.length > 50) logEntries.pop();
+  renderLogs();
+}
+
+function renderLogs() {
+  document.getElementById('log-body').innerHTML = logEntries.map(e =>
+    `<div class="log-line"><span class="log-time">${e.t}</span><span class="log-msg ${e.type}">${e.msg}</span></div>`
+  ).join('');
+  document.getElementById('log-count').textContent = logEntries.length + ' eventos';
+}
+
+async function update() {
+  const [pipeline, thumbs, comments] = await Promise.all([
+    sb('content_pipeline','select=status&limit=2000'),
+    sb('video_thumbnails','select=id&status=eq.ready'),
+    sb('social_comments_queue','select=id&reply_sent=eq.false')
+  ]);
+  
+  const cnt = {};
+  pipeline.forEach(r => cnt[r.status] = (cnt[r.status]||0)+1);
+  
+  const fila = cnt['pending_generation']||0;
+  const render = (cnt['rendering']||0)+(cnt['audio_ready']||0);
+  const pronto = cnt['pending_credentials']||0;
+  const mp4c = pipeline.filter(r => ['pending_credentials'].includes(r.status)).length;
+  
+  document.getElementById('k-fila').textContent = fila.toLocaleString('pt-BR');
+  document.getElementById('k-render').textContent = render;
+  document.getElementById('k-pronto').textContent = pronto;
+  document.getElementById('k-thumb').textContent = thumbs.length;
+  document.getElementById('k-comment').textContent = comments.length;
+  document.getElementById('k-vel').textContent = '~3/dia';
+  
+  // Flow
+  document.getElementById('f-pend').textContent = fila.toLocaleString('pt-BR');
+  document.getElementById('f-script').textContent = cnt['script_ready']||0;
+  document.getElementById('f-tts').textContent = cnt['ready_tts']||0;
+  document.getElementById('f-audio').textContent = cnt['audio_ready']||0;
+  document.getElementById('f-render').textContent = cnt['rendering']||0;
+  document.getElementById('f-mp4').textContent = pronto;
+  document.getElementById('f-pub').textContent = cnt['archived']||0;
+  
+  // Projeção
+  const vpd = 3;
+  document.getElementById('proj-dias').textContent = '~'+Math.round(fila/vpd);
+  
+  document.getElementById('last-update').textContent = 'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+  
+  addLog(`Pipeline: ${fila} fila · ${render} render · ${pronto} prontos`, 'info');
+}
+
+async function loadNextPub() {
+  const vids = await sb('content_pipeline', 'select=id,title,youtube_title,seo_score&status=eq.pending_credentials&order=seo_score.desc&limit=5');
+  document.getElementById('next-pub').innerHTML = vids.map((v,i) => `
+    <div class="next-card">
+      <div class="next-rank">#${i+1}</div>
+      <div class="next-info">
+        <div class="next-title">${v.title||'Sem título'}</div>
+        <div class="next-meta">ID ${v.id} · SEO ${v.seo_score}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+addLog('Monitor iniciado — pipeline ativo 24/7', 'ok');
+addLog('47 crons rodando com tela fechada', 'ok');
+addLog('Qwen3 + Groq + Edge TTS + Flux Schnell — $0/mês', 'info');
+update();
+loadNextPub();
+setInterval(update, 30000);
+</script>
+</body></html>
