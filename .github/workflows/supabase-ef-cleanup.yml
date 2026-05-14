@@ -1,0 +1,112 @@
+name: Supabase EF Cleanup — Deletar Orphan Functions
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (apenas listar, nao deletar)'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        run: |
+          curl -fsSL https://cli.supabase.com/install.sh | sh
+          supabase --version
+
+      - name: List Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          echo "=== Edge Functions atuais ==="
+          supabase functions list --project-ref tpjvalzwkqwttvmszvie 2>&1 || echo "Lista falhou — verifique SUPABASE_ACCESS_TOKEN"
+
+      - name: Delete Orphan Functions
+        if: ${{ inputs.dry_run == 'false' }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          PROJECT_REF="tpjvalzwkqwttvmszvie"
+          
+          # Lista de EFs orphan para deletar
+          ORPHANS=(
+            commit-learn commit-skills commit-chat commit-route
+            commit-from-chunks commit-route-final commit-from-cache
+            commit-chatia commit-chatia-v3 store-v6-p1 commit-v8-route
+            commit-executor-v7 commit-ia-v6 test-b64-len commit-ia-executor
+            deploy-v9 commit-v9-runner do-commit-v9 trigger-commit
+            do-commit-v10 commit-v10-final add-browser run-now trigger
+            v10-trigger v10-commit-pat v10-p0 fix-and-upgrade commit-v9d
+            v10-final-commit fix-monitor-now test-pat v10-chunk-test
+            commit-v10-now v10-commit-real v10-go commit-v10-final2
+            read-file upgrade-chat-upload fix-chat-upload2 fix-browser-route
+            v10-assemble-commit assemble-and-commit-v10 assemble-v10
+            v12-assemble-commit v11-assemble-commit v11-fix-parts fix-cron-route
+            v11-final-commit v11-debug v11-commit-chunks v11-fix-together
+            v12-all-inserter v12-ins-01 v12-micro-p0 v12-insert-p4p9
+            v12-kv-store v12-insert-p7 v12-insert-p7-exact v12-p7-native
+            v12-p7-v2 v12-p7-final v12-p8-fn create-vercel-project
+            debug-sbk debug-secret-key debug-envs test-pat exec-sql
+          )
+          
+          echo "=== Deletando ${#ORPHANS[@]} EFs orphan ==="
+          DELETED=0
+          FAILED=0
+          
+          for fn in "${ORPHANS[@]}"; do
+            echo -n "Deletando $fn... "
+            if supabase functions delete "$fn" --project-ref "$PROJECT_REF" 2>&1; then
+              echo "OK"
+              DELETED=$((DELETED + 1))
+            else
+              echo "FALHOU (pode nao existir)"
+              FAILED=$((FAILED + 1))
+            fi
+            sleep 0.5
+          done
+          
+          echo ""
+          echo "=== Resultado ==="
+          echo "Deletados: $DELETED"
+          echo "Falhas: $FAILED"
+          echo "EFs restantes:"
+          supabase functions list --project-ref "$PROJECT_REF" 2>&1
+
+      - name: Dry Run Report
+        if: ${{ inputs.dry_run == 'true' }}
+        run: |
+          echo "=== DRY RUN ==="
+          echo "Para deletar os orphans, execute novamente com dry_run=false"
+          echo ""
+          echo "EFs que SERIAM deletados:"
+          cat << 'LIST'
+          commit-learn, commit-skills, commit-chat, commit-route,
+          commit-from-chunks, commit-route-final, commit-from-cache,
+          commit-chatia, commit-chatia-v3, store-v6-p1, commit-v8-route,
+          commit-executor-v7, commit-ia-v6, test-b64-len, commit-ia-executor,
+          deploy-v9, commit-v9-runner, do-commit-v9, trigger-commit,
+          do-commit-v10, commit-v10-final, add-browser, run-now, trigger,
+          v10-trigger, v10-commit-pat, v10-p0, fix-and-upgrade, commit-v9d,
+          v10-final-commit, fix-monitor-now, test-pat, v10-chunk-test,
+          commit-v10-now, v10-commit-real, v10-go, commit-v10-final2,
+          read-file, upgrade-chat-upload, fix-chat-upload2, fix-browser-route,
+          v10-assemble-commit, assemble-and-commit-v10, assemble-v10,
+          v12-assemble-commit, v11-assemble-commit, v11-fix-parts, fix-cron-route,
+          v11-final-commit, v11-debug, v11-commit-chunks, v11-fix-together,
+          v12-all-inserter, v12-ins-01, v12-micro-p0, v12-insert-p4p9,
+          v12-kv-store, v12-insert-p7, v12-insert-p7-exact, v12-p7-native,
+          v12-p7-v2, v12-p7-final, v12-p8-fn, create-vercel-project,
+          debug-sbk, debug-secret-key, debug-envs, exec-sql
+          LIST
+          echo ""
+          echo "IMPORTANTE: Adicione o secret SUPABASE_ACCESS_TOKEN em:"
+          echo "https://github.com/tafita81/Repovazio/settings/secrets/actions"
+          echo "(Personal Access Token da Supabase Dashboard)"
