@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Renovar Token YouTube — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--crim:#E11D48;--gold:#F59E0B;--grn:#10B981;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:32px;max-width:540px;width:100%;position:relative;z-index:1}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 40% at 50% 30%,rgba(225,29,72,.06),transparent)}
+h1{font-size:24px;font-weight:800;color:#F0F4FF;margin-bottom:6px}
+.sub{font-size:12px;color:var(--t2);margin-bottom:24px}
+.step{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:12px}
+.step-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.step-n{width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sn-done{background:rgba(16,185,129,.2);color:var(--grn)}
+.sn-curr{background:rgba(225,29,72,.2);color:var(--crim)}
+.sn-pend{background:rgba(255,255,255,.08);color:var(--t3)}
+.step-title{font-size:13px;font-weight:700;color:var(--t1)}
+label{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;display:block;margin-bottom:4px}
+input,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;color:var(--t1);font-size:12px;outline:none;font-family:"DM Mono",monospace}
+input:focus,textarea:focus{border-color:var(--crim)}
+.btn{width:100%;padding:10px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;border:none;margin-top:8px;transition:.15s}
+.btn-main{background:var(--crim);color:#fff}
+.btn-main:hover{background:#be123c}
+.btn-sec{background:rgba(255,255,255,.08);color:var(--t1)}
+.btn-sec:hover{background:rgba(255,255,255,.13)}
+.btn-grn{background:rgba(16,185,129,.2);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
+.code-box{font-family:"DM Mono",monospace;font-size:10px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px;color:var(--mist);word-break:break-all;margin-top:8px;cursor:pointer}
+.alert{padding:10px 14px;border-radius:8px;font-size:12px;margin-top:10px}
+.alert-ok{background:rgba(16,185,129,.1);color:var(--grn);border:1px solid rgba(16,185,129,.2)}
+.alert-err{background:rgba(225,29,72,.1);color:#FCA5A5;border:1px solid rgba(225,29,72,.2)}
+.alert-info{background:rgba(245,158,11,.08);color:#FDE68A;border:1px solid rgba(245,158,11,.2)}
+progress-step{display:flex;gap:4px;margin-bottom:24px}
+.prog{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.07)}
+.prog.done{background:var(--grn)}.prog.curr{background:var(--crim)}.prog.pend{background:rgba(255,255,255,.07)}
+</style></head>
+<body>
+<div class="card">
+  <!-- Progress bars -->
+  <div style="display:flex;gap:4px;margin-bottom:20px">
+    <div class="prog" id="p1"></div>
+    <div class="prog" id="p2"></div>
+    <div class="prog" id="p3"></div>
+    <div class="prog" id="p4"></div>
+  </div>
+
+  <h1>🔐 Renovar Token YouTube</h1>
+  <div class="sub">@psidanielacoelho · Canal UCyCkIpsVgME9yCj_oXJFheA · token expirado</div>
+
+  <!-- STEP 1: Credenciais -->
+  <div class="step" id="step1">
+    <div class="step-hdr">
+      <div class="step-n sn-curr" id="n1">1</div>
+      <div class="step-title">Confirmar credenciais OAuth</div>
+    </div>
+    <label>YouTube Client ID (do GitHub Secret YT_CLIENT_ID)</label>
+    <input type="text" id="client_id" placeholder="123456789-abc.apps.googleusercontent.com">
+    <label style="margin-top:8px">YouTube Client Secret (do GitHub Secret YT_CLIENT_SECRET)</label>
+    <input type="password" id="client_secret" placeholder="GOCSPX-...">
+    <div class="alert alert-info" style="margin-top:8px;font-size:11px">
+      💡 Se não souber os valores, veja em:<br>
+      <a href="https://github.com/tafita81/Repovazio/settings/secrets/actions" target="_blank" style="color:var(--gold)">github.com/tafita81/Repovazio/settings/secrets/actions</a>
+    </div>
+    <button class="btn btn-main" onclick="gerarUrl()">→ Gerar URL de Autorização</button>
+  </div>
+
+  <!-- STEP 2: Autorizar -->
+  <div class="step" id="step2" style="display:none">
+    <div class="step-hdr">
+      <div class="step-n sn-curr" id="n2">2</div>
+      <div class="step-title">Autorizar no Google (psidanielacoelho1982@gmail.com)</div>
+    </div>
+    <p style="font-size:12px;color:var(--t2);margin-bottom:8px">Clique no botão abaixo para abrir a página de autorização do Google:</p>
+    <button class="btn btn-main" id="btn-auth" onclick="abrirAuth()">🔗 Abrir página de autorização Google</button>
+    <div class="alert alert-info" style="margin-top:10px;font-size:11px">
+      ⚠️ Faça login com <strong>psidanielacoelho1982@gmail.com</strong><br>
+      Na tela de permissões, clique em "Permitir"<br>
+      Copie o código de autorização que aparece
+    </div>
+    <label style="margin-top:10px">Cole o código de autorização aqui:</label>
+    <input type="text" id="auth_code" placeholder="4/0AY0e-...">
+    <button class="btn btn-sec" onclick="trocaCode()">→ Trocar código por token</button>
+  </div>
+
+  <!-- STEP 3: Token obtido -->
+  <div class="step" id="step3" style="display:none">
+    <div class="step-hdr">
+      <div class="step-n" id="n3">3</div>
+      <div class="step-title">Salvar novo Refresh Token</div>
+    </div>
+    <label>Novo Refresh Token (copie e salve):</label>
+    <div class="code-box" id="new_token" onclick="copiarToken()">aguardando...</div>
+    <div class="alert alert-ok" id="token-alert" style="display:none">✅ Token copiado!</div>
+    <button class="btn btn-grn" style="margin-top:8px" onclick="copiarToken()">📋 Copiar Token</button>
+  </div>
+
+  <!-- STEP 4: Atualizar GitHub Secret -->
+  <div class="step" id="step4" style="display:none">
+    <div class="step-hdr">
+      <div class="step-n" id="n4">4</div>
+      <div class="step-title">Atualizar GitHub Secret</div>
+    </div>
+    <ol style="font-size:12px;color:var(--t2);padding-left:16px;line-height:2">
+      <li>Acesse: <a href="https://github.com/tafita81/Repovazio/settings/secrets/actions/YT_REFRESH_TOKEN" target="_blank" style="color:var(--gold)">GitHub → Settings → Secrets → YT_REFRESH_TOKEN</a></li>
+      <li>Clique em <strong>"Update secret"</strong></li>
+      <li>Cole o novo refresh token</li>
+      <li>Clique em <strong>"Update secret"</strong></li>
+    </ol>
+    <button class="btn btn-main" onclick="redirectPublish()" style="margin-top:8px">🚀 Ir para GitHub Actions → Publicar Vídeos</button>
+  </div>
+
+  <div id="erro" class="alert alert-err" style="display:none;margin-top:12px"></div>
+</div>
+
+<script>
+let clientId='', clientSecret='', authUrl='', newToken='';
+
+function updateProgress(step) {
+  const states = ['p1','p2','p3','p4'];
+  states.forEach((p,i) => {
+    const el = document.getElementById(p);
+    if (i < step-1) el.style.background = 'var(--grn)';
+    else if (i === step-1) el.style.background = 'var(--crim)';
+    else el.style.background = 'rgba(255,255,255,.07)';
+  });
+}
+
+function showErr(msg) {
+  const el = document.getElementById('erro');
+  el.textContent = '❌ ' + msg;
+  el.style.display = 'block';
+}
+
+function gerarUrl() {
+  clientId = document.getElementById('client_id').value.trim();
+  clientSecret = document.getElementById('client_secret').value.trim();
+  if (!clientId) { showErr('Informe o Client ID'); return; }
+  if (!clientSecret) { showErr('Informe o Client Secret'); return; }
+  
+  authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${encodeURIComponent(clientId)}` +
+    `&redirect_uri=${encodeURIComponent('urn:ietf:wg:oauth:2.0:oob')}` +
+    `&response_type=code` +
+    `&scope=${encodeURIComponent('https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube')}` +
+    `&access_type=offline&prompt=consent`;
+  
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  document.getElementById('erro').style.display = 'none';
+  updateProgress(2);
+}
+
+function abrirAuth() {
+  window.open(authUrl, '_blank');
+}
+
+async function trocaCode() {
+  const code = document.getElementById('auth_code').value.trim();
+  if (!code) { showErr('Cole o código de autorização'); return; }
+  
+  try {
+    const resp = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+        grant_type: 'authorization_code'
+      })
+    });
+    const data = await resp.json();
+    
+    if (!resp.ok || !data.refresh_token) {
+      showErr(`Erro: ${data.error} — ${data.error_description || 'Verifique o código'}`);
+      return;
+    }
+    
+    newToken = data.refresh_token;
+    document.getElementById('new_token').textContent = newToken;
+    document.getElementById('step2').style.display = 'none';
+    document.getElementById('step3').style.display = 'block';
+    document.getElementById('step4').style.display = 'block';
+    document.getElementById('n3').className = 'step-n sn-done';
+    document.getElementById('n3').textContent = '✓';
+    document.getElementById('n4').className = 'step-n sn-curr';
+    document.getElementById('erro').style.display = 'none';
+    updateProgress(4);
+  } catch(e) {
+    showErr('Erro de conexão: ' + e.message);
+  }
+}
+
+function copiarToken() {
+  navigator.clipboard?.writeText(newToken).then(() => {
+    document.getElementById('token-alert').style.display = 'block';
+    setTimeout(() => document.getElementById('token-alert').style.display='none', 3000);
+  });
+}
+
+function redirectPublish() {
+  window.open('https://github.com/tafita81/Repovazio/actions/workflows/youtube-publisher.yml', '_blank');
+}
+
+updateProgress(1);
+</script>
+</body></html>
