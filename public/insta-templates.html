@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Instagram Templates — @psidanielacoelho</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--mist:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
+.hdr{padding:16px 24px;border-bottom:1px solid var(--bd);background:rgba(6,6,15,.9);position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:16px}
+.logo{font-size:18px;font-weight:800;color:var(--mist)}
+.tabs{display:flex;gap:4px;margin-left:24px}
+.tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--bd);color:var(--t2);transition:.15s}
+.tab.active{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.5);color:var(--mist)}
+.wrap{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 57px)}
+.ctrl{background:var(--s1);border-right:1px solid var(--bd);padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.preview{display:flex;align-items:center;justify-content:center;padding:32px;overflow:auto;background:var(--bg)}
+label{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;display:block;margin-bottom:3px}
+input,select,textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bd);border-radius:8px;padding:7px 10px;color:var(--t1);font-size:12px;outline:none}
+input:focus,select:focus{border-color:var(--acc)}
+.btn{padding:9px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;border:none;transition:.15s;width:100%}
+.btn-main{background:var(--acc);color:#fff}
+.btn-sec{background:rgba(124,58,237,.15);color:var(--mist);border:1px solid rgba(124,58,237,.3);margin-top:6px}
+.sep{height:1px;background:var(--bd);margin:4px 0}
+/* Canvas */
+.canvas-outer{position:relative;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 24px 80px rgba(0,0,0,.5)}
+#canvas{display:block}
+.dim-label{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;text-align:center;margin-top:8px}
+</style></head>
+<body>
+<header class="hdr">
+  <div class="logo">ψ Instagram Templates</div>
+  <div class="tabs">
+    <button class="tab active" onclick="setFormat('post')">Post 1:1 (1080×1080)</button>
+    <button class="tab" onclick="setFormat('reels')">Reels 9:16 (1080×1920)</button>
+    <button class="tab" onclick="setFormat('story')">Stories 9:16</button>
+  </div>
+  <span style="margin-left:auto;font-size:10px;color:var(--t3);font-family:monospace">@psidanielacoelho</span>
+</header>
+
+<div class="wrap">
+<div class="ctrl">
+  <div>
+    <label>TIPO DE CONTEÚDO</label>
+    <select id="tipo" onchange="render()">
+      <option value="quote">💬 Citação / Insight</option>
+      <option value="lista">📋 Lista numerada</option>
+      <option value="pergunta">❓ Pergunta de engajamento</option>
+      <option value="fato">🔬 Fato científico</option>
+      <option value="cta">📣 CTA / Convite</option>
+    </select>
+  </div>
+  <div>
+    <label>TEMA</label>
+    <select id="tema" onchange="render()">
+      <option value="apego">💜 Apego Ansioso</option>
+      <option value="narcisismo">🔴 Narcisismo</option>
+      <option value="trauma">🟣 Trauma</option>
+      <option value="ansiedade">🔵 Ansiedade</option>
+      <option value="dinheiro">🟡 Psicologia do Dinheiro</option>
+      <option value="autoestima">💛 Autoestima</option>
+    </select>
+  </div>
+  <div class="sep"></div>
+  <div>
+    <label>TÍTULO PRINCIPAL</label>
+    <textarea id="titulo" rows="2" oninput="render()">Você sabe identificar o apego ansioso?</textarea>
+  </div>
+  <div>
+    <label>SUBTÍTULO / CORPO</label>
+    <textarea id="corpo" rows="3" oninput="render()">O medo de perder alguém pode fazer você se tornar outra pessoa. Isso tem nome.</textarea>
+  </div>
+  <div>
+    <label>ITEM 1</label><input id="i1" value="Medo de abandono constante" oninput="render()">
+    <label style="margin-top:6px">ITEM 2</label><input id="i2" value="Busca excessiva de validação" oninput="render()">
+    <label style="margin-top:6px">ITEM 3</label><input id="i3" value="Ciúmes sem motivo real" oninput="render()">
+  </div>
+  <div class="sep"></div>
+  <div>
+    <label>HASHTAGS</label>
+    <textarea id="hashtags" rows="2" oninput="render()">#apegaansioso #psicologia #saudemental #relacionamentos</textarea>
+  </div>
+  <button class="btn btn-main" onclick="render()">⚡ Atualizar</button>
+  <button class="btn btn-sec" onclick="dlSVG()">↓ Download SVG</button>
+  <button class="btn btn-sec" onclick="dlPNG()">↓ Download PNG</button>
+</div>
+
+<div class="preview">
+  <div>
+    <div class="canvas-outer">
+      <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="dim-label" id="dim-label">1080×1080px — Instagram Post</div>
+  </div>
+</div>
+</div>
+
+<script>
+const CORES = {
+  apego:{bg1:'#0a0418',glow:'#7C3AED',acc:'#C4B5FD',bar:'#7C3AED'},
+  narcisismo:{bg1:'#1a0508',glow:'#E11D48',acc:'#E11D48',bar:'#E11D48'},
+  trauma:{bg1:'#0D0418',glow:'#7C3AED',acc:'#7C3AED',bar:'#7C3AED'},
+  ansiedade:{bg1:'#03111f',glow:'#0D9488',acc:'#0D9488',bar:'#0D9488'},
+  dinheiro:{bg1:'#120C02',glow:'#F59E0B',acc:'#F59E0B',bar:'#F59E0B'},
+  autoestima:{bg1:'#0a0820',glow:'#7C3AED',acc:'#C4B5FD',bar:'#7C3AED'}
+};
+let fmt = 'post'; // post=1:1, reels/story=9:16
+const FMTS = {
+  post:{w:1080,h:1080,label:'1080×1080px — Instagram Post'},
+  reels:{w:1080,h:1920,label:'1080×1920px — Instagram Reels / Stories'}
+};
+
+function setFormat(f) {
+  fmt = f === 'story' ? 'reels' : f;
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['post','reels','story'][i] === f));
+  render();
+}
+
+function g(id){return document.getElementById(id).value.trim()}
+
+function wrap(text, width, fontSize) {
+  const words = text.split(' ');
+  const lines = []; let line = '';
+  const charsPerLine = Math.floor(width / (fontSize * 0.55));
+  for (const w of words) {
+    if ((line + w).length > charsPerLine) { lines.push(line.trim()); line = w + ' '; }
+    else line += w + ' ';
+  }
+  if (line.trim()) lines.push(line.trim());
+  return lines;
+}
+
+function render() {
+  const tema = g('tema') || 'apego';
+  const c = CORES[tema] || CORES.apego;
+  const {w, h} = FMTS[fmt] || FMTS.post;
+  const tipo = g('tipo');
+  const titulo = g('titulo');
+  const corpo = g('corpo');
+  const i1 = g('i1'), i2 = g('i2'), i3 = g('i3');
+
+  const svg = document.getElementById('canvas');
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.setAttribute('width', w > h ? '420' : '236');
+  svg.setAttribute('height', w > h ? '420' : '420');
+  svg.style.maxWidth = '100%';
+
+  const isSquare = w === h;
+  const cy = isSquare ? h/2 : h*0.42;
+
+  let itemsHTML = '';
+  if (tipo === 'lista') {
+    const items = [i1,i2,i3].filter(Boolean);
+    items.forEach((item, idx) => {
+      const y = cy + 120 + idx * 90;
+      itemsHTML += `<circle cx="${w*0.08}" cy="${y}" r="22" fill="${c.acc}" opacity="0.9"/>
+      <text x="${w*0.08}" y="${y+8}" font-size="24" font-family="DM Sans,sans-serif" font-weight="900" fill="#06060F" text-anchor="middle">${idx+1}</text>
+      <text x="${w*0.08+44}" y="${y+10}" font-size="32" font-family="DM Sans,sans-serif" font-weight="600" fill="#E2E8F0">${item}</text>`;
+    });
+  }
+
+  const titleLines = wrap(titulo, w*0.82, isSquare?48:52);
+  const corpoLines = wrap(corpo, w*0.82, 34);
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:${c.bg1}"/>
+        <stop offset="100%" style="stop-color:#06060F"/>
+      </linearGradient>
+      <radialGradient id="gw" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" style="stop-color:${c.glow};stop-opacity:0.18"/>
+        <stop offset="100%" style="stop-color:${c.glow};stop-opacity:0"/>
+      </radialGradient>
+    </defs>
+    <rect width="${w}" height="${h}" fill="url(#bg)"/>
+    <rect width="${w}" height="${h}" fill="url(#gw)"/>
+    <rect x="0" y="0" width="6" height="${h}" fill="${c.bar}"/>
+    <rect x="0" y="${h-6}" width="${w}" height="6" fill="${c.bar}" opacity="0.4"/>
+    
+    <!-- ψ watermark -->
+    <text x="${w*0.88}" y="${isSquare?h*0.85:h*0.82}" font-size="${isSquare?220:300}" font-family="serif" font-weight="900"
+      fill="${c.acc}" opacity="0.06" text-anchor="middle">ψ</text>
+
+    <!-- Handle topo -->
+    <text x="${w*0.07}" y="68" font-size="28" font-family="DM Mono,monospace" fill="${c.acc}" opacity="0.7">@psidanielacoelho</text>
+    <rect x="${w*0.07}" y="78" width="240" height="3" fill="${c.bar}" opacity="0.5"/>
+
+    <!-- Título -->
+    ${titleLines.map((l,i)=>`<text x="${w*0.07}" y="${isSquare?cy-120:cy-160+(i*isSquare?58:64)}${i>0?'+':''}" 
+      font-size="${isSquare?52:58}" font-family="DM Sans,sans-serif" font-weight="900" fill="#F0F4FF" 
+      y="${isSquare?cy-80+i*62:cy-120+i*70}">${l}</text>`).join('')}
+
+    <!-- Linha separadora -->
+    <rect x="${w*0.07}" y="${isSquare?cy+40:cy+50}" width="80" height="4" rx="2" fill="${c.acc}"/>
+
+    <!-- Corpo -->
+    ${tipo!=='lista' ? corpoLines.map((l,i)=>`<text x="${w*0.07}" y="${isSquare?cy+100+i*44:cy+120+i*48}"
+      font-size="34" font-family="DM Sans,sans-serif" font-weight="400" fill="#94A3B8">${l}</text>`).join('') : itemsHTML}
+
+    <!-- Footer hashtags -->
+    <text x="${w*0.07}" y="${h-60}" font-size="22" font-family="DM Mono,monospace" fill="${c.acc}" opacity="0.5"
+      >${g('hashtags').split(' ').slice(0,4).join(' ')}</text>
+  `;
+
+  document.getElementById('dim-label').textContent = FMTS[fmt]?.label || '1080×1080px';
+}
+
+function getSVG(){
+  const s=document.getElementById('canvas').cloneNode(true);
+  const {w,h}=FMTS[fmt]||FMTS.post;
+  s.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  s.setAttribute('width',w); s.setAttribute('height',h);
+  return '<?xml version="1.0"?>' + s.outerHTML;
+}
+function dlSVG(){
+  const a=document.createElement('a');
+  a.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(getSVG());
+  a.download=`insta-${g('tema')}-${fmt}.svg`; a.click();
+}
+function dlPNG(){
+  const s=document.getElementById('canvas');
+  const data=new XMLSerializer().serializeToString(s);
+  const {w,h}=FMTS[fmt]||FMTS.post;
+  const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  const img=new Image();
+  img.onload=()=>{ctx.drawImage(img,0,0,w,h);
+    const a=document.createElement('a'); a.download=`insta-${g('tema')}-${fmt}.png`;
+    a.href=canvas.toDataURL('image/png'); a.click();
+  };
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(data);
+}
+render();
+</script>
+</body></html>
