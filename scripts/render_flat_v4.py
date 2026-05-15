@@ -206,13 +206,12 @@ def gerar_cena_flat(titulo, trecho, cena_idx, total_cenas, video_id, dur_min):
     acc_c = pal["acc"]
     sky_c = pal["sky"]
 
-    # FUNDO: gradiente ceu
+    # FUNDO: gradiente ceu (numpy vetorizado, sem overflow)
     arr = np.zeros((H, W, 3), dtype=np.uint8)
-    for y in range(H):
-        t = y / H
-        # Gradiente do ceu para o chao
-        for c in range(3):
-            arr[y,:,c] = int(sky_c[c] * (1-t*0.3) + bg_c[c] * t)
+    ys = np.linspace(0.0, 1.0, H, dtype=np.float32)
+    for c in range(3):
+        col = np.clip(sky_c[c] * (1.0 - ys * 0.3) + bg_c[c] * ys, 0, 255).astype(np.uint8)
+        arr[:, :, c] = col[:, np.newaxis]
 
     img = Image.fromarray(arr, "RGB")
     draw = ImageDraw.Draw(img)
