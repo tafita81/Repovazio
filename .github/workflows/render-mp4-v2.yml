@@ -1,4 +1,4 @@
-name: Render MP4 V2 (Flux + Ken Burns — Padrao Quantico)
+name: Render MP4 V2 (Flux/Pillow + Ken Burns + FFmpeg)
 
 on:
   workflow_dispatch:
@@ -20,8 +20,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install supabase requests pillow numpy
+          sudo apt-get install -y ffmpeg
 
-      - name: Render Quantum Videos (Flux + Ken Burns V2)
+      - name: Passo 1 — Gerar imagens (Pillow Psych2Go + NVIDIA fallback)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -31,6 +32,13 @@ jobs:
         run: |
           python3 scripts/render_quantum_v2.py
 
+      - name: Passo 2 — Render MP4 (Ken Burns + Audio + lower third)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 scripts/render_ffmpeg_v2.py
+
       - name: Report
         if: always()
-        run: echo "Render quantico V2 concluido - $(date)"
+        run: echo "Render V2 concluido - $(date)"
