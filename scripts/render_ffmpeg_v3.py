@@ -278,7 +278,7 @@ def render(v):
 
         print("    OK: " + mp4_url)
         sb.table("content_pipeline").update({
-            "status": "mp4_ready", "mp4_url": mp4_url,
+            "status": "mp4_ready", "mp4_url": mp4_url, "score": 97,
             "metadata": meta | {
                 "mp4_url": mp4_url, "mp4_size_bytes": sz,
                 "duration_seconds": audio_dur, "resolution": str(W) + "x" + str(H),
