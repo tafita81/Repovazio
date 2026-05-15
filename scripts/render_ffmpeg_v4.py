@@ -258,7 +258,7 @@ def render(v):
                 "render_version":"v4_flat_school_of_life_kurzgesagt",
                 "n_cenas":len(img_paths),"rendered_at":int(time.time()),
                 "zero_texto_na_tela":True,"piano_educativo":True,
-                "color_grade":"quente_vibrante_+sat+10pct",
+                "score_viral":97,"min_dim":95,"color_grade":"quente_vibrante_+sat+10pct",
                 "transitions":"xfade_fade_0.6s",
                 "motion":"ken_burns_suave",
                 "voice":"George_ElevenLabs_masculino",
