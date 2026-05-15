@@ -22,15 +22,7 @@ jobs:
           pip install supabase requests pillow numpy edge-tts
           sudo apt-get install -y ffmpeg
 
-      - name: Passo 1 — Gerar imagens multi-cena Psych2Go (NVIDIA + Pillow fallback)
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
-        run: |
-          python3 scripts/render_quantum_v2.py
-
-      - name: Passo 2 — Gerar audio ElevenLabs Sarah PT-BR (voz realista)
+      - name: Passo 1 — TTS ElevenLabs Sarah PT-BR (voz realista indetectavel)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -38,7 +30,15 @@ jobs:
         run: |
           python3 scripts/tts_v2.py
 
-      - name: Passo 3 — Render MP4 multi-cena Ken Burns ZERO texto
+      - name: Passo 2 — Gerar imagens multi-cena Psych2Go (NVIDIA + Pillow)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+        run: |
+          python3 scripts/render_quantum_v2.py
+
+      - name: Passo 3 — Render MP4 multi-cena Ken Burns ZERO texto na tela
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -47,4 +47,4 @@ jobs:
 
       - name: Report
         if: always()
-        run: echo "Pipeline V15 concluido - $(date)"
+        run: echo "Pipeline V15.1 concluido - $(date)"
