@@ -14,11 +14,11 @@ BR=(255,255,255);ES=(40,25,10)
 
 def lerp(a,b,t): return tuple(int(a[i]*(1-t)+b[i]*t) for i in range(3))
 
-def fundo(draw,ct,cb):
+def fundo(draw,ct,cb,cg=None):
+    if cg is None: cg=(200,185,165)
     for y in range(H):
-        t=y/H
         if y<H*0.72: c=lerp(ct,cb,y/(H*0.72))
-        else: c=lerp(cb,(200,185,165),(y-H*0.72)/(H*0.28))
+        else: c=lerp(cb,cg,(y-H*0.72)/(H*0.28))
         draw.line([(0,y),(W,y)],fill=c)
 
 def sol(draw):
