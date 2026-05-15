@@ -21,8 +21,8 @@ def fundo(draw,ct,cb,cg=None):
         else: c=lerp(cb,cg,(y-H*0.72)/(H*0.28))
         draw.line([(0,y),(W,y)],fill=c)
 
-def sol(draw):
-    sx,sy,r=W-90,85,48
+def sol(draw,x=None,y=None,r=48):
+    sx,sy=x or W-90,y or 85
     for a in range(0,360,45):
         rad=math.radians(a)
         draw.line([int(sx+r*math.cos(rad)),int(sy+r*math.sin(rad)),int(sx+(r+28)*math.cos(rad)),int(sy+(r+28)*math.sin(rad))],fill=AM,width=7)
