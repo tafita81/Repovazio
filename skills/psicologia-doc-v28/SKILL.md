@@ -8,7 +8,7 @@ date: 2026-05-15
 # psicologia.doc V28 — Sistema Completo @psidanielacoelho
 
 ## INFRA CORE
-- **Supabase:** tpjvalzwkqwttvmszvie | AK: SB_KEY_REDACTED
+- **Supabase:** tpjvalzwkqwttvmszvie | AK: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...ao3Q
 - **GitHub:** tafita81/Repovazio | PAT: ghp_***REDACTED***
 - **Vercel:** repovazio.vercel.app | prj_rypXLpuS41CQt7sQYk5MM8kRQArr | team_zr9vAef0Zz3njNAiGm3v5Y3h
 - **Canal ATIVO:** UCyCkIpsVgME9yCj_oXJFheA | @psidanielacoelho (psidanielacoelho1982@gmail.com)
@@ -358,3 +358,27 @@ Instagram: https://repovazio.vercel.app/brand/instagram-templates.html
 
 ---
 TOTAL DEFINITIVO: 84 criterios | Blocos A-M | $0/mes | S1->S52->infinito
+
+## REGRA ABSOLUTA — ZERO TEXTO NA TELA (critérios 75 e 79)
+
+**PROIBIDO EM 100% DOS VÍDEOS:**
+- Texto aparecendo/piscando na tela durante a narração
+- Subtítulos ou legendas automáticas durante o vídeo
+- Palavras-chave animadas sincronizadas com o áudio
+- Frases do script aparecendo na tela enquanto o áudio fala
+- Qualquer texto overlay sobre o vídeo
+
+**O PADRÃO MUNDIAL CORRETO (Psych2Go 28M, Charisma 18M, Improvement Pill 15M):**
+- ÁUDIO TTS faz a narração completa
+- IMAGENS 2D ilustradas com personagens humanóides SEM ROSTO mostram cada cena
+- Ken Burns (zoom lento 100%->110%) sobre as ilustrações
+- Mudança de ilustração a cada 30-45s
+- ZERO texto na tela durante o vídeo
+
+**ÚNICO TEXTO PERMITIDO:**
+1. Lower third "ψ Daniela Coelho | Psicóloga Clínica · @psidanielacoelho" — aparece em 0:30 e no end screen
+2. Watermark ψ 10% de opacidade no canto superior direito durante todo o vídeo
+
+**O vídeo ERRADO que foi gerado:** fundo colorido + texto piscando linha por linha = LIXO. Não tem nada a ver com Psych2Go.
+
+**O vídeo CERTO:** personagens 2D brancos/pastéis sem rosto em cenas emocionais + narração em áudio + Ken Burns suave + sem texto.
