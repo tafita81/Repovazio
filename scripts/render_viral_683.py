@@ -567,6 +567,7 @@ cmd=["ffmpeg","-y",
      "-c:a","aac","-b:a","128k",
      "-shortest","-r","25","-crf","18",
      "-vf","eq=saturation=1.18:brightness=0.02:contrast=1.06",
+     "-t","58",
      "-movflags","+faststart",
      "/tmp/v7/viral_v7.mp4"]
 res=subprocess.run(cmd,capture_output=True,text=True,timeout=480)
