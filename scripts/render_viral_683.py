@@ -302,14 +302,11 @@ def kb(m,fr):
     return f"zoompan=z='{z}':x='{x}':y='{y}':d={fr}:s={W}x{H}:fps={FPS}"
 
 inp=[]
-for p in paths: inp+=["-loop","1","-t",str(DUR+0.3),"-i",p]
+for p in paths: inp+=["-loop","1","-t",str(DUR+0.1),"-i",p]
 
 fc=""
 for i in range(12):
-    fi=f"[{i}:v]scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,setsar=1,{kb(KB[i],FR+5)}"
-    if i>0: fi+=f",fade=t=in:st=0:d=0.25"
-    if i<11: fi+=f",fade=t=out:st={DUR-0.25:.3f}:d=0.25"
-    fi+=f"[v{i}];"
+    fi=f"[{i}:v]scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,setsar=1,{kb(KB[i],FR+5)}[v{i}];"
     fc+=fi
 fc+="".join(f"[v{i}]" for i in range(12))
 fc+=f"concat=n=12:v=1:a=0[vout];[vout]eq=saturation=1.15:brightness=0.02:contrast=1.05[vf]"
