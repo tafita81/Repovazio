@@ -390,31 +390,21 @@ print(f"Audio {ADU:.1f}s | cena {DUR:.2f}s | {FR}f")
 KB=["zi","zo","pl","pr","zi","zo","pl","pr","zi","zo",
     "pl","pr","zi","zo","pl","pr","zi","zo","pl","zi"]
 
-def ken(m,i,fr):
-    """Scale 10% + crop com motion linear - robusto e confiavel"""
-    # Scale para 10% maior: 1080*1.10=1188, 1920*1.10=2112
-    scale="scale=1188:2112"
-    ox,oy="54","96"  # offset maximo = (1188-1080)/2=54, (2112-1920)/2=96
-    n=f"n"  # frame counter no filtro crop
+def ken(m,fr):
+    """Scale 10% + crop com motion linear - valores pre-calculados, sem Python ops"""
+    # Scale: 1080*1.10=1188, 1920*1.10=2112 | offset max x=54, y=96
     if m=="zi":
-        # Zoom in: comecar com crop offset, ir para centro
-        cx2=f"max(0,{ox}-{ox}*{n}/{fr})"
-        cy2=f"max(0,{oy}-{oy}*{n}/{fr})"
+        return f"scale=1188:2112,crop=1080:1920:max(0,54-54*n/{fr}):max(0,96-96*n/{fr}),setsar=1"
     elif m=="zo":
-        # Zoom out: comecar no centro, mover para borda
-        cx2=f"min({ox},{ox}*{n}/{fr})"
-        cy2=f"min({oy},{oy}*{n}/{fr})"
+        return f"scale=1188:2112,crop=1080:1920:min(54,54*n/{fr}):min(96,96*n/{fr}),setsar=1"
     elif m=="pl":
-        # Pan left: de direita para esquerda
-        cx2=f"max(0,{ox}*2-{ox}*2*{n}/{fr})"
-        cy2=f"{oy}//2"
+        return f"scale=1188:2112,crop=1080:1920:max(0,108-108*n/{fr}):48,setsar=1"
     elif m=="pr":
-        # Pan right: de esquerda para direita
-        cx2=f"min({ox}*2,{ox}*2*{n}/{fr})"
-        cy2=f"{oy}//2"
+        return f"scale=1188:2112,crop=1080:1920:min(108,108*n/{fr}):48,setsar=1"
+    elif m=="zt":
+        return f"scale=1188:2112,crop=1080:1920:max(0,54-54*n/{fr}):0,setsar=1"
     else:
-        cx2,cy2=ox,"0"
-    return f"{scale},crop=1080:1920:{cx2}:{cy2},setsar=1"
+        return "scale=1188:2112,crop=1080:1920:54:48,setsar=1"
 
 inp=[]
 for p in paths: inp+=["-loop","1","-t",str(DUR+0.20),"-i",p]
@@ -423,7 +413,7 @@ for p in paths: inp+=["-loop","1","-t",str(DUR+0.20),"-i",p]
 fc=""
 for i in range(N):
     mode=KB[i%len(KB)]
-    kf=ken(mode,i,FR)
+    kf=ken(mode,FR)
     # Cada stream: scale+crop + setpts para tempo correto
     fc+=f"[{i}:v]setpts=PTS-STARTPTS,{kf}[v{i}];"
 fc+="".join(f"[v{i}]" for i in range(N))
