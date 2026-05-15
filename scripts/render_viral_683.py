@@ -367,12 +367,7 @@ def cena(idx):
 
 print("=== RENDER VIRAL V3 | 20 CENAS | SEM PSICOLOGA ===")
 paths=[cena(i) for i in range(1,N+1)]
-print("Cenas OK! Verificando diversidade de cores:")
-from PIL import Image as PIL_Image
-import numpy as np
-for i,p in enumerate(paths[:5],1):
-    arr=np.array(PIL_Image.open(p))
-    print(f"  Cena {i:02d}: top R={int(np.mean(arr[:100,:,0]))},G={int(np.mean(arr[:100,:,1]))},B={int(np.mean(arr[:100,:,2]))}")
+print(f"Cenas OK! Total: {len(paths)} cenas geradas")
 
 # AUDIO
 r=requests.get(f"{SB_URL}/rest/v1/content_pipeline",
