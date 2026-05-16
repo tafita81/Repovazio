@@ -257,3 +257,47 @@ Tabela: `viral_videos_reference` | Função: `get_viral_mirror_instruction(topic
 - Setup tokens: https://repovazio.vercel.app/setup-tokens.html
 - GitHub Actions: https://github.com/tafita81/Repovazio/actions
 - YouTube Studio: https://studio.youtube.com (psidanielacoelho1982@gmail.com)
+
+---
+
+## LONGS 15MIN — PADRÃO ETERNO
+
+**Script:** `scripts/render_long_v8_standard.py`
+**Workflow:** `.github/workflows/render-long-padrao-eterno.yml` (1x/dia às 3h UTC)
+
+### Diferenças Short → Long (só 3):
+
+| Parâmetro | Short | Long |
+|-----------|-------|------|
+| N_CENAS | 20 | **50** |
+| CRF | 25 (~3-6MB) | **22 (~15-20MB)** |
+| Estrutura | linear | **5 capítulos × 10 cenas** |
+
+### Tudo mais é IDÊNTICO ao Short:
+- Pollinations primary → Gemini 2.0 Flash Exp → Pillow chibi
+- Caption badge no TOPO por cena
+- Lower third: Daniela Coelho | Saude Mental | @psidanielacoelho
+- RATE_REAL dinâmico
+- AntonioNeural
+- ffconcat → FFmpeg
+
+### 5 Capítulos do Long:
+```
+Cap 1 (cenas  1-10): Introdução / Gancho
+Cap 2 (cenas 11-20): Desenvolvimento
+Cap 3 (cenas 21-30): Aprofundamento / Ciência
+Cap 4 (cenas 31-40): Solução / Insights
+Cap 5 (cenas 41-50): Conclusão + INSCREVA-SE 🔔
+```
+Badge de capítulo (badge vermelho canto sup. direito): "INTRODUÇÃO", "DESENVOLVIMENTO", etc.
+
+### Longs em fila (audio_ready):
+- #693 Gaslighting — 16.320 chars | audio: v693.mp3 ← render rodando
+- #695 Rel. Tóxico — 14.880 chars | audio: v695.mp3
+- #692 Apego Ansioso — 13.814 chars | audio: v692.mp3
+- #706 Narcisista — 10.883 chars | sem audio ainda
+
+### Para gerar Long:
+```
+GitHub Actions → render-long-padrao-eterno.yml → video_id: <693|695|692|706>
+```
