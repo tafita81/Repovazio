@@ -203,7 +203,16 @@ CENAS=[
 
 print(f"=== RENDER V8 FINAL: GEMINI AI | 20 CENAS | EDGE TTS ===")
 dur_audio = gerar_audio()
-print(f"Audio: {dur_audio:.1f}s | Cenas: {len(CENAS)}")
+# Timing DINAMICO: calcular rate real do audio gerado
+SCRIPT_CHARS_TTS=len(SCRIPT_TTS)
+RATE_REAL=SCRIPT_CHARS_TTS/dur_audio
+print(f"Audio: {dur_audio:.1f}s | Rate: {RATE_REAL:.3f} chars/s")
+# Chars por cena na ordem do CENAS
+CHARS_POR_CENA=[42,32,33,13,40,18,27,41,40,36,46,55,48,23,24,31,34,38,28,18]
+CENAS=[(CENAS[i][0],CENAS[i][1],round(CHARS_POR_CENA[i]/RATE_REAL,3),CENAS[i][3],CENAS[i][4],CENAS[i][5])
+       for i in range(len(CENAS))]
+soma=sum(d for _,_,d,_,_,_ in CENAS)
+print(f"Soma cenas: {soma:.1f}s | Gap audio: {dur_audio-soma:.1f}s (ultima cena cobre)")
 
 def generate_scene(scene_def):
     idx,frase,dur,pal,prompt,caption=scene_def
