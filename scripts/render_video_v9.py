@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """
 render_video_v9.py — psicologia.doc V9 MOTION AI
-CORREÇÕES APLICADAS:
-  ✅ FFmpeg drawtext: removido fontweight (não existe), fixed "Saude Mental"
-  ✅ Gemini: log de erros detalhado, retry com backoff, modelos corretos
-  ✅ Groq: response_format removido, parsing robusto
-  ✅ Veo 3.x para cenas-chave (real motion)
-  ✅ RATE_REAL dinâmico (len(script)/dur_audio, NUNCA hardcoded)
-  ✅ Lower third SEM Psicóloga até jan/2027
-  ✅ 🔔 Inscreva-se agora nos últimos 4s
-  ✅ Anti-plágio em TODOS os prompts
+Image generation: NVIDIA FLUX.1 Schnell (primary, free 40K/mês) 
+                  + Gemini (fallback) + creme sólido (último recurso)
+
+TODAS CORREÇÕES APLICADAS:
+  ✅ NVIDIA FLUX.1 Schnell como gerador principal de imagens chibi
+  ✅ Gemini Image como fallback (se NVIDIA falhar)
+  ✅ Veo 3.x para cenas-chave com real motion
+  ✅ reference_image: personagem consistente (NVIDIA gera referência)
+  ✅ RATE_REAL dinâmico (len(script)/dur_audio — NUNCA hardcoded)
+  ✅ Lower third: "Daniela Coelho | Saude Mental | @psidanielacoelho"
+  ✅ SEM Psicóloga até jan/2027
+  ✅ 🔔 Inscreva-se agora nos últimos 4s (sem fontweight=bold)
+  ✅ Anti-plágio: "original character design not based on any existing IP"
   ✅ Fundo creme #F5F0E8 Psych2Go (NUNCA escuro)
-  ✅ crf=25 Shorts, crf=22 Longs
-  ✅ Ken Burns suave para cenas estáticas
+  ✅ crf=25 Shorts (~3MB), crf=22 Longs (~18MB)
+  ✅ Ken Burns suave para imagens estáticas
 """
 import os, sys, json, time, base64, asyncio, subprocess
 import re, requests, traceback
@@ -21,11 +25,12 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
-SB_URL      = "https://tpjvalzwkqwttvmszvie.supabase.co"
-SB_KEY      = os.environ.get("SUPABASE_SERVICE_KEY", "")
-GROQ_KEY    = os.environ.get("GROQ_API_KEY", "")
-GEMINI_KEY  = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_KEY2 = os.environ.get("GEMINI_API_KEY_2", "")
+SB_URL       = "https://tpjvalzwkqwttvmszvie.supabase.co"
+SB_KEY       = os.environ.get("SUPABASE_SERVICE_KEY", "")
+GROQ_KEY     = os.environ.get("GROQ_API_KEY", "")
+GEMINI_KEY   = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_KEY2  = os.environ.get("GEMINI_API_KEY_2", "")
+NVIDIA_KEY   = os.environ.get("NVIDIA_API_KEY", "")
 
 VIDEO_ID = int(sys.argv[1]) if len(sys.argv) > 1 else 683
 TS       = int(time.time())
@@ -33,31 +38,35 @@ WORK_DIR = Path(f"/tmp/v9_{VIDEO_ID}_{TS}")
 WORK_DIR.mkdir(parents=True, exist_ok=True)
 
 TTS_VOICE   = "pt-BR-AntonioNeural"
-# CORRETO: "Saude Mental" (não "Metal")
 LOWER_THIRD = "Daniela Coelho | Saude Mental | @psidanielacoelho"
 CRF_SHORT   = 25
 CRF_LONG    = 22
 VEO_BUDGET  = 8
 
+# NVIDIA FLUX.1 Schnell (grátis 40K/mês, melhor qualidade chibi)
+NVIDIA_FLUX_URL = "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-schnell"
+
+# Gemini fallback
 GEMINI_MODELS_IMG = [
     "gemini-2.5-flash-image",
     "gemini-3.1-flash-image-preview",
-    "gemini-2.0-flash-exp-image-generation",
-    "imagen-3.0-generate-002",
 ]
+
 VEO_MODELS = [
     "veo-3.1-generate-preview",
     "veo-3.0-generate-preview",
     "veo-2.0-generate-001",
 ]
+
 ANTI_PLAGIO = (
     "original character design not based on any existing IP, "
-    "no text, no logos, no brand marks, no watermarks"
+    "no text, no logos, no brand marks"
 )
 PSYCH2GO_BASE = (
     "Psych2Go animation style, kawaii chibi anime character, "
     "cream white background #F5F0E8, pastel warm colors, "
-    "round big expressive eyes, clean soft lines"
+    "round big expressive eyes, clean soft lines, "
+    "professional psychology channel"
 )
 
 # ── SUPABASE ──────────────────────────────────────────────────────────────────
@@ -102,18 +111,18 @@ def get_audio_duration(path):
 # ── GROQ: prompts de cena ─────────────────────────────────────────────────────
 def generate_scene_prompts(script, paragraphs):
     n = len(paragraphs)
-    user = f"""Script PT-BR (canal psicologia):
+    user = f"""Script PT-BR (canal psicologia @psidanielacoelho):
 {script}
 
-Para cada um dos {n} parágrafos, gere JSON. Retorne EXATAMENTE array JSON com {n} objetos:
-[{{"img":"english chibi image prompt","veo":"english 8s motion clip prompt","key":true/false,"emotion":"neutral"}}]
+Para cada um dos {n} parágrafos, gere JSON array com {n} objetos:
+[{{"img":"english chibi prompt for stable diffusion","veo":"english 8s motion clip prompt","key":true/false,"emotion":"neutral"}}]
 
-- img: prompt imagem chibi estática (kawaii, psych2go style)
-- veo: prompt clip animado 8s com movimento real (max {VEO_BUDGET} com key=true)
-- key: true apenas para cenas de revelação/clímax emocional (max {VEO_BUDGET})
+- img: prompt inglês para FLUX imagem chibi estática (kawaii, psych2go style, creme background)
+- veo: prompt clip animado 8s (max {VEO_BUDGET} com key=true)
+- key: true apenas para hook/clímax/revelação emocional (máx {VEO_BUDGET})
 - emotion: neutral|surprised|concerned|happy|focused|dramatic
 
-RETORNE APENAS O ARRAY JSON. Nenhum texto antes ou depois."""
+RETORNE APENAS O JSON ARRAY."""
 
     try:
         r = requests.post("https://api.groq.com/openai/v1/chat/completions",
@@ -128,69 +137,85 @@ RETORNE APENAS O ARRAY JSON. Nenhum texto antes ou depois."""
         if m: return json.loads(m.group())
     except Exception as e:
         print(f"   ⚠️ Groq: {e}")
-
+    
     emotions = ["neutral","concerned","dramatic","surprised","empathetic","focused","happy","sad"]
-    return [{"img":f"kawaii chibi {emotions[i%8]} psychology channel character",
+    return [{"img":f"kawaii chibi anime girl psychology channel, {emotions[i%8]} expression, "
+                   f"psych2go style, cream white background, expressive eyes",
              "veo":f"chibi character explains psychology, {emotions[i%8]} gesture, natural movement",
-             "key": i < min(VEO_BUDGET, n//3), "emotion": emotions[i%8]}
+             "key": i < min(VEO_BUDGET, max(1, n//4)), "emotion": emotions[i%8]}
             for i in range(n)]
 
-# ── GEMINI IMAGE ──────────────────────────────────────────────────────────────
-def gemini_generate_image(prompt, key):
+# ── NVIDIA FLUX.1 SCHNELL (principal) ─────────────────────────────────────────
+def nvidia_generate_image(prompt):
     """
-    Gera imagem chibi com Gemini Image.
-    Tenta múltiplos modelos com log detalhado.
+    Gera imagem chibi com NVIDIA FLUX.1 Schnell.
+    Grátis: 40.000 imagens/mês. Melhor que Gemini para estilo anime/chibi.
     """
-    full_prompt = f"{PSYCH2GO_BASE}, {prompt}. {ANTI_PLAGIO}"
+    full = f"{PSYCH2GO_BASE}, {prompt}. {ANTI_PLAGIO}"
     
+    r = requests.post(
+        NVIDIA_FLUX_URL,
+        headers={"Authorization":f"Bearer {NVIDIA_KEY}","Content-Type":"application/json"},
+        json={
+            "prompt": full,
+            "height": 1024,    # 576x1024 = 9:16
+            "width":  576,
+            "num_inference_steps": 4,
+            "seed": hash(prompt) % (2**31)  # seed determinístico pelo prompt
+        },
+        timeout=120
+    )
+    
+    if r.status_code != 200:
+        raise ValueError(f"NVIDIA FLUX {r.status_code}: {r.text[:100]}")
+    
+    data = r.json()
+    # NVIDIA retorna lista de artifacts com base64
+    artifacts = data.get("artifacts", [])
+    if not artifacts:
+        raise ValueError("NVIDIA FLUX: sem imagens na resposta")
+    
+    b64 = artifacts[0].get("base64","")
+    if not b64:
+        raise ValueError("NVIDIA FLUX: campo base64 vazio")
+    
+    return base64.b64decode(b64)
+
+# ── GEMINI IMAGE (fallback) ───────────────────────────────────────────────────
+def gemini_generate_image(prompt, key):
+    """Fallback: Gemini Image se NVIDIA falhar"""
+    full = f"{PSYCH2GO_BASE}, {prompt}. {ANTI_PLAGIO}"
     for model in GEMINI_MODELS_IMG:
         try:
-            if model == "imagen-3.0-generate-002":
-                # Imagen tem endpoint diferente
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateImages?key={key}"
-                payload = {
-                    "prompt": {"text": full_prompt},
-                    "numberOfImages": 1,
-                    "aspectRatio": "9:16",
-                    "safetySettings": {"category": "BLOCK_ONLY_HIGH"}
-                }
-                r = requests.post(url, json=payload, timeout=60)
-                if r.status_code == 200:
-                    imgs = r.json().get("generatedImages",[])
-                    if imgs:
-                        b64 = imgs[0].get("image",{}).get("imageBytes","")
-                        if b64: return base64.b64decode(b64)
-                print(f"      Imagen {r.status_code}: {r.text[:100]}")
-                continue
-            
-            # generateContent para modelos gemini-*-image
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
-            payload = {
-                "contents": [{"parts": [{"text": full_prompt}]}],
-                "generationConfig": {"responseModalities": ["IMAGE","TEXT"]}
-            }
-            r = requests.post(url, json=payload, timeout=60)
-            
-            if r.status_code == 429:
-                print(f"      {model}: quota limit, aguardando 5s...")
-                time.sleep(5)
-                # Retry uma vez
-                r = requests.post(url, json=payload, timeout=60)
-            
-            if r.status_code != 200:
-                print(f"      {model}: HTTP {r.status_code} — {r.text[:80]}")
-                continue
-            
+            r = requests.post(url,
+                headers={"Content-Type":"application/json"},
+                json={"contents":[{"parts":[{"text":full}]}],
+                      "generationConfig":{"responseModalities":["IMAGE","TEXT"]}},
+                timeout=60)
+            if r.status_code != 200: continue
             for part in r.json().get("candidates",[{}])[0].get("content",{}).get("parts",[]):
                 if "inlineData" in part:
                     return base64.b64decode(part["inlineData"]["data"])
-            
-            print(f"      {model}: sem imagem na resposta")
-        
+        except: continue
+    raise ValueError("Gemini Image: todos os modelos falharam")
+
+def generate_image(prompt, idx=0):
+    """
+    Tenta em ordem: NVIDIA FLUX → Gemini → ValueError
+    """
+    if NVIDIA_KEY:
+        try:
+            return nvidia_generate_image(prompt)
         except Exception as e:
-            print(f"      {model}: {str(e)[:60]}")
+            print(f"      NVIDIA: {str(e)[:60]} → Gemini fallback")
     
-    raise ValueError("Todos os modelos Gemini Image falharam")
+    gemini_keys = [k for k in [GEMINI_KEY, GEMINI_KEY2] if k]
+    k = gemini_keys[idx % len(gemini_keys)] if gemini_keys else ""
+    if k:
+        return gemini_generate_image(prompt, k)
+    
+    raise ValueError("Sem chaves de imagem disponíveis")
 
 # ── VEO 3.x ───────────────────────────────────────────────────────────────────
 def veo_generate_clip(veo_prompt, ref_b64, key, duration_s=8):
@@ -207,12 +232,8 @@ def veo_generate_clip(veo_prompt, ref_b64, key, duration_s=8):
                 }
             }
             r = requests.post(url, json=body, timeout=60)
-            if r.status_code in (400,403,404):
-                print(f"      {model}: HTTP {r.status_code}")
-                continue
-            if r.status_code not in (200,202):
-                print(f"      {model}: HTTP {r.status_code} {r.text[:60]}")
-                continue
+            if r.status_code in (400,403,404): continue
+            if r.status_code not in (200,202): continue
             
             op = r.json()
             op_name = op.get("name","")
@@ -233,8 +254,8 @@ def veo_generate_clip(veo_prompt, ref_b64, key, duration_s=8):
                     break
                 if i%6==0: print(f"      ⏳ Veo... {(i+1)*5}s")
         except Exception as e:
-            print(f"      {model}: {str(e)[:60]}")
-    raise ValueError("Veo indisponível (paid preview ou quota esgotada)")
+            print(f"      {model}: {str(e)[:50]}")
+    raise ValueError("Veo: indisponível (paid preview)")
 
 def _extract_video(resp):
     samples = resp.get("generatedSamples") or resp.get("videos") or []
@@ -254,8 +275,11 @@ def build_static_clip(img_bytes, duration, idx):
     clip_p = WORK_DIR / f"clip_{idx:03d}.mp4"
     img_p.write_bytes(img_bytes)
     df = max(1, int(duration*30))
+    # FLUX gera 576x1024 — escalar para 1080x1920
     z = "min(zoom+0.0012,1.25)" if idx%2==0 else "if(lte(zoom,1.0),1.25,max(1.0,zoom-0.0012))"
-    vf = (f"scale=1200:2133,zoompan=z='{z}':d={df}:"
+    vf = (f"scale=1080:1920:force_original_aspect_ratio=decrease,"
+          f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=#F5F0E8,"
+          f"zoompan=z='{z}':d={df}:"
           f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1080x1920:fps=30")
     subprocess.run([
         "ffmpeg","-y","-loop","1","-i",str(img_p),
@@ -278,7 +302,6 @@ def build_motion_clip(video_bytes, target_dur, idx):
     return clip_p
 
 def build_fallback_clip(duration, idx):
-    """Creme sólido — fallback quando Gemini falha"""
     clip_p = WORK_DIR / f"clip_{idx:03d}.mp4"
     subprocess.run([
         "ffmpeg","-y","-f","lavfi",
@@ -287,22 +310,18 @@ def build_fallback_clip(duration, idx):
     ], check=True, capture_output=True)
     return clip_p
 
-# ── FINALIZE ──────────────────────────────────────────────────────────────────
+# ── OVERLAYS FINAIS ───────────────────────────────────────────────────────────
 def finalize_video(concat_path, audio_path, out_path, total_dur, is_long):
     """
-    Overlays + áudio final.
-    CORRIGIDO: removido fontweight=bold (não existe no ffmpeg drawtext)
-    Lower third: "Daniela Coelho | Saude Mental | @psidanielacoelho" (SEM Psicóloga)
+    Lower third SEM Psicóloga + progress bar + 🔔 Inscreva-se agora.
+    CORRIGIDO: sem fontweight=bold (não existe no ffmpeg drawtext)
     """
     crf = CRF_LONG if is_long else CRF_SHORT
     end_start = max(0.0, total_dur - 4.0)
+    lt = LOWER_THIRD.replace("'", "\\'").replace(":", "\\:")
     
-    # Usar aspas simples escapadas para o texto
-    lt = LOWER_THIRD.replace("'", "\\'")
-    
-    # CORRIGIDO: sem fontweight, sem font não disponível
     vf = (
-        # Lower third (SEM Psicóloga até jan/2027)
+        # Lower third
         f"drawtext=text='{lt}'"
         f":fontsize=26:fontcolor=white"
         f":x=(w-text_w)/2:y=h-75"
@@ -311,7 +330,7 @@ def finalize_video(concat_path, audio_path, out_path, total_dur, is_long):
         f"drawbox=x=0:y=h-10"
         f":w='min(iw\\,iw*t/{total_dur:.3f})':h=10"
         f":color=0x7C3AED:t=fill,"
-        # 🔔 Inscreva-se nos últimos 4s
+        # Inscreva-se nos últimos 4s
         f"drawtext=text='Inscreva-se agora'"
         f":fontsize=40:fontcolor=0x7C3AED"
         f":x=(w-text_w)/2:y=h/2+200"
@@ -321,8 +340,7 @@ def finalize_video(concat_path, audio_path, out_path, total_dur, is_long):
     
     result = subprocess.run([
         "ffmpeg","-y",
-        "-i",str(concat_path),
-        "-i",str(audio_path),
+        "-i",str(concat_path),"-i",str(audio_path),
         "-vf",vf,
         "-c:v","libx264","-crf",str(crf),"-preset","fast",
         "-c:a","aac","-b:a","128k",
@@ -331,15 +349,18 @@ def finalize_video(concat_path, audio_path, out_path, total_dur, is_long):
     ], capture_output=True, timeout=600)
     
     if result.returncode != 0:
-        print(f"FFmpeg stderr: {result.stderr.decode(errors='replace')[-500:]}")
+        err = result.stderr.decode(errors='replace')[-400:]
+        print(f"FFmpeg stderr: {err}")
         raise subprocess.CalledProcessError(result.returncode, "ffmpeg")
 
 # ── MAIN ──────────────────────────────────────────────────────────────────────
 def main():
     print(f"\n{'='*60}")
     print(f"  ψ V9 MOTION AI — Video #{VIDEO_ID}")
+    print(f"  Image backend: {'NVIDIA FLUX.1 Schnell' if NVIDIA_KEY else 'Gemini fallback'}")
     print(f"{'='*60}")
     
+    # 1. Dados do Supabase
     rows = sb_get("content_pipeline", f"id=eq.{VIDEO_ID}&select=id,title,script,audio_url,status")
     if not rows: sys.exit(f"❌ Vídeo {VIDEO_ID} não encontrado")
     row = rows[0]
@@ -350,10 +371,10 @@ def main():
     is_long  = len(script) > 4000
     n_scenes = 50 if is_long else 20
     
-    # Áudio
+    # 2. Áudio
     audio_path = WORK_DIR / "audio.mp3"
     if row.get("audio_url"):
-        print(f"\n🎙️  Usando áudio existente...")
+        print(f"\n🎙️  Usando áudio existente (AntonioNeural)...")
         ar = requests.get(row["audio_url"], timeout=60)
         ar.raise_for_status(); audio_path.write_bytes(ar.content)
     else:
@@ -362,106 +383,108 @@ def main():
         ap = sb_upload(f"videos/audios/v{VIDEO_ID}_v9_{TS}.mp3", audio_path, "audio/mpeg")
         sb_patch("content_pipeline", VIDEO_ID, {"audio_url": ap})
     
-    # Timing DINÂMICO (NUNCA hardcoded)
+    # 3. Timing DINÂMICO (NUNCA hardcoded)
     dur_audio = get_audio_duration(audio_path)
     rate_real = len(script) / dur_audio
-    print(f"\n⏱️  {dur_audio:.1f}s | RATE_REAL={rate_real:.2f} chars/s")
+    print(f"\n⏱️  {dur_audio:.1f}s | RATE_REAL={rate_real:.2f} chars/s (dinâmico)")
     
-    # Parágrafos
+    # 4. Parágrafos
     paragraphs = [p.strip() for p in script.split("\n") if p.strip()]
     actual_n   = min(len(paragraphs), n_scenes)
     scene_durs = [max(1.5, min(len(p)/rate_real, 15.0)) for p in paragraphs[:actual_n]]
     print(f"   {actual_n} cenas | ~{sum(scene_durs):.0f}s")
     
-    # Prompts Groq
+    # 5. Prompts Groq
     print(f"\n🧠 Groq: {actual_n} prompts de cena...")
     scenes = generate_scene_prompts(script, paragraphs[:actual_n])
     key_n  = sum(1 for s in scenes if s.get("key"))
-    print(f"   {key_n} key (Veo) | {actual_n-key_n} normal (Gemini)")
+    print(f"   {key_n} key (Veo) | {actual_n-key_n} normal (NVIDIA/Gemini)")
     
-    # Referência de personagem
-    print(f"\n🎨 Referência Gemini Image...")
+    # 6. Referência de personagem (NVIDIA FLUX)
+    print(f"\n🎨 Referência NVIDIA FLUX.1 Schnell...")
     ref_b64 = None
-    gemini_keys = [k for k in [GEMINI_KEY, GEMINI_KEY2] if k]
-    for k in gemini_keys:
-        try:
-            rb = gemini_generate_image(
-                "psychology channel host chibi, kawaii anime girl, dark hair, "
-                "friendly warm smile, white cream background, full body, neutral pose", k)
-            ref_b64 = base64.b64encode(rb).decode()
-            print(f"   ✅ Referência: {len(rb)//1024}KB")
-            break
-        except Exception as e:
-            print(f"   Key {k[:20]}: {e}")
-    if not ref_b64: print("   ⚠️  Sem referência — Veo usará apenas texto")
+    master_prompt = (
+        "psychology channel host chibi character, kawaii anime girl, dark hair, "
+        "warm friendly smile, professional casual outfit, front facing, full body, "
+        "cream white background, studio lighting, high quality"
+    )
+    try:
+        ref_bytes = generate_image(master_prompt, idx=0)
+        ref_path  = WORK_DIR / "reference.png"
+        ref_path.write_bytes(ref_bytes)
+        ref_b64   = base64.b64encode(ref_bytes).decode()
+        print(f"   ✅ Referência: {len(ref_bytes)//1024}KB")
+    except Exception as e:
+        print(f"   ⚠️  Referência falhou: {e}")
     
-    # Identificar índices
+    # 7. Identificar cenas
     veo_indices = []
     vrem = VEO_BUDGET
     for i, s in enumerate(scenes[:actual_n]):
         if s.get("key") and vrem > 0 and ref_b64:
             veo_indices.append(i); vrem -= 1
-    gem_indices = [i for i in range(actual_n) if i not in veo_indices]
+    img_indices = [i for i in range(actual_n) if i not in veo_indices]
     
     clips     = [None] * actual_n
     veo_count = 0
-    gem_count = 0
+    img_count = 0
     
-    # Gemini em paralelo
-    print(f"\n🖼️  {len(gem_indices)} cenas Gemini (4 workers)...")
-    def render_gem(idx):
+    # 8a. Imagens em paralelo (NVIDIA FLUX / Gemini)
+    print(f"\n🖼️  {len(img_indices)} imagens NVIDIA FLUX (4 workers)...")
+    
+    def render_img(idx):
         s = scenes[idx] if idx < len(scenes) else {}
-        p = s.get("img","kawaii chibi neutral psychology")
-        k = gemini_keys[idx % len(gemini_keys)] if gemini_keys else ""
-        if not k: return idx, build_fallback_clip(scene_durs[idx], idx), "fallback"
+        p = s.get("img","kawaii chibi anime psychology channel character, cream white background")
         try:
-            b = gemini_generate_image(p, k)
-            return idx, build_static_clip(b, scene_durs[idx], idx), "gemini"
+            b = generate_image(p, idx)
+            return idx, build_static_clip(b, scene_durs[idx], idx), True
         except Exception as e:
-            return idx, build_fallback_clip(scene_durs[idx], idx), "fallback"
+            print(f"   [{idx+1:02d}] imagem falhou: {str(e)[:50]}")
+            return idx, build_fallback_clip(scene_durs[idx], idx), False
     
     with ThreadPoolExecutor(max_workers=4) as ex:
-        futs = {ex.submit(render_gem,i):i for i in gem_indices}
+        futs = {ex.submit(render_img,i):i for i in img_indices}
         done = 0
         for fut in as_completed(futs):
-            idx, clip_p, src = fut.result()
+            idx, clip_p, ok = fut.result()
             clips[idx] = clip_p
-            if src=="gemini": gem_count += 1
+            if ok: img_count += 1
             done += 1
-            sys.stdout.write(f"\r   ✅ {done}/{len(gem_indices)}")
+            sys.stdout.write(f"\r   ✅ {done}/{len(img_indices)} imagens")
             sys.stdout.flush()
     print()
     
-    # Veo sequencial
+    # 8b. Veo motion (sequencial)
     if veo_indices:
-        print(f"\n🎬 {len(veo_indices)} cenas Veo (motion)...")
+        print(f"\n🎬 {len(veo_indices)} cenas Veo motion...")
         for idx in veo_indices:
             s  = scenes[idx] if idx < len(scenes) else {}
-            vp = s.get("veo","chibi explains psychology, natural gestures")
+            vp = s.get("veo","chibi character explains psychology enthusiastically")
             print(f"   [{idx+1:02d}] {vp[:50]}...")
             try:
-                gk  = GEMINI_KEY or GEMINI_KEY2
-                vid = veo_generate_clip(vp, ref_b64, gk, duration_s=8)
-                clips[idx] = build_motion_clip(vid, scene_durs[idx], idx)
+                gk = GEMINI_KEY or GEMINI_KEY2
+                v  = veo_generate_clip(vp, ref_b64, gk, duration_s=8)
+                clips[idx] = build_motion_clip(v, scene_durs[idx], idx)
                 veo_count += 1
             except Exception as e:
-                print(f"   ⚠️  {str(e)[:50]} → Gemini fallback")
+                print(f"   ⚠️  {str(e)[:50]} → FLUX fallback")
                 try:
-                    k = GEMINI_KEY or GEMINI_KEY2
-                    b = gemini_generate_image(s.get("img","kawaii chibi"), k)
+                    b = generate_image(s.get("img","kawaii chibi"), idx)
                     clips[idx] = build_static_clip(b, scene_durs[idx], idx)
-                    gem_count += 1
+                    img_count += 1
                 except:
                     clips[idx] = build_fallback_clip(scene_durs[idx], idx)
     
-    print(f"\n   ✅ Veo: {veo_count} | Gemini: {gem_count} | Fallback creme: {actual_n-veo_count-gem_count}")
+    print(f"\n   ✅ Veo: {veo_count} | FLUX/Gemini: {img_count} | "
+          f"Fallback: {actual_n-veo_count-img_count}")
     
-    # Concatenar
+    # 9. Concatenar
     print(f"\n🔗 Concatenando {actual_n} clips...")
     ctxt = WORK_DIR / "input.txt"
     with open(ctxt,"w") as f:
         for c in clips:
             if c: f.write(f"file '{c}'\n")
+    
     concat_mp4 = WORK_DIR / "concat.mp4"
     subprocess.run([
         "ffmpeg","-y","-f","concat","-safe","0",
@@ -469,8 +492,8 @@ def main():
         "-c:v","libx264","-pix_fmt","yuv420p","-r","30",str(concat_mp4)
     ], check=True, capture_output=True, timeout=300)
     
-    # Overlays + áudio
-    print(f"🎨 Overlays + áudio...")
+    # 10. Overlays + áudio
+    print(f"🎨 Overlays (lower third, progress, 🔔, áudio)...")
     out_name = f"v{VIDEO_ID}_v9_{TS}.mp4"
     out_path = WORK_DIR / out_name
     finalize_video(concat_mp4, audio_path, out_path, dur_audio, is_long)
@@ -478,16 +501,20 @@ def main():
     mb = out_path.stat().st_size / 1024 / 1024
     print(f"   ✅ {mb:.1f}MB | {dur_audio:.1f}s | crf={CRF_LONG if is_long else CRF_SHORT}")
     
-    # Upload + DB
+    # 11. Upload + DB
     print(f"\n☁️  Upload Supabase...")
     pub_url = sb_upload(f"videos/mp4s/{out_name}", out_path)
     sb_patch("content_pipeline", VIDEO_ID, {
-        "video_url": pub_url, "status": "pending_credentials",
+        "video_url": pub_url,
+        "status": "pending_credentials",
         "metadata": json.dumps({
             "render_version": "v9",
-            "veo_clips": veo_count, "gemini_clips": gem_count,
+            "image_backend": "nvidia_flux" if NVIDIA_KEY else "gemini",
+            "veo_clips": veo_count,
+            "image_clips": img_count,
             "total_clips": actual_n,
-            "duration_s": round(dur_audio,2), "rate_real": round(rate_real,3),
+            "duration_s": round(dur_audio,2),
+            "rate_real": round(rate_real,3),
             "file_mb": round(mb,2),
             "rendered_at": datetime.utcnow().isoformat(),
             "lower_third": LOWER_THIRD,
@@ -498,7 +525,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"  ✅ V9 COMPLETO — #{VIDEO_ID}")
     print(f"  🎬 {pub_url}")
-    print(f"  Veo: {veo_count} | Gemini: {gem_count} | {dur_audio:.1f}s | {mb:.1f}MB")
+    print(f"  FLUX/Gemini: {img_count} | Veo: {veo_count} | {dur_audio:.1f}s | {mb:.1f}MB")
     print(f"{'='*60}")
 
 if __name__ == "__main__":
