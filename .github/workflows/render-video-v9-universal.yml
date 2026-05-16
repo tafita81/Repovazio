@@ -7,7 +7,6 @@ on:
         description: "ID do vídeo (ex: 683)"
         required: true
         default: "683"
-
   schedule:
     - cron: "0 6,12,18 * * *"
 
@@ -19,19 +18,17 @@ jobs:
   render-v9:
     runs-on: ubuntu-latest
     timeout-minutes: 120
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: 📦 Instalar dependências
         run: |
-          pip install --quiet requests edge-tts
+          pip install --quiet requests edge-tts pillow
           sudo apt-get install -y ffmpeg --quiet 2>/dev/null
-          python3 -c "import requests, edge_tts; print('deps OK')"
+          python3 -c "import requests, edge_tts, PIL; print('deps OK')"
 
       - name: 🎯 Determinar video_id
         id: get_video
@@ -58,7 +55,7 @@ jobs:
           echo "video_id=$VID" >> $GITHUB_OUTPUT
           echo "✅ Video: $VID"
 
-      - name: 🎬 Render V9 — NVIDIA FLUX + Veo Motion
+      - name: 🎬 Render V9 Motion AI
         if: steps.get_video.outputs.video_id != 'NONE'
         env:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -70,15 +67,10 @@ jobs:
         run: |
           python scripts/render_video_v9.py ${{ steps.get_video.outputs.video_id }}
 
-      - name: ℹ️ Fila vazia
-        if: steps.get_video.outputs.video_id == 'NONE'
-        run: echo "✅ Nenhum vídeo pendente"
-
       - name: 📊 Resumo
         if: always()
         run: |
-          echo "## 🎬 V9 Motion AI" >> $GITHUB_STEP_SUMMARY
-          echo "- Video: ${{ steps.get_video.outputs.video_id }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Imagens: NVIDIA FLUX.1 Schnell (principal)" >> $GITHUB_STEP_SUMMARY
-          echo "- Motion: Veo 3.x (cenas-chave)" >> $GITHUB_STEP_SUMMARY
+          echo "## 🎬 V9 Motion AI — psicologia.doc" >> $GITHUB_STEP_SUMMARY
+          echo "- Video: #${{ steps.get_video.outputs.video_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Image: Gemini Flash Image (ou Pillow chibi psych2go)" >> $GITHUB_STEP_SUMMARY
           echo "- Lower third: Daniela Coelho | Saude Mental | @psidanielacoelho" >> $GITHUB_STEP_SUMMARY
