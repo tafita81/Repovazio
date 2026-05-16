@@ -1,0 +1,22 @@
+name: Render Viral V8 Gemini
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: { python-version: '3.11' }
+      - name: Install deps
+        run: pip install pillow requests
+      - name: Install FFmpeg
+        run: sudo apt-get install -y ffmpeg
+      - name: Render V8
+        env:
+          SUPABASE_URL: https://tpjvalzwkqwttvmszvie.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python3 scripts/render_viral_683_v8.py
