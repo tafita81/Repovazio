@@ -149,37 +149,70 @@ RETORNE APENAS O JSON ARRAY."""
 def nvidia_generate_image(prompt):
     """
     Gera imagem chibi com NVIDIA FLUX.1 Schnell.
-    Grátis: 40.000 imagens/mês. Melhor que Gemini para estilo anime/chibi.
+    Grátis: 40.000 imagens/mês.
+    
+    ENDPOINTS CORRETOS (ordem de preferência):
+    1. integrate.api.nvidia.com — OpenAI-compatible, retorna b64_json
+    2. ai.api.nvidia.com/genai — retorna artifacts[].base64
+    3. SDXL fallback
     """
+    import random as _random
     full = f"{PSYCH2GO_BASE}, {prompt}. {ANTI_PLAGIO}"
     
-    r = requests.post(
-        NVIDIA_FLUX_URL,
-        headers={"Authorization":f"Bearer {NVIDIA_KEY}","Content-Type":"application/json"},
-        json={
-            "prompt": full,
-            "height": 1024,    # 576x1024 = 9:16
-            "width":  576,
-            "num_inference_steps": 4,
-            "seed": hash(prompt) % (2**31)  # seed determinístico pelo prompt
-        },
-        timeout=120
-    )
+    endpoints = [
+        # OpenAI-compatible endpoint (mais estável)
+        (
+            "https://integrate.api.nvidia.com/v1/images/generations",
+            {"model":"black-forest-labs/flux-schnell",
+             "prompt": full, "n": 1,
+             "size": "1024x1792",          # ~9:16 vertical
+             "response_format": "b64_json"}
+        ),
+        # NIM endpoint direto para FLUX
+        (
+            "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux-schnell",
+            {"prompt": full,
+             "width": 768, "height": 1344,  # 9:16
+             "num_inference_steps": 4, "guidance_scale": 3.5,
+             "num_images": 1, "seed": _random.randint(1, 999999)}
+        ),
+        # SDXL fallback
+        (
+            "https://ai.api.nvidia.com/v1/genai/stabilityai/stable-diffusion-xl",
+            {"prompt": full,
+             "width": 768, "height": 1344,
+             "num_inference_steps": 20, "guidance_scale": 7.0,
+             "seed": _random.randint(1, 999999)}
+        ),
+    ]
     
-    if r.status_code != 200:
-        raise ValueError(f"NVIDIA FLUX {r.status_code}: {r.text[:100]}")
+    for ep, payload in endpoints:
+        try:
+            r = requests.post(ep,
+                headers={"Authorization":f"Bearer {NVIDIA_KEY}","Content-Type":"application/json"},
+                json=payload, timeout=120)
+            
+            print(f"      NVIDIA {ep.split('/')[-1]}: {r.status_code}")
+            if r.status_code != 200:
+                try: print(f"        {r.json().get('detail',r.text[:80])}")
+                except: print(f"        {r.text[:80]}")
+                continue
+            
+            data = r.json()
+            # Tentar dois formatos de resposta
+            b64 = (data.get("artifacts",[{}])[0].get("base64","") or
+                   data.get("data",[{}])[0].get("b64_json",""))
+            
+            if b64:
+                print(f"      ✅ NVIDIA OK: {len(b64)//1024}KB")
+                return base64.b64decode(b64)
+            
+            print(f"      Resposta sem base64: {list(data.keys())}")
+        
+        except Exception as e:
+            print(f"      NVIDIA exc: {str(e)[:60]}")
     
-    data = r.json()
-    # NVIDIA retorna lista de artifacts com base64
-    artifacts = data.get("artifacts", [])
-    if not artifacts:
-        raise ValueError("NVIDIA FLUX: sem imagens na resposta")
-    
-    b64 = artifacts[0].get("base64","")
-    if not b64:
-        raise ValueError("NVIDIA FLUX: campo base64 vazio")
-    
-    return base64.b64decode(b64)
+    raise ValueError("NVIDIA: todos os endpoints falharam")
 
 # ── GEMINI IMAGE (fallback) ───────────────────────────────────────────────────
 def gemini_generate_image(prompt, key):
