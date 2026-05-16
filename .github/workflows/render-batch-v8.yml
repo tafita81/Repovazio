@@ -1,0 +1,55 @@
+name: Render Batch V8 (fila automatica)
+on:
+  schedule:
+    - cron: '0 6,12,18 * * *'  # 3x por dia: 6h, 12h, 18h UTC
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Quantos videos renderizar'
+        default: '3'
+        type: string
+
+jobs:
+  queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      video_ids: ${{ steps.get_queue.outputs.video_ids }}
+    steps:
+      - name: Get render queue
+        id: get_queue
+        env:
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          LIMIT="${{ inputs.limit || '3' }}"
+          IDS=$(curl -s "https://tpjvalzwkqwttvmszvie.supabase.co/rest/v1/content_pipeline?select=id&status=in.(audio_ready,ready_tts)&order=id.asc&limit=${LIMIT}" \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" | \
+            python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps([str(x['id']) for x in d]))")
+          echo "video_ids=$IDS" >> $GITHUB_OUTPUT
+          echo "Queue: $IDS"
+
+  render:
+    needs: queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    if: needs.queue.outputs.video_ids != '[]'
+    strategy:
+      matrix:
+        video_id: ${{ fromJson(needs.queue.outputs.video_ids) }}
+      max-parallel: 1  # sequencial para nao sobrecarregar Gemini
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with: { python-version: '3.11' }
+      - run: pip install pillow requests edge-tts
+      - run: sudo apt-get install -y ffmpeg
+      - name: Render ${{ matrix.video_id }}
+        env:
+          VIDEO_ID: ${{ matrix.video_id }}
+          SUPABASE_URL: https://tpjvalzwkqwttvmszvie.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/render_video_v8.py $VIDEO_ID
