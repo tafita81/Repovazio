@@ -8,7 +8,8 @@ ANTI-TIMEOUT: Busca imagens do banco (pré-geradas)
 - 100 imgs × 2s = 3min (vs 27min antes!)
 - Total estimado: ~12-15min (bem dentro de 90min)
 """
-import os, sys, json, subprocess, requests, time, urllib.parse, asyncio, re
+import os
+import requests, sys, json, subprocess, requests, time, urllib.parse, asyncio, re
 from PIL import Image, ImageDraw
 
 VIDEO_ID = int(os.environ.get("VIDEO_ID","683"))
@@ -223,17 +224,73 @@ segs = split_300(raw)
 SCRIPT_TTS = " ".join(segs)   # sem ". " = sem pausa dupla no edge_tts
 log(f"  {len(segs)} segmentos | {len(SCRIPT_TTS)} chars")
 
-# ETAPA 1: ÁUDIO
-log(f"\n🎙️  ETAPA 1 — Áudio (AntonioNeural {RATE_ADJ})...")
-async def gen_audio():
+# ETAPA 1: ÁUDIO — George (ElevenLabs) ou AntonioNeural fallback
+log(f"\n🎙️  ETAPA 1 — Áudio (George ElevenLabs → AntonioNeural fallback)...")
+
+def preprocess_tts(text):
+    """Remove artefatos que causam pausas artificiais no TTS"""
+    import re
+    text = re.sub(r'—', ', ', text)         # em-dash → vírgula (sem pausa longa)
+    text = re.sub(r'\.{2,}', '.', text)    # reticências → ponto simples
+    text = re.sub(r'\s*:\s*', ': ', text) # dois-pontos espaçado
+    text = re.sub(r'\s{2,}', ' ', text)    # espaços duplos
+    text = re.sub(r'([!?])\s+', r'\1 ', text)
+    return text.strip()
+
+TTS_CLEAN = preprocess_tts(SCRIPT_TTS)
+log(f"  {len(TTS_CLEAN)} chars limpos para TTS")
+
+def gen_audio_george():
+    """ElevenLabs George — voz humana PT-BR qualidade máxima"""
+    XI_KEY = os.environ.get("ELEVENLABS_API_KEY","")
+    if not XI_KEY:
+        log("  ⚠️  ELEVENLABS_API_KEY ausente → fallback edge_tts")
+        return False
+    GEORGE_ID = "JBFqnCBsd6RMkjVDRZzb"
+    log(f"  Tentando George ({GEORGE_ID})...")
+    try:
+        r = requests.post(
+            f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE_ID}",
+            headers={"xi-api-key": XI_KEY, "Content-Type": "application/json"},
+            json={
+                "text": TTS_CLEAN,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {
+                    "stability": 0.50,
+                    "similarity_boost": 0.85,
+                    "style": 0.35,
+                    "use_speaker_boost": True,
+                    "speed": 1.32   # equivale ao +32% do edge_tts
+                }
+            },
+            timeout=300
+        )
+        if r.status_code == 200:
+            with open(f"{WORKDIR}/audio.mp3",'wb') as f: f.write(r.content)
+            sz = os.path.getsize(f"{WORKDIR}/audio.mp3") // 1024
+            log(f"  ✅ George OK: {sz}KB")
+            return True
+        else:
+            log(f"  ⚠️  George erro {r.status_code}: {r.text[:120]}")
+            return False
+    except Exception as e:
+        log(f"  ⚠️  George exception: {e}")
+        return False
+
+async def gen_audio_antonio():
+    """Fallback: AntonioNeural edge_tts"""
     import edge_tts
-    c=edge_tts.Communicate(SCRIPT_TTS,voice="pt-BR-AntonioNeural",rate=RATE_ADJ)
+    c = edge_tts.Communicate(TTS_CLEAN, voice="pt-BR-AntonioNeural", rate=RATE_ADJ)
     await c.save(f"{WORKDIR}/audio.mp3")
-asyncio.run(gen_audio())
+    log(f"  ✅ AntonioNeural OK (fallback)")
+
+if not gen_audio_george():
+    log("  Usando AntonioNeural como fallback...")
+    asyncio.run(gen_audio_antonio())
 DUR=measure_dur(f"{WORKDIR}/audio.mp3")
-RATE_REAL=len(SCRIPT_TTS)/DUR
+RATE_REAL=len(TTS_CLEAN)/DUR
 log(f"  ✅ {DUR:.0f}s = {DUR/60:.2f}min | RATE={RATE_REAL:.2f}")
-DURS=[max(0.2,round(len(s)/RATE_REAL,3)) for s in segs]
+DURS=[max(0.2,round(len(preprocess_tts(s))/RATE_REAL,3)) for s in segs]
 
 # ETAPA 2: IMAGENS (banco primeiro!)
 log(f"\n🎨 ETAPA 2 — {N_UNIQUE} imagens (banco→Pollinations)...")
