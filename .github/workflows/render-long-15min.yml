@@ -1,0 +1,43 @@
+name: "🎬 Long 15min Quântico — 90 Cenas + Ken Burns + Chapters"
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: "ID do vídeo com script no Supabase"
+        required: true
+        default: "683"
+      script_override:
+        description: "Script direto (opcional, substitui Supabase)"
+        required: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 📦 Deps
+        run: |
+          pip install --quiet requests Pillow edge-tts
+          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
+      - name: 🎬 Render Long 15min
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          VIDEO_ID: ${{ github.event.inputs.video_id }}
+          SCRIPT_LONG: ${{ github.event.inputs.script_override }}
+        run: python scripts/render_long_15min.py
+      - name: 📊 Summary
+        if: always()
+        run: |
+          echo "## 🎬 Long 15min — Padrão Quântico" >> $GITHUB_STEP_SUMMARY
+          echo "- 90 imagens Pollinations FLUX" >> $GITHUB_STEP_SUMMARY
+          echo "- Cena nova a cada ~5s (Psych2Go style)" >> $GITHUB_STEP_SUMMARY
+          echo "- 5 atos narrativos (máxima retenção)" >> $GITHUB_STEP_SUMMARY
+          echo "- Ken Burns zoom in/out" >> $GITHUB_STEP_SUMMARY
+          echo "- Mid-rolls: 03:00 | 06:00 | 09:00 | 12:00" >> $GITHUB_STEP_SUMMARY
+          echo "- Chapters JSON para YouTube" >> $GITHUB_STEP_SUMMARY
+          echo "- Meta: R\$50K/mês AdSense em 12 meses" >> $GITHUB_STEP_SUMMARY
