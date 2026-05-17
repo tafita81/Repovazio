@@ -175,7 +175,7 @@ def gen_pillow(idx):
 log("🎙️  ETAPA 1 — Gerando áudio (AntonioNeural +8% = 58s)...")
 
 # RATE FIXO +8% → leve aceleração, soa natural, dá ~58s
-RATE_ADJ = "+8%"
+RATE_ADJ = "+37%"  # 79s natural / 1.37 = 57.7s ≈ 58s
 
 async def gen_audio():
     import edge_tts
