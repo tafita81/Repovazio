@@ -42,7 +42,7 @@ def search_image_bank(char_slug, scene_type, keywords=[]):
     """Busca imagem pré-gerada no banco Supabase"""
     params = f"character_slug=eq.{char_slug}&scene_type=eq.{scene_type}&order=times_used.asc&limit=1"
     r = requests.get(f"{SB_URL}/rest/v1/image_bank?{params}",
-        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=10)
+        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=60)
     if r.status_code == 200 and r.json():
         row = r.json()[0]
         # Incrementar counter
@@ -54,7 +54,7 @@ def search_image_bank(char_slug, scene_type, keywords=[]):
 
 def download_bank_image(url, out_path):
     """Baixa imagem do banco e redimensiona para 1080×1920"""
-    r = requests.get(url, timeout=30)
+    r = requests.get(url, timeout=90)
     if r.status_code == 200 and len(r.content) > 10000:
         img = Image.open(__import__('io').BytesIO(r.content)).convert("RGB")
         img = img.resize((W,H), Image.LANCZOS)
@@ -106,7 +106,7 @@ def sb_get_script():
     SCRIPT_ENV = os.environ.get("SCRIPT_LONG","")
     if SCRIPT_ENV and len(SCRIPT_ENV) > 500: return SCRIPT_ENV
     r = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=script",
-        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=30)
+        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=90)
     rows = r.json()
     if rows and rows[0].get("script"): return rows[0]["script"]
     raise ValueError(f"Script não encontrado para id={VIDEO_ID}")
@@ -115,7 +115,7 @@ def sb_patch(id_, data):
     requests.patch(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{id_}",
         headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}",
                  "Content-Type":"application/json","Prefer":"return=minimal"},
-        json=data, timeout=30).raise_for_status()
+        json=data, timeout=90).raise_for_status()
 
 def sb_upload(path, data, ctype):
     r = requests.post(f"{SB_URL}/storage/v1/object/videos/{path}",
@@ -263,7 +263,7 @@ def gen_audio_george():
                     "speed": 1.32   # equivale ao +32% do edge_tts
                 }
             },
-            timeout=300
+            timeout=900
         )
         if r.status_code == 200:
             with open(f"{WORKDIR}/audio.mp3",'wb') as f: f.write(r.content)
