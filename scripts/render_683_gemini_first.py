@@ -113,8 +113,9 @@ def gen_gemini(prompt, idx):
         return None, "no_key"
     
     models = [
-        "gemini-2.0-flash-exp-image-generation",
-        "gemini-2.0-flash-exp",
+        "gemini-2.5-flash-image-preview",
+        "gemini-3.1-flash-image-preview",
+        "gemini-2.0-flash-preview-image-generation",
     ]
     
     full_prompt = f"Create a kawaii chibi anime illustration: {prompt}"
