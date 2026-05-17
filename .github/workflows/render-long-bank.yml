@@ -1,0 +1,27 @@
+name: "🎬 Long 15min — Banco de Imagens (Anti-Timeout)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: "ID do vídeo"
+        default: "32"
+        required: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: 📦 Deps
+        run: |
+          pip install --quiet requests Pillow edge-tts
+          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
+      - name: 🎬 Render Long (Banco)
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          VIDEO_ID: ${{ github.event.inputs.video_id }}
+        run: python scripts/render_long_from_bank.py
