@@ -130,7 +130,8 @@ SCENES = [
 FRASES   = [s[0] for s in SCENES]
 PROMPTS  = [s[1] for s in SCENES]
 N        = len(SCENES)
-SCRIPT   = "\n\n".join(FRASES)
+SCRIPT     = "\n\n".join(FRASES)  # para cálculo de RATE_REAL
+SCRIPT_TTS = ". ".join(FRASES)     # para TTS (sem quebras = sem pausas)
 
 log(f"{'='*55}")
 log(f"  ψ SHORT 58s — {N} FRASES / {N} IMAGENS")
@@ -157,7 +158,7 @@ def sb_upload(path, data, ctype):
 async def gen_audio(rate_adj="+0%"):
     import edge_tts
     path = f"{WORKDIR}/audio_{rate_adj.replace('%','pct').replace('+','p').replace('-','m')}.mp3"
-    c = edge_tts.Communicate(SCRIPT, voice="pt-BR-AntonioNeural", rate=rate_adj)
+    c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-AntonioNeural", rate=rate_adj)
     await c.save(path)
     return path
 
