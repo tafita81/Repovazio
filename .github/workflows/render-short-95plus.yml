@@ -1,0 +1,37 @@
+name: "🎯 Short 58s Score 95+ — PMID + Hook + Two-Pass TTS"
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: "ID do vídeo"
+        default: "683"
+        required: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 📦 Deps
+        run: |
+          pip install --quiet requests Pillow edge-tts
+          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
+      - name: 🎯 Render Short 95+
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scripts/render_short_58s_95plus.py
+      - name: 📊 Resultado
+        if: always()
+        run: |
+          echo "## 🎯 Short 58s Score 95+" >> $GITHUB_STEP_SUMMARY
+          echo "- PMID 37286231 (citação científica real)" >> $GITHUB_STEP_SUMMARY
+          echo "- Hook paradoxal: A pessoa que mais te machuca..." >> $GITHUB_STEP_SUMMARY
+          echo "- Curiosity gap entre sinais" >> $GITHUB_STEP_SUMMARY
+          echo "- CTA nomeando próximo vídeo: A Mentira do Narcisista" >> $GITHUB_STEP_SUMMARY
+          echo "- Cliffhanger específico: mentira desde o início" >> $GITHUB_STEP_SUMMARY
+          echo "- Two-pass TTS: 58s exatos dinâmicos" >> $GITHUB_STEP_SUMMARY
