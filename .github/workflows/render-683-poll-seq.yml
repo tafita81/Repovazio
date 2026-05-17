@@ -1,0 +1,29 @@
+name: "🌐 Vídeo 1 Pollinations Sequencial — #683"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 📦 Deps
+        run: |
+          pip install --quiet requests Pillow
+          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
+      - name: 🌐 Render Pollinations Sequencial
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scripts/render_683_poll_seq.py
+      - name: 📊 Resultado
+        if: always()
+        run: |
+          echo "## 🌐 Pollinations Sequencial — Grátis + Ilimitado" >> $GITHUB_STEP_SUMMARY
+          echo "- 33 cenas FLUX enhanced, 1 por vez, 4s delay" >> $GITHUB_STEP_SUMMARY
+          echo "- Sem API key, sem limite, sem custo" >> $GITHUB_STEP_SUMMARY
+          echo "- Personagens: Daniela, Sara, Marcos, Julia, Dra. Ana" >> $GITHUB_STEP_SUMMARY
