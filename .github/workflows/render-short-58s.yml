@@ -1,0 +1,36 @@
+name: "⏱️ Short 58s Perfeito — 1 Imagem por Frase"
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_id:
+        description: "ID do vídeo (padrão: 683)"
+        default: "683"
+        required: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 📦 Deps
+        run: |
+          pip install --quiet requests Pillow edge-tts
+          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
+      - name: ⏱️ Render Short 58s
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scripts/render_short_58s.py
+      - name: 📊 Resultado
+        if: always()
+        run: |
+          echo "## ⏱️ Short 58s Perfeito" >> $GITHUB_STEP_SUMMARY
+          echo "- 58 segundos exatos (TTS rate adjustment)" >> $GITHUB_STEP_SUMMARY
+          echo "- 22 frases = 22 imagens únicas" >> $GITHUB_STEP_SUMMARY
+          echo "- 1 imagem por frase/pensamento" >> $GITHUB_STEP_SUMMARY
+          echo "- Cada imagem descreve exatamente o que está sendo dito" >> $GITHUB_STEP_SUMMARY
+          echo "- Pollinations FLUX sequencial: grátis + ilimitado" >> $GITHUB_STEP_SUMMARY
