@@ -223,7 +223,7 @@ def add_overlay(img_path, caption):
     img = Image.open(img_path).convert("RGB")
     draw = ImageDraw.Draw(img)
     # Lower third
-    draw.rectangle([0, H-100, W, H], fill=DARK := (8,6,18))
+    DARK=(8,6,18); draw.rectangle([0, H-100, W, H], fill=DARK)
     draw.rectangle([0, H-100, 6, H], fill=VERM)
     draw.rectangle([0, H-4, W, H], fill=VERM)
     draw.text((22, H-90), "ψ", fill=GOLD)
