@@ -129,7 +129,7 @@ if XI_KEY:
                     "similarity_boost": 0.85,
                     "style":            0.50,
                     "use_speaker_boost": True,
-                    "speed":            1.05
+                    "speed":            1.15    # calibrado: 826 chars / 58.6s = 58s exatos
                 }
             },
             timeout=180
