@@ -129,7 +129,7 @@ if XI_KEY:
                     "similarity_boost": 0.85,
                     "style":            0.50,
                     "use_speaker_boost": True,
-                    "speed":            1.10    # interpolado empirico: 826chars → 58.2s
+                    "speed":            1.05    # qualidade máxima — atempo cuida da duração
                 }
             },
             timeout=180
@@ -155,8 +155,31 @@ if AUDIO_PATH is None:
 
 DUR_TOTAL = measure_dur(AUDIO_PATH)
 RATE_REAL = total_chars / DUR_TOTAL
-log(f"  ✅ {DUR_TOTAL:.1f}s | {RATE_REAL:.1f} chars/s")
-DURS = [max(1.2, round(len(f)/RATE_REAL, 3)) for f in FRASES]
+log(f"  ✅ George bruto: {DUR_TOTAL:.1f}s | {RATE_REAL:.1f} chars/s")
+
+# ── AJUSTE EXATO PARA 58s via ffmpeg atempo ──────────────────────────────
+TARGET_DUR = 58.0
+if abs(DUR_TOTAL - TARGET_DUR) > 0.5:
+    atempo = DUR_TOTAL / TARGET_DUR
+    # atempo deve estar entre 0.5 e 2.0 (ElevenLabs já está em 0.9-1.2x)
+    atempo = max(0.5, min(2.0, atempo))
+    adjusted_path = f"{WORKDIR}/audio_58s.mp3"
+    r_at = subprocess.run([
+        "ffmpeg","-y","-i",AUDIO_PATH,
+        "-filter:a",f"atempo={atempo:.4f}",
+        "-q:a","2",adjusted_path
+    ], capture_output=True, text=True, timeout=60)
+    if r_at.returncode == 0:
+        AUDIO_PATH = adjusted_path
+        DUR_TOTAL  = measure_dur(AUDIO_PATH)
+        log(f"  ✅ Ajustado: {DUR_TOTAL:.2f}s (atempo={atempo:.4f})")
+    else:
+        log(f"  ⚠️ atempo falhou: {r_at.stderr[-100:]}")
+else:
+    log(f"  ✅ Duração OK: {DUR_TOTAL:.1f}s (sem ajuste necessário)")
+
+RATE_REAL = total_chars / DUR_TOTAL
+DURS = [max(1.0, round(len(f)/RATE_REAL, 3)) for f in FRASES]
 diff = DUR_TOTAL - sum(DURS)
 DURS[0] = round(DURS[0] + diff, 3)
 
