@@ -7,7 +7,6 @@ FIXES v3:
 3. Validação: testa áudio antes de renderizar
 """
 import os, sys, asyncio, json, subprocess, requests, time, re
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ── CONFIG ──────────────────────────────────────────────────────────
 VIDEO_ID = int(os.environ.get("VIDEO_ID", "683"))
@@ -243,51 +242,100 @@ log("  Prompts gerados:")
 for i, (f, (p, s)) in enumerate(zip(FRASES, PROMPTS), 1):
     log(f"    [{i:02d}] → {p[:70]}...")
 
-# ── 6. IMAGENS POLLINATIONS PARALELAS (5 workers) ───────────────────
-log(f"\n  Gerando {N} imagens em paralelo (5 workers)...")
+# ── 6. IMAGENS: BANCO SUPABASE (semântico) → POLLINATIONS SEQUENCIAL ──
+log(f"\n🎨 ETAPA 2 — {N} IMAGENS (banco semântico → Pollinations fallback)")
 
 def upscale(src, dst):
     subprocess.run(["ffmpeg","-y","-i",src,"-vf","scale=1080:1920:flags=lanczos",
                     "-q:v","2",dst], capture_output=True)
     return dst if os.path.exists(dst) else src
 
-def fetch_img(idx, prompt, seed):
+# Buscar banco inteiro
+banco_map = {}
+try:
+    rb = requests.get(f"{SB_URL}/rest/v1/image_bank?select=character_slug,scene_type,image_url&limit=300",
+        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=60)
+    from collections import defaultdict
+    for img in rb.json():
+        k = f"{img['character_slug']}_{img['scene_type']}"
+        banco_map.setdefault(k, []).append(img['image_url'])
+    log(f"  🏦 Banco: {sum(len(v) for v in banco_map.values())} imagens")
+except Exception as e:
+    log(f"  ⚠️ Banco: {e}")
+
+def get_semantic_char_scene(frase, idx):
+    """Mapeamento semântico preciso para char+scene do banco."""
+    t = frase.lower()
+    if any(k in t for k in ["harvard","pesquisa","estudo","universidade","neurolog","ciência","cérebro","indiana"]):
+        return "ana", "ciencia"
+    elif any(k in t for k in ["inscreva","🔔","próximo vídeo"]):
+        return "group", "cta"
+    elif any(k in t for k in ["exagerando","normalmente","anormal","válido","não é sensível","não é dramát"]):
+        return "daniela", "virada"
+    elif any(k in t for k in ["narcis","perigoso","grita","chora","vítima","responsável","incompreendido","hipersensível"]):
+        return "marcos", "problema"
+    elif any(k in t for k in ["crítica","crise","magoá","falar nada","aprende"]):
+        return "sara", "problema"
+    elif any(k in t for k in ["desculpar","existir","sentir","precisar","apagando","voz","quatro anos"]):
+        return "sara", "virada"
+    elif any(k in t for k in ["sinal 1","sinal 2","sinal 3"]):
+        return "marcos", "gancho"
+    elif idx < N//4:
+        return "daniela", "gancho"
+    elif idx < N//2:
+        return "sara", "problema"
+    else:
+        return "daniela", "cta"
+
+IMGS = []
+banco_cnt = 0
+poll_cnt  = 0
+
+for idx, (frase, (prompt, seed)) in enumerate(zip(FRASES, PROMPTS), 1):
+    char, scene = get_semantic_char_scene(frase, idx)
     fpath = f"{WORKDIR}/img_{idx:02d}.jpg"
     up    = f"{WORKDIR}/img_up_{idx:02d}.jpg"
-    url   = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=576&height=1024&seed={seed}&nologo=true&model=flux"
-    for att in range(3):
-        try:
-            r = requests.get(url, timeout=120, headers={"User-Agent":"Mozilla/5.0"})
-            if r.status_code == 200 and len(r.content) > 5000:
-                with open(fpath, 'wb') as f_: f_.write(r.content)
-                upscale(fpath, up)
-                return idx, up, len(r.content)//1024, "poll"
-        except Exception as e:
-            if att == 2: return idx, None, 0, f"erro:{e}"
-        time.sleep(5)
-    return idx, None, 0, "timeout"
+    found = False
 
-# Fetch paralelo com 5 workers
-IMGS_MAP = {}
-t0 = time.time()
+    # 1. Banco semântico
+    for key in [f"{char}_{scene}", f"sara_{scene}", f"daniela_{scene}"]:
+        urls = banco_map.get(key, [])
+        if urls:
+            url = urls[(idx * 13) % len(urls)]
+            try:
+                r = requests.get(url, timeout=30)
+                if r.status_code == 200 and len(r.content) > 5000:
+                    with open(fpath,'wb') as f_: f_.write(r.content)
+                    IMGS.append(upscale(fpath, up))
+                    log(f"  [{idx:02d}/{N}] 🏦 banco/{char}/{scene} | {frase[:40]}")
+                    banco_cnt += 1
+                    found = True
+                    break
+            except: pass
 
-with ThreadPoolExecutor(max_workers=5) as executor:
-    futures = {executor.submit(fetch_img, i, p, s): i
-               for i, (p, s) in enumerate(PROMPTS, 1)}
-    
-    for future in as_completed(futures):
-        idx, fpath, sz, status = future.result()
-        IMGS_MAP[idx] = fpath
-        icon = "🌐" if fpath else "❌"
-        log(f"  [{idx:02d}/{N}] {icon} {sz}KB | {FRASES[idx-1][:35]}")
+    # 2. Pollinations sequencial (comprovado 100% de sucesso no v2)
+    if not found:
+        poll_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=576&height=1024&seed={seed}&nologo=true"
+        for att in range(4):
+            try:
+                r = requests.get(poll_url, timeout=90, headers={"User-Agent":"Mozilla/5.0"})
+                if r.status_code == 200 and len(r.content) > 5000:
+                    with open(fpath,'wb') as f_: f_.write(r.content)
+                    IMGS.append(upscale(fpath, up))
+                    sz = len(r.content)//1024
+                    log(f"  [{idx:02d}/{N}] 🌐 poll {sz}KB | {frase[:40]}")
+                    poll_cnt += 1
+                    found = True
+                    break
+            except: pass
+            time.sleep(4)
 
-t1 = time.time()
-ok = sum(1 for v in IMGS_MAP.values() if v)
-log(f"\n  ✅ {ok}/{N} imagens | {t1-t0:.0f}s total")
+    if not found:
+        IMGS.append(IMGS[-1] if IMGS else None)
+        log(f"  [{idx:02d}/{N}] ⚠️ usando fallback")
 
-# Fallback: usar primeira imagem válida para as que falharam
-fallback = next((v for v in IMGS_MAP.values() if v), None)
-IMGS = [IMGS_MAP.get(i) or fallback for i in range(1, N+1)]
+ok = banco_cnt + poll_cnt
+log(f"  ✅ {banco_cnt} banco | {poll_cnt} Pollinations | {ok}/{N} total")
 
 # ── 7. RENDER FFMPEG ─────────────────────────────────────────────────
 log(f"\n🎬 ETAPA 3 — FFMPEG render")
