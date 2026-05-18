@@ -1,4 +1,4 @@
-name: "🎤 Short 58s — George ElevenLabs (lê DB)"
+name: "🎤 Short 58s — George ElevenLabs (Semântico v3)"
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,7 +20,7 @@ jobs:
         run: |
           pip install --quiet requests Pillow edge-tts
           sudo apt-get install -y ffmpeg --quiet 2>/dev/null
-      - name: 🎤 George ElevenLabs — Short 58s
+      - name: 🎤 George — Short Semântico v3
         env:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
