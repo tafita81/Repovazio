@@ -165,7 +165,12 @@ if AUDIO is None:
         from TTS.api import TTS
 
         log("  Carregando modelo XTTS v2 (~750MB, pode demorar 1a vez)...")
+        # Forçar CPU explicitamente
+        import torch
+        device = "cpu"  # GitHub Actions não tem GPU
+        log(f"  Device: {device} | Torch: {torch.__version__}")
         tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", progress_bar=False)
+        tts = tts.to(device)
         log("  ✅ Modelo carregado")
 
         # Gerar frase por frase com speeds diferentes
@@ -175,6 +180,7 @@ if AUDIO is None:
         for idx, (frase, (speed, pause_s)) in enumerate(zip(frases, emocoes), 1):
             seg_path = f"{WORKDIR}/seg_{idx:03d}.wav"
             try:
+                log(f"  [{idx:02d}/{N}] 🔄 Gerando frase: {frase[:40]}")
                 # XTTS v2: sem parâmetro speed — aplicar atempo via ffmpeg depois
                 tts.tts_to_file(
                     text=frase,
@@ -182,9 +188,10 @@ if AUDIO is None:
                     language="pt",
                     file_path=seg_path
                 )
+                log(f"  [{idx:02d}/{N}] 📝 Arquivo gerado")
 
                 if not os.path.exists(seg_path) or os.path.getsize(seg_path) < 1000:
-                    log(f"  [{idx:02d}/{N}] ⚠️ segmento vazio")
+                    log(f"  [{idx:02d}/{N}] ⚠️ segmento vazio ou muito pequeno")
                     continue
 
                 seg_dur = measure_dur(seg_path)
@@ -223,7 +230,9 @@ if AUDIO is None:
                         seg_files.append(sil_path)
 
             except Exception as e:
-                log(f"  [{idx:02d}/{N}] ⚠️ {e}")
+                log(f"  [{idx:02d}/{N}] ❌ XTTS erro: {type(e).__name__}: {str(e)[:200]}")
+                import traceback
+                log(f"  Traceback: {traceback.format_exc()[-300:]}")
 
         if seg_files:
             concat_txt = f"{WORKDIR}/concat_xtts.txt"
