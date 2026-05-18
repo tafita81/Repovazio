@@ -1,4 +1,4 @@
-name: "🎤 Short 58s — George ElevenLabs (Semântico v3)"
+name: "🎙️ Short 58s — Kokoro PT-BR (Emoção Dinâmica)"
 
 on:
   workflow_dispatch:
@@ -11,16 +11,24 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: kokoro-model-pt-br-v1
+
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      - name: 📦 Deps
+
+      - name: 📦 Deps (Kokoro + ffmpeg + espeak)
         run: |
-          pip install --quiet requests Pillow edge-tts
-          sudo apt-get install -y ffmpeg --quiet 2>/dev/null
-      - name: 🎤 George — Short Semântico v3
+          pip install --quiet kokoro>=0.9.4 soundfile numpy requests edge-tts
+          sudo apt-get install -y espeak-ng ffmpeg --quiet 2>/dev/null
+
+      - name: 🎙️ Kokoro — Short 58s Emoção Dinâmica
         env:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
