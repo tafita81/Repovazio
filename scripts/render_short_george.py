@@ -307,15 +307,15 @@ ANA     = ("female expert Dr age 42, white coat, reading glasses, "
 def prompt_for_frase(frase, idx, N):
     t = frase.lower()
     
-    # ── CTA INSCREVA-SE ── Drama máximo
-    if "inscreva" in t or "🔔" in frase:
+    # ── CTA — Teaser para vídeo completo
+    if any(k in t for k in ["salva", "vídeo", "canal", "assistir", "inscreva", "mais tarde", "depois"]):
         return (
             f"masterpiece, best quality, {STYLE}, "
-            "GIANT golden notification bell filling center of frame, "
-            "radiant golden sparkle rays exploding outward from bell, "
-            f"{DANIELA} and {SARA} beneath with arms raised in pure joy and celebration, "
-            "colorful confetti purple and gold everywhere, maximum excitement energy, "
-            "subscribe urgency, bright celebration atmosphere "
+            f"{DANIELA} in warm inviting pose, hand extended toward viewer beckoning them closer, "
+            "soft glowing screen or portal showing more content beyond, "
+            "curious hopeful expression, violet golden warm light, "
+            "come watch more energy, FOMO and desire to continue watching, "
+            "save for later bookmark symbol subtly present "
             f"{NEG}"
         )
     
@@ -487,8 +487,9 @@ for idx, (frase, prompt) in enumerate(zip(frases, PROMPTS), 1):
     
     # Forçar Pollinations para cenas emocionais chave
     force_poll = any(k in t for k in [
-        "inscreva","quatro anos apagando","não está exagerando",
-        "normalmente","ele chora","mais perigoso","afastar","errada"
+        "salva","canal","assistir","mais tarde","depois",
+        "inscreva","não está exagerando",
+        "ele chora","mais perigoso","afastar","errada"
     ])
     
     if not force_poll:
