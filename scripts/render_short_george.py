@@ -135,7 +135,7 @@ VOICE_USED = "Chatterbox/George_clone_semantic"
 SR = 24000  # sample rate Chatterbox
 
 # P1: ElevenLabs George (script completo se disponível)
-SCRIPT_TTS = "\n".join(t for t, *_ in GRUPOS)
+SCRIPT_TTS = "\n\n".join(t for t, *_ in GRUPOS)  # \n\n = pausa de parágrafo natural
 if XI_KEY:
     log("  [P1] ElevenLabs George...")
     try:
@@ -154,84 +154,47 @@ if XI_KEY:
             log(f"  ❌ ElevenLabs {r.status_code}: {r.json().get('detail',{}).get('code','')}")
     except Exception as e: log(f"  ⚠️ {e}")
 
-# P2: Chatterbox Multilingual — grupos semânticos
+# P2: Chatterbox Multilingual ONE-SHOT — script completo em UMA chamada
+# Máximo contexto → o modelo lê tudo junto → pausas e ênfases emergem naturalmente
 if AUDIO is None:
-    log("  [P2] Chatterbox Multilingual — grupos semânticos PT-BR...")
+    log("  [P2] Chatterbox ONE-SHOT — script completo PT-BR...")
     try:
         import torchaudio
         from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
-        log("  Carregando modelo...")
+        log("  Carregando modelo (~2min)...")
         model = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
         SR = model.sr
         log(f"  ✅ Modelo pronto | SR={SR}Hz")
 
-        seg_files = []
-        for idx, (txt, exag, cfg, pau) in enumerate(GRUPOS, 1):
-            seg_path = f"{WORKDIR}/grp_{idx:02d}.wav"
-            sil_path = f"{WORKDIR}/sil_{idx:02d}.wav"
-            preview = txt.replace('\n', ' / ')[:50]
-            log(f"  [{idx}/{len(GRUPOS)}] exag={exag:.2f} cfg={cfg:.2f} | {preview}")
-            
-            # Gerar áudio do grupo completo (contexto preservado)
-            wav = model.generate(
-                txt,
-                audio_prompt_path=GEORGE_REF,
-                language_id="pt",
-                exaggeration=exag,
-                cfg_weight=cfg
-            )
-            torchaudio.save(seg_path, wav, SR)
-            d = dur(seg_path)
-            log(f"    ✅ {d:.1f}s gerado")
-            seg_files.append(seg_path)
+        # exag=0.80 → expressivo e natural
+        # cfg=0.20 → ritmo deliberado, respeita pontuação como humano
+        log(f"  Texto completo ({len(SCRIPT_TTS)} chars)...")
+        wav = model.generate(
+            SCRIPT_TTS,
+            audio_prompt_path=GEORGE_REF,
+            language_id="pt",
+            exaggeration=0.80,
+            cfg_weight=0.20
+        )
+        raw_wav = f"{WORKDIR}/cb_raw.wav"
+        mp3_out = f"{WORKDIR}/audio_cb.mp3"
+        torchaudio.save(raw_wav, wav, SR)
+        log(f"  ✅ WAV bruto: {dur(raw_wav):.2f}s")
 
-            # Pausa dramática ENTRE grupos (não dentro)
-            if pau > 0 and idx < len(GRUPOS):
-                silence(pau, SR, sil_path)
-                seg_files.append(sil_path)
+        subprocess.run(["ffmpeg","-y","-i",raw_wav,
+            "-ar","44100","-ac","1","-af","volume=1.1",
+            "-codec:a","libmp3lame","-b:a","256k", mp3_out],
+            capture_output=True, timeout=60)
 
-        # Concatenar com torchaudio (sem ffmpeg concat — mais confiável)
-        seg_files = [sp for sp in seg_files
-                     if os.path.exists(sp) and os.path.getsize(sp) > 100]
-        
-        if seg_files:
-            import torch
-            log(f"  Concatenando {len(seg_files)} segmentos via torchaudio...")
-            tensors = []
-            target_sr = SR
-            for sp in seg_files:
-                try:
-                    wf, sr_f = torchaudio.load(sp)
-                    if sr_f != target_sr:
-                        wf = torchaudio.functional.resample(wf, sr_f, target_sr)
-                    if wf.shape[0] > 1:
-                        wf = wf.mean(dim=0, keepdim=True)
-                    tensors.append(wf)
-                except Exception as e:
-                    log(f"    ⚠️ skip {os.path.basename(sp)}: {e}")
-            
-            if tensors:
-                combined = torch.cat(tensors, dim=1)
-                # Volume +10%
-                combined = combined * 1.1
-                combined = torch.clamp(combined, -1.0, 1.0)
-                raw = f"{WORKDIR}/audio_raw.wav"
-                mp3 = f"{WORKDIR}/audio_cb.mp3"
-                torchaudio.save(raw, combined, target_sr)
-                # Converter para MP3 256k via ffmpeg (só encode, não concat)
-                subprocess.run(["ffmpeg","-y","-i",raw,
-                    "-codec:a","libmp3lame","-b:a","256k", mp3],
-                    capture_output=True)
-                AUDIO = mp3
-                log(f"  ✅ Chatterbox: {dur(AUDIO):.2f}s @ 44100Hz/256kbps")
-            else:
-                raise RuntimeError("Todos os segmentos falharam")
+        if os.path.exists(mp3_out) and os.path.getsize(mp3_out) > 10000:
+            AUDIO = mp3_out
+            log(f"  ✅ Chatterbox ONE-SHOT: {dur(AUDIO):.2f}s @ 44100Hz/256kbps")
         else:
-            raise RuntimeError("Nenhum grupo gerado")
+            raise RuntimeError("MP3 não gerado ou muito pequeno")
 
     except Exception as e:
-        log(f"  ⚠️ Chatterbox falhou: {type(e).__name__}: {str(e)[:200]}")
+        log(f"  ⚠️ Chatterbox falhou: {type(e).__name__}: {str(e)[:300]}")
         VOICE_USED = "AntonioNeural/fallback"
 
 # P3: AntonioNeural fallback
