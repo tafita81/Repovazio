@@ -1,276 +1,209 @@
 #!/usr/bin/env python3
 """
-render_chatterbox.py — Chatterbox Multilingual TTS com voz George clonada
-✅ Chatterbox > ElevenLabs em 63.75% dos testes cegos (Resemble AI)
-✅ MIT license — grátis para sempre, sem limites de uso
-✅ Zero-shot clone: 14s referência George → voz idêntica em português
-✅ Controle emocional via exaggeration (0.3 calm → 0.9 dramático)
-✅ cfg_weight por frase para variar ritmo e intensidade
+NARRAÇÃO HUMANA v2 — Arquitetura de Grupos Semânticos
+======================================================
+PROBLEMA ANTERIOR: frases isoladas → Chatterbox sem contexto → leitura mecânica
+SOLUÇÃO: grupos de 2-3 frases juntas → Chatterbox lê a cena completa → emoção real
+
+Como narrador humano:
+  - Lê o parágrafo inteiro antes de falar
+  - Usa o contexto anterior para calibrar emoção
+  - Faz pausas ENTRE cenas, não entre palavras
+  - CAPS = sílaba enfatizada naturalmente
 """
 import os, sys, json, subprocess, requests, time, re, asyncio
 
 VIDEO_ID = int(os.environ.get("VIDEO_ID", "683"))
-SB_URL   = "https://tpjvalzwkqwttvmszvie.supabase.co"
-SB_KEY   = os.environ.get("SUPABASE_SERVICE_KEY","")
-XI_KEY   = os.environ.get("ELEVENLABS_API_KEY","")
-GEORGE   = "JBFqnCBsd6RMkjVDRZzb"
-WORKDIR  = f"/tmp/short_{VIDEO_ID}"
+VOICE_VERSION = os.environ.get("VOICE_VERSION", "B")
+SB_URL  = "https://tpjvalzwkqwttvmszvie.supabase.co"
+SB_KEY  = os.environ.get("SUPABASE_SERVICE_KEY", "")
+XI_KEY  = os.environ.get("ELEVENLABS_API_KEY", "")
+GEORGE  = "JBFqnCBsd6RMkjVDRZzb"
+WORKDIR = f"/tmp/short_{VIDEO_ID}"
 os.makedirs(WORKDIR, exist_ok=True)
 GEORGE_REF = f"{WORKDIR}/george_ref.wav"
 GEORGE_SRC = "https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/mp4s/v683_george_1779065193.mp4"
 
 def log(m): print(m, flush=True)
-def measure_dur(p):
-    r=subprocess.run(["ffprobe","-v","quiet","-print_format","json","-show_format",p],
-        capture_output=True,text=True)
+def dur(p):
+    r = subprocess.run(["ffprobe","-v","quiet","-print_format","json","-show_format",p],
+        capture_output=True, text=True)
     return float(json.loads(r.stdout)["format"]["duration"])
-def upscale(src,dst):
-    subprocess.run(["ffmpeg","-y","-i",src,"-vf","scale=1080:1920:flags=lanczos","-q:v","2",dst],
+def silence(secs, sr, path):
+    subprocess.run(["ffmpeg","-y","-f","lavfi","-i",
+        f"anullsrc=r={sr}:cl=mono","-t",str(secs),"-ar",str(sr), path],
         capture_output=True)
-    return dst if os.path.exists(dst) else src
-def sb_patch(id_,data):
+def sb_patch(id_, data):
     requests.patch(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{id_}",
         headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}",
                  "Content-Type":"application/json","Prefer":"return=minimal"},
-        json=data,timeout=60)
+        json=data, timeout=60)
+
+log(f"\nψ NARRAÇÃO HUMANA v2 — #{VIDEO_ID}")
 
 # ── 1. SCRIPT ──────────────────────────────────────────────────────────
-log(f"\nψ CHATTERBOX GEORGE CLONE — #{VIDEO_ID}")
 row = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=id,title,script",
     headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=60).json()
 if not row or not row[0].get("script"):
     log("❌ Script não encontrado"); sys.exit(1)
 
 TITULO = row[0]["title"]
-RAW    = row[0]["script"].strip()
+SCRIPT_RAW = row[0]["script"].strip()
 log(f"  Título: {TITULO[:55]}")
-log(f"  Script: {len(RAW)} chars")
+log(f"  Script: {len(SCRIPT_RAW)} chars")
 
-def preprocess(txt):
-    txt = re.sub(r'\bDr\.', 'Dr', txt)
-    txt = re.sub(r'\bDra\.', 'Dra', txt)
-    return txt
+# ── 2. GRUPOS SEMÂNTICOS POR VÍDEO ─────────────────────────────────────
+# Cada grupo = lista de (texto_para_tts, exaggeration, cfg_weight, pausa_depois_s)
+# O texto de cada grupo inclui MÚLTIPLAS frases juntas para dar contexto ao Chatterbox
+# A pausa é inserida via ffmpeg ENTRE grupos (não dentro)
 
-CLEAN = preprocess(RAW)
+def montar_grupos(vid, script):
+    """Agrupa frases do script em cenas semânticas com parâmetros emocionais."""
+    linhas = [l.strip() for l in script.split('\n') if l.strip()]
+    
+    # Parâmetros base (Versão B: enhanced dramatic)
+    P = {
+        "HOOK":      (0.88, 0.15, 1.2),   # abertura + twist dramático
+        "TENSAO":    (0.85, 0.16, 1.0),   # conflito / manipulação
+        "REVELACAO": (0.90, 0.12, 1.1),   # "Isso tem NOME" / virada
+        "DESENV":    (0.78, 0.22, 0.7),   # explicação / contexto
+        "CTA":       (0.70, 0.30, 0.0),   # call to action (final)
+    }
+    
+    # Padrão: dividir em 4-5 grupos semânticos naturais
+    # Hook (1-2 linhas) | Tensão (1-2) | Revelação (1-2) | Desenv (2-3) | CTA (2)
+    n = len(linhas)
+    
+    if n <= 5:
+        # Script curto: apenas 3 grupos
+        grupos = [
+            ("\n".join(linhas[:2]), *P["HOOK"]),
+            ("\n".join(linhas[2:n-2]), *P["REVELACAO"]),
+            ("\n".join(linhas[n-2:]), *P["CTA"]),
+        ]
+    elif n <= 7:
+        # Script médio: 4 grupos
+        grupos = [
+            ("\n".join(linhas[:2]), *P["HOOK"]),
+            ("\n".join(linhas[2:4]), *P["TENSAO"]),
+            ("\n".join(linhas[4:n-2]), *P["REVELACAO"]),
+            ("\n".join(linhas[n-2:]), *P["CTA"]),
+        ]
+    else:
+        # Script longo (9+ linhas): 5 grupos
+        grupos = [
+            ("\n".join(linhas[:2]), *P["HOOK"]),
+            ("\n".join(linhas[2:4]), *P["TENSAO"]),
+            ("\n".join(linhas[4:5]), *P["REVELACAO"]),
+            ("\n".join(linhas[5:n-2]), *P["DESENV"]),
+            ("\n".join(linhas[n-2:]), *P["CTA"]),
+        ]
+    
+    # Filtrar grupos vazios
+    return [(t.strip(), e, c, p) for (t, e, c, p) in grupos if t.strip()]
 
-# ── 2. FRASES + EMOÇÃO ─────────────────────────────────────────────────
-paragrafos = [p.strip() for p in CLEAN.split('\n') if p.strip() and len(p.strip()) > 5]
+GRUPOS = montar_grupos(VIDEO_ID, SCRIPT_RAW)
 
-# SISTEMA DE NARRAÇÃO PERFEITA v1
-# Regra 1: CAPS = ênfase natural (Chatterbox responde a maiúsculas)
-# Regra 2: Linha curta sozinha = pausa ANTES e DEPOIS (impacto máximo)
-# Regra 3: "..." no texto = silêncio dramático 1.0s
-# Regra 4: cfg_weight baixo = fala mais lenta e deliberada
-# Regra 5: atempo 0.88 global = 12% mais lento sem pitch change
-
-VOICE_VERSION = os.environ.get("VOICE_VERSION", "B")
-
-def classify_frase(frase):
-    """Classificar tipo de frase para parâmetros corretos."""
-    t = frase.lower()
-    chars = len(frase.strip())
-    
-    # Linha MUITO curta (< 30 chars) = momento de impacto máximo
-    # Ex: "Ele CHORA." / "Ela NÃO estava." / "É QUÍMICA."
-    if chars < 35 and not any(k in t for k in ["salva","canal","vídeo"]):
-        return "IMPACTO"
-    
-    # CTA final
-    if any(k in t for k in ["salva","canal","assistir","mais tarde","depois","vídeo completo"]):
-        return "CTA"
-    
-    # Revelação ("Isso tem NOME", "Isso se chama...")
-    if any(k in t for k in ["isso tem nome","isso se chama","tem nome","se chama"]):
-        return "REVELACAO"
-    
-    # Dados/ciência
-    if any(k in t for k in ["harvard","pesquisador","estudo","universidade","neurológico","neurológ","química","mecanismo"]):
-        return "CIENCIA"
-    
-    # Virada emocional / não é sua culpa
-    if any(k in t for k in ["não está exagerando","não fosse você","não era sua","não é fraqueza","não é preguiça","não era preguiça"]):
-        return "VIRADA"
-    
-    # Tensão / gaslighting
-    if any(k in t for k in ["errada","acreditar","inventou","culpada","apagada","apagado","vazio"]):
-        return "TENSAO"
-    
-    # Hook inicial (primeiras frases)
-    return "NORMAL"
-
-def get_emotion(frase):
-    """
-    Sistema de narração:
-    Retorna (exaggeration, cfg_weight, pause_s)
-    exaggeration: 0.70-0.95 (B=enhanced dramatic)
-    cfg_weight: 0.10-0.28 (MUITO baixo = fala lenta e deliberada)
-    pause_s: silêncio APÓS a frase (em segundos)
-    """
-    tipo = classify_frase(frase)
-    t = frase.lower()
-    
-    # Adicionar silêncio extra quando frase tem "..."
-    dots_bonus = 0.8 if "..." in frase else 0.0
-    
-    if tipo == "IMPACTO":
-        # Linha curta = dramaticidade MÁXIMA + pausa longa
-        return (0.95, 0.10, 1.5 + dots_bonus)
-    
-    elif tipo == "CTA":
-        # Solene, claro, assertivo — não acelerado
-        return (0.72, 0.28, 0.4)
-    
-    elif tipo == "REVELACAO":
-        # "Isso tem NOME." = peso máximo, lento
-        return (0.90, 0.12, 1.2 + dots_bonus)
-    
-    elif tipo == "CIENCIA":
-        # Autoritário, claro, confiante
-        return (0.75, 0.20, 0.8)
-    
-    elif tipo == "VIRADA":
-        # Cálido, empoderador, direto
-        return (0.78, 0.18, 0.8)
-    
-    elif tipo == "TENSAO":
-        # Pesado, tenso, lento
-        return (0.88, 0.14, 1.0 + dots_bonus)
-    
-    else:  # NORMAL (hook, contextualização)
-        return (0.82, 0.18, 0.8 + dots_bonus)
-
-frases = []
-emocoes = []
-for p in paragrafos:
-    sents = re.split(r'(?<=[.!?…])\s+', p)
-    for s in sents:
-        s = s.strip()
-        if len(s) < 18 and frases:
-            frases[-1] += " " + s
-            emocoes[-1] = get_emotion(frases[-1])
-        elif len(s) > 3:
-            frases.append(s)
-            emocoes.append(get_emotion(s))
-
-ultima = paragrafos[-1] if paragrafos else ""
-if any(k in ultima.lower() for k in ["salva","canal","assistir"]) and \
-   (not frases or "salva" not in frases[-1].lower()):
-    frases.append(ultima.strip())
-    emocoes.append(get_emotion(ultima))
-if len(frases) > 16:
-    frases = frases[:15] + [frases[-1]]
-    emocoes = emocoes[:15] + [emocoes[-1]]
-
-N = len(frases)
-SCRIPT_TTS = " ".join(frases)
-log(f"\n  {N} frases | {len(SCRIPT_TTS)} chars")
-for i,(f,(exag,cfg,pau)) in enumerate(zip(frases,emocoes),1):
-    log(f"    [{i:02d}] exag={exag:.2f} cfg={cfg:.2f} +{pau:.1f}s | {f[:52]}")
+log(f"\n  {len(GRUPOS)} grupos semânticos:")
+for i, (txt, exag, cfg, pau) in enumerate(GRUPOS, 1):
+    preview = txt.replace('\n', ' / ')[:60]
+    log(f"    [{i}] exag={exag:.2f} cfg={cfg:.2f} +{pau:.1f}s | {preview}")
 
 # ── 3. REFERÊNCIA GEORGE ───────────────────────────────────────────────
-log(f"\n🎙️  ETAPA 0 — Referência George")
+log(f"\n🎙️  Baixando referência George...")
 if not os.path.exists(GEORGE_REF):
-    log("  Baixando render George original...")
     r = requests.get(GEORGE_SRC, timeout=120, headers={"User-Agent":"Mozilla/5.0"})
     if r.status_code == 200:
         src = f"{WORKDIR}/george_src.mp4"
-        with open(src,'wb') as f: f.write(r.content)
-        subprocess.run([
-            "ffmpeg","-y","-i",src,
-            "-ss","2","-t","14",
+        with open(src, 'wb') as f: f.write(r.content)
+        subprocess.run(["ffmpeg","-y","-i",src,"-ss","2","-t","14",
             "-vn","-ar","22050","-ac","1",
-            "-af","highpass=f=80,lowpass=f=8000,volume=1.3",
-            GEORGE_REF
-        ], capture_output=True)
-        log(f"  ✅ {measure_dur(GEORGE_REF):.1f}s referência extraída")
+            "-af","highpass=f=80,lowpass=f=8000,volume=1.3", GEORGE_REF],
+            capture_output=True)
+        log(f"  ✅ {dur(GEORGE_REF):.1f}s extraídos")
     else:
         log(f"  ❌ {r.status_code}"); sys.exit(1)
 else:
-    log("  ✅ Referência em cache")
+    log("  ✅ Em cache")
 
-# ── 4. VOZ — ORDEM DE PRIORIDADE ─────────────────────────────────────
-# P1: ElevenLabs George (se quota disponível)
-# P2: Chatterbox Multilingual clonando George (grátis, qualidade premium)
-# P3: AntonioNeural (fallback final)
-
-log(f"\n🎤  ETAPA 1 — VOZ")
+# ── 4. VOZ ─────────────────────────────────────────────────────────────
+log(f"\n🎤  Gerando narração em {len(GRUPOS)} grupos...")
 AUDIO = None
-VOICE_USED = "Chatterbox/George_clone"
+VOICE_USED = "Chatterbox/George_clone_semantic"
+SR = 24000  # sample rate Chatterbox
 
-# P1: ElevenLabs George
+# P1: ElevenLabs George (script completo se disponível)
+SCRIPT_TTS = "\n".join(t for t, *_ in GRUPOS)
 if XI_KEY:
-    log("  [P1] Testando ElevenLabs George...")
+    log("  [P1] ElevenLabs George...")
     try:
         r = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE}",
             headers={"xi-api-key":XI_KEY,"Content-Type":"application/json"},
             json={"text":SCRIPT_TTS,"model_id":"eleven_multilingual_v2",
                   "voice_settings":{"stability":0.20,"similarity_boost":0.85,
-                                    "style":0.70,"use_speaker_boost":True,"speed":1.00}},
+                                    "style":0.70,"use_speaker_boost":True}},
             timeout=180)
         if r.status_code == 200:
-            AUDIO = f"{WORKDIR}/audio_george.mp3"
+            AUDIO = f"{WORKDIR}/audio_xi.mp3"
             with open(AUDIO,'wb') as f: f.write(r.content)
             log(f"  ✅ ElevenLabs George: {len(r.content)//1024}KB")
             VOICE_USED = "ElevenLabs/George"
         else:
-            err = r.json().get('detail',{}).get('code','')
-            log(f"  ❌ ElevenLabs {r.status_code}: {err}")
+            log(f"  ❌ ElevenLabs {r.status_code}: {r.json().get('detail',{}).get('code','')}")
     except Exception as e: log(f"  ⚠️ {e}")
 
-# P2: Chatterbox Multilingual — clone George PT-BR
+# P2: Chatterbox Multilingual — grupos semânticos
 if AUDIO is None:
-    log("  [P2] Chatterbox Multilingual — clonando George em PT-BR...")
+    log("  [P2] Chatterbox Multilingual — grupos semânticos PT-BR...")
     try:
         import torchaudio
         from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
-        log("  Carregando modelo Chatterbox Multilingual (~CPU, pode levar 2-3min)...")
+        log("  Carregando modelo...")
         model = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
-        log("  ✅ Modelo Chatterbox carregado")
+        SR = model.sr
+        log(f"  ✅ Modelo pronto | SR={SR}Hz")
 
         seg_files = []
-        for idx,(frase,(exag,cfg,pau)) in enumerate(zip(frases,emocoes),1):
-            seg_path = f"{WORKDIR}/seg_{idx:03d}.wav"
-            try:
-                log(f"  [{idx:02d}/{N}] exag={exag:.2f} cfg={cfg:.2f} | {frase[:45]}")
-                wav = model.generate(
-                    frase,
-                    audio_prompt_path=GEORGE_REF,
-                    language_id="pt",
-                    exaggeration=exag,
-                    cfg_weight=cfg
-                )
-                torchaudio.save(seg_path, wav, model.sr)
-                dur = measure_dur(seg_path)
-                log(f"  [{idx:02d}/{N}] ✅ {dur:.1f}s gerado")
-                seg_files.append(seg_path)
+        for idx, (txt, exag, cfg, pau) in enumerate(GRUPOS, 1):
+            seg_path = f"{WORKDIR}/grp_{idx:02d}.wav"
+            sil_path = f"{WORKDIR}/sil_{idx:02d}.wav"
+            preview = txt.replace('\n', ' / ')[:50]
+            log(f"  [{idx}/{len(GRUPOS)}] exag={exag:.2f} cfg={cfg:.2f} | {preview}")
+            
+            # Gerar áudio do grupo completo (contexto preservado)
+            wav = model.generate(
+                txt,
+                audio_prompt_path=GEORGE_REF,
+                language_id="pt",
+                exaggeration=exag,
+                cfg_weight=cfg
+            )
+            torchaudio.save(seg_path, wav, SR)
+            d = dur(seg_path)
+            log(f"    ✅ {d:.1f}s gerado")
+            seg_files.append(seg_path)
 
-                # Silêncio dramático
-                if pau > 0:
-                    sil = f"{WORKDIR}/sil_{idx:03d}.wav"
-                    subprocess.run(["ffmpeg","-y","-f","lavfi",
-                        "-i",f"anullsrc=r={model.sr}:cl=mono",
-                        "-t",str(pau),"-ar",str(model.sr),sil],
-                        capture_output=True)
-                    if os.path.exists(sil): seg_files.append(sil)
-
-            except Exception as e:
-                log(f"  [{idx:02d}/{N}] ❌ {type(e).__name__}: {str(e)[:100]}")
+            # Pausa dramática ENTRE grupos (não dentro)
+            if pau > 0 and idx < len(GRUPOS):
+                silence(pau, SR, sil_path)
+                seg_files.append(sil_path)
 
         if seg_files:
-            concat_txt = f"{WORKDIR}/concat_cb.txt"
-            with open(concat_txt,'w') as f:
+            # Concatenar todos os grupos
+            concat_f = f"{WORKDIR}/concat.txt"
+            with open(concat_f,'w') as f:
                 for sp in seg_files: f.write(f"file '{sp}'\n")
-            raw_wav = f"{WORKDIR}/audio_cb_raw.wav"
-            mp3_out = f"{WORKDIR}/audio_chatterbox.mp3"
-            subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",concat_txt,
-                "-ar","44100","-ac","1","-af","volume=1.1",raw_wav],capture_output=True)
-            subprocess.run(["ffmpeg","-y","-i",raw_wav,"-codec:a","libmp3lame",
-                "-b:a","256k",mp3_out],capture_output=True)
-            AUDIO = mp3_out
-            log(f"  ✅ Chatterbox: {measure_dur(AUDIO):.2f}s @ 44100Hz/256k")
+            raw = f"{WORKDIR}/audio_raw.wav"
+            mp3 = f"{WORKDIR}/audio_cb.mp3"
+            subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",concat_f,
+                "-ar","44100","-ac","1","-af","volume=1.1", raw], capture_output=True)
+            subprocess.run(["ffmpeg","-y","-i",raw,"-codec:a","libmp3lame",
+                "-b:a","256k", mp3], capture_output=True)
+            AUDIO = mp3
+            log(f"  ✅ Chatterbox: {dur(AUDIO):.2f}s @ 44100Hz/256kbps")
         else:
-            raise RuntimeError("Nenhum segmento gerado")
+            raise RuntimeError("Nenhum grupo gerado")
 
     except Exception as e:
         log(f"  ⚠️ Chatterbox falhou: {type(e).__name__}: {str(e)[:200]}")
@@ -279,47 +212,31 @@ if AUDIO is None:
 # P3: AntonioNeural fallback
 if AUDIO is None:
     log("  [P3] AntonioNeural fallback...")
-    import edge_tts
     async def _gen():
-        c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-AntonioNeural", rate="-15%")
-        await c.save(f"{WORKDIR}/audio_antonio.mp3")
+        import edge_tts
+        c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-AntonioNeural", rate="-12%")
+        await c.save(f"{WORKDIR}/audio_ant.mp3")
     asyncio.run(_gen())
-    AUDIO = f"{WORKDIR}/audio_antonio.mp3"
-    log(f"  ✅ AntonioNeural: {measure_dur(AUDIO):.2f}s")
+    AUDIO = f"{WORKDIR}/audio_ant.mp3"
+    log(f"  ✅ AntonioNeural: {dur(AUDIO):.2f}s")
 
-DUR_AUDIO = measure_dur(AUDIO)
-log(f"  ✅ Áudio bruto: {DUR_AUDIO:.2f}s | {VOICE_USED}")
+DUR_AUDIO = dur(AUDIO)
+log(f"\n  ✅ Narração final: {DUR_AUDIO:.2f}s | {VOICE_USED}")
 
-# SLOWDOWN GLOBAL 12%: mais deliberado, mais impactante, sem pitch change
-# Sem slowdown global
-# Safety: cap em 62s
+# Safety cap 62s (sem atempo normal — só em caso extremo)
 if DUR_AUDIO > 62.0:
-    at = DUR_AUDIO/60.0
-    adj2 = f"{WORKDIR}/audio_cap.mp3"
-    subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}","-q:a","2",adj2],
-        capture_output=True, timeout=60)
-    if os.path.exists(adj2): AUDIO=adj2; DUR_AUDIO=measure_dur(AUDIO)
-log(f"  ✅ Duração final: {DUR_AUDIO:.2f}s")
+    at = DUR_AUDIO / 60.0
+    cap = f"{WORKDIR}/audio_cap.mp3"
+    subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}",
+        "-q:a","2", cap], capture_output=True, timeout=60)
+    if os.path.exists(cap): AUDIO=cap; DUR_AUDIO=dur(AUDIO)
+    log(f"  ⬇️ Cap aplicado: {DUR_AUDIO:.1f}s")
 
-# Atempo leve apenas se fora de 37-58s
-if DUR_AUDIO < 37.0:
-    at = DUR_AUDIO/37.0
-    adj = f"{WORKDIR}/audio_adj.mp3"
-    subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}","-q:a","2",adj],
-        capture_output=True,timeout=60)
-    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬆️ {DUR_AUDIO:.1f}s")
-elif DUR_AUDIO > 58.0:
-    at = DUR_AUDIO/58.0
-    adj = f"{WORKDIR}/audio_adj.mp3"
-    subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}","-q:a","2",adj],
-        capture_output=True,timeout=60)
-    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬇️ {DUR_AUDIO:.1f}s")
+RATE_REAL = len(SCRIPT_TTS.replace('\n',' ')) / DUR_AUDIO
+linhas_all = [l for l in SCRIPT_RAW.split('\n') if l.strip()]
+DURS = [max(1.2, round(len(l)/RATE_REAL, 3)) for l in linhas_all]
+diff = DUR_AUDIO - sum(DURS); DURS[0] = round(DURS[0]+diff, 3)
 
-RATE_REAL = len(SCRIPT_TTS)/DUR_AUDIO
-DURS=[max(1.2,round(len(f)/RATE_REAL,3)) for f in frases]
-diff=DUR_AUDIO-sum(DURS); DURS[0]=round(DURS[0]+diff,3)
-
-# ── 5-7. IMAGENS + RENDER + UPLOAD (mesmo padrão validado) ───────────
 
 # ── 5. PROMPTS OTIMIZADOS PARA AUDIÊNCIA 72% MULHERES 25-35 BR ─────
 log(f"\n🖼️  ETAPA 2 — Imagens (prompts audiência mulheres BR 25-35)")
