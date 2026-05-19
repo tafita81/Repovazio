@@ -291,7 +291,7 @@ DUR_AUDIO = measure_dur(AUDIO)
 log(f"  ✅ Áudio bruto: {DUR_AUDIO:.2f}s | {VOICE_USED}")
 
 # SLOWDOWN GLOBAL 12%: mais deliberado, mais impactante, sem pitch change
-GLOBAL_SLOW = 0.88
+GLOBAL_SLOW = 0.93   # 7% mais lento (ajustado pelo usuário)
 adj_slow = f"{WORKDIR}/audio_slow.mp3"
 subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={GLOBAL_SLOW}",
     "-codec:a","libmp3lame","-b:a","256k",adj_slow], capture_output=True, timeout=60)
