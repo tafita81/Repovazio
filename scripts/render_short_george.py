@@ -56,30 +56,38 @@ CLEAN = preprocess(RAW)
 # ── 2. FRASES + EMOÇÃO ─────────────────────────────────────────────────
 paragrafos = [p.strip() for p in CLEAN.split('\n') if p.strip() and len(p.strip()) > 5]
 
+# VERSÃO B: ENHANCED DRAMATIC (exag +0.13, cfg -0.13 vs clone George)
+VOICE_VERSION = os.environ.get("VOICE_VERSION", "A")  # A=clone, B=enhanced
 def get_emotion(frase):
     """Retorna (exaggeration, cfg_weight, pause_s) por tipo emocional.
-    exaggeration: 0.3 (calm) → 0.9 (dramatic)
-    cfg_weight: 0.3 (slow/deliberate) → 0.7 (fast/energetic)
+    Versão A (clone George): moderado
+    Versão B (enhanced):    mais dramático, mais potente
     """
     t = frase.lower()
+    boost = 0.13 if VOICE_VERSION == "B" else 0.0
+    cfg_cut = 0.13 if VOICE_VERSION == "B" else 0.0
+    
+    def adj(exag, cfg, pau):
+        return (min(0.95, exag+boost), max(0.15, cfg-cfg_cut), pau*(1.2 if VOICE_VERSION=="B" else 1.0))
+    
     if any(k in t for k in ["salva","canal","assistir","mais tarde","depois","inscreva","vídeo completo"]):
-        return 0.65, 0.55, 0.3   # CTA: assertivo, claro
-    if "quatro anos" in t and "apagando" in t: return 0.80, 0.25, 0.9   # impacto máximo
-    elif "quatro anos" in t: return 0.78, 0.28, 0.7
-    elif "apagando" in t: return 0.75, 0.30, 0.5
-    elif ("chora" in t and len(t) < 20): return 0.85, 0.20, 0.8   # drama máximo
-    elif any(k in t for k in ["mais perigoso","não grita","não humilha"]): return 0.72, 0.35, 0.2
-    elif any(k in t for k in ["afastar","errada","culpada"]): return 0.70, 0.38, 0.3
-    elif "isso tem nome" in t or "isso se chama" in t: return 0.70, 0.32, 0.4
-    elif any(k in t for k in ["harvard","pesquisador","estudo","dr ","dra "]): return 0.60, 0.50, 0.2
-    elif any(k in t for k in ["sinal 1","sinal 2","sinal 3"]): return 0.65, 0.40, 0.3
-    elif any(k in t for k in ["nunca responsável","crítica","aprende","falar nada"]): return 0.65, 0.40, 0.2
-    elif any(k in t for k in ["desculpar","existir","sentir","precisar"]): return 0.70, 0.35, 0.4
-    elif any(k in t for k in ["não está exagerando","sensível demais","dramática"]): return 0.75, 0.35, 0.2
-    elif any(k in t for k in ["normalmente","anormal","reagindo"]): return 0.68, 0.40, 0.2
-    elif any(k in t for k in ["não era preguiça","não era frescura","não é apego"]): return 0.68, 0.38, 0.2
-    elif any(k in t for k in ["medo de ser","medo de falhar","impostor"]): return 0.70, 0.35, 0.3
-    return 0.63, 0.45, 0.15
+        return adj(0.65, 0.55, 0.3)
+    if "quatro anos" in t and "apagando" in t: return adj(0.80, 0.25, 0.9)
+    elif "quatro anos" in t: return adj(0.78, 0.28, 0.7)
+    elif "apagando" in t: return adj(0.75, 0.30, 0.5)
+    elif ("chora" in t and len(t) < 20): return adj(0.85, 0.20, 0.8)
+    elif any(k in t for k in ["mais perigoso","não grita","não humilha"]): return adj(0.72, 0.35, 0.2)
+    elif any(k in t for k in ["afastar","errada","culpada"]): return adj(0.70, 0.38, 0.3)
+    elif "isso tem nome" in t or "isso se chama" in t: return adj(0.70, 0.32, 0.4)
+    elif any(k in t for k in ["harvard","pesquisador","estudo","dr ","dra "]): return adj(0.60, 0.50, 0.2)
+    elif any(k in t for k in ["sinal 1","sinal 2","sinal 3"]): return adj(0.65, 0.40, 0.3)
+    elif any(k in t for k in ["nunca responsável","crítica","aprende","falar nada"]): return adj(0.65, 0.40, 0.2)
+    elif any(k in t for k in ["desculpar","existir","sentir","precisar"]): return adj(0.70, 0.35, 0.4)
+    elif any(k in t for k in ["não está exagerando","sensível demais","dramática"]): return adj(0.75, 0.35, 0.2)
+    elif any(k in t for k in ["normalmente","anormal","reagindo"]): return adj(0.68, 0.40, 0.2)
+    elif any(k in t for k in ["não era preguiça","não era frescura","não é apego"]): return adj(0.68, 0.38, 0.2)
+    elif any(k in t for k in ["medo de ser","medo de falhar","impostor"]): return adj(0.70, 0.35, 0.3)
+    return adj(0.63, 0.45, 0.15)
 
 frases = []
 emocoes = []
@@ -540,7 +548,7 @@ log(f"  ✅ {DUR_FINAL:.2f}s | {SZ:.2f}MB")
 # ── 7. UPLOAD ────────────────────────────────────────────────────────
 log(f"\n☁️  ETAPA 4 — Upload")
 ts = int(time.time())
-fname = f"v{VIDEO_ID}_kokoro_{ts}.mp4"
+fname = f"v{VIDEO_ID}_cb_v{VOICE_VERSION}_{ts}.mp4"
 with open(OUT,'rb') as f: data=f.read()
 video_url = None
 for att in range(5):
