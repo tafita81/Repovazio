@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-render_final_v1.py — SHORT 45-52s com AntonioNeural masculino dramático
-✅ AntonioNeural PT-BR rate dinâmico por frase (-5% a -25%)
-✅ ElevenLabs George como upgrade automático quando quota disponível
-✅ Duração natural aceita (37-58s sem atempo forçado)
-✅ Imagens semânticas Pollinations + banco por frase
+render_chatterbox.py — Chatterbox Multilingual TTS com voz George clonada
+✅ Chatterbox > ElevenLabs em 63.75% dos testes cegos (Resemble AI)
+✅ MIT license — grátis para sempre, sem limites de uso
+✅ Zero-shot clone: 14s referência George → voz idêntica em português
+✅ Controle emocional via exaggeration (0.3 calm → 0.9 dramático)
+✅ cfg_weight por frase para variar ritmo e intensidade
 """
 import os, sys, json, subprocess, requests, time, re, asyncio
 
@@ -15,6 +16,8 @@ XI_KEY   = os.environ.get("ELEVENLABS_API_KEY","")
 GEORGE   = "JBFqnCBsd6RMkjVDRZzb"
 WORKDIR  = f"/tmp/short_{VIDEO_ID}"
 os.makedirs(WORKDIR, exist_ok=True)
+GEORGE_REF = f"{WORKDIR}/george_ref.wav"
+GEORGE_SRC = "https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/mp4s/v683_george_1779065193.mp4"
 
 def log(m): print(m, flush=True)
 def measure_dur(p):
@@ -31,8 +34,8 @@ def sb_patch(id_,data):
                  "Content-Type":"application/json","Prefer":"return=minimal"},
         json=data,timeout=60)
 
-# ── 1. SCRIPT ───────────────────────────────────────────────────────
-log(f"\nψ SHORT TEASER v1 — #{VIDEO_ID}")
+# ── 1. SCRIPT ──────────────────────────────────────────────────────────
+log(f"\nψ CHATTERBOX GEORGE CLONE — #{VIDEO_ID}")
 row = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=id,title,script",
     headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=60).json()
 if not row or not row[0].get("script"):
@@ -41,6 +44,7 @@ if not row or not row[0].get("script"):
 TITULO = row[0]["title"]
 RAW    = row[0]["script"].strip()
 log(f"  Título: {TITULO[:55]}")
+log(f"  Script: {len(RAW)} chars")
 
 def preprocess(txt):
     txt = re.sub(r'\bDr\.', 'Dr', txt)
@@ -49,29 +53,33 @@ def preprocess(txt):
 
 CLEAN = preprocess(RAW)
 
-# ── 2. FRASES + EMOÇÃO ───────────────────────────────────────────────
+# ── 2. FRASES + EMOÇÃO ─────────────────────────────────────────────────
 paragrafos = [p.strip() for p in CLEAN.split('\n') if p.strip() and len(p.strip()) > 5]
 
 def get_emotion(frase):
+    """Retorna (exaggeration, cfg_weight, pause_s) por tipo emocional.
+    exaggeration: 0.3 (calm) → 0.9 (dramatic)
+    cfg_weight: 0.3 (slow/deliberate) → 0.7 (fast/energetic)
+    """
     t = frase.lower()
     if any(k in t for k in ["salva","canal","assistir","mais tarde","depois","inscreva","vídeo completo"]):
-        return 0.80, 0.5
-    if "quatro anos" in t and "apagando" in t: return 0.62, 1.0
-    elif "quatro anos" in t: return 0.65, 0.7
-    elif "apagando" in t: return 0.65, 0.5
-    elif ("chora" in t and len(t) < 20): return 0.60, 0.9
-    elif any(k in t for k in ["mais perigoso","não grita","não humilha"]): return 0.72, 0.3
-    elif any(k in t for k in ["afastar","errada","culpada","negou","nega"]): return 0.75, 0.4
-    elif "isso tem nome" in t or "isso se chama" in t: return 0.70, 0.5
-    elif any(k in t for k in ["harvard","pesquisador","estudo","dr ","dra "]): return 0.82, 0.3
-    elif any(k in t for k in ["sinal 1","sinal 2","sinal 3"]): return 0.78, 0.4
-    elif any(k in t for k in ["nunca responsável","crítica","aprende","falar nada"]): return 0.78, 0.3
-    elif any(k in t for k in ["desculpar","existir","sentir","precisar"]): return 0.74, 0.5
-    elif any(k in t for k in ["não está exagerando","sensível demais","dramática"]): return 0.75, 0.3
-    elif any(k in t for k in ["normalmente","anormal","reagindo"]): return 0.77, 0.3
-    elif any(k in t for k in ["não era preguiça","não era frescura","não é apego"]): return 0.73, 0.3
-    elif any(k in t for k in ["tem medo","medo de ser","medo de falhar"]): return 0.74, 0.4
-    return 0.82, 0.15
+        return 0.65, 0.55, 0.3   # CTA: assertivo, claro
+    if "quatro anos" in t and "apagando" in t: return 0.80, 0.25, 0.9   # impacto máximo
+    elif "quatro anos" in t: return 0.78, 0.28, 0.7
+    elif "apagando" in t: return 0.75, 0.30, 0.5
+    elif ("chora" in t and len(t) < 20): return 0.85, 0.20, 0.8   # drama máximo
+    elif any(k in t for k in ["mais perigoso","não grita","não humilha"]): return 0.72, 0.35, 0.2
+    elif any(k in t for k in ["afastar","errada","culpada"]): return 0.70, 0.38, 0.3
+    elif "isso tem nome" in t or "isso se chama" in t: return 0.70, 0.32, 0.4
+    elif any(k in t for k in ["harvard","pesquisador","estudo","dr ","dra "]): return 0.60, 0.50, 0.2
+    elif any(k in t for k in ["sinal 1","sinal 2","sinal 3"]): return 0.65, 0.40, 0.3
+    elif any(k in t for k in ["nunca responsável","crítica","aprende","falar nada"]): return 0.65, 0.40, 0.2
+    elif any(k in t for k in ["desculpar","existir","sentir","precisar"]): return 0.70, 0.35, 0.4
+    elif any(k in t for k in ["não está exagerando","sensível demais","dramática"]): return 0.75, 0.35, 0.2
+    elif any(k in t for k in ["normalmente","anormal","reagindo"]): return 0.68, 0.40, 0.2
+    elif any(k in t for k in ["não era preguiça","não era frescura","não é apego"]): return 0.68, 0.38, 0.2
+    elif any(k in t for k in ["medo de ser","medo de falhar","impostor"]): return 0.70, 0.35, 0.3
+    return 0.63, 0.45, 0.15
 
 frases = []
 emocoes = []
@@ -97,132 +105,152 @@ if len(frases) > 16:
 
 N = len(frases)
 SCRIPT_TTS = " ".join(frases)
-log(f"  {N} frases | {len(SCRIPT_TTS)} chars")
-for i,(f,(spd,pau)) in enumerate(zip(frases,emocoes),1):
-    log(f"    [{i:02d}] spd={spd:.2f} +{pau:.1f}s | {f[:52]}")
+log(f"\n  {N} frases | {len(SCRIPT_TTS)} chars")
+for i,(f,(exag,cfg,pau)) in enumerate(zip(frases,emocoes),1):
+    log(f"    [{i:02d}] exag={exag:.2f} cfg={cfg:.2f} +{pau:.1f}s | {f[:52]}")
 
-# ── 3. VOZ ───────────────────────────────────────────────────────────
+# ── 3. REFERÊNCIA GEORGE ───────────────────────────────────────────────
+log(f"\n🎙️  ETAPA 0 — Referência George")
+if not os.path.exists(GEORGE_REF):
+    log("  Baixando render George original...")
+    r = requests.get(GEORGE_SRC, timeout=120, headers={"User-Agent":"Mozilla/5.0"})
+    if r.status_code == 200:
+        src = f"{WORKDIR}/george_src.mp4"
+        with open(src,'wb') as f: f.write(r.content)
+        subprocess.run([
+            "ffmpeg","-y","-i",src,
+            "-ss","2","-t","14",
+            "-vn","-ar","22050","-ac","1",
+            "-af","highpass=f=80,lowpass=f=8000,volume=1.3",
+            GEORGE_REF
+        ], capture_output=True)
+        log(f"  ✅ {measure_dur(GEORGE_REF):.1f}s referência extraída")
+    else:
+        log(f"  ❌ {r.status_code}"); sys.exit(1)
+else:
+    log("  ✅ Referência em cache")
+
+# ── 4. VOZ — ORDEM DE PRIORIDADE ─────────────────────────────────────
+# P1: ElevenLabs George (se quota disponível)
+# P2: Chatterbox Multilingual clonando George (grátis, qualidade premium)
+# P3: AntonioNeural (fallback final)
+
 log(f"\n🎤  ETAPA 1 — VOZ")
 AUDIO = None
-VOICE_USED = "AntonioNeural/dynamic"
+VOICE_USED = "Chatterbox/George_clone"
 
-# ── GEORGE ELEVENLABS — PRIORIDADE MÁXIMA ───────────────────────────
+# P1: ElevenLabs George
 if XI_KEY:
-    log(f"  🎤 George ElevenLabs (stability=0.20 style=0.70 speed=1.0)...")
-    for attempt in range(3):
-        try:
-            r = requests.post(
-                f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE}",
-                headers={"xi-api-key": XI_KEY, "Content-Type": "application/json"},
-                json={
-                    "text": SCRIPT_TTS,
-                    "model_id": "eleven_multilingual_v2",
-                    "voice_settings": {
-                        "stability":        0.20,   # variação emocional máxima
-                        "similarity_boost": 0.85,
-                        "style":            0.70,   # expressividade dramática alta
-                        "use_speaker_boost": True,
-                        "speed":            1.00    # ritmo natural
-                    }
-                },
-                timeout=180
-            )
-            if r.status_code == 200:
-                AUDIO = f"{WORKDIR}/audio_george.mp3"
-                with open(AUDIO, 'wb') as f: f.write(r.content)
-                sz = len(r.content)//1024
-                log(f"  ✅ George ElevenLabs: {sz}KB")
-                VOICE_USED = "ElevenLabs/George"
-                break
-            elif r.status_code == 401:
-                try:
-                    err = r.json()
-                    code = err.get('detail', {}).get('code', '')
-                    if code == 'quota_exceeded':
-                        log(f"  ❌ ElevenLabs QUOTA ESGOTADA — crie nova key em elevenlabs.io")
-                        log(f"  ⚠️  Usando AntonioNeural como fallback temporário")
-                    else:
-                        log(f"  ❌ ElevenLabs 401: {code}")
-                except:
-                    log(f"  ❌ ElevenLabs 401: {r.text[:100]}")
-                break
-            else:
-                log(f"  ⚠️ ElevenLabs {r.status_code} (tentativa {attempt+1}/3)")
-                time.sleep(5)
-        except Exception as e:
-            log(f"  ⚠️ {e} (tentativa {attempt+1}/3)")
-            time.sleep(5)
-else:
-    log("  ⚠️ ELEVENLABS_API_KEY não configurada")
+    log("  [P1] Testando ElevenLabs George...")
+    try:
+        r = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE}",
+            headers={"xi-api-key":XI_KEY,"Content-Type":"application/json"},
+            json={"text":SCRIPT_TTS,"model_id":"eleven_multilingual_v2",
+                  "voice_settings":{"stability":0.20,"similarity_boost":0.85,
+                                    "style":0.70,"use_speaker_boost":True,"speed":1.00}},
+            timeout=180)
+        if r.status_code == 200:
+            AUDIO = f"{WORKDIR}/audio_george.mp3"
+            with open(AUDIO,'wb') as f: f.write(r.content)
+            log(f"  ✅ ElevenLabs George: {len(r.content)//1024}KB")
+            VOICE_USED = "ElevenLabs/George"
+        else:
+            err = r.json().get('detail',{}).get('code','')
+            log(f"  ❌ ElevenLabs {r.status_code}: {err}")
+    except Exception as e: log(f"  ⚠️ {e}")
 
-# AntonioNeural por frase com rate dinâmico
+# P2: Chatterbox Multilingual — clone George PT-BR
 if AUDIO is None:
-    import edge_tts
-    log("  🎤 AntonioNeural rate dinâmico por frase...")
+    log("  [P2] Chatterbox Multilingual — clonando George em PT-BR...")
+    try:
+        import torchaudio
+        from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
-    def get_rate(speed):
-        pct = int((speed - 1.0) * 100)
-        return f"{max(-30,min(-5,pct))}%"
+        log("  Carregando modelo Chatterbox Multilingual (~CPU, pode levar 2-3min)...")
+        model = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
+        log("  ✅ Modelo Chatterbox carregado")
 
-    seg_paths = []
-
-    async def gen_all():
-        for idx,(frase,(speed,pause_s)) in enumerate(zip(frases,emocoes),1):
-            rate = get_rate(speed)
-            sp = f"{WORKDIR}/seg_{idx:03d}.mp3"
+        seg_files = []
+        for idx,(frase,(exag,cfg,pau)) in enumerate(zip(frases,emocoes),1):
+            seg_path = f"{WORKDIR}/seg_{idx:03d}.wav"
             try:
-                c2 = edge_tts.Communicate(frase, voice="pt-BR-AntonioNeural", rate=rate)
-                await c2.save(sp)
-                d = measure_dur(sp)
-                log(f"  [{idx:02d}/{N}] ✅ {d:.1f}s rate={rate} | {frase[:45]}")
-                seg_paths.append(sp)
-                if pause_s > 0:
-                    sil = f"{WORKDIR}/sil_{idx:03d}.mp3"
+                log(f"  [{idx:02d}/{N}] exag={exag:.2f} cfg={cfg:.2f} | {frase[:45]}")
+                wav = model.generate(
+                    frase,
+                    audio_prompt_path=GEORGE_REF,
+                    language_id="pt",
+                    exaggeration=exag,
+                    cfg_weight=cfg
+                )
+                torchaudio.save(seg_path, wav, model.sr)
+                dur = measure_dur(seg_path)
+                log(f"  [{idx:02d}/{N}] ✅ {dur:.1f}s gerado")
+                seg_files.append(seg_path)
+
+                # Silêncio dramático
+                if pau > 0:
+                    sil = f"{WORKDIR}/sil_{idx:03d}.wav"
                     subprocess.run(["ffmpeg","-y","-f","lavfi",
-                        "-i",f"anullsrc=r=44100:cl=mono",
-                        "-t",str(pause_s),"-b:a","128k",sil],capture_output=True)
-                    if os.path.exists(sil): seg_paths.append(sil)
+                        "-i",f"anullsrc=r={model.sr}:cl=mono",
+                        "-t",str(pau),"-ar",str(model.sr),sil],
+                        capture_output=True)
+                    if os.path.exists(sil): seg_files.append(sil)
+
             except Exception as e:
-                log(f"  [{idx:02d}/{N}] ❌ {e}")
+                log(f"  [{idx:02d}/{N}] ❌ {type(e).__name__}: {str(e)[:100]}")
 
-    asyncio.run(gen_all())
+        if seg_files:
+            concat_txt = f"{WORKDIR}/concat_cb.txt"
+            with open(concat_txt,'w') as f:
+                for sp in seg_files: f.write(f"file '{sp}'\n")
+            raw_wav = f"{WORKDIR}/audio_cb_raw.wav"
+            mp3_out = f"{WORKDIR}/audio_chatterbox.mp3"
+            subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",concat_txt,
+                "-ar","44100","-ac","1","-af","volume=1.1",raw_wav],capture_output=True)
+            subprocess.run(["ffmpeg","-y","-i",raw_wav,"-codec:a","libmp3lame",
+                "-b:a","256k",mp3_out],capture_output=True)
+            AUDIO = mp3_out
+            log(f"  ✅ Chatterbox: {measure_dur(AUDIO):.2f}s @ 44100Hz/256k")
+        else:
+            raise RuntimeError("Nenhum segmento gerado")
 
-    if seg_paths:
-        ct = f"{WORKDIR}/cat_audio.txt"
-        with open(ct,'w') as f:
-            for sp in seg_paths: f.write(f"file '{sp}'\n")
-        AUDIO = f"{WORKDIR}/audio_antonio.mp3"
-        subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",ct,
-            "-codec:a","libmp3lame","-b:a","192k",AUDIO],capture_output=True)
-    else:
-        async def _full():
-            c3=edge_tts.Communicate(SCRIPT_TTS,voice="pt-BR-AntonioNeural",rate="-15%")
-            await c3.save(f"{WORKDIR}/audio_full.mp3")
-        asyncio.run(_full())
-        AUDIO=f"{WORKDIR}/audio_full.mp3"
+    except Exception as e:
+        log(f"  ⚠️ Chatterbox falhou: {type(e).__name__}: {str(e)[:200]}")
+        VOICE_USED = "AntonioNeural/fallback"
+
+# P3: AntonioNeural fallback
+if AUDIO is None:
+    log("  [P3] AntonioNeural fallback...")
+    import edge_tts
+    async def _gen():
+        c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-AntonioNeural", rate="-15%")
+        await c.save(f"{WORKDIR}/audio_antonio.mp3")
+    asyncio.run(_gen())
+    AUDIO = f"{WORKDIR}/audio_antonio.mp3"
+    log(f"  ✅ AntonioNeural: {measure_dur(AUDIO):.2f}s")
 
 DUR_AUDIO = measure_dur(AUDIO)
-log(f"  ✅ {DUR_AUDIO:.2f}s | {VOICE_USED}")
+log(f"  ✅ Áudio final: {DUR_AUDIO:.2f}s | {VOICE_USED}")
 
 # Atempo leve apenas se fora de 37-58s
 if DUR_AUDIO < 37.0:
     at = DUR_AUDIO/37.0
-    adj=f"{WORKDIR}/audio_adj.mp3"
+    adj = f"{WORKDIR}/audio_adj.mp3"
     subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}","-q:a","2",adj],
         capture_output=True,timeout=60)
-    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬆️ expandido: {DUR_AUDIO:.1f}s")
+    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬆️ {DUR_AUDIO:.1f}s")
 elif DUR_AUDIO > 58.0:
     at = DUR_AUDIO/58.0
-    adj=f"{WORKDIR}/audio_adj.mp3"
+    adj = f"{WORKDIR}/audio_adj.mp3"
     subprocess.run(["ffmpeg","-y","-i",AUDIO,"-filter:a",f"atempo={at:.4f}","-q:a","2",adj],
         capture_output=True,timeout=60)
-    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬇️ comprimido: {DUR_AUDIO:.1f}s")
-else:
-    log(f"  ✅ Duração OK ({DUR_AUDIO:.1f}s) — sem compressão")
+    if os.path.exists(adj): AUDIO=adj; DUR_AUDIO=measure_dur(AUDIO); log(f"  ⬇️ {DUR_AUDIO:.1f}s")
 
 RATE_REAL = len(SCRIPT_TTS)/DUR_AUDIO
 DURS=[max(1.2,round(len(f)/RATE_REAL,3)) for f in frases]
 diff=DUR_AUDIO-sum(DURS); DURS[0]=round(DURS[0]+diff,3)
+
+# ── 5-7. IMAGENS + RENDER + UPLOAD (mesmo padrão validado) ───────────
 
 # ── 5. PROMPTS OTIMIZADOS PARA AUDIÊNCIA 72% MULHERES 25-35 BR ─────
 log(f"\n🖼️  ETAPA 2 — Imagens (prompts audiência mulheres BR 25-35)")
