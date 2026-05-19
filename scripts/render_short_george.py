@@ -106,24 +106,54 @@ log(f"\n🎤  ETAPA 1 — VOZ")
 AUDIO = None
 VOICE_USED = "AntonioNeural/dynamic"
 
-# Tentar ElevenLabs George
+# ── GEORGE ELEVENLABS — PRIORIDADE MÁXIMA ───────────────────────────
 if XI_KEY:
-    try:
-        r = requests.post(f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE}",
-            headers={"xi-api-key":XI_KEY,"Content-Type":"application/json"},
-            json={"text":SCRIPT_TTS,"model_id":"eleven_multilingual_v2",
-                  "voice_settings":{"stability":0.20,"similarity_boost":0.85,
-                                    "style":0.70,"use_speaker_boost":True,"speed":1.00}},
-            timeout=180)
-        if r.status_code == 200:
-            AUDIO = f"{WORKDIR}/audio_george.mp3"
-            with open(AUDIO,'wb') as f: f.write(r.content)
-            log(f"  ✅ George ElevenLabs: {len(r.content)//1024}KB")
-            VOICE_USED = "ElevenLabs/George"
-        else:
-            log(f"  ⚠️ ElevenLabs {r.status_code}")
-    except Exception as e:
-        log(f"  ⚠️ {e}")
+    log(f"  🎤 George ElevenLabs (stability=0.20 style=0.70 speed=1.0)...")
+    for attempt in range(3):
+        try:
+            r = requests.post(
+                f"https://api.elevenlabs.io/v1/text-to-speech/{GEORGE}",
+                headers={"xi-api-key": XI_KEY, "Content-Type": "application/json"},
+                json={
+                    "text": SCRIPT_TTS,
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": {
+                        "stability":        0.20,   # variação emocional máxima
+                        "similarity_boost": 0.85,
+                        "style":            0.70,   # expressividade dramática alta
+                        "use_speaker_boost": True,
+                        "speed":            1.00    # ritmo natural
+                    }
+                },
+                timeout=180
+            )
+            if r.status_code == 200:
+                AUDIO = f"{WORKDIR}/audio_george.mp3"
+                with open(AUDIO, 'wb') as f: f.write(r.content)
+                sz = len(r.content)//1024
+                log(f"  ✅ George ElevenLabs: {sz}KB")
+                VOICE_USED = "ElevenLabs/George"
+                break
+            elif r.status_code == 401:
+                try:
+                    err = r.json()
+                    code = err.get('detail', {}).get('code', '')
+                    if code == 'quota_exceeded':
+                        log(f"  ❌ ElevenLabs QUOTA ESGOTADA — crie nova key em elevenlabs.io")
+                        log(f"  ⚠️  Usando AntonioNeural como fallback temporário")
+                    else:
+                        log(f"  ❌ ElevenLabs 401: {code}")
+                except:
+                    log(f"  ❌ ElevenLabs 401: {r.text[:100]}")
+                break
+            else:
+                log(f"  ⚠️ ElevenLabs {r.status_code} (tentativa {attempt+1}/3)")
+                time.sleep(5)
+        except Exception as e:
+            log(f"  ⚠️ {e} (tentativa {attempt+1}/3)")
+            time.sleep(5)
+else:
+    log("  ⚠️ ELEVENLABS_API_KEY não configurada")
 
 # AntonioNeural por frase com rate dinâmico
 if AUDIO is None:
