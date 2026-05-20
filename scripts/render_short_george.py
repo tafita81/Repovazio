@@ -244,8 +244,20 @@ if AUDIO is None:
             gpath = f"{WORKDIR}/grp_{gi:02d}.wav"
             wav = gen_wav(gt, ge, gc)
             torchaudio.save(gpath, wav, SR)
-            log(f"    [{gi}] ✅ {dur(gpath):.1f}s")
-            seg_files.append(gpath)
+            d_g = dur(gpath)
+
+            # FADE: 20ms in + 30ms out — elimina click na transição fala→silêncio
+            gpath_fade = f"{WORKDIR}/grp_{gi:02d}_fade.wav"
+            fade_out_start = max(0.0, d_g - 0.03)
+            r_fade = subprocess.run([
+                "ffmpeg","-y","-i",gpath,
+                "-af",f"afade=t=in:st=0:d=0.02,afade=t=out:st={fade_out_start:.4f}:d=0.03",
+                gpath_fade
+            ], capture_output=True, text=True, timeout=30)
+
+            final_seg = gpath_fade if os.path.exists(gpath_fade) and os.path.getsize(gpath_fade) > 100 else gpath
+            log(f"    [{gi}] ✅ {d_g:.1f}s (fade in/out aplicado)")
+            seg_files.append(final_seg)
             if gpos > 0:
                 sp2 = mksil(gpos, f"{WORKDIR}/spos_{gi:02d}.wav")
                 if sp2: seg_files.append(sp2)
