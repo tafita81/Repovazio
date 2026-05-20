@@ -29,6 +29,7 @@ def dur(p):
     r = subprocess.run(["ffprobe","-v","quiet","-print_format","json","-show_format",p],
         capture_output=True, text=True)
     return float(json.loads(r.stdout)["format"]["duration"])
+measure_dur = dur  # alias para compatibilidade
 def silence(secs, sr, path):
     """Gera silêncio com torchaudio (evita problemas com ffmpeg lavfi)"""
     import torch
