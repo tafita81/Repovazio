@@ -59,13 +59,28 @@ def sb_patch(id_, data):
 log(f"\nψ NARRAÇÃO HUMANA v2 — #{VIDEO_ID}")
 
 # ── 1. SCRIPT ──────────────────────────────────────────────────────────
-row = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=id,title,script",
+row = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=id,title,script,youtube_title,youtube_description,youtube_tags,related_video_id,series_slug,ep_number",
     headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=60).json()
 if not row or not row[0].get("script"):
     log("❌ Script não encontrado"); sys.exit(1)
 
 TITULO = row[0]["title"]
 SCRIPT_RAW = row[0]["script"].strip()
+YT_TITLE   = row[0].get("youtube_title") or TITULO
+YT_DESC    = row[0].get("youtube_description") or ""
+YT_TAGS    = row[0].get("youtube_tags") or ""
+YT_LONG_ID = row[0].get("related_video_id") or ""
+SERIE_SLUG = row[0].get("series_slug") or ""
+EP_NUMBER  = row[0].get("ep_number") or 1
+
+# Se tiver Long ID, injetar link específico na descrição (YouTube linking algorithm)
+if YT_LONG_ID and "youtube.com/watch" not in YT_DESC:
+    LONG_LINK = f"https://youtube.com/watch?v={YT_LONG_ID}"
+    YT_DESC = YT_DESC.replace("https://youtube.com/@psidanielacoelho",
+                               LONG_LINK + "\n\n👉 Canal completo: https://youtube.com/@psidanielacoelho")
+
+log(f"  Título YT: {YT_TITLE[:55]}")
+log(f"  Série: {SERIE_SLUG} E{EP_NUMBER:02d} | Long ID: {YT_LONG_ID or 'pendente'}")
 log(f"  Título: {TITULO[:55]}")
 log(f"  Script: {len(SCRIPT_RAW)} chars")
 
@@ -646,12 +661,23 @@ for att in range(5):
 if video_url:
     sb_patch(VIDEO_ID, {
         "video_url": video_url, "status": "pending_credentials",
+        "youtube_title": YT_TITLE,
+        "youtube_description": YT_DESC,
+        "youtube_tags": YT_TAGS or f"#{SERIE_SLUG} #psicologia #saudemental #relacionamentos",
         "metadata": json.dumps({
             "dur_s": round(DUR_FINAL,1), "file_mb": round(SZ,2),
             "voice": VOICE_USED,
             "n_frases": N, "imgs_banco": banco_cnt, "imgs_poll": poll_cnt,
-            "version": "kokoro_v1_dynamic_emotion",
-            "audience": "72pct_women_25_35_BR"
+            "serie_slug": SERIE_SLUG, "ep_number": EP_NUMBER,
+            "yt_long_id": YT_LONG_ID,
+            "version": "v30_series_linked",
+            "audience": "72pct_women_25_35_BR",
+            "audio_params": {
+                "exag_impacto": 0.92, "cfg_impacto": 0.10,
+                "sil_pre_imp": 0.9, "sil_pos_imp": 1.4,
+                "noise_gate": "agate=threshold=0.018:ratio=1000:attack=3:release=150",
+                "fade_in_ms": 20, "fade_out_ms": 30
+            }
         })
     })
 
@@ -660,3 +686,10 @@ log(f"  ⏱️  {DUR_FINAL:.2f}s | 💾 {SZ:.2f}MB")
 log(f"  🎤 {VOICE_USED} | emoção dinâmica por frase")
 log(f"  🖼️  {banco_cnt} banco + {poll_cnt} Pollinations")
 log(f"  🎬 {video_url or '❌ upload falhou'}")
+log(f"  📺 Título YT: {YT_TITLE[:70]}")
+log(f"  🔗 Long ID: {YT_LONG_ID or 'configurar via YouTube Studio quando publicar'}")
+log(f"  📋 Série: {SERIE_SLUG.upper()} E{EP_NUMBER:02d}")
+if YT_LONG_ID:
+    log(f"  ✅ YouTube vai mostrar Long ao lado do Short automaticamente")
+else:
+    log(f"  ⚠️ Após publicar: YouTube Studio → Detalhes → Vídeo relacionado → colar ID do Long")
