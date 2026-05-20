@@ -169,47 +169,111 @@ if XI_KEY:
             log(f"  ❌ ElevenLabs {r.status_code}: {r.json().get('detail',{}).get('code','')}")
     except Exception as e: log(f"  ⚠️ {e}")
 
-# P2: Chatterbox Multilingual ONE-SHOT — script completo em UMA chamada
-# Máximo contexto → o modelo lê tudo junto → pausas e ênfases emergem naturalmente
+# P2: Chatterbox — GRUPOS SEMÂNTICOS com silêncio PRÉ+PÓS estratégico
+# Fórmula viral (Psych2Go 28M views): gancho → PAUSA LONGA → twist curto → pausa → revelação → CTA
 if AUDIO is None:
-    log("  [P2] Chatterbox ONE-SHOT — script completo PT-BR...")
+    log("  [P2] Chatterbox GRUPOS VIRAIS — silêncio PRÉ+PÓS...")
     try:
         import torchaudio
         from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
-        log("  Carregando modelo (~2min)...")
+        log("  Carregando modelo...")
         model = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
         SR = model.sr
-        log(f"  ✅ Modelo pronto | SR={SR}Hz")
+        log(f"  ✅ Modelo | SR={SR}Hz")
 
-        # exag=0.80 → expressivo e natural
-        # cfg=0.20 → ritmo deliberado, respeita pontuação como humano
-        log(f"  Texto completo ({len(SCRIPT_TTS)} chars)...")
-        wav = model.generate(
-            SCRIPT_TTS,
-            audio_prompt_path=GEORGE_REF,
-            language_id="pt",
-            exaggeration=0.82,   # um toque mais expressivo
-            cfg_weight=0.12      # mais lento e deliberado (era 0.20)
-        )
-        raw_wav = f"{WORKDIR}/cb_raw.wav"
+        def gen_wav(txt, exag, cfg):
+            return model.generate(txt, audio_prompt_path=GEORGE_REF,
+                language_id="pt", exaggeration=exag, cfg_weight=cfg)
+
+        def mksil(secs, path):
+            subprocess.run(["ffmpeg","-y","-f","lavfi",
+                "-i",f"anullsrc=r={SR}:cl=mono","-t",str(secs),"-ar",str(SR), path],
+                capture_output=True)
+            return path if os.path.exists(path) and os.path.getsize(path) > 100 else None
+
+        linhas = [l.strip() for l in SCRIPT_RAW.split("\n") if l.strip()]
+        n = len(linhas)
+
+        def tipo(l):
+            t = l.lower()
+            if any(k in t for k in ["salva","canal","assistir","mais tarde"]): return "CTA"
+            if any(k in t for k in ["isso tem nome","isso se chama","tem nome"]): return "REVELACAO"
+            if len(l) < 32: return "IMPACTO"
+            if "..." in l: return "PAUSA"
+            return "NORMAL"
+
+        # Grupos: (texto, exag, cfg, sil_pre_s, sil_pos_s)
+        grupos = []
+        i = 0
+        while i < n:
+            l = linhas[i]
+            t = tipo(l)
+            if t == "IMPACTO":
+                grupos.append((l, 0.92, 0.10, 0.9, 1.4))
+                i += 1
+            elif t == "REVELACAO":
+                grupos.append((l, 0.90, 0.11, 0.6, 1.2))
+                i += 1
+            elif t == "CTA":
+                grupos.append(("\n".join(linhas[i:]), 0.72, 0.28, 0.8, 0.0))
+                i = n
+            elif t == "PAUSA":
+                grupos.append((l, 0.85, 0.14, 0.3, 1.0))
+                i += 1
+            else:
+                if i+1 < n and tipo(linhas[i+1]) == "NORMAL":
+                    grupos.append(("\n".join([linhas[i], linhas[i+1]]), 0.80, 0.18, 0.0, 0.6))
+                    i += 2
+                else:
+                    grupos.append((l, 0.80, 0.16, 0.0, 0.7))
+                    i += 1
+
+        log(f"  {len(grupos)} grupos:")
+        for gi,(gt,ge,gc,gpre,gpos) in enumerate(grupos,1):
+            log(f"    [{gi}] pre={gpre:.1f}s pos={gpos:.1f}s exag={ge:.2f} cfg={gc:.2f} | {gt.replace(chr(10),' / ')[:50]}")
+
+        seg_files = []
+        for gi,(gt,ge,gc,gpre,gpos) in enumerate(grupos,1):
+            if gpre > 0:
+                sp = mksil(gpre, f"{WORKDIR}/spre_{gi:02d}.wav")
+                if sp: seg_files.append(sp)
+            gpath = f"{WORKDIR}/grp_{gi:02d}.wav"
+            wav = gen_wav(gt, ge, gc)
+            torchaudio.save(gpath, wav, SR)
+            log(f"    [{gi}] ✅ {dur(gpath):.1f}s")
+            seg_files.append(gpath)
+            if gpos > 0:
+                sp2 = mksil(gpos, f"{WORKDIR}/spos_{gi:02d}.wav")
+                if sp2: seg_files.append(sp2)
+
+        seg_files = [s for s in seg_files if s and os.path.exists(s) and os.path.getsize(s) > 100]
+        if not seg_files: raise RuntimeError("Nenhum segmento")
+
+        concat_f = f"{WORKDIR}/concat_cb.txt"
+        with open(concat_f,"w") as f:
+            for s in seg_files: f.write(f"file '{s}'\n")
+        raw = f"{WORKDIR}/cb_raw.wav"
         mp3_out = f"{WORKDIR}/audio_cb.mp3"
-        torchaudio.save(raw_wav, wav, SR)
-        log(f"  ✅ WAV bruto: {dur(raw_wav):.2f}s")
-
-        subprocess.run(["ffmpeg","-y","-i",raw_wav,
-            "-ar","44100","-ac","1","-af","volume=1.1",
-            "-codec:a","libmp3lame","-b:a","256k", mp3_out],
+        rc = subprocess.run(["ffmpeg","-y","-f","concat","-safe","0",
+            "-i",concat_f,"-ar","44100","-ac","1","-af","volume=1.1",raw],
+            capture_output=True, text=True, timeout=120)
+        if rc.returncode != 0:
+            log(f"  ⚠️ concat err: {rc.stderr[-100:]}")
+            seg_only = [s for s in seg_files if "pre_" not in s and "pos_" not in s]
+            with open(concat_f,"w") as f:
+                for s in seg_only: f.write(f"file '{s}'\n")
+            subprocess.run(["ffmpeg","-y","-f","concat","-safe","0",
+                "-i",concat_f,"-ar","44100","-ac","1",raw], capture_output=True, timeout=120)
+        subprocess.run(["ffmpeg","-y","-i",raw,"-codec:a","libmp3lame","-b:a","256k",mp3_out],
             capture_output=True, timeout=60)
-
-        if os.path.exists(mp3_out) and os.path.getsize(mp3_out) > 10000:
+        if os.path.exists(mp3_out) and os.path.getsize(mp3_out) > 5000:
             AUDIO = mp3_out
-            log(f"  ✅ Chatterbox ONE-SHOT: {dur(AUDIO):.2f}s @ 44100Hz/256kbps")
+            log(f"  ✅ Chatterbox GRUPOS: {dur(AUDIO):.2f}s")
         else:
-            raise RuntimeError("MP3 não gerado ou muito pequeno")
-
+            raise RuntimeError("MP3 vazio")
     except Exception as e:
-        log(f"  ⚠️ Chatterbox falhou: {type(e).__name__}: {str(e)[:300]}")
+        log(f"  ⚠️ Chatterbox: {type(e).__name__}: {str(e)[:200]}")
         VOICE_USED = "AntonioNeural/fallback"
 
 # P3: AntonioNeural fallback
