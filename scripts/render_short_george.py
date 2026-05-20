@@ -215,10 +215,18 @@ if AUDIO is None:
 
         def tipo(l):
             t = l.lower()
-            if any(k in t for k in ["salva","canal","assistir","mais tarde"]): return "CTA"
-            if any(k in t for k in ["isso tem nome","isso se chama","tem nome"]): return "REVELACAO"
-            if len(l) < 32: return "IMPACTO"
-            if "..." in l: return "PAUSA"
+            # CTA: sempre no final
+            if any(k in t for k in ["salva","canal","assistir","mais tarde","não perder","completo"]): return "CTA"
+            # REVELACAO: momento de nomeação
+            if any(k in t for k in ["isso tem nome","isso se chama","tem nome","isso é","chama-se"]): return "REVELACAO"
+            # CHORO: linha de máxima emoção (personagem vive a dor)
+            if any(k in t for k in ["chora","lágrimas","soluçava","desmoronou","não conseguia","não aguentava","quebrou","colapsou"]): return "CHORO"
+            # IMPACTO: linha curta + pontada emocional
+            if len(l) < 35: return "IMPACTO"
+            # PAUSA: suspense ou revelação parcial
+            if "..." in l or l.endswith("?") or l.endswith("—"): return "PAUSA"
+            # GANCHO: abertura de cena com personagem
+            if any(k in t for k in ["você conhece","conheça","imagine","pense em","conhece a","conhece o"]): return "GANCHO"
             return "NORMAL"
 
         # Grupos: (texto, exag, cfg, sil_pre_s, sil_pos_s)
@@ -228,23 +236,35 @@ if AUDIO is None:
             l = linhas[i]
             t = tipo(l)
             if t == "IMPACTO":
-                grupos.append((l, 0.92, 0.10, 0.9, 1.4))
+                # Drama máximo: pausa longa antes + depois → peso cinematográfico
+                grupos.append((l, 0.96, 0.09, 1.0, 1.6))
+                i += 1
+            elif t == "CHORO":
+                # Dor real: voz mais carregada, mais lenta, pausa após
+                grupos.append((l, 0.95, 0.08, 0.5, 1.8))
                 i += 1
             elif t == "REVELACAO":
-                grupos.append((l, 0.90, 0.11, 0.6, 1.2))
+                # Momento de nomeação: entonação ascendente, pausa dramática
+                grupos.append((l, 0.93, 0.10, 0.7, 1.4))
+                i += 1
+            elif t == "GANCHO":
+                # Abertura: voz próxima, íntima, convida o espectador
+                grupos.append((l, 0.88, 0.12, 0.0, 0.8))
                 i += 1
             elif t == "CTA":
-                grupos.append(("\n".join(linhas[i:]), 0.72, 0.28, 0.8, 0.0))
+                grupos.append(("\n".join(linhas[i:]), 0.74, 0.26, 0.9, 0.0))
                 i = n
             elif t == "PAUSA":
-                grupos.append((l, 0.85, 0.14, 0.3, 1.0))
+                # Suspense: pausa antes para antecipar + pausa depois
+                grupos.append((l, 0.87, 0.13, 0.4, 1.1))
                 i += 1
             else:
+                # NORMAL: agrupar 2 em 2 para contexto natural
                 if i+1 < n and tipo(linhas[i+1]) == "NORMAL":
-                    grupos.append(("\n".join([linhas[i], linhas[i+1]]), 0.80, 0.18, 0.0, 0.6))
+                    grupos.append(("\n".join([linhas[i], linhas[i+1]]), 0.82, 0.17, 0.0, 0.65))
                     i += 2
                 else:
-                    grupos.append((l, 0.80, 0.16, 0.0, 0.7))
+                    grupos.append((l, 0.81, 0.15, 0.0, 0.75))
                     i += 1
 
         log(f"  {len(grupos)} grupos:")
@@ -261,16 +281,25 @@ if AUDIO is None:
             torchaudio.save(gpath, wav, SR)
             d_g = dur(gpath)
 
-            # FADE: 20ms in + 30ms out — elimina click na transição fala→silêncio
+            # FADE: 30ms in + 60ms out — elimina click + noise ao fim
             gpath_fade = f"{WORKDIR}/grp_{gi:02d}_fade.wav"
-            fade_out_start = max(0.0, d_g - 0.03)
+            fade_out_start = max(0.0, d_g - 0.06)
             r_fade = subprocess.run([
                 "ffmpeg","-y","-i",gpath,
-                "-af",f"afade=t=in:st=0:d=0.02,afade=t=out:st={fade_out_start:.4f}:d=0.03",
+                "-af",f"afade=t=in:st=0:d=0.03,afade=t=out:st={fade_out_start:.4f}:d=0.06",
                 gpath_fade
             ], capture_output=True, text=True, timeout=30)
 
-            final_seg = gpath_fade if os.path.exists(gpath_fade) and os.path.getsize(gpath_fade) > 100 else gpath
+            # NOISE GATE POR SEGMENTO: garante silêncio digital nas bordas de cada fala
+            gpath_clean = f"{WORKDIR}/grp_{gi:02d}_clean.wav"
+            if os.path.exists(gpath_fade) and os.path.getsize(gpath_fade) > 100:
+                subprocess.run([
+                    "ffmpeg","-y","-i",gpath_fade,
+                    "-af","agate=threshold=0.028:ratio=8000:attack=1:release=60",
+                    gpath_clean
+                ], capture_output=True, timeout=30)
+            final_seg = gpath_clean if os.path.exists(gpath_clean) and os.path.getsize(gpath_clean) > 100 else (
+                        gpath_fade if os.path.exists(gpath_fade) and os.path.getsize(gpath_fade) > 100 else gpath)
             log(f"    [{gi}] ✅ {d_g:.1f}s (fade in/out aplicado)")
             seg_files.append(final_seg)
             if gpos > 0:
@@ -285,8 +314,9 @@ if AUDIO is None:
             for s in seg_files: f.write(f"file '{s}'\n")
         raw = f"{WORKDIR}/cb_raw.wav"
         mp3_out = f"{WORKDIR}/audio_cb.mp3"
+        # Sem volume extra: manter nível original para o noise gate funcionar
         rc = subprocess.run(["ffmpeg","-y","-f","concat","-safe","0",
-            "-i",concat_f,"-ar","44100","-ac","1","-af","volume=1.1",raw],
+            "-i",concat_f,"-ar","44100","-ac","1",raw],
             capture_output=True, text=True, timeout=120)
         if rc.returncode != 0:
             log(f"  ⚠️ concat err: {rc.stderr[-100:]}")
@@ -295,12 +325,18 @@ if AUDIO is None:
                 for s in seg_only: f.write(f"file '{s}'\n")
             subprocess.run(["ffmpeg","-y","-f","concat","-safe","0",
                 "-i",concat_f,"-ar","44100","-ac","1",raw], capture_output=True, timeout=120)
-        # NOISE GATE: elimina noise floor do Chatterbox (-38dB) nas pausas
-        # threshold=0.018 ≈ -35dB: abaixo disso → silêncio | fala em -22dB → preservada
-        # release=150ms: mantém gate aberto ao fim de cada sílaba (natural)
+        # NOISE GATE DUPLO:
+        # Pass 1 (agate): fecha o gate em -31dB | ratio=8000 = silêncio digital
+        # Pass 2 (highpass+anlmdn): remove ruído residual de alta frequência
+        # release=50ms: gate fecha rápido após o fim da fala (sem arrastar noise)
+        gate_wav = f"{WORKDIR}/cb_gated.wav"
         subprocess.run(["ffmpeg","-y","-i",raw,
-            "-af","highpass=f=80,agate=threshold=0.018:ratio=1000:attack=3:release=150",
-            "-codec:a","libmp3lame","-b:a","256k", mp3_out],
+            "-af","highpass=f=80,agate=threshold=0.028:ratio=8000:attack=2:release=50",
+            "-ar","44100","-ac","1", gate_wav],
+            capture_output=True, timeout=60)
+        src_for_mp3 = gate_wav if os.path.exists(gate_wav) and os.path.getsize(gate_wav) > 1000 else raw
+        subprocess.run(["ffmpeg","-y","-i",src_for_mp3,
+            "-codec:a","libmp3lame","-b:a","256k","-q:a","0", mp3_out],
             capture_output=True, timeout=60)
         if os.path.exists(mp3_out) and os.path.getsize(mp3_out) > 5000:
             AUDIO = mp3_out
