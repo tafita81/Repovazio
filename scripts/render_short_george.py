@@ -187,8 +187,11 @@ if AUDIO is None:
                 language_id="pt", exaggeration=exag, cfg_weight=cfg)
 
         def mksil(secs, path):
+            # pcm_s16le = silêncio 100% limpo, sem ruído de codec
             subprocess.run(["ffmpeg","-y","-f","lavfi",
-                "-i",f"anullsrc=r={SR}:cl=mono","-t",str(secs),"-ar",str(SR), path],
+                "-i",f"anullsrc=r={SR}:cl=mono",
+                "-t",str(secs),"-ar",str(SR),
+                "-acodec","pcm_s16le","-f","wav", path],
                 capture_output=True)
             return path if os.path.exists(path) and os.path.getsize(path) > 100 else None
 
