@@ -514,76 +514,109 @@ banco_cnt = poll_cnt = 0
 # Lista plana de todas as URLs do banco para fallback aleatório
 all_banco_urls = [u for urls in banco_map.values() for u in urls]
 
-# Psych2Go Image Strategy:
-# 1. Pollinations FLUX primeiro (imagem única por frase, seed única, cena específica)
-# 2. Banco específico por key (fallback rápido)
-# 3. Banco aleatório com GARANTIA DE NÃO REPETIR (evitar mesma imagem consecutiva)
+# ══════════════════════════════════════════════════════════════════
+# PSYCH2GO IMAGE SYSTEM V33
+# Pollinations PARALELO + rotação de banco sem repetição
+# ══════════════════════════════════════════════════════════════════
+import threading, time as _t
 
-used_banco_idxs = set()  # evitar repetição no banco
+# 8 ambientes Psych2Go distintos por posição
+SCENE_ENV = [
+    "cozy home interior warm morning light, establishing shot wide",
+    "extreme close-up emotional face tense jaw glossy eyes, harsh light",
+    "two characters dramatic tension, one looming over other, side light",
+    "library research setting, open book highlighted text, blue academic light",
+    "surreal dreamlike mental landscape, violet haze floating thoughts",
+    "before-after contrast, grey desaturated, time-passing metaphor",
+    "quiet contemplative dawn light, hand on heart, realization moment",
+    "golden hour healing scene, character looking forward, warm amber",
+    "direct eye contact with camera, warm invitation, save gesture",
+]
 
+# Rotação de personagens por posição (Psych2Go usa sequência narrativa)
+POSITION_KEY_ROTATION = [
+    "sara_problema", "marcos_problema", "sara_problema", "ana_ciencia",
+    "sara_virada",   "daniela_virada", "marcos_problema", "sara_virada",
+    "daniela_cta",   "daniela_cta",
+]
+
+banco_key_cursors = {}
+
+def get_banco_unique(key, offset=0):
+    pool = banco_map.get(key, [])
+    if not pool: return None
+    c = banco_key_cursors.get(key, 0)
+    url = pool[(c + offset) % len(pool)]
+    banco_key_cursors[key] = (c + 1) % len(pool)
+    return url
+
+# Pré-fetch Pollinations em threads paralelas
+def fetch_poll_thread(idx, prompt, seed, results):
+    try:
+        short_p = prompt[:380]
+        url = (f"https://image.pollinations.ai/prompt/"
+               f"{requests.utils.quote(short_p)}"
+               f"?width=576&height=1024&seed={seed}&nologo=true&model=flux-schnell")
+        r = requests.get(url, timeout=55)
+        if is_valid_img(r.content):
+            results[idx] = r.content
+    except Exception:
+        pass
+
+base_t = int(_t.time())
+poll_results = {}
+seeds = {i: (VIDEO_ID*1000 + i*197 + base_t%10000) % 2147483647 for i in range(1, N+1)}
+
+log(f"  🚀 Pré-fetch paralelo {N} imagens Pollinations FLUX...")
+threads = [threading.Thread(target=fetch_poll_thread,
+    args=(i, PROMPTS[i-1], seeds[i], poll_results)) for i in range(1, N+1)]
+for t in threads: t.daemon = True; t.start()
+for t in threads: t.join(timeout=60)
+log(f"  📊 FLUX obtidos: {len(poll_results)}/{N}")
+
+used_banco_set = set()
 for idx, (frase, prompt) in enumerate(zip(frases, PROMPTS), 1):
     fpath = f"{WORKDIR}/img_{idx:02d}.jpg"
     up    = f"{WORKDIR}/img_up_{idx:02d}.jpg"
     found = False
 
-    # ─── 1. POLLINATIONS FLUX — imagem única por frase ───────────────
-    # Seed única: posição × video_id × timestamp → sem repetição entre vídeos
-    import time as _t
-    seed = (VIDEO_ID * 1000 + idx * 197 + int(_t.time()) % 10000) % 2147483647
-    purl = (
-        f"https://image.pollinations.ai/prompt/"
-        f"{requests.utils.quote(prompt[:600])}"
-        f"?width=576&height=1024&seed={seed}&nologo=true&model=flux"
-    )
-    data = dl_img(purl, timeout=45)
-    if data and is_valid_img(data):
+    # 1. Pollinations pré-buscado
+    if idx in poll_results:
+        data = poll_results[idx]
         with open(fpath,'wb') as f: f.write(data)
         IMGS.append(upscale(fpath, up)); poll_cnt += 1; found = True
-        log(f"  [{idx:02d}/{N}] 🎨 FLUX {len(data)//1024}KB | pos={idx-1} {SCENE_ENV[min(idx-1,8)][:40]}")
+        sc = SCENE_ENV[min(idx-1, len(SCENE_ENV)-1)][:35]
+        log(f"  [{idx:02d}/{N}] 🎨 FLUX ✅ {len(data)//1024}KB | {sc}")
 
-    # ─── 2. Banco key específica (fallback) ──────────────────────────
+    # 2. Banco por posição com rotação
     if not found:
-        te = tipo_emocional(frase)
-        key_map = {
-            "CIENCIA": "ana_ciencia", "REVELACAO": "ana_ciencia",
-            "CHORO": "sara_problema", "DOR": "sara_problema",
-            "VILAO": "marcos_problema",
-            "GANCHO": "daniela_cta", "CTA": "daniela_cta",
-        }
-        key = key_map.get(te)
-        if key and banco_map.get(key):
-            candidates = [(bi, url) for bi, url in enumerate(banco_map[key]) if bi not in used_banco_idxs]
-            if not candidates:
-                candidates = list(enumerate(banco_map[key]))  # reset se esgotou
-            bi, burl = candidates[seed % len(candidates)]
+        pos = min(idx-1, len(POSITION_KEY_ROTATION)-1)
+        key = POSITION_KEY_ROTATION[pos]
+        burl = get_banco_unique(key, offset=seeds[idx] % 7)
+        if burl:
             data = dl_img(burl)
             if data and is_valid_img(data):
                 with open(fpath,'wb') as f: f.write(data)
                 IMGS.append(upscale(fpath, up)); banco_cnt += 1; found = True
-                used_banco_idxs.add(bi)
-                log(f"  [{idx:02d}/{N}] 🏦 {key}")
+                log(f"  [{idx:02d}/{N}] 🏦 {key}[pos{pos}]")
 
-    # ─── 3. Banco aleatório SEM REPETIR ──────────────────────────────
+    # 3. Banco aleatório sem repetição
     if not found and all_banco_urls:
-        # Escolher índice não usado ainda
-        available = [i for i in range(len(all_banco_urls)) if i not in used_banco_idxs]
-        if not available:
-            available = list(range(len(all_banco_urls)))
-            used_banco_idxs.clear()
-        bi = available[seed % len(available)]
+        avail = [i for i in range(len(all_banco_urls)) if i not in used_banco_set]
+        if not avail: avail = list(range(len(all_banco_urls))); used_banco_set.clear()
+        bi = avail[seeds[idx] % len(avail)]
         data = dl_img(all_banco_urls[bi])
         if data and is_valid_img(data):
             with open(fpath,'wb') as f: f.write(data)
             IMGS.append(upscale(fpath, up)); banco_cnt += 1; found = True
-            used_banco_idxs.add(bi)
+            used_banco_set.add(bi)
             log(f"  [{idx:02d}/{N}] 🏦 rnd#{bi}")
 
-    # ─── 4. Fallback seguro ───────────────────────────────────────────
     if not found:
         IMGS.append(IMGS[-1] if IMGS else None)
-        log(f"  [{idx:02d}/{N}] ⚠️ duplicando anterior")
+        log(f"  [{idx:02d}/{N}] ⚠️ duplicando")
 
-log(f"  ✅ {banco_cnt} banco | {poll_cnt} Pollinations FLUX | {banco_cnt+poll_cnt}/{N}")
+log(f"  ✅ {banco_cnt} banco | {poll_cnt} FLUX | total {banco_cnt+poll_cnt}/{N}")
 
 # ── 6. RENDER ────────────────────────────────────────────────────────
 log(f"\n🎬 ETAPA 3 — FFMPEG render")
