@@ -274,10 +274,21 @@ log(f"  Estimado: {len(SCRIPT_TTS)/13.3:.0f}s = {len(SCRIPT_TTS)/13.3/60:.2f}min
 log(f"\n🎙️  ETAPA 1 — Áudio 15min (AntonioNeural {RATE_ADJ})...")
 
 async def gen_audio():
-    import edge_tts
+    import edge_tts, os
     path = f"{WORKDIR}/audio_long.mp3"
-    c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-AntonioNeural", rate=RATE_ADJ)
-    await c.save(path)
+    # ThalitaMultilingualNeural: voz feminina emocional — ideal para narrativa psych
+    # FranciscaNeural: alternativa com entonação forte
+    voice = "pt-BR-ThalitaMultilingualNeural"
+    log(f"  Voz Long: {voice} | Rate: {RATE_ADJ}")
+    try:
+        c = edge_tts.Communicate(SCRIPT_TTS, voice=voice, rate=RATE_ADJ)
+        await c.save(path)
+        if not os.path.exists(path) or os.path.getsize(path) < 10000:
+            raise Exception("Audio vazio")
+    except Exception as e:
+        log(f"  ⚠️ Thalita falhou ({e}), fallback FranciscaNeural")
+        c = edge_tts.Communicate(SCRIPT_TTS, voice="pt-BR-FranciscaNeural", rate=RATE_ADJ)
+        await c.save(path)
     return path
 
 asyncio.run(gen_audio())
@@ -422,10 +433,32 @@ for att in range(5):
         log(f"  Tentativa {att+1}: {e}"); time.sleep(15)
 
 if video_url:
+    # Buscar metadados YouTube do Supabase
+    yt_row = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}"
+        "&select=youtube_title,series_slug,ep_number,related_video_id",
+        headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"},timeout=15).json()
+    yt_title = (yt_row[0].get("youtube_title") or "") if yt_row else ""
+    serie_slug = (yt_row[0].get("series_slug") or "") if yt_row else ""
+    ep_num = (yt_row[0].get("ep_number") or 1) if yt_row else 1
+    short_id = (yt_row[0].get("related_video_id") or "") if yt_row else ""
+
+    # Gerar YouTube description do Long com link para o Short correspondente
+    short_link = f"https://youtube.com/watch?v={short_id}" if short_id else "https://youtube.com/@psidanielacoelho"
+    yt_desc_long = (
+        f"🎬 Versão completa de 15 minutos\n\n"
+        f"▶ Shorts desta série: {short_link}\n"
+        f"👉 Canal: https://youtube.com/@psidanielacoelho\n\n"
+        f"⏱ Capítulos:\n"
+        + "\n".join([f"{c['time']} {c['title']}" for c in chapters])
+        + f"\n\n#{serie_slug} #psicologia #saudemental #relacionamentos"
+    )
+
     sb_patch(VIDEO_ID, {
         "video_url": video_url, "status": "pending_credentials",
+        "youtube_title": yt_title or f"{serie_slug.title()} S{ep_num:02d} — 15min",
+        "youtube_description": yt_desc_long,
         "metadata": json.dumps({
-            "version":"long_15min_v2_3s_quantum",
+            "version":"long_15min_v31_thalita",
             "dur_s": round(dur2,1), "target_s": TARGET_S,
             "img_interval_s": IMG_INTERVAL,
             "n_appear": N_APPEAR, "n_unique": N_UNIQUE,
@@ -434,6 +467,9 @@ if video_url:
             "file_mb": round(sz/1024/1024,1),
             "chapters": chapters,
             "mid_rolls_at": ["03:00","06:00","09:00","12:00"],
+            "voice": "ThalitaMultilingualNeural",
+            "serie_slug": serie_slug, "ep_number": ep_num,
+            "short_link": short_link,
         })
     })
 
@@ -446,4 +482,7 @@ log(f"  ✂️  Cena nova a cada {IMG_INTERVAL}s (padrão Psych2Go)")
 log(f"  💰 Mid-rolls: 03:00 | 06:00 | 09:00 | 12:00")
 log(f"  💾 {sz/1024/1024:.1f}MB")
 log(f"  🎬 {video_url or 'UPLOAD FALHOU'}")
+log(f"  🔗 Short relacionado: {short_id or 'configurar via YouTube Studio'}")
+log(f"  📺 Título YT: {yt_title[:70] if yt_title else 'configurar no Supabase'}")
+log(f"  ✅ YouTube mostrará este Long ao lado do Short quando configurado")
 log(f"{'='*60}\n")
