@@ -325,16 +325,21 @@ if AUDIO is None:
                 for s in seg_only: f.write(f"file '{s}'\n")
             subprocess.run(["ffmpeg","-y","-f","concat","-safe","0",
                 "-i",concat_f,"-ar","44100","-ac","1",raw], capture_output=True, timeout=120)
-        # NOISE GATE DUPLO:
-        # Pass 1 (agate): fecha o gate em -31dB | ratio=8000 = silêncio digital
-        # Pass 2 (highpass+anlmdn): remove ruído residual de alta frequência
-        # release=50ms: gate fecha rápido após o fim da fala (sem arrastar noise)
-        gate_wav = f"{WORKDIR}/cb_gated.wav"
+        # PIPELINE DE LIMPEZA FINAL — 3 passes:
+        # Pass 1: afftdn (FFT denoiser) — remove noise espectral inteligentemente
+        # Pass 2: silenceremove — remove silêncio nas bordas
+        # Pass 3: agate suave — fecha gaps digitais residuais
+        denoised_wav = f"{WORKDIR}/cb_denoised.wav"
         subprocess.run(["ffmpeg","-y","-i",raw,
-            "-af","highpass=f=80,agate=threshold=0.028:ratio=8000:attack=2:release=50",
-            "-ar","44100","-ac","1", gate_wav],
-            capture_output=True, timeout=60)
-        src_for_mp3 = gate_wav if os.path.exists(gate_wav) and os.path.getsize(gate_wav) > 1000 else raw
+            "-af",(
+                "highpass=f=80,"              # remove rumble
+                "afftdn=nf=-35:nt=w:om=o,"   # FFT denoiser (chave principal)
+                "agate=threshold=0.015:ratio=100:attack=5:release=100,"  # gate suave
+                "volume=1.05"                 # compensar atenuação do denoiser
+            ),
+            "-ar","44100","-ac","1", denoised_wav],
+            capture_output=True, timeout=90)
+        src_for_mp3 = denoised_wav if os.path.exists(denoised_wav) and os.path.getsize(denoised_wav) > 1000 else raw
         subprocess.run(["ffmpeg","-y","-i",src_for_mp3,
             "-codec:a","libmp3lame","-b:a","256k","-q:a","0", mp3_out],
             capture_output=True, timeout=60)
@@ -400,163 +405,94 @@ MARCOS  = ("male antagonist age 34, well-dressed navy blazer, "
 ANA     = ("female expert Dr age 42, white coat, reading glasses, "
            "Brazilian professional appearance, scientific authority, clipboard")
 
+# ══════════════════════════════════════════════════════════════════
+# PSYCH2GO IMAGE SYSTEM V32
+# 8 CENAS ÚNICAS por vídeo — cada posição tem ambiente diferente
+# Personagem + Cena = história visual sem repetição
+# ══════════════════════════════════════════════════════════════════
+
+# Ambiente por posição no vídeo (Psych2Go usa ambientes distintos)
+SCENE_ENV = [
+    # 0: Abertura — personagem em ambiente cotidiano
+    "interior home setting, warm morning light, cozy bedroom or kitchen, character in daily routine, establishing shot wide angle",
+    # 1: O problema — close-up emocional tenso
+    "extreme close-up emotional face, tense jaw, glossy eyes holding back tears, harsh sharp lighting, tight frame",
+    # 2: Conflito — dinâmica entre personagens
+    "two characters in tense moment, one dominant looming over other, atmospheric distance between them, dramatic side lighting",
+    # 3: Revelação científica — ambiente acadêmico
+    "library or study room, open book with highlighted text, researcher or therapist with clipboard, soft blue academic light",
+    # 4: Visualização interna — abstrata/surrealista
+    "surreal dreamlike mental landscape, character inside symbolic space, floating thoughts represented visually, violet haze",
+    # 5: O custo — contraste temporal
+    "before-after split visual metaphor, character energy depleted, calendar or clock showing time passed, grey desaturated mood",
+    # 6: Insight — momento de percepção
+    "character in quiet contemplative moment, soft dawn light, hand on heart, realization expression, warm amber tones",
+    # 7: Esperança — cena de cura
+    "healing and recovery scene, soft golden hour outdoor light, character looking forward, green park or window with sunlight",
+    # 8: CTA — personagem falando para câmera
+    "direct eye contact with camera, warm invitation expression, pointing gesture toward viewer, save and subscribe visual cues",
+]
+
+def tipo_emocional(frase):
+    t = frase.lower()
+    if any(k in t for k in ["salva","vídeo completo","canal","assistir","não perder"]): return "CTA"
+    if any(k in t for k in ["isso tem nome","isso se chama","chama-se","tem nome"]): return "REVELACAO"
+    if any(k in t for k in ["chora","lágrimas","soluçava","desmoronou","não conseguia","colapsou"]): return "CHORO"
+    if any(k in t for k in ["harvard","pesquisa","estudo","neurociência","neurológ","química","dopamina","cortisol","amígdala"]): return "CIENCIA"
+    if any(k in t for k in ["você conhece","conheça","imagine","pense em","hoje ela","naquele dia","era uma"]): return "GANCHO"
+    if any(k in t for k in ["perigoso","calculista","manipula","controla","grita","humilha"]): return "VILAO"
+    if any(k in t for k in ["sente","sentia","chorando","confusa","culpada","apagada","esgotada","não aguentava"]): return "DOR"
+    if any(k in t for k in ["no vídeo","completo","mostro","aprenda","quer entender"]): return "CTA"
+    return "NORMAL"
+
 def prompt_for_frase(frase, idx, N):
     t = frase.lower()
+    te = tipo_emocional(frase)
     
-    # ── CTA — Teaser para vídeo completo
-    if any(k in t for k in ["salva", "vídeo", "canal", "assistir", "inscreva", "mais tarde", "depois"]):
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{DANIELA} in warm inviting pose, hand extended toward viewer beckoning them closer, "
-            "soft glowing screen or portal showing more content beyond, "
-            "curious hopeful expression, violet golden warm light, "
-            "come watch more energy, FOMO and desire to continue watching, "
-            "save for later bookmark symbol subtly present "
-            f"{NEG}"
-        )
+    # Cena por posição (garante diversidade visual)
+    # idx começa em 1; scene_pos de 0 a 8
+    scene_pos = min(idx - 1, len(SCENE_ENV) - 1)
+    # Para vídeos > 9 frases: ciclar com variação
+    if idx > len(SCENE_ENV):
+        scene_pos = (idx - 1) % len(SCENE_ENV)
+    base_scene = SCENE_ENV[scene_pos]
     
-    # ── HOOK: narcisista perigoso ──
-    elif "mais perigoso" in t or ("grita" in t and "humilha" in t):
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{MARCOS} shown in split-frame: left side warm friendly charming smile in bright light, "
-            "right side reveals sinister cold calculating shadow-self, "
-            "beautiful flowers on one side with hidden thorns revealed on other, "
-            "danger disguised as love, dramatic split lighting "
-            f"{NEG}"
-        )
-    
-    # ── "Ele chora" — momento mais impactante ──
-    elif "ele chora" in t or (t.strip().endswith("chora.") and len(t) < 25):
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{MARCOS} with exaggerated fake tears streaming down face, "
-            "dramatic theatrical crying pose, manipulative victim act, "
-            "but eyes remain cold and watching, calculating tears, "
-            "performance of pain not real pain, manipulation in action "
-            f"{NEG}"
-        )
-    
-    # ── "Você é quem está errada" ──
-    elif "afastar" in t or "errada" in t or "culpada" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{SARA} backing away with {MARCOS} pointing accusatory finger directly at her, "
-            "wavy distorted gaslighting background effect, "
-            "reality being twisted, her expression shows confusion and self-doubt, "
-            "she appears smaller, he appears larger, power imbalance visible "
-            f"{NEG}"
-        )
-    
-    # ── Isso tem nome ──
-    elif "isso tem nome" in t or "narcisismo encoberto" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{ANA} in research setting, "
-            "holding open book with psychological term highlighted in bold, "
-            "Harvard or university seal visible, revelation moment, "
-            "bright discovery lighting, naming the invisible threat "
-            f"{NEG}"
-        )
-    
-    # ── Sinal 1 ──
-    elif "sinal 1" in t or "nunca responsável" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            "large glowing violet number ONE floating prominently, "
-            f"{MARCOS} in dramatic victim pose — hands clutched to chest, eyes wide, "
-            "playing wounded, everyone around looks confused and apologetic, "
-            "theatrical victimhood performance "
-            f"{NEG}"
-        )
-    
-    # ── Sinal 2 ──
-    elif "sinal 2" in t or "crítica" in t or "vira crise" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            "large glowing violet number TWO floating prominently, "
-            f"{SARA} carefully tiptoeing over literal eggshells drawn on floor, "
-            f"{MARCOS} in background mid-dramatic-overreaction to smallest criticism, "
-            "tense suffocating atmosphere, walking on eggshells literally "
-            f"{NEG}"
-        )
-    
-    # ── Nunca falar nada ──
-    elif "nunca falar" in t or "magoá" in t or "aprende a" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{SARA} pressing both hands firmly over own mouth, "
-            "silencing herself, eyes wide with learned fear, "
-            "invisible muzzle or cage bars suggestion, self-censorship, "
-            f"{MARCOS} looming in shadows causing the silence "
-            f"{NEG}"
-        )
-    
-    # ── Sinal 3 / desculpar por existir ──
-    elif "sinal 3" in t or "desculpar" in t or ("sentir" in t and "precisar" in t):
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            "large glowing violet number THREE floating prominently, "
-            f"{SARA} in deeply apologetic posture — bent forward, hands pressed together, "
-            "apologizing for existing, for feeling, for needing, "
-            "her light visibly dimming and her presence shrinking, "
-            "self-erasure in progress "
-            f"{NEG}"
-        )
-    
-    # ── Quatro anos / apagando a voz ──
-    elif "quatro anos" in t or "apagando" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{SARA} body becoming translucent and ghostlike, "
-            "identity slowly dissolving like watercolor washing away, "
-            "4 calendar years visible in background fading into gray, "
-            "voice literally shown as sound waves disappearing into nothing, "
-            "years of self-erasure, maximum emotional impact "
-            f"{NEG}"
-        )
-    
-    # ── Pesquisador / dado científico ──
-    elif any(k in t for k in ["harvard","pesquisador","estudo","universidade","indiana"]):
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{ANA} dramatically pointing to large statistic on board or clipboard, "
-            "shocked-but-authoritative expression, research data revealed, "
-            "university crest visible, blue academic lighting, "
-            "scientific validation moment "
-            f"{NEG}"
-        )
-    
-    # ── Você não está exagerando ──
-    elif "não está exagerando" in t or "sensível demais" in t or "dramática" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{DANIELA} in intimate close-up, making intense direct eye contact with camera viewer, "
-            "hand placed gently on heart with deep compassion, "
-            "warm golden healing light emanating from her presence, "
-            "YOU ARE SEEN AND HEARD energy, validation and recognition moment "
-            f"{NEG}"
-        )
-    
-    # ── Reagindo normalmente ──
-    elif "normalmente" in t or "anormal" in t:
-        return (
-            f"masterpiece, best quality, {STYLE}, "
-            f"{DANIELA} with powerful protective presence, "
-            "violet and golden light breaking through dark background, "
-            f"{SARA} beside her with strength visibly returning, "
-            "darkness lifting, identity being reclaimed, "
-            "empowering hopeful healing energy "
-            f"{NEG}"
-        )
-    
-    # Fallback por posição
-    elif idx <= 2:
-        return f"masterpiece, best quality, {STYLE}, {DANIELA} presenting urgent psychological warning, serious direct gaze {NEG}"
-    elif idx <= N//2:
-        return f"masterpiece, best quality, {STYLE}, {SARA} experiencing painful emotional recognition moment, authentic Brazilian woman look {NEG}"
+    # Personagem principal baseado no tipo emocional + posição
+    if te == "CTA" or idx == N:
+        char = DANIELA + ", warm direct gaze into camera, friendly inviting"
+    elif te == "VILAO":
+        char = MARCOS + ", menacing cold calculating expression"
+    elif te == "CHORO" or te == "DOR":
+        char = SARA + ", deeply emotional vulnerable expression"
+    elif te == "CIENCIA":
+        char = ANA + ", authoritative researcher pose, pointing at data"
+    elif te == "REVELACAO":
+        char = ANA + ", dramatic revelation expression, discovery moment"
+    elif te == "GANCHO":
+        # Abertura: usar o personagem da história
+        char = SARA + ", caught in ordinary moment unaware of pattern"
+    elif idx <= N // 3:
+        char = MARCOS + ", charming but something feels off"
+    elif idx <= 2 * N // 3:
+        char = SARA + ", emotional processing journey"
     else:
-        return f"masterpiece, best quality, {STYLE}, {DANIELA} warm empowering expression toward camera, healing golden light {NEG}"
+        char = DANIELA + ", empowering healing presence"
+    
+    # Contexto específico da frase no prompt
+    frase_ctx = frase[:50].lower().replace('"', '').replace("'", "")
+    
+    return (
+        f"masterpiece, best quality, {STYLE}, "
+        f"{char}, "
+        f"{base_scene}, "
+        f"scene context: {frase_ctx}, "
+        f"vertical 9:16 portrait format, "
+        f"Psych2Go animation style, flat illustration, "
+        f"emotionally resonant, viral psychology content "
+        f"{NEG}"
+    )
+
+PROMPTS = [prompt_for_frase(f, i, N) for i, f in enumerate(frases, 1)]
 
 PROMPTS = [prompt_for_frase(f, i, N) for i, f in enumerate(frases, 1)]
 
@@ -578,54 +514,76 @@ banco_cnt = poll_cnt = 0
 # Lista plana de todas as URLs do banco para fallback aleatório
 all_banco_urls = [u for urls in banco_map.values() for u in urls]
 
+# Psych2Go Image Strategy:
+# 1. Pollinations FLUX primeiro (imagem única por frase, seed única, cena específica)
+# 2. Banco específico por key (fallback rápido)
+# 3. Banco aleatório com GARANTIA DE NÃO REPETIR (evitar mesma imagem consecutiva)
+
+used_banco_idxs = set()  # evitar repetição no banco
+
 for idx, (frase, prompt) in enumerate(zip(frases, PROMPTS), 1):
     fpath = f"{WORKDIR}/img_{idx:02d}.jpg"
     up    = f"{WORKDIR}/img_up_{idx:02d}.jpg"
     found = False
-    t = frase.lower()
 
-    # KEY específica
-    if "sinal 1" in t or "nunca responsável" in t: key = "marcos_problema"
-    elif "sinal 2" in t or "crítica" in t: key = "sara_problema"
-    elif "sinal 3" in t or "desculpar" in t: key = "sara_virada"
-    elif any(k in t for k in ["harvard","estudo","pesquisador","neurológ","química"]): key = "ana_ciencia"
-    elif any(k in t for k in ["normalmente","anormal","reagindo"]): key = "daniela_virada"
-    elif any(k in t for k in ["salva","canal","assistir","mais tarde"]): key = "daniela_cta"
-    else: key = None
+    # ─── 1. POLLINATIONS FLUX — imagem única por frase ───────────────
+    # Seed única: posição × video_id × timestamp → sem repetição entre vídeos
+    import time as _t
+    seed = (VIDEO_ID * 1000 + idx * 197 + int(_t.time()) % 10000) % 2147483647
+    purl = (
+        f"https://image.pollinations.ai/prompt/"
+        f"{requests.utils.quote(prompt[:600])}"
+        f"?width=576&height=1024&seed={seed}&nologo=true&model=flux"
+    )
+    data = dl_img(purl, timeout=45)
+    if data and is_valid_img(data):
+        with open(fpath,'wb') as f: f.write(data)
+        IMGS.append(upscale(fpath, up)); poll_cnt += 1; found = True
+        log(f"  [{idx:02d}/{N}] 🎨 FLUX {len(data)//1024}KB | pos={idx-1} {SCENE_ENV[min(idx-1,8)][:40]}")
 
-    # 1. Banco key específica
-    if not found and key and banco_map.get(key):
-        data = dl_img(banco_map[key][(idx*17) % len(banco_map[key])])
-        if data:
-            with open(fpath,'wb') as f: f.write(data)
-            IMGS.append(upscale(fpath,up)); banco_cnt += 1; found = True
-            log(f"  [{idx:02d}/{N}] 🏦 {key}")
-
-    # 2. Banco aleatório (sempre antes de Pollinations)
-    if not found and all_banco_urls:
-        data = dl_img(all_banco_urls[(idx*31 + VIDEO_ID) % len(all_banco_urls)])
-        if data:
-            with open(fpath,'wb') as f: f.write(data)
-            IMGS.append(upscale(fpath,up)); banco_cnt += 1; found = True
-            log(f"  [{idx:02d}/{N}] 🏦 rnd")
-
-    # 3. Pollinations — último recurso, timeout curto
+    # ─── 2. Banco key específica (fallback) ──────────────────────────
     if not found:
-        seed = 7777 + idx*191 + VIDEO_ID
-        purl = (f"https://image.pollinations.ai/prompt/"
-                f"{requests.utils.quote(prompt)}?width=576&height=1024&seed={seed}&nologo=true")
-        data = dl_img(purl, timeout=30)
-        if data:
-            with open(fpath,'wb') as f: f.write(data)
-            IMGS.append(upscale(fpath,up)); poll_cnt += 1; found = True
-            log(f"  [{idx:02d}/{N}] 🌐 poll {len(data)//1024}KB")
-        else:
-            log(f"  [{idx:02d}/{N}] ⚠️ poll sem resposta válida")
+        te = tipo_emocional(frase)
+        key_map = {
+            "CIENCIA": "ana_ciencia", "REVELACAO": "ana_ciencia",
+            "CHORO": "sara_problema", "DOR": "sara_problema",
+            "VILAO": "marcos_problema",
+            "GANCHO": "daniela_cta", "CTA": "daniela_cta",
+        }
+        key = key_map.get(te)
+        if key and banco_map.get(key):
+            candidates = [(bi, url) for bi, url in enumerate(banco_map[key]) if bi not in used_banco_idxs]
+            if not candidates:
+                candidates = list(enumerate(banco_map[key]))  # reset se esgotou
+            bi, burl = candidates[seed % len(candidates)]
+            data = dl_img(burl)
+            if data and is_valid_img(data):
+                with open(fpath,'wb') as f: f.write(data)
+                IMGS.append(upscale(fpath, up)); banco_cnt += 1; found = True
+                used_banco_idxs.add(bi)
+                log(f"  [{idx:02d}/{N}] 🏦 {key}")
 
+    # ─── 3. Banco aleatório SEM REPETIR ──────────────────────────────
+    if not found and all_banco_urls:
+        # Escolher índice não usado ainda
+        available = [i for i in range(len(all_banco_urls)) if i not in used_banco_idxs]
+        if not available:
+            available = list(range(len(all_banco_urls)))
+            used_banco_idxs.clear()
+        bi = available[seed % len(available)]
+        data = dl_img(all_banco_urls[bi])
+        if data and is_valid_img(data):
+            with open(fpath,'wb') as f: f.write(data)
+            IMGS.append(upscale(fpath, up)); banco_cnt += 1; found = True
+            used_banco_idxs.add(bi)
+            log(f"  [{idx:02d}/{N}] 🏦 rnd#{bi}")
+
+    # ─── 4. Fallback seguro ───────────────────────────────────────────
     if not found:
         IMGS.append(IMGS[-1] if IMGS else None)
         log(f"  [{idx:02d}/{N}] ⚠️ duplicando anterior")
-log(f"  ✅ {banco_cnt} banco | {poll_cnt} poll | {banco_cnt+poll_cnt}/{N}")
+
+log(f"  ✅ {banco_cnt} banco | {poll_cnt} Pollinations FLUX | {banco_cnt+poll_cnt}/{N}")
 
 # ── 6. RENDER ────────────────────────────────────────────────────────
 log(f"\n🎬 ETAPA 3 — FFMPEG render")
