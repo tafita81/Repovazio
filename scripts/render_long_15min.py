@@ -449,7 +449,7 @@ if video_url:
         f"▶ Shorts desta série: {short_link}\n"
         f"👉 Canal: https://youtube.com/@psidanielacoelho\n\n"
         f"⏱ Capítulos:\n"
-        + "\n".join([f"{c['time']} {c['title']}" for c in chapters])
+        + "\n".join([f"{c['time']} {c['title']}" if isinstance(c, dict) else str(c) for c in (chapters if isinstance(chapters, list) else [])])
         + f"\n\n#{serie_slug} #psicologia #saudemental #relacionamentos"
     )
 
