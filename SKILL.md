@@ -992,3 +992,155 @@ Vídeos:  https://repovazio.vercel.app/videos-prontos.html
 Painel:  https://repovazio.vercel.app/painel-400.html
 Skill:   https://github.com/tafita81/Repovazio/blob/main/docs/SKILL_V32.md
 ```
+
+
+---
+
+## 🧠 CÉREBRO QUÂNTICO DE APIs — V33 (Sistema Vivo)
+
+> Base de conhecimento no Supabase. Auto-expansível. 145+ APIs mapeadas. Evolui infinitamente.
+
+### Estrutura do Cérebro
+
+```
+Supabase: tabela api_brain (145 APIs)
+  ├── 82 SEM AUTH — usar direto em produção
+  ├── 55 ALTA RELEVÂNCIA (relevância=3)
+  ├── 18 TESTADAS AO VIVO ✅
+  └── 25 categorias × 82 subcategorias
+
+GitHub: scripts/api_brain.py (Brain class)
+  ├── Brain.search("quotes")      → busca no banco
+  ├── Brain.ready_to_use()        → APIs sem auth relevantes
+  ├── Brain.discover("Health")    → live dos diretórios
+  ├── Brain.call("AdviceSlip")    → chamar API diretamente
+  ├── Brain.quick_quote()         → quote com fallback cascata
+  ├── Brain.translate_pt_en(txt)  → MyMemory → Lingva fallback
+  ├── Brain.check_grammar(txt)    → LanguageTool PT-BR
+  ├── Brain.test_all_no_auth()    → testar e atualizar banco
+  └── Brain.add(api_data)         → inserir nova API no banco
+
+SQL: função find_api() no Supabase
+  SELECT * FROM find_api('tts', no_auth:=true, lim:=5);
+  SELECT * FROM find_api('quotes', min_relevance:=3);
+  SELECT * FROM v_apis_psico;   -- todas as ★★★ relevância
+  SELECT * FROM v_apis_no_auth; -- todas sem auth
+```
+
+### Como Consultar o Cérebro
+
+```python
+from scripts.api_brain import Brain
+
+# 1. Buscar APIs para uma tarefa
+apis_quotes = Brain.search("quotes pt-br", no_auth=True)
+
+# 2. Chamar diretamente (confirmadas)
+quote = Brain.call("ZenQuotes")        # → "Life is..."
+advice = Brain.call("AdviceSlip")      # → "Exercise daily..."
+fact = Brain.call("UselessFacts")      # → "A group of..."
+
+# 3. Traduzir para keywords YouTube
+en = Brain.translate_pt_en("ansiedade e burnout")  # → "anxiety and burnout"
+
+# 4. Verificar gramática de script
+erros = Brain.check_grammar(script_text, "pt-BR")
+
+# 5. Descobrir novas APIs em tempo real
+novas = Brain.discover("Health", no_auth=True)
+for api in novas:
+    # Adicionar ao banco se relevante
+    Brain.add({"name":api["API"],"endpoint":api["Link"],...})
+
+# 6. Estatísticas atuais
+print(Brain.stats())
+# → {"total":145,"sem_auth":82,"alta_relevancia":55,...}
+```
+
+### Como Expandir o Cérebro
+
+```python
+# Adicionar qualquer nova API descoberta:
+Brain.add({
+    "name":       "Nova API",
+    "category":   "Health",
+    "subcategory":"Mental Health",
+    "endpoint":   "https://api.example.com/v1/",
+    "auth_type":  "none",
+    "description":"Descrição da API",
+    "relevance":  3,
+    "use_case":   "Como usar no pipeline psicologia.doc",
+    "rate_limit": "100/dia",
+    "source":     "descoberta-manual",
+    "tags":       ["health","mental-health","no-auth"]
+})
+
+# Testar todas e atualizar banco:
+resultado = Brain.test_all_no_auth(verbose=True)
+# → ✅ 18/20 funcionando
+
+# Descobrir automaticamente por categoria:
+for cat in ["Health","Personality","Music","Text Analysis"]:
+    novas = Brain.discover(cat, no_auth=True)
+    for a in novas[:5]:
+        Brain.add({"name":a["API"],"category":cat,"endpoint":a["Link"],
+                   "description":a["Description"],"auth_type":"none",
+                   "relevance":2,"source":"public-apis-live"})
+```
+
+### URLs de Acesso Direto
+
+```
+Banco:    https://tpjvalzwkqwttvmszvie.supabase.co/rest/v1/api_brain
+Módulo:   https://github.com/tafita81/Repovazio/blob/main/scripts/api_brain.py
+SQL:      SELECT * FROM find_api('quotes', no_auth:=true);
+View:     SELECT * FROM v_apis_psico;
+```
+
+---
+
+## 📊 ESTADO ATUAL DO CÉREBRO (atualizado 2026-05-21)
+
+| Categoria | Total | Sem Auth | Alta Relevância |
+|-----------|-------|----------|-----------------|
+| Machine Learning | 25 | 2 | 9 |
+| Quotes | 19 | 19 | 5 |
+| Text Analysis | 16 | 2 | 8 |
+| Science & Math | 11 | 9 | 4 |
+| Audio/TTS | 11 | 7 | 4 |
+| Music | 8 | 4 | 3 |
+| Translation | 6 | 4 | 3 |
+| Video | 6 | 4 | 4 |
+| Social | 6 | 3 | 2 |
+| Photography | 6 | 5 | 2 |
+| **TOTAL** | **145** | **82** | **55** |
+
+---
+
+## 🌐 DIRETÓRIOS PARA EXPANSÃO INFINITA
+
+```python
+# Para descobrir mais APIs em tempo real:
+DISCOVERY_SOURCES = {
+    "public_apis":     "https://api.publicapis.org/entries?auth=null&https=true",
+    "public_api_lists":"https://public-api-lists.github.io/public-api-lists/apis.json",
+    "freepublicapis":  "https://www.freepublicapis.com/",  # curadoria semanal
+    "mixedanalytics":  "https://mixedanalytics.com/blog/list-actually-free-open-no-auth-needed-apis/",
+    "rapidapi_free":   "https://rapidapi.com/collection/list-of-free-apis",
+    "publicapis_dev":  "https://publicapis.dev/category/{cat}",
+}
+
+# As 51 categorias disponíveis para discover():
+ALL_CATEGORIES = [
+    "Animals","Anime","Anti-Malware","Art & Design","Authentication",
+    "Books","Business","Calendar","Cloud Storage & File Sharing",
+    "Continuous Integration","Cryptocurrency","Currency Exchange",
+    "Data Validation","Development","Dictionaries","Documents & Productivity",
+    "Email","Environment","Events","Finance","Food & Drink","Games & Comics",
+    "Geocoding","Government","Health","Jobs","Machine Learning","Music","News",
+    "Open Data","Open Source Projects","Patent","Personality","Phone",
+    "Photography","Science & Math","Security","Shopping","Social",
+    "Sports & Fitness","Test Data","Text Analysis","Tracking","Transportation",
+    "URL Shorteners","Vehicle","Video","Weather"
+]
+```
