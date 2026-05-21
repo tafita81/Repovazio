@@ -26,45 +26,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install Chromium
+      - name: Install FFmpeg only
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y chromium-browser ffmpeg
-          echo "CHROMIUM=$(which chromium-browser)" >> $GITHUB_ENV
+          sudo apt-get install -y ffmpeg
+          echo "✅ FFmpeg instalado"
 
       - name: Install Remotion deps
         run: |
           cd remotion
           npm install
-          echo "✅ Remotion instalado"
+          echo "✅ npm install OK"
+
+      - name: Download Remotion browser
+        run: |
+          cd remotion
+          npx remotion browser ensure
+          echo "✅ Browser Remotion baixado"
 
       - name: Install Python deps
         continue-on-error: true
         run: |
-          pip install --break-system-packages requests edge-tts || true
-          pip install --break-system-packages chatterbox-tts || echo "Chatterbox indisponível"
+          pip install --break-system-packages requests edge-tts 2>/dev/null || true
+          pip install --break-system-packages torch --index-url https://download.pytorch.org/whl/cpu 2>/dev/null || true
+          pip install --break-system-packages chatterbox-tts 2>/dev/null || echo "Chatterbox indisponível — usando EdgeTTS"
 
-      - name: Generate props.json from Supabase
+      - name: Generate props.json + audio
         run: |
           python3 - << 'EOF'
-          import os, json, re, asyncio, subprocess, sys, requests
+          import os, json, re, asyncio, subprocess, sys, requests, tempfile
 
           VIDEO_ID = os.environ.get("VIDEO_ID", "683")
           SB_URL   = "https://tpjvalzwkqwttvmszvie.supabase.co"
           SB_KEY   = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
           FPS, TOTAL = 30, 1740
+          WORKDIR = f"/tmp/remotion_{VIDEO_ID}"
+          os.makedirs(WORKDIR, exist_ok=True)
 
-          # Buscar script
           rows = requests.get(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VIDEO_ID}&select=id,title,script,series_slug,ep_number",
             headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}"}, timeout=15).json()
           if not rows: sys.exit(1)
@@ -82,11 +90,9 @@ jobs:
             if any(k in t for k in ["você conhece","conheça","imagine"]): return "GANCHO"
             return "NORMAL"
 
-          # Grupos + timing
           SILENCE = {"GANCHO":(0,25),"IMPACTO":(27,42),"REVELACAO":(21,36),
                      "CHORO":(15,54),"CTA":(27,0),"PAUSA":(12,33),"NORMAL":(0,20)}
-          groups_raw = []
-          i = 0
+          groups_raw, i = [], 0
           while i < len(lines):
             tp = classify(lines[i])
             if tp in ("IMPACTO","REVELACAO","CHORO","GANCHO","PAUSA","CTA"):
@@ -98,72 +104,91 @@ jobs:
                 groups_raw.append((lines[i], "NORMAL"))
             i += 1
 
+          # Gerar áudio via EdgeTTS
+          audio_path = f"{WORKDIR}/narration.mp3"
+          full_text = " ".join(t for t,_ in groups_raw)
+          async def do_tts():
+            import edge_tts
+            c = edge_tts.Communicate(full_text, voice="pt-BR-ThalitaMultilingualNeural", rate="+28%")
+            await c.save(audio_path)
+          try:
+            asyncio.run(do_tts())
+            print(f"✅ EdgeTTS: {os.path.getsize(audio_path)} bytes")
+          except Exception as e:
+            print(f"⚠️ TTS erro: {e}")
+
+          # Upload áudio para Supabase
+          audio_sb_url = ""
+          if os.path.exists(audio_path):
+            with open(audio_path,"rb") as f: data = f.read()
+            r = requests.put(f"{SB_URL}/storage/v1/object/videos/audio/v{VIDEO_ID}_remotion.mp3",
+              headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}",
+                       "Content-Type":"audio/mpeg","x-upsert":"true"},
+              data=data, timeout=60)
+            if r.status_code < 300:
+              audio_sb_url = f"{SB_URL}/storage/v1/object/public/videos/audio/v{VIDEO_ID}_remotion.mp3"
+
+          # Calcular timing de frames
           weights = [len(t)*1.5 + SILENCE.get(tp,(0,20))[0] + SILENCE.get(tp,(0,20))[1] for t,tp in groups_raw]
           total_w = sum(weights) or 1
-          avail   = TOTAL - 40
           CHAR_MAP = {"GANCHO":"daniela","NORMAL":"daniela","IMPACTO":"marcos",
                       "CHORO":"sara","REVELACAO":"ana","PAUSA":"sara","CTA":"daniela"}
-          SB_IMG_URL = f"{SB_URL}/storage/v1/object/public/images/bank"
-
           groups, images, cur = [], [], 30
           for j,(text,tp) in enumerate(groups_raw):
             groups.append({"text":text,"type":tp,"startFrame":cur})
             char = CHAR_MAP.get(tp,"daniela")
-            img = f"https://image.pollinations.ai/prompt/{char}%20kawaii%20chibi%20anime?width=576&height=1024&seed={int(VIDEO_ID)+j}&nologo=true"
-            images.append({"url":img,"startFrame":cur,"character":char})
-            cur += int((weights[j]/total_w)*avail)
+            import urllib.parse
+            prom = urllib.parse.quote(f"kawaii chibi anime {char} {text[:50]} psych2go style")
+            img_url = f"https://image.pollinations.ai/prompt/{prom}?width=576&height=1024&seed={int(VIDEO_ID)+j}&nologo=true"
+            images.append({"url":img_url,"startFrame":cur,"character":char})
+            cur += int((weights[j]/total_w)*(TOTAL-40))
 
-          props = {"videoId":int(VIDEO_ID),"title":row["title"],"audioUrl":"",
+          props = {"videoId":int(VIDEO_ID),"title":row["title"],"audioUrl":audio_sb_url,
                    "groups":groups,"images":images,
                    "seriesSlug":row.get("series_slug",""),"epNumber":row.get("ep_number",1)}
 
-          os.makedirs("/tmp/remotion_props", exist_ok=True)
-          with open("/tmp/remotion_props/props.json","w") as f:
+          with open(f"{WORKDIR}/props.json","w") as f:
             json.dump(props, f, ensure_ascii=False, indent=2)
-          print(f"✅ props.json: {len(groups)} grupos, {len(images)} imagens")
+          with open(f"{WORKDIR}/props.json.path","w") as f:
+            f.write(f"{WORKDIR}/props.json")
+          print(f"✅ props.json: {len(groups)} grupos, áudio: {audio_sb_url[:60] if audio_sb_url else 'local'}")
           EOF
 
       - name: Render with Remotion
         run: |
+          PROPS=$(cat /tmp/remotion_${VIDEO_ID}/props.json.path)
           mkdir -p /tmp/remotion_out
           cd remotion
-          npx remotion render src/index.tsx $COMPOSITION /tmp/remotion_out/v${VIDEO_ID}_remotion.mp4 \
-            --props="/tmp/remotion_props/props.json" \
+          npx remotion render src/index.tsx ${COMPOSITION} /tmp/remotion_out/v${VIDEO_ID}_remotion.mp4 \
+            --props="$PROPS" \
             --codec=h264 \
             --fps=30 \
             --width=576 \
-            --height=1024 \
-            --browser-executable=$CHROMIUM \
-            --log=verbose
+            --height=1024
           echo "✅ Render concluído"
           ls -lh /tmp/remotion_out/
 
-      - name: Upload to Supabase Storage
+      - name: Upload to Supabase
         run: |
           python3 - << 'EOF'
           import os, requests
-
           SB_URL = "https://tpjvalzwkqwttvmszvie.supabase.co"
           SB_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY","")
           VID    = os.environ.get("VIDEO_ID","683")
           mp4    = f"/tmp/remotion_out/v{VID}_remotion.mp4"
-          if not os.path.exists(mp4):
-            print("❌ MP4 não encontrado"); exit(1)
-
+          if not os.path.exists(mp4): print("❌ MP4 não encontrado"); exit(1)
           with open(mp4,"rb") as f: data = f.read()
           r = requests.put(f"{SB_URL}/storage/v1/object/videos/mp4s/v{VID}_remotion.mp4",
             headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}",
                      "Content-Type":"video/mp4","x-upsert":"true"},
             data=data, timeout=120)
-          if r.status_code >= 300:
-            print(f"❌ Upload: {r.text}"); exit(1)
-
-          video_url = f"{SB_URL}/storage/v1/object/public/videos/mp4s/v{VID}_remotion.mp4"
+          if r.status_code >= 300: print(f"❌ {r.text}"); exit(1)
+          url = f"{SB_URL}/storage/v1/object/public/videos/mp4s/v{VID}_remotion.mp4"
           requests.patch(f"{SB_URL}/rest/v1/content_pipeline?id=eq.{VID}",
             headers={"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}",
                      "Content-Type":"application/json","Prefer":"return=minimal"},
-            json={"video_url":video_url,"status":"pending_credentials"})
-          print(f"✅ {video_url}")
+            json={"video_url":url,"status":"pending_credentials"})
+          print(f"✅ {url}")
           EOF
 
       - name: Upload artifact
