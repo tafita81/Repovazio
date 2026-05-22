@@ -1,0 +1,460 @@
+{
+  "gerado_em": "2026-05-22",
+  "total_combinacoes": 50,
+  "receita_mensal_total_usd": 313750,
+  "receita_anual_usd": 3765000,
+  "apis_banco": 1839,
+  "pairs_possiveis_gratis": 250000,
+  "combinacoes": [
+    {
+      "id": "C01",
+      "nome": "Gumroad Audio Packs",
+      "prazo": "24h",
+      "receita_mensal_usd": 450,
+      "calculo": "50 clientes x $9",
+      "case_real": "Gumroad top creators $200-2000/mes packs digitais",
+      "prioridade": 1
+    },
+    {
+      "id": "C02",
+      "nome": "Hotmart DM Funnel",
+      "prazo": "48h",
+      "receita_mensal_usd": 3200,
+      "calculo": "8 vendas/dia x $200 comissao",
+      "case_real": "BR criadores R$5K-50K/mes ManyChat+Hotmart",
+      "prioridade": 1
+    },
+    {
+      "id": "C03",
+      "nome": "Redbubble POD Machine",
+      "prazo": "72h",
+      "receita_mensal_usd": 1200,
+      "calculo": "360 designs x $4/mes",
+      "case_real": "R1 Jokela $8K/mes 2K designs 3 plataformas",
+      "prioridade": 1
+    },
+    {
+      "id": "C04",
+      "nome": "TikTok Trend Capture",
+      "prazo": "6h",
+      "receita_mensal_usd": 2800,
+      "calculo": "10 spikes/mes x 50K views",
+      "case_real": "Trend surfing accounts $1K-10K/mes",
+      "prioridade": 1
+    },
+    {
+      "id": "C05",
+      "nome": "YouTube EN Empire",
+      "prazo": "14d",
+      "receita_mensal_usd": 4500,
+      "calculo": "100K views x $10 RPM",
+      "case_real": "Faceless psychology EN $2K-15K/mes",
+      "prioridade": 1
+    },
+    {
+      "id": "C06",
+      "nome": "Multi-Canal x4",
+      "prazo": "7d",
+      "receita_mensal_usd": 6000,
+      "calculo": "4 canais x 100K views x $3.5",
+      "case_real": "Practical Psychology 3M subs multi-format",
+      "prioridade": 1
+    },
+    {
+      "id": "C07",
+      "nome": "Beehiiv Boost Newsletter",
+      "prazo": "7d",
+      "receita_mensal_usd": 1800,
+      "calculo": "4 edicoes x $150 boost + 200 assinantes",
+      "case_real": "Beehiiv Boosts $50-200/edicao 5K subs",
+      "prioridade": 2
+    },
+    {
+      "id": "C08",
+      "nome": "KDP 5 Idiomas Factory",
+      "prazo": "14d",
+      "receita_mensal_usd": 3600,
+      "calculo": "4 workbooks x 5 idiomas x 6 plataformas",
+      "case_real": "KDP autopub $500-10K/mes 50-500 titulos",
+      "prioridade": 1
+    },
+    {
+      "id": "C09",
+      "nome": "Audible ACX Audiobooks",
+      "prazo": "21d",
+      "receita_mensal_usd": 2400,
+      "calculo": "10 audiobooks x 100 ouvintes x $1.50",
+      "case_real": "ACX creators $500-5K/mes 10-50 titulos",
+      "prioridade": 2
+    },
+    {
+      "id": "C10",
+      "nome": "Reddit YT Viral Machine",
+      "prazo": "3d",
+      "receita_mensal_usd": 3500,
+      "calculo": "500K views x $3.5 RPM Psych2Go model",
+      "case_real": "Psych2Go $20K-50K/mes Reddit-based",
+      "prioridade": 1
+    },
+    {
+      "id": "C11",
+      "nome": "PsiScript Pro SaaS",
+      "prazo": "30d",
+      "receita_mensal_usd": 5700,
+      "calculo": "300 clientes x $19/mes MRR",
+      "case_real": "Micro-SaaS IH $1K-10K MRR em 6 meses",
+      "prioridade": 2
+    },
+    {
+      "id": "C12",
+      "nome": "B2B Health Licensing",
+      "prazo": "30d",
+      "receita_mensal_usd": 12000,
+      "calculo": "10 clientes x $1200/mes licenca",
+      "case_real": "MedBridge $10M ARR licenca clinica",
+      "prioridade": 2
+    },
+    {
+      "id": "C13",
+      "nome": "ClickBank EN Machine",
+      "prazo": "14d",
+      "receita_mensal_usd": 8500,
+      "calculo": "50 vendas x $50 comissao EN",
+      "case_real": "ClickBank psychology top afiliados $5K-50K/mes",
+      "prioridade": 1
+    },
+    {
+      "id": "C14",
+      "nome": "Patreon Community",
+      "prazo": "21d",
+      "receita_mensal_usd": 4900,
+      "calculo": "100x$7 + 50x$19 + 20x$49 tiers",
+      "case_real": "Patrick Bet-David $8M/mes Patreon",
+      "prioridade": 2
+    },
+    {
+      "id": "C15",
+      "nome": "Spotify Podcast Stack",
+      "prazo": "14d",
+      "receita_mensal_usd": 2100,
+      "calculo": "10K ouvintes x $0.01 CPM + Ko-fi",
+      "case_real": "Psychology podcasts nicho $500-5K/mes",
+      "prioridade": 2
+    },
+    {
+      "id": "C16",
+      "nome": "BetterHelp Empire",
+      "prazo": "7d",
+      "receita_mensal_usd": 6000,
+      "calculo": "30 conversoes x $200/conversao",
+      "case_real": "BetterHelp top affiliates $20K-100K/mes USD",
+      "prioridade": 1
+    },
+    {
+      "id": "C17",
+      "nome": "Pinterest SEO Evergreen",
+      "prazo": "14d",
+      "receita_mensal_usd": 1800,
+      "calculo": "100K impressoes x 2% CTR x 1% conv",
+      "case_real": "Pinterest creators $500-10K/mes organico",
+      "prioridade": 3
+    },
+    {
+      "id": "C18",
+      "nome": "Udemy Psychology Course",
+      "prazo": "30d",
+      "receita_mensal_usd": 3750,
+      "calculo": "50K views x 0.5% conv x $15 x 50%",
+      "case_real": "Top Udemy psychology $1K-10K/mes passivo",
+      "prioridade": 2
+    },
+    {
+      "id": "C19",
+      "nome": "Ghost Newsletter+Course",
+      "prazo": "21d",
+      "receita_mensal_usd": 4350,
+      "calculo": "300 assinantes x $14.50/mes",
+      "case_real": "Ghost top creators $10K-100K/mes",
+      "prioridade": 2
+    },
+    {
+      "id": "C20",
+      "nome": "GDELT Breaking News",
+      "prazo": "6h",
+      "receita_mensal_usd": 2500,
+      "calculo": "4 virais/mes x 200K views",
+      "case_real": "Breaking psych news 1M-10M views timing",
+      "prioridade": 1
+    },
+    {
+      "id": "C21",
+      "nome": "Mental Health App Stack",
+      "prazo": "30d",
+      "receita_mensal_usd": 8500,
+      "calculo": "BetterHelp $200x20 + Calm + Headspace",
+      "case_real": "Healthline $50M+/ano saude afiliados",
+      "prioridade": 1
+    },
+    {
+      "id": "C22",
+      "nome": "Science Monitor Daily",
+      "prazo": "3d",
+      "receita_mensal_usd": 5000,
+      "calculo": "200K views x $10 RPM + sponsorships",
+      "case_real": "Kurzgesagt $5M+/ano. BR science virgem",
+      "prioridade": 1
+    },
+    {
+      "id": "C23",
+      "nome": "NLP Content Optimizer",
+      "prazo": "14d",
+      "receita_mensal_usd": 3000,
+      "calculo": "+30% CTR x receita atual",
+      "case_real": "A/B thumbnail: 50-200% CTR improvement",
+      "prioridade": 2
+    },
+    {
+      "id": "C24",
+      "nome": "Japanese Market Entry",
+      "prazo": "30d",
+      "receita_mensal_usd": 4200,
+      "calculo": "100K JP views x $12 RPM + KDP JP",
+      "case_real": "JP digital mental health $2.5B market",
+      "prioridade": 2
+    },
+    {
+      "id": "C25",
+      "nome": "German Authority Channel",
+      "prazo": "30d",
+      "receita_mensal_usd": 3800,
+      "calculo": "100K DE views x $12 + Digistore24",
+      "case_real": "Deutschsprachige Mental Health virgem",
+      "prioridade": 2
+    },
+    {
+      "id": "C26",
+      "nome": "White-Label Pipeline",
+      "prazo": "45d",
+      "receita_mensal_usd": 9900,
+      "calculo": "100 clientes x $99/mes MRR",
+      "case_real": "Content SaaS Synthesia $100M ARR",
+      "prioridade": 2
+    },
+    {
+      "id": "C27",
+      "nome": "LinkedIn Thought Leader",
+      "prazo": "7d",
+      "receita_mensal_usd": 5000,
+      "calculo": "10 clientes mentoria x $500",
+      "case_real": "LinkedIn thought leaders $10K-100K/mes",
+      "prioridade": 2
+    },
+    {
+      "id": "C28",
+      "nome": "Threads+Instagram Viral",
+      "prazo": "3d",
+      "receita_mensal_usd": 2200,
+      "calculo": "5 virais/mes x 100K alcance x 3% conv",
+      "case_real": "Threads grew 100M users fastest ever",
+      "prioridade": 2
+    },
+    {
+      "id": "C29",
+      "nome": "Shorts Machine x4",
+      "prazo": "1d",
+      "receita_mensal_usd": 2800,
+      "calculo": "4 canais x 10 Shorts x 5K views",
+      "case_real": "1M Shorts views/mes = $500-1500",
+      "prioridade": 1
+    },
+    {
+      "id": "C30",
+      "nome": "Psychology Testing SaaS",
+      "prazo": "60d",
+      "receita_mensal_usd": 7500,
+      "calculo": "750 testes/mes x $10 por teste",
+      "case_real": "16Personalities 30M tests/ano baseline",
+      "prioridade": 2
+    },
+    {
+      "id": "C31",
+      "nome": "Academic Citation Network",
+      "prazo": "30d",
+      "receita_mensal_usd": 8000,
+      "calculo": "Autoridade RPM $15-20 + sponsorships",
+      "case_real": "Healthline DA 90+ $50M+/ano backlinks",
+      "prioridade": 1
+    },
+    {
+      "id": "C32",
+      "nome": "Content ID Royalties",
+      "prazo": "7d",
+      "receita_mensal_usd": 1500,
+      "calculo": "1000 videos x 10 usos x $0.50",
+      "case_real": "Content ID $1K-10K/mes grande biblioteca",
+      "prioridade": 3
+    },
+    {
+      "id": "C33",
+      "nome": "POD 10 Platform Stack",
+      "prazo": "30d",
+      "receita_mensal_usd": 8000,
+      "calculo": "1000 designs x 10 plataformas x $4",
+      "case_real": "Mike Shakes POD $100K/mes 50K designs",
+      "prioridade": 2
+    },
+    {
+      "id": "C34",
+      "nome": "Certification Platform",
+      "prazo": "45d",
+      "receita_mensal_usd": 12000,
+      "calculo": "200 certificacoes x $60/cert",
+      "case_real": "Coursera certificates $2B receita modelo",
+      "prioridade": 2
+    },
+    {
+      "id": "C35",
+      "nome": "Insurance Mental Health B2B",
+      "prazo": "60d",
+      "receita_mensal_usd": 25000,
+      "calculo": "5 planos saude x $5000/mes",
+      "case_real": "ANS obriga psicoeducacao mercado R$50M+",
+      "prioridade": 1
+    },
+    {
+      "id": "C36",
+      "nome": "Quantum SEO Network",
+      "prazo": "30d",
+      "receita_mensal_usd": 6000,
+      "calculo": "500 artigos x 200 visitas x 1% conv x $12",
+      "case_real": "Niche SEO $1K-10K/mes 50-500 artigos",
+      "prioridade": 2
+    },
+    {
+      "id": "C37",
+      "nome": "Telegram Community Stack",
+      "prazo": "7d",
+      "receita_mensal_usd": 3800,
+      "calculo": "1000 pagantes x $4 canal Telegram",
+      "case_real": "Canais Telegram BR $1K-20K/mes",
+      "prioridade": 1
+    },
+    {
+      "id": "C38",
+      "nome": "AI Voice Clone Licensing",
+      "prazo": "30d",
+      "receita_mensal_usd": 5800,
+      "calculo": "200 psicologos x $29/mes clone voz",
+      "case_real": "ElevenLabs voice growing 200%/year",
+      "prioridade": 2
+    },
+    {
+      "id": "C39",
+      "nome": "Daily Science Brief",
+      "prazo": "14d",
+      "receita_mensal_usd": 2500,
+      "calculo": "500 assinantes x $5/mes digest",
+      "case_real": "Morning Brew acquired $300M. Niche: $10K-100K",
+      "prioridade": 2
+    },
+    {
+      "id": "C40",
+      "nome": "Psychology Dictionary SEO",
+      "prazo": "14d",
+      "receita_mensal_usd": 3500,
+      "calculo": "500K visitas x $3 RPM + afiliados",
+      "case_real": "WebMD $1B valuation. PT-BR dictionary virgem",
+      "prioridade": 2
+    },
+    {
+      "id": "C41",
+      "nome": "Affiliate Auto-Rotator",
+      "prazo": "3d",
+      "receita_mensal_usd": 4200,
+      "calculo": "+40% EPC x receita atual",
+      "case_real": "Super affiliates EPC optim: 30-50% increase",
+      "prioridade": 2
+    },
+    {
+      "id": "C42",
+      "nome": "Corporate Mental Health SaaS",
+      "prazo": "60d",
+      "receita_mensal_usd": 15000,
+      "calculo": "30 empresas x $500/mes",
+      "case_real": "Wellhub R$3B valuation. Corporate $8B market",
+      "prioridade": 1
+    },
+    {
+      "id": "C43",
+      "nome": "Viral Psychology Quiz",
+      "prazo": "7d",
+      "receita_mensal_usd": 5500,
+      "calculo": "10K quizzes x 20% email x 5% conv x $100",
+      "case_real": "BuzzFeed 75% traffic quizzes. Psych = viral",
+      "prioridade": 1
+    },
+    {
+      "id": "C44",
+      "nome": "Open Source Dataset",
+      "prazo": "21d",
+      "receita_mensal_usd": 3000,
+      "calculo": "Citacoes → autoridade → grants $5K-50K/ano",
+      "case_real": "Psychology datasets Kaggle 10K-100K downloads",
+      "prioridade": 3
+    },
+    {
+      "id": "C45",
+      "nome": "Crisis Prevention SaaS",
+      "prazo": "90d",
+      "receita_mensal_usd": 20000,
+      "calculo": "40 clinicas x $500/mes triagem IA",
+      "case_real": "Woebot $114M raised. Crisis AI market",
+      "prioridade": 1
+    },
+    {
+      "id": "C46",
+      "nome": "Quantum Content Recycler",
+      "prazo": "3d",
+      "receita_mensal_usd": 4500,
+      "calculo": "1 Long → 37 formatos × receita media",
+      "case_real": "Gary Vee Content Model 64 micro-contents",
+      "prioridade": 1
+    },
+    {
+      "id": "C47",
+      "nome": "SSRN Academic Influence",
+      "prazo": "30d",
+      "receita_mensal_usd": 8000,
+      "calculo": "2 palestras x $2K + 4 consultorias x $500",
+      "case_real": "Academic thought leaders $5K-50K/palestra",
+      "prioridade": 2
+    },
+    {
+      "id": "C48",
+      "nome": "AI Therapy Journaling App",
+      "prazo": "45d",
+      "receita_mensal_usd": 15000,
+      "calculo": "1000 usuarios x $14.99/mes app",
+      "case_real": "Woebot $114M. Psychology apps $1B market",
+      "prioridade": 1
+    },
+    {
+      "id": "C49",
+      "nome": "IP Licensing Perpetual",
+      "prazo": "60d",
+      "receita_mensal_usd": 5000,
+      "calculo": "1000 faixas x 100 usos x royalties",
+      "case_real": "Music royalties $500-50K/mes perpetuo",
+      "prioridade": 3
+    },
+    {
+      "id": "C50",
+      "nome": "Quantum Brain API Service",
+      "prazo": "30d",
+      "receita_mensal_usd": 24500,
+      "calculo": "500 assinantes x $49/mes API access",
+      "case_real": "RapidAPI $100M+ revenue. Brain unico mercado",
+      "prioridade": 1
+    }
+  ]
+}
