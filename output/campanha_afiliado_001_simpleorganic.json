@@ -1,0 +1,59 @@
+{
+  "campanha_id": "camp_001",
+  "data": "2026-05-21",
+  "pesquisa_nicho": {
+    "nicho_top": "Skincare / Beleza Acessível",
+    "ranking": 1,
+    "por_que_funciona": "Apelo visual nato em vídeo curto. Compra emocional e por impulso. Público amplo: mulheres 16-45 anos classes A-D. Marcas brasileiras pagam comissão direta 10-25%.",
+    "comissao_range": "5-25%",
+    "plataformas": ["Shopee","Amazon","TikTok Shop BR"],
+    "hooks_top": [
+      "Comprei achando que era furada por R$19 e esse produto fez o que o de R$200 não fez",
+      "Minha dermato me indicou e mudou minha pele",
+      "Testei por 7 dias e não acredito no resultado"
+    ],
+    "ticket": "baixo R$20-80",
+    "saturacao": "media",
+    "facilidade_iniciante": 9,
+    "veredito": "Melhor nicho para primeiras comissões. Shopee Afiliados + TikTok Creators = menor fricção para R$500-2.000 primeiros"
+  },
+  "produto_escolhido": {
+    "produto": "Sérum Niacinamida 10% + Zinco 1%",
+    "marca": "Simplee Organic",
+    "preco": "R$34,90",
+    "comissao": "15%",
+    "comissao_valor": "R$5,23 por venda",
+    "site_oficial": "https://simpleorganic.com.br",
+    "beneficios_principais": [
+      "Reduz poros dilatados e marcas de acne",
+      "Controla oleosidade sem ressecar",
+      "Fórmula vegana aprovada dermatologista"
+    ],
+    "publico_comprador": "Mulheres 18-35 anos com pele oleosa mista, acne leve, buscando resultado rápido sem gastar muito",
+    "por_que_viral": "Preço acessível + resultado visível em 7 dias + ingrediente científico (niacinamida) + marca BR com boa reputação"
+  },
+  "video_ugc_prompt": {
+    "modelo": "Sidence 2.0 (Higfield AI)",
+    "duracao_segundos": 15,
+    "formato": "9:16 vertical",
+    "hook": "Comprei achando que era furada por R$34 e esse sérum fez o que o de R$200 não fez",
+    "fluxo": {
+      "0-3s": "HOOK: Câmera selfie noturna. Garota 22 anos, pele com marcas de acne leves, segurando o sérum Simplee. Fala de forma genuína e íntima.",
+      "3-8s": "PROBLEMA: Take cinematográfico, quarto escuro, olhando celular frustrada. Toca o rosto, luz azul iluminando parcialmente.",
+      "8-12s": "APLICAÇÃO: Aplicando sérum naturalmente no banheiro. Mostra textura real, pingando na mão, espalhando suavemente.",
+      "12-15s": "RESULTADO: Pele levemente melhorada mas natural. Expressão de satisfação genuína. Sérum visível."
+    },
+    "estetica": "Clean Beauty Premium. Iluminacao suave e realista. Aparencia organica e emocionalmente autentica.",
+    "disclosure_obrigatorio": "#publi #ad #conteudoIA - conforme CONAR Brasil"
+  },
+  "caption_pronta": "Testei o Sérum Niacinamida da @simpleorganic por 7 dias e não acredito no resultado 😱\n\nEsse aqui de R$34 fez o que o de R$200 não conseguiu!\n\nLink na bio ⬆️ pra pegar o seu!\n\n#publi #ad #skincare #niacinamida #achadinhos #shopee #simpleorganic",
+  "link_afiliado_template": "https://s.shopee.com.br/affiliate?url=simpleorganic&affid=SEU_ID_AQUI",
+  "previsao_ganhos": {
+    "se_1_venda_dia": "R$156/mes",
+    "se_5_vendas_dia": "R$783/mes",
+    "se_20_vendas_dia": "R$3.132/mes",
+    "plataformas_publicar": ["TikTok","Instagram Reels","YouTube Shorts","Shopee Feed"]
+  },
+  "status": "prompt_pronto_aguardando_higfield",
+  "proximo_passo": "Conectar Higfield via Claude Desktop para gerar o video UGC automaticamente"
+}
