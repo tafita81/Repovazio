@@ -1,0 +1,192 @@
+{
+  "gerado_em": "2026-05-22",
+  "objetivo": "Ativar $27.500/mes renda algoritmica sem compra",
+  "pausas": [
+    {
+      "id": "PAUSA_1",
+      "titulo": "Medium Partner Program",
+      "tempo_min": 20,
+      "renda_mes_usd": 2500,
+      "url": "https://medium.com/partner-program",
+      "arquivo_pronto": "output/medium_article_narcisismo_encoberto.md",
+      "passos": [
+        "Acesse medium.com/partner-program > Apply now",
+        "Nome: Daniela Coelho | Pais: Brazil",
+        "Conectar PayPal ou Stripe para recebimento",
+        "Apos aprovacao: Novo artigo > colar conteudo do arquivo pronto",
+        "Tags: psychology, narcissism, mental health, relationships",
+        "Publicar > compartilhar Instagram Stories",
+        "Repetir para artigos 2 e 3 (apego_ansioso, neurociencia_ansiedade)"
+      ],
+      "token_necessario": "Nenhum - apenas login browser",
+      "mecanismo": "Pago por tempo de leitura - nenhuma compra necessaria"
+    },
+    {
+      "id": "PAUSA_2",
+      "titulo": "Amuse.io + Stable Audio - Spotify em 48h",
+      "tempo_min": 90,
+      "renda_mes_usd": 5000,
+      "urls": [
+        "https://huggingface.co/spaces/stabilityai/stable-audio-open",
+        "https://amuse.io"
+      ],
+      "arquivo_pronto": "output/trilhas_spotify_psicologia_vol1.json",
+      "passos": [
+        "PARTE A - Gerar trilhas (45 min):",
+        "Abrir HF Stable Audio: huggingface.co/spaces/stabilityai/stable-audio-open",
+        "Abrir JSON das trilhas no GitHub: output/trilhas_spotify_psicologia_vol1.json",
+        "Para cada trilha: copiar campo prompt_stable_audio > colar no Stable Audio",
+        "Ajustar duracao conforme duracao_min no JSON",
+        "Gerar > Download WAV > nomear como '01 - Titulo.wav'",
+        "PARTE B - Upload Amuse (30 min):",
+        "Criar conta amuse.io (GRATIS)",
+        "New Release > Album > Titulo: Psicologia Sonora Vol. 1",
+        "Artista: Daniela Coelho | Genero: Ambient / Wellness",
+        "Upload 10 faixas WAV | Cover art 3000x3000px",
+        "Distribuir para Spotify Apple Music Amazon Music > Submit",
+        "Spotify recebe em 24-48h. Royalties: todo mes automatico."
+      ],
+      "token_necessario": "Nenhum - browser apenas",
+      "mecanismo": "$0.003-0.005 por stream - royalty automatico sem compra"
+    },
+    {
+      "id": "PAUSA_3",
+      "titulo": "ASCAP Registration - Royalties USA",
+      "tempo_min": 30,
+      "renda_mes_usd": 2000,
+      "url": "https://www.ascap.com/help/ascap-member-services/join-ascap",
+      "custo_unico": "$50 USD taxa de entrada",
+      "passos": [
+        "Acesse ascap.com > Join as Writer",
+        "Taxa: $50 USD unica (se recupera no 1o royalty)",
+        "Nome: Daniela Coelho | Pais: Brazil",
+        "Conta recebimento: PayPal email ou conta bancaria",
+        "Apos aprovacao: My Account > Register Works",
+        "Registrar cada uma das 10 trilhas do album",
+        "ASCAP paga automaticamente quando musica toca em radio/TV/podcast EUA"
+      ],
+      "token_necessario": "Nenhum - browser + cartao credito",
+      "mecanismo": "$0.005-0.10 por execucao publica - automatico perpetuo"
+    },
+    {
+      "id": "PAUSA_4",
+      "titulo": "KDP Kindle Unlimited - KENP pages",
+      "tempo_min": 45,
+      "renda_mes_usd": 8000,
+      "urls": [
+        "https://reedsy.com/write-a-book",
+        "https://kdp.amazon.com"
+      ],
+      "arquivo_pronto": "output/kdp_workbook_narcisismo_encoberto.md",
+      "passos": [
+        "PARTE A - Formatar EPUB (15 min):",
+        "Acesse reedsy.com/write-a-book (GRATIS)",
+        "New Book > Import Markdown",
+        "Copiar conteudo de output/kdp_workbook_narcisismo_encoberto.md",
+        "Export > EPUB",
+        "PARTE B - Publicar KDP (30 min):",
+        "Acesse kdp.amazon.com (login Amazon - criar gratis se nao tiver)",
+        "Create New Title > Kindle eBook",
+        "Titulo: Narcisismo Encoberto: Workbook de Recuperacao",
+        "Autor: Daniela Coelho",
+        "Keywords: narcissism, psychology, mental health, workbook, therapy",
+        "Upload EPUB do Reedsy",
+        "Preco: $0.00 para Kindle Unlimited ou $9.99 venda direta",
+        "IMPORTANTE: KDP Select > Enroll (mais promocoes)",
+        "Publish > disponivel em 24-72h",
+        "Cada pagina lida por assinante KU = $0.004 automatico"
+      ],
+      "token_necessario": "Nenhum - login Amazon",
+      "mecanismo": "$0.004/pagina lida - leitor nao compra, Amazon paga do pool KU"
+    },
+    {
+      "id": "PAUSA_5",
+      "titulo": "YouTube Content ID - 22 videos",
+      "tempo_min": 15,
+      "renda_mes_usd": 3000,
+      "url": "https://studio.youtube.com",
+      "passos": [
+        "Acesse studio.youtube.com",
+        "Login: psidanielacoelho1982@gmail.com",
+        "Menu esquerdo: Monetizacao",
+        "Secao: Content ID (ou Video Claims)",
+        "Enable Content ID para o canal",
+        "Selecionar todos os 22 videos",
+        "Configurar: quando alguem usar seu conteudo > Monetize (nao bloquear)",
+        "Salvar",
+        "Toda copia nao autorizada = royalty automatico para voce"
+      ],
+      "token_necessario": "Nenhum - YouTube Studio browser",
+      "mecanismo": "$0.10-5.00 por match - perpetuo automatico"
+    },
+    {
+      "id": "PAUSA_6",
+      "titulo": "YouTube Live 24/7 Lofi - AdSense continuo",
+      "tempo_min": 30,
+      "renda_mes_usd": 7000,
+      "urls": [
+        "https://obsproject.com",
+        "https://studio.youtube.com"
+      ],
+      "passos": [
+        "Baixar OBS Studio: obsproject.com (GRATIS)",
+        "Pegar trilhas WAV geradas no Passo 2",
+        "OBS: Sources > + > Media Source > selecionar WAV > marcar Loop",
+        "Adicionar imagem do canal como overlay",
+        "YouTube Studio > Create > Go Live",
+        "Titulo: Musica para Meditacao | Psicologia do Bem-Estar",
+        "Em OBS: Settings > Stream > YouTube > copiar Stream Key",
+        "OBS: Start Streaming > Live 24/7",
+        "AdSense paga automaticamente por todos os views"
+      ],
+      "token_necessario": "Nenhum - OBS + YouTube Studio",
+      "alternativa": "VPS $5/mes Digital Ocean para nao deixar PC ligado - me passe token DO",
+      "mecanismo": "AdSense continuo 24/7 - modelo Lofi Girl"
+    }
+  ],
+  "tokens_para_automacao_completa": [
+    {
+      "token": "GROQ_API_KEY",
+      "para": "Motor geração automatica 30 scripts/dia",
+      "como_pegar": "console.groq.com > Sign Up > API Keys > Create > começa com gsk_",
+      "custo": "GRATIS 6000 tokens/min",
+      "desbloqueia": "Pipeline 100% automatico sem intervencao"
+    },
+    {
+      "token": "DEEPL_API_KEY",
+      "para": "Traducao automatica 10 idiomas",
+      "como_pegar": "deepl.com/pro-api > Free 500K chars/mes > Authentication Key",
+      "custo": "GRATIS ate 500K chars",
+      "desbloqueia": "Canal EN DE FR JP KR = 5x receita AdSense"
+    },
+    {
+      "token": "HF_TOKEN",
+      "para": "Modelos TTS e Video HuggingFace",
+      "como_pegar": "huggingface.co/settings/tokens > New Token > Read > gera hf_...",
+      "custo": "GRATIS 500K modelos",
+      "desbloqueia": "TTS automatico + Video AI pipeline"
+    },
+    {
+      "token": "ASSEMBLYAI_API_KEY",
+      "para": "Recuperar 22 videos quebrados",
+      "como_pegar": "assemblyai.com > Sign Up > Dashboard > API Key",
+      "custo": "$2 total para 22 videos",
+      "desbloqueia": "22 videos recuperados e republicos"
+    },
+    {
+      "token": "GNEWS_API_KEY",
+      "para": "Breaking news videos em 6h",
+      "como_pegar": "gnews.io > Sign Up > Free 100 req/dia > API Key",
+      "custo": "GRATIS",
+      "desbloqueia": "Trend surfer automatico = 10x views medias"
+    }
+  ],
+  "resumo": {
+    "pausas_necessarias": 6,
+    "tempo_total_rafael_horas": 3.5,
+    "renda_ativada_mes_usd": 27500,
+    "tipo": "100% algoritmica - zero compras necessarias",
+    "tokens_necessarios_para_automacao_total": 5,
+    "todos_tokens_gratuitos": true
+  }
+}
