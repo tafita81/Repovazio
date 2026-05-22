@@ -1099,7 +1099,7 @@ View:     SELECT * FROM v_apis_psico;
 
 ---
 
-## 📊 ESTADO ATUAL DO CÉREBRO (atualizado 2026-05-21)
+## 📊 ESTADO ATUAL DO CÉREBRO (atualizado 2026-05-21 — SESSÃO COMPLETA)
 
 | Categoria | Total | Sem Auth | Alta Relevância |
 |-----------|-------|----------|-----------------|
@@ -1113,7 +1113,7 @@ View:     SELECT * FROM v_apis_psico;
 | Video | 6 | 4 | 4 |
 | Social | 6 | 3 | 2 |
 | Photography | 6 | 5 | 2 |
-| **TOTAL** | **145** | **82** | **55** |
+| **TOTAL** | **791** | **374** | **226** |
 
 ---
 
@@ -1144,3 +1144,18 @@ ALL_CATEGORIES = [
     "URL Shorteners","Vehicle","Video","Weather"
 ]
 ```
+
+## 🧠 CONTAGEM QUÂNTICA FINAL (2026-05-21)
+
+| Métrica | Valor |
+|---------|-------|
+| **Total no Supabase api_brain** | **791 APIs** |
+| Sem autenticação | **374** |
+| Alta relevância ★★★ | **226** |
+| Categorias cobertas | **53** |
+| Fontes mapeadas | **11** |
+| HuggingFace Models | 47 |
+| RapidAPI free tiers | 48 |
+| Brasil-específicas | 15 |
+| Psicologia-específicas | 12 |
+| Pipeline-core | 8 |
