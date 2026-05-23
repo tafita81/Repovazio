@@ -2,15 +2,31 @@ name: Vercel Deploy
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ vars.SKIP_VERCEL != 'true' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - run: npm i -g vercel
+      - name: Check Vercel Token
+        id: check
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "VERCEL_TOKEN not set — skipping deploy"
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
 
-      - run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+      - name: Install Vercel CLI
+        if: steps.check.outputs.skip == 'false'
+        run: npm i -g vercel
+
+      - name: Deploy to Vercel
+        if: steps.check.outputs.skip == 'false'
+        run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+        continue-on-error: true
