@@ -1,0 +1,35 @@
+name: Canal EN — Psicologia em Inglês
+
+on:
+  schedule:
+    - cron: "0 12 * * 1,3,5"  # Seg/Qua/Sex 09h BR
+  workflow_dispatch:
+    inputs:
+      tema_idx:
+        description: "Índice do tema (0-7)"
+        default: "0"
+      en_voice:
+        description: "Voz EN"
+        default: "en-US-JennyNeural"
+
+jobs:
+  en-content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests edge-tts --break-system-packages
+      - name: Generate EN content
+        env:
+          GROQ_API_KEY:   ${{ secrets.GROQ_API_KEY }}
+          TEMA_IDX:       ${{ github.event.inputs.tema_idx || '0' }}
+          EN_VOICE:       ${{ github.event.inputs.en_voice || 'en-US-JennyNeural' }}
+          GH_PAT:         ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/en_channel_engine.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: en-channel-content
+          path: output/en_channel/
+          retention-days: 30
