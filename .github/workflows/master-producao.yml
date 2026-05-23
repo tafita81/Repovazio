@@ -1,0 +1,60 @@
+name: Master Producao — Pipeline Completo Diário
+
+on:
+  schedule:
+    - cron: "0 10 * * *"   # 07h BR todo dia
+  workflow_dispatch:
+
+jobs:
+  producao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Install all deps
+        run: pip install requests edge-tts --break-system-packages
+
+      - name: Podcast Ep do dia
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TTS_VOICE:    pt-BR-FranciscaNeural
+          EPISODE_NUM:  "1"
+        run: python3 scripts/podcast_pipeline.py
+        continue-on-error: true
+
+      - name: Canal EN
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          EN_VOICE:     en-US-JennyNeural
+        run: python3 scripts/en_channel_engine.py
+        continue-on-error: true
+
+      - name: Bluesky 3 posts
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          BLUESKY_HANDLE:       ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          N_POSTS:              "3"
+        run: python3 scripts/bluesky_psicologia_bot.py
+        continue-on-error: true
+
+      - name: Quantum Brain Expand
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/brain_mass_expander.py
+        continue-on-error: true
+
+      - name: Upload artefatos
+        uses: actions/upload-artifact@v4
+        with:
+          name: producao-diaria-${{ github.run_id }}
+          path: |
+            output/podcasts/
+            output/en_channel/
+            output/newsletter/
+          retention-days: 30
