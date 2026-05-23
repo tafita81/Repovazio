@@ -1,95 +1,126 @@
 #!/usr/bin/env python3
 """
-en_channel_engine.py — Canal EN Automático
-Cruzamento: DeepL (500K chars/mes gratis) + LibreTranslate (no-auth backup) + Edge TTS EN
-
-IDEIA ÚNICA: Cada vídeo PT-BR do psicologia.doc é automaticamente:
-1. Traduzido para EN (DeepL 500K grátis/mês)
-2. Narrado em inglês (Edge TTS en-US-GuyNeural)
-3. Publicado no canal EN faceless
-
-5 canais de receita do mesmo conteúdo. RPM EN = 3-10x BR.
+en_channel_engine.py
+Traduz scripts PT-BR → EN + narra com Edge TTS EN + gera vídeo
+Canal EN = mesma produção, CPM $8-15 vs $1-3 BR = 5-8x mais renda
 """
+import os, asyncio, subprocess, json, requests
+from pathlib import Path
 
-import requests, os, asyncio
-from datetime import datetime
+GROQ_KEY = os.getenv("GROQ_API_KEY", "")
+SBU = os.getenv("SUPABASE_URL", "https://tpjvalzwkqwttvmszvie.supabase.co")
+SBK = os.getenv("SUPABASE_SERVICE_KEY", "")
 
-DEEPL_KEY = os.getenv("DEEPL_API_KEY","")
-SB_URL    = os.getenv("SUPABASE_URL","https://tpjvalzwkqwttvmszvie.supabase.co")
-SB_KEY    = os.getenv("SUPABASE_SERVICE_ROLE_KEY","")
+EN_VOICES = [
+    "en-US-JennyNeural",     # feminina natural EN-US
+    "en-US-GuyNeural",       # masculina natural EN-US
+    "en-GB-SoniaNeural",     # feminina British English
+    "en-AU-NatashaNeural",   # australiana — mercado Oceania
+]
 
-def traduzir_deepl(texto: str, idioma_alvo: str = "EN-US") -> str:
-    """DeepL API — 500K chars/mês grátis"""
-    if not DEEPL_KEY: return traduzir_libre(texto)
-    
-    r = requests.post("https://api-free.deepl.com/v2/translate",
-        headers={"Authorization": f"DeepL-Auth-Key {DEEPL_KEY}"},
-        json={"text": [texto], "target_lang": idioma_alvo, "source_lang": "PT"},
-        timeout=30)
-    
-    if r.status_code == 200:
-        return r.json()["translations"][0]["text"]
-    return traduzir_libre(texto)
+TEMAS_EN = [
+    ("covert narcissism", "5 Signs Nobody Talks About"),
+    ("anxious attachment", "Why We Sabotage Good Relationships"),
+    ("childhood trauma", "How It Shows Up in Adults"),
+    ("imposter syndrome", "What Harvard Research Actually Says"),
+    ("smiling depression", "When Pain Becomes Invisible"),
+    ("emotional burnout", "The Science of Real Exhaustion"),
+    ("gaslighting", "How to Recognize and Break Free"),
+    ("emotional boundaries", "Healthy vs Isolation"),
+]
 
-def traduzir_libre(texto: str) -> str:
-    """LibreTranslate backup — gratuito, sem auth"""
+def traduzir_groq(texto_pt, tema_en):
+    if not GROQ_KEY:
+        return None
+    prompt = f"""Translate this psychology script from Brazilian Portuguese to American English.
+Keep the same structure, tone, and scientific references.
+The topic is: {tema_en}
+Make it sound like a natural American psychology podcast host — warm, direct, science-based.
+Preserve [pause] markers and emotional beats.
+Return ONLY the translated script.
+
+ORIGINAL:
+{texto_pt[:3000]}"""
     try:
-        r = requests.post("https://libretranslate.com/translate",
-            json={"q": texto, "source": "pt", "target": "en", "format": "text"},
-            timeout=20)
+        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
+            json={"model": "llama-3.3-70b-versatile",
+                  "messages": [{"role": "user", "content": prompt}],
+                  "max_tokens": 2000, "temperature": 0.7},
+            timeout=60)
         if r.status_code == 200:
-            return r.json().get("translatedText", texto)
-    except:
-        pass
-    return texto
+            return r.json()["choices"][0]["message"]["content"]
+    except: pass
+    return None
 
-async def narrar_en(texto: str, output_path: str, voz: str = "en-US-GuyNeural"):
-    """Narrar em inglês com Edge TTS — gratuito, ilimitado"""
-    import edge_tts
-    communicate = edge_tts.Communicate(texto, voz)
-    await communicate.save(output_path)
+def gerar_script_en(tema, subtitulo):
+    if not GROQ_KEY: return None
+    prompt = f"""You are Dr. Sarah Mitchell, a Harvard-trained psychologist with a popular podcast.
+Write a complete 8-10 minute podcast script about: {tema} — {subtitulo}
 
-def processar_video_ptbr(video_id: str, script_ptbr: str, titulo_ptbr: str) -> dict:
-    """Traduz e prepara versão EN de um video PT-BR"""
+STRUCTURE:
+[HOOK 30s] - counter-intuitive opening fact
+[REAL CASE 90s] - anonymous clinical vignette
+[SCIENCE 2min] - cite real researchers: Malkin, van der Kolk, Gottman, Neff, Siegel
+[5 SIGNS 3min] - non-obvious, specific behavioral patterns
+[WHAT TO DO 90s] - 3 concrete, actionable steps
+[OUTRO 30s] - powerful closing + next episode tease
+
+TONE: Two smart friends talking. Direct, warm, evidence-based. American English.
+Use [pause] for natural pauses.
+Return ONLY the script."""
+    try:
+        r = requests.post("https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {GROQ_KEY}", "Content-Type": "application/json"},
+            json={"model": "llama-3.3-70b-versatile",
+                  "messages": [{"role": "user", "content": prompt}],
+                  "max_tokens": 2000, "temperature": 0.75},
+            timeout=60)
+        if r.status_code == 200:
+            return r.json()["choices"][0]["message"]["content"]
+    except: pass
+    return None
+
+async def narrar_en(texto, arquivo, voz="en-US-JennyNeural"):
+    try:
+        import edge_tts
+        texto_limpo = texto.replace("[pause]", " . ").replace("[HOOK]", "").replace("[SCIENCE]", "").replace("[SIGNS]", "").replace("[OUTRO]", "")
+        communicate = edge_tts.Communicate(texto_limpo[:5000], voz, rate="+8%")
+        await communicate.save(arquivo)
+        return True
+    except Exception as e:
+        print(f"EdgeTTS EN erro: {e}")
+        return False
+
+def run():
+    import time
+    tema_idx = int(os.getenv("TEMA_IDX", "0")) % len(TEMAS_EN)
+    tema, subtitulo = TEMAS_EN[tema_idx]
+    voz = os.getenv("EN_VOICE", "en-US-JennyNeural")
     
-    # 1. Traduzir título
-    titulo_en = traduzir_deepl(titulo_ptbr)
+    print(f"=== EN CHANNEL — {tema}: {subtitulo} ===")
+    out_dir = Path(os.getenv("GITHUB_WORKSPACE", ".")) / "output" / "en_channel"
+    out_dir.mkdir(parents=True, exist_ok=True)
     
-    # 2. Traduzir script
-    script_en = traduzir_deepl(script_ptbr)
-    
-    # 3. Adaptar titulo para EN (mais clickbait)
-    # Padrões que funcionam em EN:
-    titulo_en_viral = titulo_en
-    if "Narcisismo" in titulo_ptbr:
-        titulo_en_viral = titulo_en.replace("Narcissism", "Covert Narcissism")
-    
-    resultado = {
-        "video_id_ptbr": video_id,
-        "titulo_en": titulo_en_viral,
-        "script_en": script_en[:500],
-        "voz_en": "en-US-GuyNeural",
-        "canal_destino": "EN Psychology Channel (faceless)",
-        "rpm_estimado": "$5-15 USD",
-        "status": "traduzido",
-        "data": datetime.now().isoformat()
-    }
-    
-    # Salvar no Supabase
-    if SB_KEY:
-        requests.post(f"{SB_URL}/rest/v1/en_channel_queue",
-            headers={"apikey": SB_KEY, "Authorization": f"Bearer {SB_KEY}",
-                     "Content-Type": "application/json"},
-            json=resultado, timeout=15)
-    
-    return resultado
+    # Gerar script EN
+    print("1. Gerando script EN via Groq...")
+    script = gerar_script_en(tema, subtitulo)
+    if script:
+        script_path = out_dir / f"en_ep{tema_idx+1:02d}_{tema.replace(' ','_')}.md"
+        with open(script_path, "w") as f:
+            f.write(f"# {tema.title()} — {subtitulo}\n\n{script}")
+        print(f"   Script salvo: {script_path.name}")
+        
+        # Narrar EN
+        print(f"2. Narrando com Edge TTS {voz}...")
+        narr = str(out_dir / f"en_ep{tema_idx+1:02d}_{tema.replace(' ','_')}.mp3")
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        ok = loop.run_until_complete(narrar_en(script, narr, voz))
+        if ok:
+            print(f"   Narração: {narr}")
+    else:
+        print("   Groq indisponível — script não gerado")
 
 if __name__ == "__main__":
-    # Testar com o video #683
-    resultado = processar_video_ptbr(
-        "683",
-        "O narcisista mais perigoso não humilha. Ele faz você se sentir culpada por machucá-lo.",
-        "Narcisismo Encoberto: Os 7 Sinais Que Ele Está Te Manipulando Sem Você Perceber"
-    )
-    print(f"EN Title: {resultado['titulo_en']}")
-    print(f"Status: {resultado['status']}")
+    run()
