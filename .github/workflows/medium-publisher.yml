@@ -1,4 +1,4 @@
-name: Medium Publisher — 5 Artigos Psicologia
+name: Medium Publisher PT — 9 Artigos
 
 on:
   workflow_dispatch:
@@ -11,9 +11,9 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
       - run: pip install requests --break-system-packages
-      - name: Publicar artigos no Medium
+      - name: Publicar artigos PT
         env:
-          MEDIUM_TOKEN:       ${{ secrets.MEDIUM_TOKEN }}
-          GH_PAT:             ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY:  ${{ github.repository }}
+          MEDIUM_TOKEN: ${{ secrets.MEDIUM_TOKEN }}
+          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: python3 scripts/medium_publisher.py
