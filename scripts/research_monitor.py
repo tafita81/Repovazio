@@ -89,7 +89,7 @@ def gerar_script_baseado_em_paper(paper: dict) -> dict:
     if not GROQ_KEY: return {}
     
     prompt = f"""
-Você é Daniela Coelho, psicóloga brasileira que explica ciência de forma acessível.
+Você é Daniela Coelho, pesquisadora de comportamento humano brasileira que explica ciência de forma acessível.
 
 Um novo paper científico foi publicado:
 Título (EN): {paper.get('titulo_en','')}
