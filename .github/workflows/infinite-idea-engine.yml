@@ -20,10 +20,12 @@ jobs:
           NVIDIA_API_KEY:            ${{ secrets.NVIDIA_API_KEY }}
           SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        continue-on-error: true
         run: python3 scripts/infinite_idea_engine.py
       - name: Quantum Brain Combinatorial
         env:
           GROQ_API_KEY:              ${{ secrets.GROQ_API_KEY }}
           SUPABASE_URL:              ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        continue-on-error: true
         run: python3 scripts/quantum_brain_engine.py 5
