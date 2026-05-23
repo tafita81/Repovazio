@@ -1,0 +1,36 @@
+name: Podcast — Gerar Temporada 1 Completa (8 eps)
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: "Episódio específico (1-8) ou 'all' para todos"
+        default: "all"
+
+jobs:
+  podcast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests edge-tts --break-system-packages
+      
+      - name: Gerar todos os episódios
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TTS_VOICE:    pt-BR-FranciscaNeural
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            echo "=== Episódio $i ==="
+            EPISODE_NUM=$i python3 scripts/podcast_pipeline.py || true
+            sleep 5
+          done
+      
+      - name: Upload todos os MP3s
+        uses: actions/upload-artifact@v4
+        with:
+          name: podcast-temporada-1
+          path: output/podcasts/
+          retention-days: 90
