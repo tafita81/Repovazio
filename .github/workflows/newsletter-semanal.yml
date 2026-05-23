@@ -1,0 +1,25 @@
+name: Newsletter Semanal — Substack
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"   # Toda segunda 06h BR — enviar newsletter semana
+  workflow_dispatch:
+
+jobs:
+  newsletter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Generate newsletter
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/newsletter_engine.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-week
+          path: output/newsletter/
+          retention-days: 14
