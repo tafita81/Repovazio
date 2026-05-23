@@ -1,6 +1,6 @@
 # Apego Ansioso: Por Que Sabotamos os Relacionamentos Que Mais Queremos
 
-*Por Daniela Coelho | Psicóloga*
+*Por Daniela Coelho | Daniela Coelho*
 
 ---
 
@@ -10,7 +10,7 @@ Se sim, você provavelmente conhece o apego ansioso — não pela teoria, mas pe
 
 ## O Que a Ciência Diz (de Verdade)
 
-Em 1969, a psicóloga Mary Ainsworth conduziu o que ficou conhecido como o "Procedimento da Situação Estranha". Ela observou bebês sendo brevemente separados e reunidos com seus cuidadores.
+Em 1969, a pesquisadora de comportamento humano Mary Ainsworth conduziu o que ficou conhecido como o "Procedimento da Situação Estranha". Ela observou bebês sendo brevemente separados e reunidos com seus cuidadores.
 
 Alguns bebês exploravam o ambiente com confiança quando o cuidador estava presente. Quando ele saía, ficavam angustiados. Quando voltava, se acalmavam rapidamente e voltavam a explorar. Ainsworth chamou isso de apego seguro.
 
@@ -74,4 +74,4 @@ Você não escolheu esse padrão. Mas você pode escolher — com tempo, com apo
 
 ---
 
-*Daniela Coelho é psicóloga especialista em relações interpessoais e saúde mental. Referências: Ainsworth (1969), Siegel (2010), Gottman (2015), Johnson (2019).*
+*Daniela Coelho é pesquisadora de comportamento humano especialista em relações interpessoais e saúde mental. Referências: Ainsworth (1969), Siegel (2010), Gottman (2015), Johnson (2019).*
