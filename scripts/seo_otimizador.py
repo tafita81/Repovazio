@@ -76,7 +76,7 @@ REGRAS SEO 2026:
 2. Descrição linha 1-2: keyword + promessa (indexado pelo Google como snippet)
 3. Descrição total: 400-500 palavras com keywords naturais + chapters + links
 4. Tags: exatamente 15 tags relevantes
-5. NUNCA usar "psicóloga" ou "CRP"
+5. NUNCA usar "pesquisadora de comportamento humano" ou "CRP"
 
 Responda APENAS em JSON válido:
 {{
