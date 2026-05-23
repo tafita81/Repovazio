@@ -1,0 +1,22 @@
+name: Medium Publisher — 5 Artigos Cientificos
+
+on:
+  workflow_dispatch:
+    inputs:
+      medium_token:
+        description: "Medium Integration Token (pegar em medium.com/me/settings)"
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install requests --break-system-packages
+      - name: Publicar artigos Medium
+        env:
+          MEDIUM_TOKEN: ${{ github.event.inputs.medium_token }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/medium_publisher.py
