@@ -10,7 +10,7 @@ Fernanda chegou ao consultório dizendo que estava "ficando louca". Seu namorado
 Fernanda não estava ficando louca. Estava sendo sistematicamente manipulada.
 
 [CIÊNCIA]
-Jennifer Freyd, psicóloga da Universidade de Oregon, cunhou o conceito de "traição-trauma": quando a fonte de dano é também a fonte de cuidado, o sistema cognitivo muitas vezes blinda a percepção do dano. É uma adaptação de sobrevivência — é difícil reconhecer abuso de quem você depende ou ama.
+Jennifer Freyd, pesquisadora de comportamento humano da Universidade de Oregon, cunhou o conceito de "traição-trauma": quando a fonte de dano é também a fonte de cuidado, o sistema cognitivo muitas vezes blinda a percepção do dano. É uma adaptação de sobrevivência — é difícil reconhecer abuso de quem você depende ou ama.
 
 [pausa]
 
