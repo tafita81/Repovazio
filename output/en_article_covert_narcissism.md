@@ -1,6 +1,6 @@
 # Covert Narcissism: 5 Signs Nobody Talks About (And Why Science Explains Them)
 
-*By Dr. Sarah Mitchell | Psychology*
+*By Sarah Mitchell | Behavioral Research*
 
 ---
 
@@ -10,7 +10,7 @@ This is covert narcissism — and it's far more difficult to recognize, far more
 
 ## What Research Actually Shows
 
-Craig Malkin, a clinical psychologist at Harvard Medical School, spent years studying what he calls the "narcissism spectrum." His finding? Covert narcissism manifests through hypersensitivity to recognition — not direct attention-seeking.
+Craig Malkin, a behavioral researcher at Harvard Medical School, spent years studying what he calls the "narcissism spectrum." His finding? Covert narcissism manifests through hypersensitivity to recognition — not direct attention-seeking.
 
 The covert narcissist doesn't brag. They suffer. They're the one who seems perpetually wounded, overlooked, and victimized. And paradoxically, they draw enormous amounts of attention and care through this suffering.
 
