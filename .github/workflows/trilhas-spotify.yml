@@ -1,0 +1,24 @@
+name: Trilhas Spotify — Preparar Upload Amuse
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trilhas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Prepare Amuse guide
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GH_PAT:       ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/trilhas_spotify_uploader.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trilhas-guia
+          path: output/trilhas/
+          retention-days: 30
