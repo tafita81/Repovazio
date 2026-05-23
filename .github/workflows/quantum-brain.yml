@@ -2,7 +2,7 @@ name: Quantum Brain Auto-Combinatorial
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 * * * *"   # A cada hora
   workflow_dispatch:
     inputs:
       n:
