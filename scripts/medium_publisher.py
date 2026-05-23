@@ -1,40 +1,25 @@
 #!/usr/bin/env python3
-"""medium_publisher.py — publica 9 artigos PT no Medium"""
+"""medium_publisher.py — 12 artigos PT no Medium"""
 import os, requests, base64, time
 
 MEDIUM_TOKEN = os.getenv("MEDIUM_TOKEN", "")
-GH_PAT       = os.getenv("GH_PAT", os.getenv("GITHUB_TOKEN", ""))
-REPO         = os.getenv("GITHUB_REPOSITORY", "tafita81/Repovazio")
-BIO = "Daniela Coelho · Pesquisa e Conteúdo em Psicologia · @psidanielacoelho"
+GH_PAT = os.getenv("GH_PAT", os.getenv("GITHUB_TOKEN", ""))
+REPO  = os.getenv("GITHUB_REPOSITORY", "tafita81/Repovazio")
+BIO   = "Daniela Coelho · Pesquisa e Conteúdo em Psicologia · @psidanielacoelho"
 
 ARTIGOS = [
-    {"file":"output/medium_article_narcisismo_encoberto.md",
-     "titulo":"Narcisismo Encoberto: 5 Sinais Que Ninguém Percebe (e a Ciência Explica Por Quê)",
-     "tags":["psicologia","saude-mental","narcisismo","relacoes","autoconhecimento"]},
-    {"file":"output/medium_article_apego_ansioso.md",
-     "titulo":"Apego Ansioso: Por Que Sabotamos os Relacionamentos Que Mais Queremos",
-     "tags":["psicologia","apego","relacoes","saude-mental","comportamento"]},
-    {"file":"output/medium_article_neurociencia_ansiedade.md",
-     "titulo":"Neurociência da Ansiedade: O Que Acontece no Seu Cérebro (e Por Que Isso Muda Tudo)",
-     "tags":["neurociencia","ansiedade","psicologia","cerebro","saude-mental"]},
-    {"file":"output/medium_article_impostor.md",
-     "titulo":"Síndrome do Impostor: Por Que Pessoas Competentes Se Sentem Fraudes",
-     "tags":["psicologia","carreira","autoconhecimento","saude-mental","performance"]},
-    {"file":"output/medium_article_trauma_desenvolvimento.md",
-     "titulo":"Trauma de Desenvolvimento: Como a Infância Molda o Adulto Que Você É",
-     "tags":["trauma","psicologia","infancia","saude-mental","relacoes"]},
-    {"file":"output/medium_article_gaslighting.md",
-     "titulo":"Gaslighting: Como Identificar e Sair Quando a Realidade Parece Escorregadia",
-     "tags":["psicologia","gaslighting","relacoes","saude-mental","trauma"]},
-    {"file":"output/medium_article_validacao.md",
-     "titulo":"Vício em Validação: Por Que Precisamos de Aprovação o Tempo Todo",
-     "tags":["psicologia","redes-sociais","autoestima","saude-mental","comportamento"]},
-    {"file":"output/medium_article_critica.md",
-     "titulo":"Por Que Críticas Doem Tanto (E O Que a Neurociência Diz Para Fazer Com Isso)",
-     "tags":["psicologia","neurociencia","feedback","saude-mental","autoconhecimento"]},
-    {"file":"output/medium_article_amigos.md",
-     "titulo":"Por Que É Tão Difícil Fazer Amigos na Vida Adulta (E O Que Pesquisas Mostram)",
-     "tags":["psicologia","amizade","solidao","relacoes","saude-mental"]},
+    {"file":"output/medium_article_narcisismo_encoberto.md","titulo":"Narcisismo Encoberto: 5 Sinais Que Ninguém Percebe","tags":["psicologia","narcisismo","relacoes","saude-mental","autoconhecimento"]},
+    {"file":"output/medium_article_apego_ansioso.md","titulo":"Apego Ansioso: Por Que Sabotamos o Que Mais Queremos","tags":["psicologia","apego","relacoes","saude-mental","comportamento"]},
+    {"file":"output/medium_article_neurociencia_ansiedade.md","titulo":"Neurociência da Ansiedade: O Que Acontece no Seu Cérebro","tags":["neurociencia","ansiedade","psicologia","cerebro","saude-mental"]},
+    {"file":"output/medium_article_impostor.md","titulo":"Síndrome do Impostor: Por Que Competentes Se Sentem Fraudes","tags":["psicologia","carreira","autoconhecimento","saude-mental","performance"]},
+    {"file":"output/medium_article_trauma_desenvolvimento.md","titulo":"Trauma de Desenvolvimento: Como a Infância Molda o Adulto","tags":["trauma","psicologia","infancia","saude-mental","relacoes"]},
+    {"file":"output/medium_article_gaslighting.md","titulo":"Gaslighting: Como Identificar Quando a Realidade Parece Escorregadia","tags":["psicologia","gaslighting","relacoes","saude-mental","trauma"]},
+    {"file":"output/medium_article_validacao.md","titulo":"Vício em Validação: Por Que Precisamos de Aprovação o Tempo Todo","tags":["psicologia","redes-sociais","autoestima","saude-mental","comportamento"]},
+    {"file":"output/medium_article_critica.md","titulo":"Por Que Críticas Doem Tanto","tags":["psicologia","neurociencia","feedback","saude-mental","autoconhecimento"]},
+    {"file":"output/medium_article_amigos.md","titulo":"Por Que É Tão Difícil Fazer Amigos na Vida Adulta","tags":["psicologia","amizade","solidao","relacoes","saude-mental"]},
+    {"file":"output/medium_article_amor_proprio.md","titulo":"Amor Próprio Não É O Que as Redes Sociais Vendem","tags":["psicologia","autocompaixao","saude-mental","autoestima","comportamento"]},
+    {"file":"output/medium_article_raiva.md","titulo":"Raiva Não É O Problema — O Que Você Faz Com Ela É","tags":["psicologia","emocoes","raiva","saude-mental","neurociencia"]},
+    {"file":"output/medium_article_procrastinacao.md","titulo":"Procrastinação Não É Preguiça — É Regulação Emocional","tags":["psicologia","procrastinacao","produtividade","saude-mental","comportamento"]},
 ]
 
 def get_file(path):
@@ -58,19 +43,17 @@ def publicar(user_id, titulo, content, tags):
 
 def run():
     if not MEDIUM_TOKEN:
-        print("MEDIUM_TOKEN ausente.")
-        print("medium.com/me/settings → Integration Tokens → gerar token")
-        print("GitHub: tafita81/Repovazio → Settings → Secrets → MEDIUM_TOKEN")
+        print("Adicione MEDIUM_TOKEN nas GitHub Secrets")
+        print("medium.com/me/settings → Integration Tokens → criar token")
         return
     user_id = uid()
     if not user_id: return
-    print(f"Publicando {len(ARTIGOS)} artigos PT no Medium...")
     for i, art in enumerate(ARTIGOS):
         content = get_file(art["file"])
-        if not content: print(f"  [{i+1}] ❌ arquivo não encontrado"); continue
+        if not content: print(f"[{i+1}] ❌ arquivo não encontrado"); continue
         url = publicar(user_id, art["titulo"], content, art["tags"])
         ok = "medium.com" in url
-        print(f"  [{i+1}] {'✅' if ok else '❌'} {art['titulo'][:55]}")
+        print(f"[{i+1}] {'✅' if ok else '❌'} {art['titulo'][:55]}")
         time.sleep(5)
 
 if __name__ == "__main__":
