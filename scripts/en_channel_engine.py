@@ -55,7 +55,7 @@ ORIGINAL:
 
 def gerar_script_en(tema, subtitulo):
     if not GROQ_KEY: return None
-    prompt = f"""You are Dr. Sarah Mitchell, a Harvard-trained psychologist with a popular podcast.
+    prompt = f"""You are Sarah Mitchell, a Harvard-trained behavioral researcher with a popular podcast.
 Write a complete 8-10 minute podcast script about: {tema} — {subtitulo}
 
 STRUCTURE:
