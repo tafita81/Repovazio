@@ -1,0 +1,38 @@
+name: YouTube Live 🇲🇽 ES — México/España/Colombia
+
+on:
+  workflow_dispatch:
+    inputs:
+      horas:
+        description: "Horas"
+        default: "6"
+  schedule:
+    # Primetime México (CST = UTC-6): 20h-24h = UTC 02-06
+    # Primetime España (CET = UTC+1): 20h-24h = UTC 19-23
+    - cron: "0 2,8,14,19 * * *"
+
+jobs:
+  live-es:
+    runs-on: ubuntu-latest
+    timeout-minutes: 375
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests --break-system-packages
+      - name: Check stream key
+        run: |
+          [ -z "$YOUTUBE_STREAM_KEY_ES" ] && [ -z "$YOUTUBE_STREAM_KEY" ] && echo "Need YOUTUBE_STREAM_KEY_ES" && exit 1
+          echo "✅ Stream key ES OK"
+        env:
+          YOUTUBE_STREAM_KEY_ES: ${{ secrets.YOUTUBE_STREAM_KEY_ES }}
+          YOUTUBE_STREAM_KEY:    ${{ secrets.YOUTUBE_STREAM_KEY }}
+      - name: Live ES 24/7
+        env:
+          YOUTUBE_STREAM_KEY_ES: ${{ secrets.YOUTUBE_STREAM_KEY_ES }}
+          YOUTUBE_STREAM_KEY:    ${{ secrets.YOUTUBE_STREAM_KEY }}
+          GROQ_API_KEY:          ${{ secrets.GROQ_API_KEY }}
+        run: timeout $((${HORAS:-6} * 3600)) python3 scripts/live_global_es.py || true
+        continue-on-error: true
