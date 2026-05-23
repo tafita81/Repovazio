@@ -65,7 +65,7 @@ Regras:
 - Segunda pessoa (você)
 - Gera curiosidade irresistível
 - SEO: inclua palavra-chave principal da série
-- NÃO use "psicóloga", "CRP" ou termos médicos
+- NÃO use "pesquisadora de comportamento humano", "CRP" ou termos médicos
 - Responda APENAS com o título, sem aspas"""
     
     try:
