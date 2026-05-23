@@ -36,7 +36,7 @@ TEMAS = [
 ]
 
 FORMATOS = [
-    "Revele um insight contra-intuitivo sobre {tema}. Máximo 280 caracteres, sem bullet points. Tom: Daniela Coelho, psicóloga empática e direta. Comece com fato surpreendente.",
+    "Revele um insight contra-intuitivo sobre {tema}. Máximo 280 caracteres, sem bullet points. Tom: Daniela Coelho, pesquisadora de comportamento humano empática e direta. Comece com fato surpreendente.",
     "Qual é o mecanismo neural por trás de {tema}? Explique em 1 frase científica + 1 implicação prática. Total: 280 chars. Cite 1 pesquisador (nome real).",
     "Complete: 'A maioria das pessoas não sabe que {tema}...' — continue em 250 chars. Ângulo: revelar algo que parece óbvio mas não é.",
     "3 sinais de {tema} que ninguém fala. Formato: sem numeração, fluido, 275 chars máx. Tom: revelação, não lista clínica.",
@@ -48,7 +48,7 @@ def gerar_post(tema):
         return f"Sobre {tema}: a ciência revela padrões que mudam como entendemos nossas relações. O que você percebe em si mesmo?"
     
     fmt = random.choice(FORMATOS).format(tema=tema)
-    prompt = f"""Você é Daniela Coelho (@psidanielacoelho), psicóloga brasileira.
+    prompt = f"""Você é Daniela Coelho (@psidanielacoelho), pesquisadora de comportamento humano brasileira.
 Escreva um post para o Bluesky (máximo 280 caracteres) sobre: {tema}
 Instrução: {fmt}
 REGRAS: sem hashtags, sem emojis excessivos (max 1), sem aspas, sem "Daniela:", sem bullets.
