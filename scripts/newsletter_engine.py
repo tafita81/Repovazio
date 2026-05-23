@@ -42,7 +42,7 @@ def gerar_newsletter(paper):
         return None
     
     semana = datetime.now().strftime("%d/%m/%Y")
-    prompt = f"""Você é Daniela Coelho, psicóloga criadora da newsletter "Mente em Foco".
+    prompt = f"""Você é Daniela Coelho, pesquisadora de comportamento humano criadora da newsletter "Mente em Foco".
 Escreva a edição dessa semana ({semana}) baseada neste paper:
 
 Título: {paper['title']}
@@ -67,7 +67,7 @@ FORMATO (markdown para Substack):
 *Próxima semana: [próximo tema relacionado]*
 *Se esse conteúdo te ajudou, encaminhe para alguém.*
 
-TOM: newsletter inteligente de psicóloga com quem se pode confiar. PT-BR fluente.
+TOM: newsletter inteligente de pesquisadora de comportamento humano com quem se pode confiar. PT-BR fluente.
 Sem jargão excessivo. Com profundidade real."""
 
     try:
