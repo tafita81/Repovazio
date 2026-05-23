@@ -98,7 +98,7 @@ def gerar_script_multiagente(topico):
     prompt = (f"Crie um roteiro de 300 palavras sobre psicologia: {topico}. "
               "Formato: Hook impactante (1 frase) + 4 paragrafos cientificos + "
               "CTA que retorna agencia ao espectador. "
-              "Cite 1 pesquisador real. Tom: Daniela Coelho, psicóloga brasileira. "
+              "Cite 1 pesquisador real. Tom: Daniela Coelho, pesquisadora de comportamento humano brasileira. "
               "Apenas o roteiro, sem explicacao.")
     agentes = ["groq_llama","nvidia_deep","gemini_flash"]
     for ag in agentes:
