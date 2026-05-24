@@ -1,0 +1,14 @@
+# Deploy Version
+last_update: 2026-05-24T16:12:17.258772
+pages:
+  - /psicologia-para-dormir
+  - /dashboard
+  - /cerebro
+features:
+  - whatsapp_produto
+  - instagram_reels_producer
+  - calendario_30dias
+  - funil_completo
+  - llm_router_v5
+revenue_streams: 6
+status: production
