@@ -1,369 +1,103 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ψ Hub — psicologia.doc V42</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;600&display=swap" rel="stylesheet">
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ Hub — psicologia.doc</title>
 <style>
-:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;
-  --v:#7C3AED;--r:#E11D48;--g:#F59E0B;--t:#0D9488;--grn:#10B981;--w:#25D366;
-  --m:#C4B5FD;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh}
-
-/* HEADER */
-.hdr{position:sticky;top:0;z-index:100;background:rgba(6,6,15,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.logo{font-size:22px;font-weight:900;color:var(--m);font-family:serif}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite;flex-shrink:0}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.kpis{display:flex;gap:14px;margin-left:auto;flex-wrap:wrap}
-.kpi-n{font-size:18px;font-weight:900;line-height:1;display:block}
-.kpi-l{font-size:7px;color:var(--t3);font-family:"DM Mono",monospace}
-
-/* ALERT */
-.alert{background:rgba(225,29,72,.05);border:1px solid rgba(225,29,72,.2);border-radius:10px;padding:10px 16px;margin:14px 20px 0;font-size:11px;color:#FCA5A5;line-height:1.6}
-.alert strong{color:#fff}.alert a{color:var(--g)}
-
-/* LAYOUT */
-.wrap{max-width:1500px;margin:0 auto;padding:14px 20px 80px}
-.sec{margin-bottom:20px}
-.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--bd)}
-.sec-ico{font-size:15px}.sec-ttl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--t2)}
-.sec-sub{font-size:8px;color:var(--t3);font-family:"DM Mono",monospace;margin-left:auto}
-
-/* GRIDS */
-.g7{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
-.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
-.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-
-/* CARD */
-.c{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:11px 12px;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:4px;transition:.15s;position:relative;overflow:hidden}
-.c:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.5)}
-.cv:hover{border-color:rgba(124,58,237,.4)}.cr:hover{border-color:rgba(225,29,72,.4)}
-.cg:hover{border-color:rgba(245,158,11,.4)}.ct:hover{border-color:rgba(13,148,136,.4)}
-.cgr:hover{border-color:rgba(16,185,129,.4)}.cw:hover{border-color:rgba(37,211,102,.4)}
-.c-wide{grid-column:span 2}
-.c-dest{background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(225,29,72,.06));border-color:rgba(124,58,237,.18)}
-.c-ico{font-size:18px;position:relative;z-index:1}
-.c-ttl{font-size:11px;font-weight:700;color:var(--t1);line-height:1.2;position:relative;z-index:1}
-.c-dsc{font-size:9px;color:var(--t2);line-height:1.4;position:relative;z-index:1}
-.badge{position:absolute;top:7px;right:7px;font-size:7px;font-family:"DM Mono",monospace;padding:2px 6px;border-radius:10px;font-weight:700;z-index:2}
-.b-live{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
-.b-new{background:rgba(124,58,237,.2);color:var(--m);border:1px solid rgba(124,58,237,.3)}
-.b-hot{background:rgba(225,29,72,.15);color:#FCA5A5;border:1px solid rgba(225,29,72,.3)}
-.b-go{background:rgba(245,158,11,.15);color:var(--g);border:1px solid rgba(245,158,11,.3)}
-
-/* ETAPAS PIPELINE */
-.pipe{display:flex;gap:0;margin-bottom:20px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
-.pe{flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--bd);position:relative;transition:.15s;cursor:pointer}
-.pe:last-child{border-right:none}
-.pe:hover{background:rgba(255,255,255,.03)}
-.pe-n{font-size:18px;font-weight:900;line-height:1}
-.pe-l{font-size:8px;font-family:"DM Mono",monospace;color:var(--t3);margin-top:2px}
-.pe-arr{position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:16px;height:16px;background:var(--s2);border:1px solid var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;z-index:2;color:var(--t3)}
-
-/* VÍDEOS TABLE */
-.vt{width:100%;border-collapse:collapse;font-size:10px}
-.vt th{font-size:7px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:"DM Mono",monospace;padding:5px 8px;text-align:left;border-bottom:1px solid var(--bd)}
-.vt td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
-.vt tr:hover td{background:rgba(255,255,255,.02)}
-.vt .ytitle{font-weight:700;color:var(--t1);max-width:260px}
-.stag{font-size:7px;font-family:"DM Mono",monospace;padding:1px 5px;border-radius:5px;background:rgba(124,58,237,.12);color:var(--m);border:1px solid rgba(124,58,237,.2)}
-.plat{font-size:7px;color:var(--t3);font-family:"DM Mono",monospace}
-
-/* SÉRIES */
-.serie-c{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:10px 11px}
-.sc-hdr{display:flex;align-items:center;gap:5px;margin-bottom:5px}
-.sc-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-top:5px}
-.sc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--v),var(--r))}
-.sc-nums{display:flex;justify-content:space-between;font-size:8px;color:var(--t3);font-family:"DM Mono",monospace;margin-top:2px}
-
-@media(max-width:1200px){.g7{grid-template-columns:repeat(4,1fr)}.g6{grid-template-columns:repeat(3,1fr)}.g5{grid-template-columns:repeat(3,1fr)}.pipe{flex-wrap:wrap}}
-@media(max-width:800px){.g7,.g6,.g5,.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}.kpis{display:none}}
+:root{--bg:#06060F;--card:#0F0F1A;--p:#7C3AED;--r:#E11D48;--g:#22C55E;--y:#F59E0B;--t:#0D9488;--txt:#F1F5F9;--muted:#94A3B8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif}
+header{padding:12px 18px;border-bottom:1px solid #1E1E33;display:flex;align-items:center;gap:8px;position:sticky;top:0;background:var(--bg);z-index:10}
+.logo{font-weight:800;font-size:1rem;background:linear-gradient(135deg,#A78BFA,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+main{max-width:1000px;margin:0 auto;padding:14px}
+h2{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #1E1E33}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:6px}
+.card{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:12px;text-decoration:none;color:var(--txt);display:block;transition:border-color .15s}
+.card:hover{border-color:#7C3AED}
+.card .icon{font-size:1.4rem;margin-bottom:6px}
+.card .name{font-size:.82rem;font-weight:700;margin-bottom:2px}
+.card .desc{font-size:.72rem;color:var(--muted)}
+.card .status{font-size:.65rem;margin-top:5px;padding:2px 6px;border-radius:99px;display:inline-block}
+.ok{background:#22C55E22;color:#22C55E;border:1px solid #22C55E33}
+.pend{background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B33}
+.new{background:#7C3AED22;color:#A78BFA;border:1px solid #7C3AED33}
+footer{text-align:center;padding:12px;color:var(--muted);font-size:.68rem;border-top:1px solid #1E1E33;margin-top:16px}
 </style>
-</head><body>
-
-<header class="hdr">
-  <span class="logo">ψ</span>
-  <span style="font-size:12px;font-weight:700;color:var(--t1)">psicologia<span style="color:var(--m)">.doc</span> V42</span>
-  <span class="dot"></span>
-  <div class="kpis">
-    <div><span class="kpi-n" id="h-mp4" style="color:var(--r)">16</span><span class="kpi-l">MP4 PRONTOS</span></div>
-    <div><span class="kpi-n" id="h-fila" style="color:var(--m)">466</span><span class="kpi-l">FILA LLM</span></div>
-    <div><span class="kpi-n" style="color:var(--grn)">51</span><span class="kpi-l">CRONS</span></div>
-    <div><span class="kpi-n" style="color:var(--g)">20</span><span class="kpi-l">SÉRIES</span></div>
-    <div><span class="kpi-n" id="h-pub" style="color:var(--t3)">0</span><span class="kpi-l">PUBLICADOS</span></div>
-  </div>
+</head>
+<body>
+<header>
+  <span>ψ</span><span class="logo">psicologia.doc — Hub Completo</span>
+  <span style="margin-left:auto;font-size:.7rem;color:var(--muted)" id="ts"></span>
 </header>
+<main>
 
-<div class="alert">🔴 <strong>Ação necessária agora:</strong>
-  <a href="/oauth.html">Renovar token YouTube</a> (3 min) →
-  depois os 16 MP4s publicam automaticamente. +
-  <a href="/conectores.html">Deletar 63 EFs orphan</a> no Supabase Dashboard.
+<h2>📊 Operação Central</h2>
+<div class="grid">
+  <a href="/dashboard" class="card"><div class="icon">📈</div><div class="name">Dashboard</div><div class="desc">KPIs receita tempo real</div><div class="status ok">live</div></a>
+  <a href="/qg" class="card"><div class="icon">⚙️</div><div class="name">QG</div><div class="desc">20 pipelines + links</div><div class="status ok">ativo</div></a>
+  <a href="/checklist" class="card"><div class="icon">✅</div><div class="name">Checklist</div><div class="desc">Produção completa</div><div class="status ok">ativo</div></a>
+  <a href="/cerebro" class="card"><div class="icon">🧠</div><div class="name">Quantum Brain</div><div class="desc">3.037+ APIs</div><div class="status ok">ativo</div></a>
 </div>
 
-<div class="wrap">
-
-<!-- ═ PIPELINE (etapas do vídeo) ══════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🔄</span>
-    <span class="sec-ttl">Pipeline — Etapas Estratégicas de Cada Vídeo</span>
-    <span class="sec-sub">7 etapas · automático do início ao fim</span>
-  </div>
-  <div class="pipe">
-    <div class="pe" title="LLM NVIDIA→Groq→OpenAI gera roteiro viral">
-      <div class="pe-n" id="p-gen" style="color:var(--m)">466</div>
-      <div class="pe-l">1 LLM Script</div>
-    </div>
-    <div class="pe" title="Script gerado, aguardando TTS">
-      <div class="pe-n" id="p-script" style="color:var(--t2)">0</div>
-      <div class="pe-l">2 Script Pronto</div>
-    </div>
-    <div class="pe" title="Edge TTS gera áudio PT-BR neural">
-      <div class="pe-n" id="p-tts" style="color:var(--t2)">0</div>
-      <div class="pe-l">3 TTS Áudio</div>
-    </div>
-    <div class="pe" title="Flux Schnell + Ken Burns 30fps 1080p">
-      <div class="pe-n" id="p-audio" style="color:var(--g)">3</div>
-      <div class="pe-l">4 Render MP4</div>
-    </div>
-    <div class="pe" title="Aguarda token YT renovado">
-      <div class="pe-n" id="p-mp4" style="color:var(--r)">16</div>
-      <div class="pe-l">5 MP4 Pronto</div>
-    </div>
-    <div class="pe" title="Score 95+ via iteração automática">
-      <div class="pe-n" style="color:var(--v)">∞</div>
-      <div class="pe-l">6 Score 95+</div>
-    </div>
-    <div class="pe" title="Publicado no YouTube @psidanielacoelho">
-      <div class="pe-n" id="p-pub" style="color:var(--grn)">0</div>
-      <div class="pe-l">7 Publicado YT</div>
-    </div>
-  </div>
+<h2>💰 Produtos (monetização direta)</h2>
+<div class="grid">
+  <a href="/app-vendas" class="card"><div class="icon">🧠</div><div class="name">Modo Psicologia App</div><div class="desc">R$29,90 pagamento único</div><div class="status pend">aguarda Hotmart</div></a>
+  <a href="/psicologia-para-dormir" class="card"><div class="icon">🌙</div><div class="name">Psicologia Para Dormir</div><div class="desc">R$216/ano WhatsApp</div><div class="status pend">aguarda Hotmart</div></a>
+  <a href="https://amuse.io" target="_blank" class="card"><div class="icon">🎵</div><div class="name">Trilhas Spotify</div><div class="desc">528Hz+432Hz binaural</div><div class="status new">upload manual</div></a>
+  <a href="https://kdp.amazon.com" target="_blank" class="card"><div class="icon">📚</div><div class="name">Amazon KDP</div><div class="desc">Narcisismo workbook</div><div class="status new">upload manual</div></a>
+  <a href="https://gumroad.com" target="_blank" class="card"><div class="icon">🛒</div><div class="name">Gumroad Pack</div><div class="desc">50 prompts PDF</div><div class="status ok">ativo</div></a>
+  <a href="https://redbubble.com" target="_blank" class="card"><div class="icon">🎨</div><div class="name">Redbubble</div><div class="desc">Designs dark merch</div><div class="status ok">ativo</div></a>
 </div>
 
-<!-- ═ VÍDEOS PRONTOS ══════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🎬</span>
-    <span class="sec-ttl">16 Vídeos com MP4 Prontos — Aguardando Token YT</span>
-    <span class="sec-sub">SEO 99/100 · publisher bloqueado pelo refresh token expirado</span>
-  </div>
-  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:11px;overflow:hidden;margin-bottom:8px">
-    <table class="vt">
-      <thead><tr><th>ID</th><th>Título YouTube</th><th>Série</th><th>Tipo</th><th>SEO</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--t3);font-family:monospace">91</td><td class="ytitle">Apego Ansioso: 7 Sinais Que Você Tem (e Não Sabe)</td><td><span class="stag">Apego</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">682</td><td class="ytitle">Você Checa o Celular 80x/dia? Não é Vício — É Apego Ansioso</td><td><span class="stag">Apego</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">683</td><td class="ytitle">Narcisismo: 3 Sinais Que Você Está Ignorando Agora Mesmo</td><td><span class="stag">Narcisismo</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">684</td><td class="ytitle">Ansiedade: O Sinal Silencioso Que 9 em 10 Pessoas Ignoram</td><td><span class="stag">Ansiedade</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">685</td><td class="ytitle">Você Sabota Tudo Quando Está Prestes a Ser Feliz?</td><td><span class="stag">Autoestima</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">686</td><td class="ytitle">Trauma: O Que o Trauma Silencioso Faz Dentro de Você</td><td><span class="stag">Trauma</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">687</td><td class="ytitle">Quando Você Confunde Amor Com Necessidade — A Neurociência</td><td><span class="stag">Relacionamentos</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">688</td><td class="ytitle">Depressão: Não Era Preguiça. Era o Cérebro Desligando</td><td><span class="stag">Depressão</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">689</td><td class="ytitle">Perfeccionista Não Tem Medo de Falhar — Tem Medo de Ser Descoberto</td><td><span class="stag">Autoestima</span></td><td class="plat">shorts</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">690</td><td class="ytitle">Relacionamento Tóxico: Ciência Por Que Você Escolhe Errado</td><td><span class="stag">Relacionamentos</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">691</td><td class="ytitle">Trauma de Abandono: Por Que Nunca Se Sente Seguro</td><td><span class="stag">Trauma</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">692</td><td class="ytitle">Apego Ansioso: O Medo de Abandono Que Controla Cada Relação</td><td><span class="stag">Apego</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">693</td><td class="ytitle">Gaslighting: A Manipulação Que Faz Você Duvidar da Sua Mente</td><td><span class="stag">Narcisismo</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">694</td><td class="ytitle">Negligência Emocional: O Trauma que Você Nem Sabe que Tem</td><td><span class="stag">Trauma</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">695</td><td class="ytitle">Relacionamento Tóxico: Os Sinais Que Você Está Normalizando</td><td><span class="stag">Relacionamentos</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-        <tr><td style="color:var(--t3);font-family:monospace">696</td><td class="ytitle">Psicologia do Dinheiro: Por Que o Dinheiro Foge de Você</td><td><span class="stag">Dinheiro</span></td><td class="plat">long</td><td><span style="color:var(--grn);font-family:monospace">99</span></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="g4">
-    <a class="c cr c-dest" href="/publicar.html"><span class="badge b-hot">URGENTE</span><span class="c-ico">🚀</span><div class="c-ttl">Publicar Vídeos</div><div class="c-dsc">Gerenciar os 16 MP4s prontos · publisher 3x/dia</div></a>
-    <a class="c cr" href="/oauth.html"><span class="badge b-go">AÇÃO 1ª</span><span class="c-ico">🔐</span><div class="c-ttl">Renovar Token YouTube</div><div class="c-dsc">Token expirado — 3 min para resolver</div></a>
-    <a class="c" href="/publicar.html"><span class="badge b-live">LIVE</span><span class="c-ico">🎬</span><div class="c-ttl">Galeria de Vídeos</div><div class="c-dsc">Player HTML5 · download · todos os MP4s</div></a>
-    <a class="c" href="/pronto-publicar.html"><span class="c-ico">📋</span><div class="c-ttl">Pronto para Publicar</div><div class="c-dsc">Checklist dos 16 vídeos prontos</div></a>
-  </div>
+<h2>📺 Canais de Conteúdo</h2>
+<div class="grid">
+  <a href="https://youtube.com/@psidanielacoelho" target="_blank" class="card"><div class="icon">▶️</div><div class="name">YouTube PT-BR</div><div class="desc">@psidanielacoelho · RPM R$7</div><div class="status ok">ativo</div></a>
+  <a href="https://youtube.com/studio" target="_blank" class="card"><div class="icon">🔴</div><div class="name">YouTube Live 24/7</div><div class="desc">Stream RTMP contínuo</div><div class="status new">STREAM_KEY pendente</div></a>
+  <a href="https://anchor.fm" target="_blank" class="card"><div class="icon">🎙️</div><div class="name">Podcast Spotify</div><div class="desc">8 episódios gerados</div><div class="status new">upload Anchor.fm</div></a>
+  <a href="https://instagram.com/psidanielacoelho" target="_blank" class="card"><div class="icon">📸</div><div class="name">Instagram</div><div class="desc">3 posts/dia CTA SONO</div><div class="status ok">ativo</div></a>
+  <a href="https://bsky.app" target="_blank" class="card"><div class="icon">🌐</div><div class="name">Bluesky Bot</div><div class="desc">Posts automáticos</div><div class="status ok">ativo</div></a>
+  <a href="https://medium.com" target="_blank" class="card"><div class="icon">✍️</div><div class="name">Medium</div><div class="desc">3 artigos prontos</div><div class="status new">MEDIUM_TOKEN pendente</div></a>
 </div>
 
-<!-- ═ RANKING MUNDIAL & ANÁLISE ════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🌍</span>
-    <span class="sec-ttl">Ranking Mundial & Análise de Vídeos</span>
-    <span class="sec-sub">Comparação com 38.78M subs · papers The Lancet IF 168.9</span>
-  </div>
-  <div class="g4">
-    <a class="c cv c-wide c-dest" href="/videos-analise.html">
-      <span class="badge b-hot">RANKING MUNDIAL</span>
-      <span class="c-ico">🧠</span>
-      <div class="c-ttl">Análise Viral 95+ · Memória Eterna · Ranking Mundial</div>
-      <div class="c-dsc">Compara com 38M subs top mondial · Score best-in-world · Papers científicos reais (The Lancet IF 168.9) · Voz emocional por segmento · Iteração automática até 95+</div>
-      <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
-        <span style="font-size:7px;font-family:monospace;padding:2px 5px;border-radius:4px;background:rgba(167,139,250,.15);color:var(--m);border:1px solid rgba(167,139,250,.2)">⚡ 5 iterações</span>
-        <span style="font-size:7px;font-family:monospace;padding:2px 5px;border-radius:4px;background:rgba(34,211,238,.1);color:#22d3ee;border:1px solid rgba(34,211,238,.2)">📚 20 papers</span>
-        <span style="font-size:7px;font-family:monospace;padding:2px 5px;border-radius:4px;background:rgba(251,191,36,.1);color:var(--g);border:1px solid rgba(251,191,36,.2)">🎙️ 10 emoções</span>
-        <span style="font-size:7px;font-family:monospace;padding:2px 5px;border-radius:4px;background:rgba(16,185,129,.1);color:var(--grn)">38.78M subs ref</span>
-      </div>
-    </a>
-    <a class="c cv" href="/cerebro.html"><span class="badge b-live">24/7</span><span class="c-ico">🧠</span><div class="c-ttl">Cérebro Eterno</div><div class="c-dsc">Auto-evolutivo · DeepSeek V4 Pro · aprende a cada minuto</div></a>
-    <a class="c cv" href="/viral.html"><span class="badge b-hot">CTR 7.3%</span><span class="c-ico">🔥</span><div class="c-ttl">Painel Viral</div><div class="c-dsc">30 hooks · score 95+ · ranking por CTR</div></a>
-    <a class="c cv" href="/galeria-quantica.html"><span class="c-ico">⚡</span><div class="c-ttl">Galeria Quântica</div><div class="c-dsc">Vídeos renderizados Flux Schnell · Ken Burns</div></a>
-<a class="c cv" href="https://tpjvalzwkqwttvmszvie.supabase.co/storage/v1/object/public/videos/galeria-videos.html" target="_blank"><span class="badge b-new">32</span><span class="c-ico">🎬</span><div class="c-ttl">Galeria Completa</div><div class="c-dsc">32 vídeos · S1→S11 · Ranking 52S · Eternos · Score ≥95</div></a>
-  </div>
+<h2>🤖 Pipelines Automáticos (GitHub Actions)</h2>
+<div class="grid">
+  <div class="card"><div class="icon">🌅</div><div class="name">daniela-iris</div><div class="desc">9h UTC — briefing diário</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">🎨</div><div class="name">quadrinhos-dark</div><div class="desc">9h+12h+18h UTC — 3x/dia</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">💬</div><div class="name">funil-diario</div><div class="desc">minerador+reels+monitor</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">📱</div><div class="name">whatsapp-daily</div><div class="desc">22:30 UTC áudio 19h30</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">🔴</div><div class="name">youtube-live-24_7</div><div class="desc">3x/dia RTMP stream</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">🎙️</div><div class="name">podcast-spotify</div><div class="desc">Seg/Qua/Sex episódio</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">🎵</div><div class="name">trilhas-amuse</div><div class="desc">Ter/Sex binaural</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">✍️</div><div class="name">medium-publisher</div><div class="desc">Ter/Sex artigos</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">🛒</div><div class="name">gumroad-products</div><div class="desc">Segunda produtos</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">🎨</div><div class="name">redbubble-engine</div><div class="desc">Quarta designs</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">📰</div><div class="name">reddit-video-engine</div><div class="desc">Ter/Qui dark videos</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">💬</div><div class="name">quote-pod</div><div class="desc">Diário frases</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">🌍</div><div class="name">world-income-engine</div><div class="desc">Diário renda global</div><div class="status new">novo</div></div>
+  <div class="card"><div class="icon">📚</div><div class="name">kdp-psicologia</div><div class="desc">Quarta livros Amazon</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">📊</div><div class="name">receita-monitor</div><div class="desc">Hora em hora</div><div class="status ok">ativo</div></div>
+  <div class="card"><div class="icon">📋</div><div class="name">weekly-report</div><div class="desc">Segunda KPIs</div><div class="status ok">ativo</div></div>
 </div>
 
-<!-- ═ QG & COMANDO ════════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🏛️</span>
-    <span class="sec-ttl">QG — Quartel General & Comando</span>
-    <span class="sec-sub">Centro de controle total do projeto</span>
-  </div>
-  <div class="g5">
-    <a class="c cr c-wide c-dest" href="/qg.html">
-      <span class="badge b-hot">QG PRINCIPAL</span>
-      <span class="c-ico">🏛️</span>
-      <div class="c-ttl">Quartel General V41</div>
-      <div class="c-dsc">Central de operações · rota R$46K/mês · visão estratégica completa</div>
-    </a>
-    <a class="c cr" href="/comando.html"><span class="badge b-hot">COMMAND</span><span class="c-ico">⚡</span><div class="c-ttl">Command Center</div><div class="c-dsc">R$46K/mês · controles avançados · execução</div></a>
-    <a class="c" href="/monitor.html"><span class="badge b-live">LIVE</span><span class="c-ico">🔬</span><div class="c-ttl">Monitor Tempo Real</div><div class="c-dsc">Pipeline · crons · workflows</div></a>
-    <a class="c" href="/mapa.html"><span class="c-ico">🗺️</span><div class="c-ttl">Mapa de Produção</div><div class="c-dsc">Visualização do fluxo completo</div></a>
-    <a class="c" href="/admin.html"><span class="c-ico">⚙️</span><div class="c-ttl">Admin</div><div class="c-dsc">Painel administrativo interno</div></a>
-  </div>
+<h2>⚡ 3 Secrets Ainda Faltando</h2>
+<div class="grid">
+  <a href="https://studio.youtube.com" target="_blank" class="card" style="border-color:#E11D4844">
+    <div class="icon">🔴</div><div class="name">YOUTUBE_STREAM_KEY</div>
+    <div class="desc">YouTube Studio → Go Live → Stream Key</div><div class="status pend">obrigatório p/ Live 24/7</div>
+  </a>
+  <a href="https://medium.com/me/settings" target="_blank" class="card" style="border-color:#E11D4844">
+    <div class="icon">✍️</div><div class="name">MEDIUM_TOKEN</div>
+    <div class="desc">medium.com/me/settings → Integration Tokens</div><div class="status pend">obrigatório p/ artigos</div>
+  </a>
+  <a href="https://manychat.com/settings/api" target="_blank" class="card" style="border-color:#E11D4844">
+    <div class="icon">💬</div><div class="name">MANYCHAT_API_KEY</div>
+    <div class="desc">manychat.com → Settings → API</div><div class="status pend">obrigatório p/ DMs</div>
+  </a>
 </div>
 
-<!-- ═ 20 SÉRIES ════════════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">📚</span>
-    <span class="sec-ttl">20 Séries de Conteúdo</span>
-    <span class="sec-sub">466 scripts na fila · NVIDIA→Groq→OpenAI</span>
-  </div>
-  <div class="g5" style="margin-bottom:8px">
-    <a class="c cv c-wide c-dest" href="/series.html">
-      <span class="badge b-new">20 SÉRIES</span>
-      <span class="c-ico">📚</span>
-      <div class="c-ttl">Gestão das 20 Séries · 200 Episódios</div>
-      <div class="c-dsc">Página completa com todas as séries, progresso, próximos episódios e plano de 200 vídeos</div>
-    </a>
-    <a class="c cv" href="/publicar.html?filtro=narcisismo"><span class="c-ico">🔴</span><div class="c-ttl">Narcisismo & Manipulação</div><div class="c-dsc">76 scripts · 1 MP4 · Gaslighting</div></a>
-    <a class="c cv" href="/publicar.html?filtro=apego"><span class="c-ico">💜</span><div class="c-ttl">Apego Ansioso</div><div class="c-dsc">37 scripts · 4 MP4 · CTR 7.31%</div></a>
-    <a class="c cv" href="/publicar.html?filtro=relacionamentos"><span class="c-ico">🤝</span><div class="c-ttl">Relacionamentos</div><div class="c-dsc">54 scripts · 2 MP4</div></a>
-  </div>
-  <div class="g7">
-    <div class="serie-c"><div class="sc-hdr"><span>⚫</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Burnout</span></div><div class="sc-bar"><div class="sc-fill" style="width:46%"></div></div><div class="sc-nums"><span>35</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🔵</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Ansiedade</span></div><div class="sc-bar"><div class="sc-fill" style="width:39%"></div></div><div class="sc-nums"><span>30</span><span>1 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🟣</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Trauma</span></div><div class="sc-bar"><div class="sc-fill" style="width:38%"></div></div><div class="sc-nums"><span>29</span><span>1 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>😔</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Depressão</span></div><div class="sc-bar"><div class="sc-fill" style="width:24%"></div></div><div class="sc-nums"><span>18</span><span>1 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🕊️</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Luto</span></div><div class="sc-bar"><div class="sc-fill" style="width:24%"></div></div><div class="sc-nums"><span>18</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>👨‍👩‍👧</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Família</span></div><div class="sc-bar"><div class="sc-fill" style="width:16%"></div></div><div class="sc-nums"><span>12</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🎭</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Vícios</span></div><div class="sc-bar"><div class="sc-fill" style="width:14%"></div></div><div class="sc-nums"><span>11</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>💛</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Autoestima</span></div><div class="sc-bar"><div class="sc-fill" style="width:11%"></div></div><div class="sc-nums"><span>8</span><span>2 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>💰</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Dinheiro</span></div><div class="sc-bar"><div class="sc-fill" style="width:4%"></div></div><div class="sc-nums"><span>3</span><span>1 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>😶</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Ansi. Social</span></div><div class="sc-bar"><div class="sc-fill" style="width:4%"></div></div><div class="sc-nums"><span>3</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🧠</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Int. Emocional</span></div><div class="sc-bar"><div class="sc-fill" style="width:3%"></div></div><div class="sc-nums"><span>2</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🏆</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Sucesso</span></div><div class="sc-bar"><div class="sc-fill" style="width:2%"></div></div><div class="sc-nums"><span>2</span><span>1 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🧘</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Mindfulness</span></div><div class="sc-bar"><div class="sc-fill" style="width:1%"></div></div><div class="sc-nums"><span>1</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🌙</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Sono</span></div><div class="sc-bar"><div class="sc-fill" style="width:1%"></div></div><div class="sc-nums"><span>1</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🎯</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Propósito</span></div><div class="sc-bar"><div class="sc-fill" style="width:1%"></div></div><div class="sc-nums"><span>1</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>💬</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Comunicação</span></div><div class="sc-bar"><div class="sc-fill" style="width:1%"></div></div><div class="sc-nums"><span>1</span><span>0 MP4</span></div></div>
-    <div class="serie-c"><div class="sc-hdr"><span>🧬</span><span style="font-size:9px;font-weight:700;color:var(--t1)">Personalidade</span></div><div class="sc-bar"><div class="sc-fill" style="width:2%"></div></div><div class="sc-nums"><span>2</span><span>0 MP4</span></div></div>
-  </div>
-</div>
-
-<!-- ═ ESTRATÉGIA R$50K ═════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">📈</span>
-    <span class="sec-ttl">Estratégia & Crescimento até R$50K/mês</span>
-    <span class="sec-sub">3 fases · ads → viral → AdSense + sponsors</span>
-  </div>
-  <div class="g5">
-    <a class="c cg c-wide c-dest" href="/estrategia.html">
-      <span class="badge b-go">ESTRATÉGIA V37</span>
-      <span class="c-ico">📋</span>
-      <div class="c-ttl">Estratégia Completa V37</div>
-      <div class="c-dsc">Plano detalhado Fase 1 (0→1K subs, R$250/mês ads) · Fase 2 (1K→10K viral orgânico) · Fase 3 (10K→100K AdSense R$46K)</div>
-    </a>
-    <a class="c cg" href="/canal-oficial.html"><span class="badge b-go">BLUEPRINT</span><span class="c-ico">🎯</span><div class="c-ttl">Blueprint Canal Oficial</div><div class="c-dsc">Estratégia 0 → Monetizado @psidanielacoelho</div></a>
-    <a class="c cg" href="/growth.html"><span class="c-ico">🚀</span><div class="c-ttl">Growth Tracker</div><div class="c-dsc">Meta 1K subs · fases · métricas</div></a>
-    <a class="c cg" href="/seo-dashboard.html"><span class="c-ico">📊</span><div class="c-ttl">SEO Dashboard</div><div class="c-dsc">Keywords · projeção R$46K · PT/EN/ES</div></a>
-    <a class="c cg" href="/analytics.html"><span class="badge b-new">NEW</span><span class="c-ico">📉</span><div class="c-ttl">Analytics Canal</div><div class="c-dsc">Inscritos · views · CTR · receita</div></a>
-  </div>
-</div>
-
-<!-- ═ BRAND & VISUAL ═══════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🎨</span>
-    <span class="sec-ttl">Brand & Visual</span>
-    <span class="sec-sub">47 thumbnails · 6 templates Insta · brand kit completo</span>
-  </div>
-  <div class="g7">
-    <a class="c ct" href="/brand.html"><span class="c-ico">🎨</span><div class="c-ttl">Brand Kit</div><div class="c-dsc">Banner · avatars · paleta</div></a>
-    <a class="c ct" href="/brand/master-studio.html"><span class="c-ico">🏭</span><div class="c-ttl">Master Studio</div><div class="c-dsc">Estúdio criativo central</div></a>
-    <a class="c ct" href="/thumbnail-gen.html"><span class="c-ico">⚡</span><div class="c-ttl">Gerador Thumbs</div><div class="c-dsc">5 estilos · 1280×720</div></a>
-    <a class="c ct" href="/brand/thumb-generator.html"><span class="c-ico">🖼️</span><div class="c-ttl">Thumb Generator</div><div class="c-dsc">Gerador brand</div></a>
-    <a class="c ct" href="/galeria-thumbnails.html"><span class="badge b-new">47</span><span class="c-ico">🖼️</span><div class="c-ttl">Galeria Thumbs</div><div class="c-dsc">Auto-gerados</div></a>
-    <a class="c ct" href="/insta-templates.html"><span class="c-ico">📸</span><div class="c-ttl">Templates Insta</div><div class="c-dsc">Post · Reels · Stories</div></a>
-    <a class="c ct" href="/brand/youtube-banner.html"><span class="c-ico">📺</span><div class="c-ttl">Banner YouTube</div><div class="c-dsc">2560×1440px</div></a>
-  </div>
-</div>
-
-<!-- ═ COMUNIDADE & CANAL ════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">💬</span>
-    <span class="sec-ttl">Comunidade & Canal</span>
-    <span class="sec-sub">8 grupos WA · link-in-bio · setup completo</span>
-  </div>
-  <div class="g5">
-    <a class="c cw" href="/whatsapp.html"><span class="badge b-new">8 grupos</span><span class="c-ico">💬</span><div class="c-ttl">WhatsApp Community</div><div class="c-dsc">Templates · instruções</div></a>
-    <a class="c" href="/daniela.html"><span class="c-ico">👤</span><div class="c-ttl">Perfil @psidanielacoelho</div><div class="c-dsc">Link-in-bio · YT · Insta · TikTok</div></a>
-    <a class="c" href="/calendario.html"><span class="c-ico">📅</span><div class="c-ttl">Calendário</div><div class="c-dsc">Ter/Qui 19h30 BR</div></a>
-    <a class="c" href="/setup-canal.html"><span class="c-ico">📺</span><div class="c-ttl">Setup do Canal</div><div class="c-dsc">Checklist YT · Insta · TikTok</div></a>
-    <a class="c ct" href="https://studio.youtube.com/channel/UCyCkIpsVgME9yCj_oXJFheA" target="_blank"><span class="c-ico">🎬</span><div class="c-ttl">YouTube Studio</div><div class="c-dsc">Verificar após renovar token</div></a>
-  </div>
-</div>
-
-<!-- ═ INFRAESTRUTURA ════════════════════════════════════════════ -->
-<div class="sec">
-  <div class="sec-hdr">
-    <span class="sec-ico">🔧</span>
-    <span class="sec-ttl">Infraestrutura & Desbloqueios</span>
-    <span class="sec-sub">GitHub · Supabase · Vercel</span>
-  </div>
-  <div class="g7">
-    <a class="c cr" href="/conectores.html"><span class="badge b-go">AÇÃO 2ª</span><span class="c-ico">🔗</span><div class="c-ttl">Conectores & Bloqueios</div><div class="c-dsc">63 EFs orphan · OAuth · tokens</div></a>
-    <a class="c cv" href="/producao.html"><span class="badge b-new">100%</span><span class="c-ico">✅</span><div class="c-ttl">Checklist Produção</div><div class="c-dsc">10 auto · 5 manual</div></a>
-    <a class="c" href="/estado-v37.html"><span class="c-ico">📸</span><div class="c-ttl">Estado V37</div><div class="c-dsc">Snapshot versão anterior</div></a>
-    <a class="c" href="/v2.html"><span class="c-ico">🔬</span><div class="c-ttl">V2 Psych2Go</div><div class="c-dsc">Sistema Psych2Go 12 vídeos</div></a>
-    <a class="c ct" href="https://github.com/tafita81/Repovazio/actions" target="_blank"><span class="c-ico">⚡</span><div class="c-ttl">GitHub Actions</div><div class="c-dsc">9 workflows ativos</div></a>
-    <a class="c ct" href="https://app.supabase.com/project/tpjvalzwkqwttvmszvie" target="_blank"><span class="c-ico">🗄️</span><div class="c-ttl">Supabase</div><div class="c-dsc">466 scripts · 51 crons</div></a>
-    <a class="c" href="/apps/pipeline-manager.html"><span class="c-ico">🏭</span><div class="c-ttl">Pipeline Manager</div><div class="c-dsc">App de gestão do pipeline</div></a>
-  </div>
-</div>
-
-</div><!-- /wrap -->
-
-<script>
-const SB='https://tpjvalzwkqwttvmszvie.supabase.co';
-const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
-async function load(){
-  try{
-    const r=await fetch(`${SB}/rest/v1/content_pipeline?select=status,youtube_video_id&limit=2000`,{headers:{'apikey':K,'Authorization':'Bearer '+K}});
-    const d=await r.json();
-    const c={};d.forEach(x=>c[x.status]=(c[x.status]||0)+1);
-    const pub=d.filter(x=>x.youtube_video_id).length;
-    document.getElementById('h-mp4').textContent=c['pending_credentials']||0;
-    document.getElementById('h-fila').textContent=(c['pending_generation']||0).toLocaleString('pt-BR');
-    document.getElementById('h-pub').textContent=pub;
-    document.getElementById('p-gen').textContent=c['pending_generation']||0;
-    document.getElementById('p-script').textContent=c['script_ready']||0;
-    document.getElementById('p-tts').textContent=c['ready_tts']||0;
-    document.getElementById('p-audio').textContent=(c['audio_ready']||0)+(c['rendering']||0);
-    document.getElementById('p-mp4').textContent=c['pending_credentials']||0;
-    document.getElementById('p-pub').textContent=pub;
-  }catch(e){}
-}
-load();setInterval(load,60000);
-</script>
-</body></html>
+</main>
+<footer>ψ psicologia.doc · 16 pipelines · 6 canais · 6 produtos · meta R$50K/mês</footer>
+<script>document.getElementById('ts').textContent=new Date().toLocaleString('pt-BR')</script>
+</body>
+</html>
