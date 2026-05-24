@@ -10,48 +10,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Python deps
+      - name: Install Python + Playwright
         run: |
-          pip install -q playwright reportlab
-          playwright install chromium --with-deps
+          pip install playwright reportlab
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
 
-      - name: Generate CV PDF
+      - name: Verify CV exists
         run: |
+          ls -la .github/assets/rafael_cv.pdf
           python3 -c "
-          from reportlab.lib.pagesizes import letter
-          from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
-          from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-          from reportlab.lib.colors import HexColor
-          from reportlab.lib.enums import TA_CENTER
           import os
-          os.makedirs('.github/assets', exist_ok=True)
-          doc = SimpleDocTemplate('.github/assets/rafael_cv.pdf', pagesize=letter,
-              topMargin=36, bottomMargin=36, leftMargin=50, rightMargin=50)
-          styles = getSampleStyleSheet()
-          navy = HexColor('#1F3864')
-          title_s = ParagraphStyle('t', fontSize=22, textColor=navy, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=4)
-          sub_s   = ParagraphStyle('s', fontSize=11, textColor=HexColor('#5B21B6'), fontName='Helvetica', alignment=TA_CENTER, spaceAfter=4)
-          body_s  = ParagraphStyle('b', fontSize=9.5, textColor=HexColor('#374151'), fontName='Helvetica', leading=14, spaceAfter=6)
-          story = [
-            Paragraph('OPEN TO US REMOTE | AVAILABLE IMMEDIATELY', ParagraphStyle('badge', fontSize=9, textColor=HexColor('#ffffff'), backColor=navy, alignment=TA_CENTER, fontName='Helvetica-Bold', spaceAfter=8)),
-            Paragraph('RAFAEL RODRIGUES', title_s),
-            Paragraph('Senior Data Analyst  ·  Analytics Engineer  ·  Cloud BI Specialist', sub_s),
-            Paragraph('Brazil  |  +55 22 99241-8257  |  Rafa_roberto2004@yahoo.com.br  |  linkedin.com/in/rafael-r-a3946a15', ParagraphStyle('c', fontSize=9, textColor=HexColor('#555'), alignment=TA_CENTER, spaceAfter=8)),
-            HRFlowable(width='100%', thickness=2, color=navy, spaceAfter=8),
-            Paragraph('<b>PROFESSIONAL SUMMARY</b>', ParagraphStyle('h', fontSize=11, textColor=navy, fontName='Helvetica-Bold', spaceAfter=4)),
-            Paragraph('Senior Data Analyst and Analytics Engineer with 15+ years of experience delivering enterprise-scale BI, cloud analytics, and self-service data platforms across Telecommunications, Retail, Financial Services, Marketing, and Industrial sectors. Specialized in Power BI (DAX, Power Query, RLS, Dataflows), SQL, Python, dimensional modeling, KPI governance, and multi-cloud analytics using BigQuery, Databricks SQL, Snowflake, Amazon Athena, and Azure Synapse. Generated $9M+ operational savings, reduced reporting latency by 70%, delivered analytics for 200+ users, processed 500M+ records monthly.', body_s),
-            Paragraph('<b>CERTIFICATIONS:</b> Microsoft PL-300 Power BI Data Analyst · Tableau Desktop Specialist · MBA IBMEC Business School', body_s),
-            Paragraph('<b>STACK:</b> Power BI · Tableau · Looker · DAX · Power Query · SQL · Python · BigQuery · Snowflake · Databricks SQL · Azure Synapse · ADF · Dimensional Modeling · Star Schema · ETL/ELT', body_s),
-            HRFlowable(width='100%', thickness=1, color=navy, spaceAfter=6),
-            Paragraph('<b>EXPERIENCE</b>', ParagraphStyle('h', fontSize=11, textColor=navy, fontName='Helvetica-Bold', spaceAfter=4)),
-            Paragraph('<b>Senior Data Analyst — Dataex (2022–Present):</b> Enterprise Power BI, Tableau, Looker. 200+ users. 60% load time reduction. 12+ data sources. LGPD compliance.', body_s),
-            Paragraph('<b>Senior Data Analyst — Keyrus (2019–2022):</b> BI consulting for Financial Services, Retail, Insurance. 70% query optimization. Azure Synapse, Salesforce, SAP, Oracle.', body_s),
-            Paragraph('<b>Senior Data Analyst — Coca-Cola (2018–2019):</b> 30+ KPIs. Google BigQuery. Python automation reducing 4h/day to 20 min.', body_s),
-            Paragraph('<b>Senior Data Analyst — TIM/OI Telecom (2007–2017):</b> 500M+ subscriber records/month. Churn prediction. Revenue forecasting. $9M+ savings. 500+ daily report consumers.', body_s),
-          ]
-          doc.build(story)
-          import os
-          print(f'CV: {os.path.getsize(".github/assets/rafael_cv.pdf"):,} bytes')
+          size = os.path.getsize('.github/assets/rafael_cv.pdf')
+          print(f'CV OK: {size:,} bytes')
+          assert size > 1000, 'CV muito pequeno'
           "
 
       - name: Run Playwright Form Filler
