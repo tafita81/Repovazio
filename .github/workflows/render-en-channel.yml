@@ -1,0 +1,26 @@
+name: Render EN Channel — Shorts USA/UK/AU
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 10,22 * * *"
+
+jobs:
+  render-en:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Instalar dependências
+        run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests edge-tts --break-system-packages
+      - name: Render EN Shorts
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/render_en_channel.py || true
+        continue-on-error: true
