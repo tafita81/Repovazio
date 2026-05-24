@@ -1,0 +1,31 @@
+name: Viral Engine — Títulos + Distribuição + SEO
+
+on:
+  schedule:
+    - cron: "0 7 * * *"   # Todo dia 7h UTC
+  workflow_dispatch:
+
+jobs:
+  viral:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+
+      - name: Gerar títulos virais 9 idiomas
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/viral_title_generator.py || true
+        continue-on-error: true
+
+      - name: Distribuição multi-plataforma
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/multi_platform_distributor.py || true
+        continue-on-error: true
