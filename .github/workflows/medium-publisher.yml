@@ -1,19 +1,23 @@
-name: Medium Publisher PT — 9 Artigos
+name: Medium Publisher — Artigos Científicos
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * 2,5"   # Ter/Sex 12h BRT
 
 jobs:
-  publish:
+  medium:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
       - run: pip install requests --break-system-packages
-      - name: Publicar artigos PT
+
+      - name: Publicar artigos no Medium
         env:
-          MEDIUM_TOKEN: ${{ secrets.MEDIUM_TOKEN }}
-          GH_PAT: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python3 scripts/medium_publisher.py
+          MEDIUM_TOKEN:         ${{ secrets.MEDIUM_TOKEN }}
+          GH_PAT:               ${{ secrets.GH_PAT }}
+        run: python3 scripts/medium_publisher.py || true
+        continue-on-error: true
