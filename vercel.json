@@ -1,17 +1,16 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/psicologia-para-dormir", "destination": "/public/psicologia-para-dormir.html" },
-    { "source": "/dashboard",              "destination": "/public/dashboard.html" },
-    { "source": "/cerebro",                "destination": "/public/cerebro.html" }
+    { "source": "/psicologia-para-dormir",  "destination": "/public/psicologia-para-dormir.html" },
+    { "source": "/app",                     "destination": "/public/app-psicologia.html" },
+    { "source": "/app-vendas",              "destination": "/public/app-psicologia-vendas.html" },
+    { "source": "/dashboard",               "destination": "/public/dashboard.html" },
+    { "source": "/cerebro",                 "destination": "/public/cerebro.html" }
   ],
   "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Cache-Control", "value": "public, max-age=60" }
-      ]
-    }
+    { "source": "/(.*)", "headers": [
+      { "key": "X-Content-Type-Options", "value": "nosniff" },
+      { "key": "Cache-Control",          "value": "public, max-age=60" }
+    ]}
   ]
 }
