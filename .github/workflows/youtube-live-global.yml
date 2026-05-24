@@ -1,0 +1,57 @@
+name: YouTube Live — Multi-Idioma Global (12 canais)
+
+on:
+  workflow_dispatch:
+    inputs:
+      idioma:
+        description: "Idioma (EN/ES/DE/FR/IT/JA/KO/PT/ZH/AR/RU/HI)"
+        default: "EN"
+      horas:
+        description: "Horas de live"
+        default: "6"
+  schedule:
+    # EN — USA prime time (8pm EST = UTC 00h)
+    - cron: "0 0 * * *"
+    # ES — Mexico prime time (9pm CST = UTC 03h)
+    - cron: "0 3 * * *"
+    # DE — Germany prime time (9pm CET = UTC 20h)
+    - cron: "0 20 * * *"
+    # JA — Japan prime time (9pm JST = UTC 12h)
+    - cron: "0 12 * * *"
+    # PT — Brazil prime time (9pm BRT = UTC 00h)
+    - cron: "30 0 * * *"
+    # FR — France prime time (9pm CET = UTC 20h)
+    - cron: "30 20 * * *"
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 375
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Instalar dependências
+        run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests --break-system-packages
+      - name: Live Multi-Idioma
+        env:
+          CANAL_IDIOMA:              ${{ inputs.idioma || 'EN' }}
+          HORAS:                     ${{ inputs.horas || '6' }}
+          GROQ_API_KEY:              ${{ secrets.GROQ_API_KEY }}
+          # Secrets por idioma — adicionar conforme criar cada canal:
+          YOUTUBE_STREAM_KEY_EN:     ${{ secrets.YOUTUBE_STREAM_KEY_EN }}
+          YOUTUBE_STREAM_KEY_ES:     ${{ secrets.YOUTUBE_STREAM_KEY_ES }}
+          YOUTUBE_STREAM_KEY_DE:     ${{ secrets.YOUTUBE_STREAM_KEY_DE }}
+          YOUTUBE_STREAM_KEY_FR:     ${{ secrets.YOUTUBE_STREAM_KEY_FR }}
+          YOUTUBE_STREAM_KEY_IT:     ${{ secrets.YOUTUBE_STREAM_KEY_IT }}
+          YOUTUBE_STREAM_KEY_JA:     ${{ secrets.YOUTUBE_STREAM_KEY_JA }}
+          YOUTUBE_STREAM_KEY_KO:     ${{ secrets.YOUTUBE_STREAM_KEY_KO }}
+          YOUTUBE_STREAM_KEY_PT:     ${{ secrets.YOUTUBE_STREAM_KEY }}
+          YOUTUBE_STREAM_KEY_ZH:     ${{ secrets.YOUTUBE_STREAM_KEY_ZH }}
+          YOUTUBE_STREAM_KEY_AR:     ${{ secrets.YOUTUBE_STREAM_KEY_AR }}
+          YOUTUBE_STREAM_KEY_RU:     ${{ secrets.YOUTUBE_STREAM_KEY_RU }}
+          YOUTUBE_STREAM_KEY_HI:     ${{ secrets.YOUTUBE_STREAM_KEY_HI }}
+        run: timeout $((${HORAS:-6}*3600)) python3 scripts/live_global_master.py || true
+        continue-on-error: true
