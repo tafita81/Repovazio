@@ -1,0 +1,31 @@
+name: Narrativa Engine — 5 Nichos × Vídeos-Chave
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5,13,21 * * *"  # 3x/dia
+
+jobs:
+  narrativa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Narrativa Engine — Estruturas Validadas
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/narrativa_engine.py || true
+        continue-on-error: true
+      - name: Canal em Ascensão Finder
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/canal_ascensao_finder.py || true
+        continue-on-error: true
