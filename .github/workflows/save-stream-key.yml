@@ -1,0 +1,57 @@
+name: 💾 Salvar Stream Key + Ativar Schedule 24/7
+
+on:
+  workflow_dispatch:
+    inputs:
+      stream_key:
+        description: "Stream Key do YouTube Studio (Settings > Stream)"
+        required: true
+
+jobs:
+  save-and-activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Instalar deps
+        run: pip install requests PyNaCl --break-system-packages -q
+      - name: Salvar key + ativar todos os workflows de live
+        env:
+          STREAM_KEY: ${{ inputs.stream_key }}
+          GH_PAT:     ${{ secrets.GH_PAT }}
+        run: |
+          python3 - << 'PYEOF'
+          import os, requests, base64
+          from nacl import encoding, public
+
+          key  = os.environ["STREAM_KEY"].strip()
+          ghp  = os.environ.get("GH_PAT","")
+          H    = {"Authorization":f"token {ghp}","Accept":"application/vnd.github.v3+json"}
+          REPO = "tafita81/Repovazio"
+
+          rk  = requests.get(f"https://api.github.com/repos/{REPO}/actions/secrets/public-key",headers=H,timeout=10)
+          pd  = rk.json()
+          pk  = public.PublicKey(pd["key"].encode(), encoding.Base64Encoder())
+          enc = base64.b64encode(public.SealedBox(pk).encrypt(key.encode())).decode()
+
+          secrets = ["YOUTUBE_STREAM_KEY","YOUTUBE_STREAM_KEY_EN","YOUTUBE_STREAM_KEY_ES",
+                     "YOUTUBE_STREAM_KEY_MAX","YT_STREAM_KEY"]
+          for name in secrets:
+              r = requests.put(f"https://api.github.com/repos/{REPO}/actions/secrets/{name}",
+                  headers=H,json={"encrypted_value":enc,"key_id":pd["key_id"]},timeout=30)
+              print(f"  {'✅' if r.status_code in(201,204) else '❌'} {name}")
+
+          # Disparar workflows de live
+          wfs = ["youtube-live-max.yml","youtube-live-en.yml","youtube-live-es.yml"]
+          wf_r = requests.get(f"https://api.github.com/repos/{REPO}/actions/workflows?per_page=100",headers=H)
+          wf_map = {w["path"].split("/")[-1]:w["id"] for w in wf_r.json().get("workflows",[])}
+          for wf in wfs:
+              if wf in wf_map:
+                  r2 = requests.post(
+                      f"https://api.github.com/repos/{REPO}/actions/workflows/{wf_map[wf]}/dispatches",
+                      headers=H,json={"ref":"main"},timeout=30)
+                  print(f"  {'✅' if r2.status_code==204 else '❌'} Disparado: {wf}")
+
+          print("\n✅ Stream key salva + lives disparadas!")
+          print(f"   Key: {key[:8]}...{key[-4:]}")
+          print("   Monitor: https://studio.youtube.com")
+          PYEOF
