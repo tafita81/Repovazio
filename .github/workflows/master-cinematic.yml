@@ -1,0 +1,41 @@
+name: MASTER CINEMATIC — 5 Estilos Virais + 27 APIs + Chatterbox
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6,14,22 * * *"
+
+jobs:
+  cinematic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+
+      - name: Setup completo
+        run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests edge-tts chatterbox-tts torch --extra-index-url https://download.pytorch.org/whl/cpu --break-system-packages 2>/dev/null || pip install requests edge-tts --break-system-packages
+
+      - name: Master Cinematic Pipeline
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          ELEVENLABS_API_KEY:   ${{ secrets.ELEVENLABS_API_KEY }}
+          GH_PAT:               ${{ secrets.GH_PAT }}
+          NVIDIA_API_KEY:       ${{ secrets.NVIDIA_API_KEY }}
+        run: python3 scripts/master_cinematic_pipeline.py
+        continue-on-error: true
+
+      - name: Short PT-BR George (vídeos âncora)
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          ELEVENLABS_API_KEY:   ${{ secrets.ELEVENLABS_API_KEY }}
+          GH_PAT:               ${{ secrets.GH_PAT }}
+        run: python3 scripts/render_short_george.py || true
+        continue-on-error: true
