@@ -1,4 +1,4 @@
-name: Knowledge Fusion — 27 APIs Gratuitas Confirmadas
+name: Knowledge Fusion V2 — 61 APIs Gratuitas
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
       - run: |
           sudo apt-get install -y ffmpeg > /dev/null 2>&1
           pip install requests edge-tts --break-system-packages
-      - name: Knowledge Fusion 27 APIs
+      - name: Knowledge Fusion 61 APIs
         env:
           SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
