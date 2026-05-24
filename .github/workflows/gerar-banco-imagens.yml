@@ -1,0 +1,70 @@
+name: Gerar Banco de Imagens Virais
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  gerar-imagens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+
+      - name: Gerar todos os estilos virais
+        run: |
+          python3 - << 'PYEOF'
+          import requests, pathlib, base64, time, os
+
+          GH_PAT = os.getenv("GH_PAT","")
+          H = {"Authorization":f"token {GH_PAT}","Accept":"application/vnd.github.v3+json"}
+          TMP = pathlib.Path("/tmp/imgs"); TMP.mkdir(exist_ok=True)
+
+          IMAGENS = [
+            ("public/estilos_virais/jason.jpg",
+             "masterpiece 8K ultra HD photo dark blue serene mountain lake midnight perfect mirror reflection full moon aurora borealis mist tranquility no text no people no logos ### text watermark nsfw",
+             7001),
+            ("public/estilos_virais/greenred.jpg",
+             "masterpiece digital art sacred geometry mandala glowing neon green electric blue pure black background flower of life metatron cube fractal no text no people ### text watermark nsfw",
+             4002),
+            ("public/estilos_virais/cinematic_dark.jpg",
+             "masterpiece cinematic dark purple atmospheric background lone silhouette spotlight mist shadow psychology concept high contrast moody no text no real faces ### text watermark nsfw",
+             3003),
+            ("public/estilos_virais/lofi_study.jpg",
+             "anime cozy night bedroom girl studying desk by rainy window city lights warm lamp books coffee Studio Ghibli aesthetic highly detailed no text ### text watermark nsfw",
+             2004),
+            ("public/thumbnails/sleep_528hz.jpg",
+             "masterpiece 8K ultra HD deep dark cosmic space milky way galaxy purple blue nebula aurora borealis particles ethereal serene dreamlike no text no people no numbers ### text watermark nsfw",
+             5289),
+          ]
+
+          for path, prompt, seed in IMAGENS:
+            fname = path.split("/")[-1]
+            print(f"Generating {fname}...")
+            url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt[:400])}?model=flux&width=1920&height=1080&seed={seed}&nologo=true&enhance=true"
+            try:
+              r = requests.get(url, timeout=120)
+              if r.status_code == 200 and len(r.content) > 20000:
+                p = TMP/fname; p.write_bytes(r.content)
+                c = base64.b64encode(r.content).decode()
+                r0 = requests.get(f"https://api.github.com/repos/tafita81/Repovazio/contents/{path}", headers=H, timeout=10)
+                sha = r0.json().get("sha") if r0.status_code == 200 else None
+                pl = {"message":f"feat: {fname} viral style","content":c}
+                if sha: pl["sha"] = sha
+                r2 = requests.put(f"https://api.github.com/repos/tafita81/Repovazio/contents/{path}", headers=H, json=pl, timeout=60)
+                print(f"  {'OK' if r2.status_code in (200,201) else 'FAIL'} {fname} {len(r.content)//1024}KB")
+              else: print(f"  ERR {r.status_code}")
+            except Exception as e: print(f"  EXC {e}")
+            time.sleep(8)
+          PYEOF
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        continue-on-error: true
+
+      - name: Commit sumário de análise
+        run: |
+          echo "Imagens virais geradas em $(date -u)" >> public/ANALISE_IMAGENS.md
