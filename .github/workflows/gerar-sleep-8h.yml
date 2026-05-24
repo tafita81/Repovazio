@@ -1,0 +1,33 @@
+name: Gerar Sleep 8h — Meditative Mind Style
+
+on:
+  workflow_dispatch:
+    inputs:
+      idioma:
+        description: "EN PT ES DE FR JA KO IT ZH AR RU HI"
+        default: "EN"
+  schedule:
+    - cron: "0 2 * * 1"  # toda segunda-feira 2h UTC
+
+jobs:
+  sleep8h:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        idioma: [EN, PT, ES, DE]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests --break-system-packages
+      - name: Gerar Sleep 8h
+        env:
+          CANAL_IDIOMA: ${{ matrix.idioma }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/gen_sleep_8h.py || true
+        continue-on-error: true
