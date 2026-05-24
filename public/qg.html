@@ -1,244 +1,139 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ψ Quartel General V42 — psicologia.doc</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ψ QG — psicologia.doc</title>
 <style>
-:root{--bg:#06060F;--s1:#0E0E1A;--s2:#12121F;--bd:rgba(255,255,255,.06);--bd2:rgba(255,255,255,.1);--acc:#7C3AED;--mist:#C4B5FD;--gold:#F59E0B;--teal:#0D9488;--cyan:#38BDF8;--grn:#10B981;--frost:#F0F4FF;--t1:#E2E8F0;--t2:#94A3B8;--t3:#475569}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--t1);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 100% 60% at 50% -5%,rgba(124,58,237,.1),transparent),radial-gradient(ellipse 50% 40% at 90% 80%,rgba(14,148,130,.05),transparent)}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-.hdr{position:sticky;top:0;z-index:100;background:rgba(6,6,15,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--bd);padding:0 28px;height:56px;display:flex;align-items:center;gap:14px}
-.hdr-logo{font-size:18px;font-weight:800;letter-spacing:-1px;color:var(--frost)}.hdr-logo span{color:var(--mist)}
-.hdr-v{font-size:9px;color:var(--gold);font-family:'DM Mono',monospace;background:rgba(245,158,11,.1);padding:2px 8px;border-radius:20px;border:1px solid rgba(245,158,11,.2);font-weight:700}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 1.8s infinite;display:inline-block}
-.hdr-live{font-size:10px;color:var(--t2);display:flex;align-items:center;gap:5px}
-.hdr-r{margin-left:auto;display:flex;gap:6px;align-items:center}
-.hdr-btn{padding:5px 14px;border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;color:var(--t2);border:1px solid var(--bd);transition:.15s;background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif}
-.hdr-btn:hover{color:var(--frost)}.hdr-btn.p{background:var(--acc);color:#fff;border-color:transparent}
-.pg{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:20px 24px 60px}
-.mission{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(91,33,182,.08),rgba(14,148,130,.06));border:1px solid rgba(124,58,237,.2);border-radius:20px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden;animation:fadeUp .3s ease}
-.mission::before{content:'ψ';position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:120px;font-weight:900;opacity:.04;color:var(--mist);line-height:1}
-.mission-label{font-size:10px;font-family:'DM Mono',monospace;color:var(--mist);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:8px}
-.mission h1{font-size:clamp(22px,3.5vw,36px);font-weight:800;letter-spacing:-1.5px;color:var(--frost);line-height:1.1;margin-bottom:8px}
-.mission h1 em{font-style:normal;background:linear-gradient(90deg,#C084FC,#38BDF8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.mission-sub{font-size:13px;color:var(--t2);max-width:680px;line-height:1.6}
-.mission-meta{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
-.mmeta{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;padding:3px 10px;background:rgba(255,255,255,.04);border-radius:20px;border:1px solid var(--bd)}
-.mmeta.ok{color:var(--grn);background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2)}
-.mmeta.warn{color:var(--gold);background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2)}
-.mmeta.acc{color:var(--mist);background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.2)}
-.llm{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:18px 24px;margin-bottom:20px}
-.llm-t{font-size:13px;font-weight:700;color:var(--frost);margin-bottom:12px}
-.llm-row{display:flex;gap:8px;flex-wrap:wrap}
-.pill{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:5px 12px;font-size:11px;color:var(--t2);font-family:'DM Mono',monospace}
-.pill.active{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);color:var(--gold);font-weight:700}
-.pill .pos{color:var(--t3);font-size:9px;margin-right:5px}
-.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px}
-.metric{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;transition:.2s;animation:fadeUp .35s ease both}
-.metric:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px)}
-.mn{font-size:28px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px}
-.ml{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
-.ms{font-size:9px;color:var(--t3);margin-top:3px;font-family:'DM Mono',monospace}
-.m-acc{color:var(--mist)}.m-grn{color:var(--grn)}.m-gold{color:var(--gold)}.m-cyan{color:var(--cyan)}.m-teal{color:var(--teal)}
-.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
-@media(max-width:1100px){.mgrid{grid-template-columns:1fr 1fr}}@media(max-width:720px){.mgrid{grid-template-columns:1fr}}
-.panel{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden}
-.ph{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
-.pt{font-size:12px;font-weight:700;color:var(--t1)}
-.pb-badge{margin-left:auto;font-size:9px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;font-weight:700}
-.pb-grn{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.2)}
-.pb-gold{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
-.pb-acc{background:rgba(124,58,237,.15);color:var(--mist);border:1px solid rgba(124,58,237,.2)}
-.pb{padding:14px 16px}
-.lnk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--t2);border:1px solid transparent;transition:.15s;margin-bottom:6px}
-.lnk:hover{background:rgba(255,255,255,.04);border-color:var(--bd);color:var(--t1)}
-.li{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.lt{flex:1;min-width:0}
-.ln{font-size:12px;font-weight:600;color:var(--t1);display:block;margin-bottom:1px}
-.ld{font-size:10px;color:var(--t3);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}.sdot.live{background:var(--grn);animation:pulse 2s infinite}.sdot.pend{background:var(--gold)}
-.rr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}.rr:last-child{border-bottom:none}
-.ri{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.rn{font-size:12px;font-weight:600;color:var(--t1);flex:1}
-.di{padding:10px 0;border-bottom:1px solid var(--bd);display:flex;gap:10px;align-items:flex-start}.di:last-child{border-bottom:none}
-.dn{font-size:11px;font-weight:800;font-family:'DM Mono',monospace;color:var(--mist);width:20px;flex-shrink:0;margin-top:1px}
-.dt{font-size:11px;color:var(--t2);line-height:1.45;flex:1}
-.tag{font-size:8px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:6px;font-family:'DM Mono',monospace}
-.tg{background:rgba(16,185,129,.15);color:var(--grn)}.ta{background:rgba(124,58,237,.15);color:var(--mist)}.tp{background:rgba(245,158,11,.15);color:var(--gold)}
-.ps-row{display:flex;gap:8px;flex-wrap:wrap}
-.ps{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;text-align:center;flex:1;min-width:80px}
-.psn{font-size:20px;font-weight:800;font-family:'DM Mono',monospace;line-height:1}
-.psl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
-.tick{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.tt{font-size:11px;color:var(--t2);flex:1;line-height:1.4}
-.tm{font-size:9px;color:var(--t3);font-family:'DM Mono',monospace;flex-shrink:0}
-.fgrid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px}@media(max-width:900px){.fgrid{grid-template-columns:1fr}}
-.rbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--s2);border-top:1px solid var(--bd);font-size:10px;color:var(--t3);font-family:'DM Mono',monospace}
-.spin{width:12px;height:12px;border:1.5px solid var(--bd2);border-top-color:var(--acc);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
-footer{text-align:center;padding:20px;font-size:10px;color:var(--t3);border-top:1px solid var(--bd);font-family:'DM Mono',monospace}
-@media(max-width:600px){.pg{padding:14px 14px 40px}.metrics{grid-template-columns:repeat(3,1fr)}}
-</style></head><body>
-<!-- BOTÃO HOME FIXO -->
-<a href="/" title="← Página Principal" style="
-  position:fixed;top:14px;left:14px;z-index:9999;
-  display:flex;align-items:center;gap:6px;
-  background:rgba(6,6,15,.92);
-  border:1px solid rgba(196,181,253,.25);
-  border-radius:10px;
-  padding:6px 12px;
-  color:#C4B5FD;
-  font-family:'DM Sans','DM Mono',monospace,sans-serif;
-  font-size:11px;font-weight:700;
-  text-decoration:none;
-  backdrop-filter:blur(12px);
-  transition:all .15s;
-  box-shadow:0 2px 16px rgba(0,0,0,.4);
-" onmouseover="this.style.borderColor='rgba(196,181,253,.6)';this.style.background='rgba(14,14,26,.97)'"
-  onmouseout="this.style.borderColor='rgba(196,181,253,.25)';this.style.background='rgba(6,6,15,.92)'">
-  <span style="font-size:14px;font-family:serif;font-weight:900">ψ</span>
-  <span>← Início</span>
-</a>
-<!-- /BOTÃO HOME FIXO -->
-
-<header class="hdr">
-<div class="hdr-logo">ψ <span>psicologia.doc</span></div>
-<div class="hdr-v">QG V37 · Qwen3</div>
-<div class="hdr-live"><span class="live-dot"></span> Cérebro V37 Ativo</div>
-<div class="hdr-r">
-        <a class="hdr-btn" href="/brand.html">🎨 Brand</a>
-        <a class="hdr-btn" href="/viral.html">🔥 Viral</a>
-        <a class="hdr-btn" href="/publicar.html" style="color:var(--crim)">🚀 Publicar</a>
-<a href="/series.html" class="hdr-btn">Séries</a>
-<a href="/videos-prontos.html" class="hdr-btn">Vídeos</a>
-<a href="/estrategia.html" class="hdr-btn">Estratégia</a>
-<a href="/hub.html" class="hdr-btn">Hub</a>
-<button onclick="loadPipeline()" class="hdr-btn p">↻ Sync</button>
-</div>
+:root{--bg:#06060F;--card:#0F0F1A;--p:#7C3AED;--r:#E11D48;--g:#22C55E;--y:#F59E0B;--t:#0D9488;--txt:#F1F5F9;--muted:#94A3B8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid #1E1E33;display:flex;align-items:center;gap:10px}
+.logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#A78BFA,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.main{max-width:960px;margin:0 auto;padding:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:14px;border-left:3px solid var(--p)}
+.card.g{border-left-color:var(--g)}.card.r{border-left-color:var(--r)}.card.y{border-left-color:var(--y)}.card.t{border-left-color:var(--t)}
+.card h3{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.card .links{display:flex;flex-direction:column;gap:5px}
+.lnk{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#ffffff08;border-radius:6px;text-decoration:none;color:var(--txt);font-size:.8rem;transition:background .15s}
+.lnk:hover{background:#ffffff14}
+.lnk .icon{font-size:.9rem;flex-shrink:0}
+.status{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:auto;flex-shrink:0}
+.ok{background:#22C55E;box-shadow:0 0 4px #22C55E66;animation:p 2s infinite}
+.pend{background:#F59E0B}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.5}}
+.section-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:18px 0 8px;padding-bottom:4px;border-bottom:1px solid #1E1E33}
+.pipes{display:flex;flex-direction:column;gap:6px}
+.pipe{background:var(--card);border:1px solid #1E1E33;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.pipe .name{font-size:.82rem;font-weight:600;flex:1}
+.pipe .sched{font-size:.72rem;color:var(--muted)}
+.bloq{background:#1a0808;border:1px solid #E11D4833;border-radius:8px;padding:12px;margin-bottom:12px}
+.bloq h3{color:#E11D48;font-size:.78rem;margin-bottom:6px}
+.bloq li{font-size:.78rem;color:#FCA5A5;margin-bottom:3px;list-style:none;padding-left:4px}
+.bloq li::before{content:"⚡ "}
+footer{text-align:center;padding:16px;color:var(--muted);font-size:.7rem;border-top:1px solid #1E1E33;margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+  <span>ψ</span>
+  <span class="logo">psicologia.doc — QG</span>
+  <span style="margin-left:auto;font-size:.7rem;color:var(--muted)" id="ts"></span>
 </header>
-<div class="pg">
-<div class="mission">
-<div class="mission-label">🧠 Quartel General V37 · Cadeia Qwen3 Next 80B · Autonomia Total · $0/mês</div>
-<h1>Rota para <em>R$ 50.000/mês</em> · 1M views</h1>
-<p class="mission-sub">Sistema autônomo psicologia.doc — Cadeia LLM 8 modelos grátis (Qwen3→DeepSeek→Llama→Gemini→Groq) · Edge TTS Microsoft pt-BR · Render Flux+Ken Burns V8 Cinematic · 20 séries · 140 episódios · Custo $0/mês.</p>
-<div class="mission-meta">
-<span class="mmeta ok">🟢 Cérebro V37 Ativo</span>
-<span class="mmeta acc">⚡ Qwen3 Default</span>
-<span class="mmeta ok">✓ 15 vídeos prontos</span>
-<span class="mmeta warn">⚠️ OAuth Meta/TikTok Pendente</span>
-<span class="mmeta">📅 Meta: Jan/2027</span>
+<div class="main">
+
+  <!-- PENDÊNCIAS CRÍTICAS -->
+  <div class="bloq">
+    <h3>⚡ PENDÊNCIAS MANUAIS (sem elas R$ não entra)</h3>
+    <ul>
+      <li>Hotmart: criar produto R$29,90 (único) → hotmart.com/products/new</li>
+      <li>Hotmart: criar produto R$216/ano (recorrente) → Comunidade</li>
+      <li>WhatsApp: criar grupo exclusivo → copiar link → Supabase produto_whatsapp</li>
+      <li>ManyChat: keyword "SONO" → DM automático → link R$29,90</li>
+      <li>YouTube OAuth: YOUTUBE_REFRESH_TOKEN no GitHub Secrets</li>
+    </ul>
+  </div>
+
+  <!-- LINKS RÁPIDOS -->
+  <div class="section-title">Links Rápidos</div>
+  <div class="grid">
+    <div class="card">
+      <h3>📱 Produtos</h3>
+      <div class="links">
+        <a href="/app-vendas" class="lnk"><span class="icon">🧠</span> App R$29,90</a>
+        <a href="/app" class="lnk"><span class="icon">📲</span> Acessar App</a>
+        <a href="/psicologia-para-dormir" class="lnk"><span class="icon">🌙</span> WA R$216/ano</a>
+      </div>
+    </div>
+    <div class="card g">
+      <h3>📊 Analytics</h3>
+      <div class="links">
+        <a href="/dashboard" class="lnk"><span class="icon">📈</span> Dashboard Geral</a>
+        <a href="/cerebro" class="lnk"><span class="icon">🧠</span> Quantum Brain</a>
+        <a href="/growth" class="lnk"><span class="icon">🚀</span> Growth Monitor</a>
+      </div>
+    </div>
+    <div class="card r">
+      <h3>🎬 Conteúdo</h3>
+      <div class="links">
+        <a href="/galeria.html" class="lnk"><span class="icon">🖼️</span> Galeria Imagens</a>
+        <a href="/fila-publicacao.html" class="lnk"><span class="icon">📅</span> Fila Publicação</a>
+        <a href="/calendario.html" class="lnk"><span class="icon">📆</span> Calendário</a>
+      </div>
+    </div>
+    <div class="card y">
+      <h3>⚙️ Infra</h3>
+      <div class="links">
+        <a href="https://github.com/tafita81/Repovazio/actions" class="lnk" target="_blank"><span class="icon">🔧</span> GitHub Actions</a>
+        <a href="https://app.supabase.com" class="lnk" target="_blank"><span class="icon">🗄️</span> Supabase</a>
+        <a href="https://vercel.com/dashboard" class="lnk" target="_blank"><span class="icon">▲</span> Vercel</a>
+      </div>
+    </div>
+    <div class="card t">
+      <h3>📺 Canal</h3>
+      <div class="links">
+        <a href="https://youtube.com/@psidanielacoelho" class="lnk" target="_blank"><span class="icon">▶️</span> @psidanielacoelho</a>
+        <a href="https://instagram.com/psidanielacoelho" class="lnk" target="_blank"><span class="icon">📸</span> Instagram</a>
+        <a href="/brand/master-studio.html" class="lnk"><span class="icon">🎨</span> Brand Studio</a>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📚 KDP & Afiliados</h3>
+      <div class="links">
+        <a href="https://kdp.amazon.com" class="lnk" target="_blank"><span class="icon">📚</span> Amazon KDP</a>
+        <a href="https://hotmart.com" class="lnk" target="_blank"><span class="icon">🛒</span> Hotmart</a>
+        <a href="https://manychat.com" class="lnk" target="_blank"><span class="icon">💬</span> ManyChat</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINES -->
+  <div class="section-title">Pipelines Ativos (20 GitHub Actions)</div>
+  <div class="pipes">
+    <div class="pipe"><div class="status ok"></div><div class="name">daniela-iris</div><div class="sched">9h UTC diário — IRIS+minerador+5dias+funil</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">funil-diario</div><div class="sched">12h+15h+21h UTC — 3x/dia completo</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">receita-monitor</div><div class="sched">:30 todo hora — vendas+alertas</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">weekly-report</div><div class="sched">Segunda 11h UTC — KPIs+AB test</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">quadrinhos-dark</div><div class="sched">9h+12h+18h UTC — carrosséis dark</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">whatsapp-daily</div><div class="sched">22:30 UTC — áudio 19h30 BRT</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">kdp-psicologia</div><div class="sched">Quarta 10h UTC — livro Amazon</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">master-orchestrator</div><div class="sched">6h+14h+22h UTC — orquestra</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">competitive-radar</div><div class="sched">Segunda 8h — 6 canais</div></div>
+    <div class="pipe"><div class="status ok"></div><div class="name">brain-auto-expand</div><div class="sched">:45 todo hora — APIs Quantum Brain</div></div>
+  </div>
+
+  <!-- MATH -->
+  <div class="section-title">Math Financeiro — Caminho para R$50K</div>
+  <div class="grid">
+    <div class="card g"><h3>Conservador</h3><div style="font-size:1.2rem;font-weight:800;margin:6px 0">R$4.485/mês</div><div style="font-size:.75rem;color:var(--muted)">5 vendas app/dia × R$29,90 × 30</div></div>
+    <div class="card y"><h3>Crescendo</h3><div style="font-size:1.2rem;font-weight:800;margin:6px 0">R$8.970/mês</div><div style="font-size:.75rem;color:var(--muted)">10 vendas/dia + 100 assinantes WA</div></div>
+    <div class="card r"><h3>Viral</h3><div style="font-size:1.2rem;font-weight:800;margin:6px 0">R$17.940/mês</div><div style="font-size:.75rem;color:var(--muted)">20 vendas/dia × R$29,90 × 30</div></div>
+    <div class="card p" style="border-left-color:#7C3AED"><h3>Meta Total</h3><div style="font-size:1.2rem;font-weight:800;margin:6px 0">R$50.000/mês</div><div style="font-size:.75rem;color:var(--muted)">app viral + 1K assinantes WA + YouTube</div></div>
+  </div>
+
 </div>
-</div>
-<div class="llm">
-<div class="llm-t">🤖 Cadeia LLM V37 · 8 Modelos · 100% Grátis · NVIDIA NIM + Gemini + Groq</div>
-<div class="llm-row">
-<span class="pill active"><span class="pos">01</span>Qwen3 Next 80B (Default)</span>
-<span class="pill"><span class="pos">02</span>DeepSeek V4 Pro</span>
-<span class="pill"><span class="pos">03</span>Qwen3 235B A22B</span>
-<span class="pill"><span class="pos">04</span>Llama 3.3 70B</span>
-<span class="pill"><span class="pos">05-06</span>Gemini 2.5 Flash (×2)</span>
-<span class="pill"><span class="pos">07</span>Groq Llama 3.3 70B</span>
-<span class="pill"><span class="pos">08</span>Groq Llama 3.1 8B Instant</span>
-</div>
-</div>
-<div class="metrics">
-<div class="metric"><div class="mn m-grn" id="mt-mp4">15</div><div class="ml">MP4 Prontos</div><div class="ms">10 top10 + 5 pilotos</div></div>
-<div class="metric"><div class="mn m-acc">5</div><div class="ml">Pilotos V37</div><div class="ms">Qwen3 + Edge TTS</div></div>
-<div class="metric"><div class="mn m-gold" id="mt-pend">18</div><div class="ml">Pending OAuth</div><div class="ms">Meta/TikTok/Pin</div></div>
-<div class="metric"><div class="mn m-cyan">20</div><div class="ml">Séries</div><div class="ms">140 episódios</div></div>
-<div class="metric"><div class="mn m-teal">5</div><div class="ml">Priority 10</div><div class="ms">34 episódios</div></div>
-<div class="metric"><div class="mn" style="color:#F472B6">$0</div><div class="ml">Custo Mensal</div><div class="ms">100% grátis</div></div>
-</div>
-<div class="mgrid">
-<div class="panel"><div class="ph"><span>🗂️</span><span class="pt">Páginas do Sistema</span><span class="pb-badge pb-acc">20 páginas</span></div>
-<div class="pb">
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:8px;font-weight:700">V37 Novas</div>
-<a href="/series.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📚</div><div class="lt"><span class="ln">Séries V37</span><span class="ld">20 séries · 140 episódios</span></div></a>
-<a href="/estrategia.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🎯</div><div class="lt"><span class="ln">Estratégia V37</span><span class="ld">Painel unificado · Roadmap monetização</span></div></a>
-<a href="/videos-prontos.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">🎬</div><div class="lt"><span class="ln">Vídeos Prontos</span><span class="ld">15 MP4s · Player HTML5 · Auto-update 1h</span></div></a>
-<a href="/hub.html" class="lnk"><div class="li" style="background:rgba(56,189,248,.1)">🏠</div><div class="lt"><span class="ln">Hub Master</span><span class="ld">Portal unificado · 20 páginas</span></div></a>
-<div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);font-family:'DM Mono',monospace;margin:12px 0 8px;font-weight:700">Controle</div>
-<a href="/dashboard" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">📊</div><div class="lt"><span class="ln">Dashboard V11</span><span class="ld">16 páginas operacionais</span></div></a>
-<a href="/cerebro.html" class="lnk"><div class="li" style="background:rgba(196,181,253,.1)">🧠</div><div class="lt"><span class="ln">Cérebro Autônomo V37</span><span class="ld">Qwen3 · Memória eterna · Auto-melhoria</span></div></a>
-<a href="/galeria-quantica.html" class="lnk"><div class="li" style="background:rgba(124,58,237,.15)">🌌</div><div class="lt"><span class="ln">Galeria Quântica</span><span class="ld">Flux+KB V2 · Score 95+</span></div></a>
-<a href="/growth.html" class="lnk"><div class="li" style="background:rgba(16,185,129,.1)">📈</div><div class="lt"><span class="ln">Growth Plan</span><span class="ld">0→1K→10K→100K subs</span></div></a>
-<a href="/canal-oficial.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">▶️</div><div class="lt"><span class="ln">Canal Oficial</span><span class="ld">@psidanielacoelho · UCyCkI...</span></div></a>
-<a href="/conectores.html" class="lnk"><div class="li" style="background:rgba(245,158,11,.1)">🔌</div><div class="lt"><span class="ln">Conectores OAuth</span><span class="ld">Meta/TikTok/Pinterest setup</span></div></a>
-<a href="/admin.html" class="lnk"><div class="li" style="background:rgba(225,29,72,.1)">⚙️</div><div class="lt"><span class="ln">Admin Panel</span><span class="ld">Controles do sistema</span></div></a>
-</div></div>
-<div style="display:flex;flex-direction:column;gap:14px">
-<div class="panel"><div class="ph"><span>📡</span><span class="pt">Redes Sociais V37</span><span class="pb-badge pb-gold">5 plataformas</span></div>
-<div class="pb">
-<div class="rr"><div class="ri" style="background:rgba(255,0,0,.15)">▶️</div><div style="flex:1"><div class="rn">YouTube</div><div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">@psidanielacoelho · OAuth ✓</div></div><div class="sdot live"></div></div>
-<div class="rr"><div class="ri" style="background:rgba(225,48,108,.15)">📸</div><div style="flex:1"><div class="rn">Instagram</div><div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">Pendente OAuth</div></div><div class="sdot pend"></div></div>
-<div class="rr"><div class="ri" style="background:rgba(1,1,1,.25)">🎵</div><div style="flex:1"><div class="rn">TikTok</div><div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">Pendente OAuth</div></div><div class="sdot pend"></div></div>
-<div class="rr"><div class="ri" style="background:rgba(230,0,35,.15)">📌</div><div style="flex:1"><div class="rn">Pinterest</div><div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">Pendente OAuth</div></div><div class="sdot pend"></div></div>
-<div class="rr"><div class="ri" style="background:rgba(37,211,102,.15)">💬</div><div style="flex:1"><div class="rn">WhatsApp</div><div style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">8 grupos · Pendente link</div></div><div class="sdot pend"></div></div>
-</div></div>
-<div class="panel"><div class="ph"><span>📚</span><span class="pt">Séries Priority 10</span><span class="pb-badge pb-acc">5 · 34 eps</span></div>
-<div class="pb" style="font-size:11px;color:var(--t2);line-height:1.8">
-<div style="display:flex;justify-content:space-between"><strong style="color:#7C3AED">A Ciência do Apego</strong><span style="font-family:'DM Mono',monospace;color:var(--t3)">1/8</span></div>
-<div style="display:flex;justify-content:space-between"><strong style="color:#E11D48">Mentes Narcisistas</strong><span style="font-family:'DM Mono',monospace;color:var(--t3)">1/6</span></div>
-<div style="display:flex;justify-content:space-between"><strong style="color:#0D9488">Trauma Invisível</strong><span style="font-family:'DM Mono',monospace;color:var(--t3)">1/8</span></div>
-<div style="display:flex;justify-content:space-between"><strong style="color:#F59E0B">Vínculos Tóxicos</strong><span style="font-family:'DM Mono',monospace;color:var(--t3)">1/6</span></div>
-<div style="display:flex;justify-content:space-between"><strong style="color:#38BDF8">Psicologia do Dinheiro</strong><span style="font-family:'DM Mono',monospace;color:var(--t3)">1/6</span></div>
-<a href="/series.html" style="display:block;text-align:center;margin-top:14px;padding:8px;background:var(--acc);color:#fff;text-decoration:none;border-radius:8px;font-size:11px;font-weight:600">Ver todas as 20 séries →</a>
-</div></div>
-</div>
-<div class="panel"><div class="ph"><span>⚡</span><span class="pt">Decisões V37 do Cérebro</span><span class="pb-badge pb-grn">Autonomia Total</span></div>
-<div class="pb">
-<div class="di"><div class="dn">01</div><div class="dt">Cadeia LLM V37: <strong>Qwen3 Next 80B</strong> default + 7 fallbacks 100% grátis <span class="tag tg">Ativo</span></div></div>
-<div class="di"><div class="dn">02</div><div class="dt">5 episódios piloto via Qwen3: <strong>13.8k–16.3k chars</strong> (média 15.3k) <span class="tag tg">Gerado</span></div></div>
-<div class="di"><div class="dn">03</div><div class="dt">TTS via <strong>Edge TTS Microsoft pt-BR FranciscaNeural</strong> (unlimited, $0) <span class="tag tg">Ativo</span></div></div>
-<div class="di"><div class="dn">04</div><div class="dt">3 long-form expandidos (#686/690/691): <strong>5k → 12.4k chars</strong> via Qwen3 <span class="tag tg">Executado</span></div></div>
-<div class="di"><div class="dn">05</div><div class="dt">Render <strong>v8 Cinematic</strong> (estável) · V2 Flux Schnell (em fix) <span class="tag ta">Automático</span></div></div>
-<div class="di"><div class="dn">06</div><div class="dt">Quantum Gate: <strong>score ≥95 + min_dim ≥90</strong> obrigatórios <span class="tag ta">Trigger DB</span></div></div>
-<div class="di"><div class="dn">07</div><div class="dt">20 séries · 140 episódios em <code>topics jsonb</code> <span class="tag tg">Executado</span></div></div>
-<div class="di"><div class="dn">08</div><div class="dt">Render-trigger v7 EF: storage-based + graceful YT quota <span class="tag tg">v7 Ativa</span></div></div>
-<div class="di"><div class="dn">09</div><div class="dt">OAuth Meta/TikTok/Pinterest → publicação multi-rede <span class="tag tp">Aguarda Rafael</span></div></div>
-<div class="di"><div class="dn">10</div><div class="dt">Google Ads R$200 (0→1K subs) + AdSense (1K+ subs + 4Kh) <span class="tag tp">Próximos</span></div></div>
-</div></div>
-</div>
-<div class="fgrid">
-<div class="panel"><div class="ph"><span>🔄</span><span class="pt">Pipeline Tempo Real V37</span><span class="pb-badge pb-acc" id="pipe-last">—</span></div>
-<div class="pb">
-<div class="ps-row">
-<div class="ps"><div class="psn m-grn" id="ps-mp4">15</div><div class="psl">MP4 Ready</div></div>
-<div class="ps"><div class="psn m-gold" id="ps-pend">18</div><div class="psl">Pending OAuth</div></div>
-<div class="ps"><div class="psn m-cyan" id="ps-rend">0</div><div class="psl">Rendering</div></div>
-<div class="ps"><div class="psn m-acc" id="ps-aud">0</div><div class="psl">Audio Ready</div></div>
-<div class="ps"><div class="psn m-teal" id="ps-scr">0</div><div class="psl">Script Ready</div></div>
-<div class="ps"><div class="psn" style="color:#E11D48" id="ps-pub">0</div><div class="psl">Publicados</div></div>
-</div>
-<div style="margin-top:12px">
-<div class="tick"><span>🎬</span><span class="tt"><strong>5 episódios piloto V37 (#692–696) completados:</strong> Qwen3 + Edge TTS + Render v8. 15 MP4s totais prontos.</span><span class="tm">agora</span></div>
-<div class="tick"><span>📝</span><span class="tt"><strong>3 long-form expandidos:</strong> #686/#690/#691 de ~5k → 12.3–12.5k chars via Qwen3 Next 80B.</span><span class="tm">agora</span></div>
-<div class="tick" style="background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.15)"><span>⚠️</span><span class="tt"><strong>Pendente Rafael:</strong> Configurar OAuth Meta/TikTok/Pinterest · 18 pipelines em pending_credentials · YouTube OAuth ✓</span><span class="tm">pendente</span></div>
-</div>
-</div>
-<div class="rbar"><span>Última: <span id="last-time">—</span></span><span><span class="spin"></span> Auto-sync 30s</span></div>
-</div>
-<div class="panel"><div class="ph"><span>🛠️</span><span class="pt">Stack Técnica V37</span><span class="pb-badge pb-grn">$0/mês</span></div>
-<div class="pb" style="font-size:11px;color:var(--t2);line-height:1.8">
-<div><strong style="color:var(--frost)">LLM:</strong> Qwen3 Next 80B → 7 fallbacks</div>
-<div><strong style="color:var(--frost)">TTS:</strong> Edge TTS MS pt-BR FranciscaNeural</div>
-<div><strong style="color:var(--frost)">Render:</strong> Flux+KB V2 + v8 Cinematic</div>
-<div><strong style="color:var(--frost)">DB:</strong> Supabase tpjvalzwkqwttv...</div>
-<div><strong style="color:var(--frost)">Frontend:</strong> Vercel repovazio.vercel.app</div>
-<div><strong style="color:var(--frost)">CI:</strong> GitHub Actions 22 workflows</div>
-<div><strong style="color:var(--frost)">Storage:</strong> Supabase Storage videos/</div>
-<div><strong style="color:var(--frost)">Gate:</strong> Score 95+ + min_dim 90+</div>
-<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);font-size:10px;color:var(--t3);font-family:'DM Mono',monospace">Custo total: <span style="color:var(--grn);font-weight:700">$0/mês</span></div>
-</div></div>
-</div>
-</div>
-<footer>psicologia.doc · @psidanielacoelho · Cérebro V37 · Qwen3 Next 80B · Autonomia Total · 20 séries · 140 episódios<br>15 MP4s prontos · Edge TTS MS pt-BR · Render v8 Cinematic · Custo $0/mês · Meta: R$50K/mês jan/2027</footer>
-<script>
-const SB="https://tpjvalzwkqwttvmszvie.supabase.co";
-const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY4NjkyMzAsImV4cCI6MjA2MjQ0NTIzMH0.w45_lqUBd_9m8HEZSbNDHMb0kfKWq0Nwd1Dqf7V5NVc";
-async function loadPipeline(){try{const r=await fetch(SB+"/rest/v1/content_pipeline?select=status,mp4_url",{headers:{apikey:SK,Authorization:"Bearer "+SK}});const d=await r.json();if(!Array.isArray(d))return;const c={};let mp4=0;d.forEach(v=>{c[v.status]=(c[v.status]||0)+1;if(v.mp4_url)mp4++});
-const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-s("mt-mp4",mp4);s("mt-pend",c.pending_credentials||0);s("ps-mp4",c.mp4_ready||0);s("ps-pend",c.pending_credentials||0);s("ps-rend",c.rendering||0);s("ps-aud",c.audio_ready||0);s("ps-scr",c.script_ready||0);s("ps-pub",c.published||0);
-document.getElementById("pipe-last").textContent="Atualizado "+new Date().toLocaleTimeString("pt-BR");s("last-time",new Date().toLocaleTimeString("pt-BR"))}catch(e){console.log(e)}}
-loadPipeline();setInterval(loadPipeline,30000);
-</script></body></html>
+<footer>ψ Daniela Coelho · @psidanielacoelho · v28 · 7 fontes · 20 pipelines · R$50K meta</footer>
+<script>document.getElementById('ts').textContent = new Date().toLocaleString('pt-BR');</script>
+</body>
+</html>
