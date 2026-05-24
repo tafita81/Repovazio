@@ -1,0 +1,48 @@
+name: Daniela IRIS — Agente Autônomo 6h BRT
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * *"   # 9h UTC = 6h BRT — briefing diário (do transcript Milagre)
+
+jobs:
+  iris-daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+
+      - name: "IRIS: Briefing diário + KPIs + Alertas"
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/daniela_iris.py || true
+        continue-on-error: true
+
+      - name: "Minerar posts virais gringa → BR"
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/minerador_viral.py || true
+        continue-on-error: true
+
+      - name: "Estratégia 5 dias — gerar plano editorial"
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/estrategia_5dias.py || true
+        continue-on-error: true
+
+      - name: "Funil integrado — configurar sequências"
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/funil_integrado.py || true
+        continue-on-error: true
