@@ -1,0 +1,21 @@
+name: Meta Ads Creative — Criativos Dark
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 3"
+jobs:
+  meta-ads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Meta Ads Creative
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/meta_ads_creative.py || true
+        continue-on-error: true
