@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>psicologia.doc — Central de Controle</title>
+<style>
+  :root{--bg:#06060F;--card:#0F0F1A;--border:#1E1E33;--p:#7C3AED;--a:#5B21B6;--r:#E11D48;--g:#22C55E;--y:#F59E0B;--t:#0D9488;--txt:#E2E8F0;--muted:#94A3B8}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;padding:16px}
+  h1{background:linear-gradient(135deg,#7C3AED,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.5rem;margin-bottom:4px}
+  .sub{color:var(--muted);font-size:.85rem;margin-bottom:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:20px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .card h3{font-size:.85rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+  .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:.75rem;font-weight:600;margin:2px}
+  .live{background:#EF444422;color:#EF4444;border:1px solid #EF4444;animation:pulse 2s infinite}
+  .ok{background:#22C55E22;color:#22C55E;border:1px solid #22C55E}
+  .warn{background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B}
+  .info{background:#7C3AED22;color:#A78BFA;border:1px solid #7C3AED}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+  .metric{font-size:2rem;font-weight:700;color:var(--txt);line-height:1}
+  .metric-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+  .dot.green{background:#22C55E}
+  .dot.red{background:#EF4444}
+  table{width:100%;font-size:.82rem;border-collapse:collapse}
+  td,th{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left}
+  th{color:var(--muted);font-weight:500}
+  a{color:#A78BFA;text-decoration:none}
+  .status-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+  .status-row:last-child{border-bottom:none}
+  pre{font-family:monospace;font-size:.78rem;background:#060610;padding:8px;border-radius:6px;overflow:auto;max-height:120px;color:#94A3B8}
+  #log{background:#060610;border-radius:8px;padding:12px;font-family:monospace;font-size:.75rem;color:#94A3B8;max-height:180px;overflow-y:auto;margin-top:8px}
+</style>
+</head>
+<body>
+<h1>ψ psicologia.doc</h1>
+<p class="sub">Central de Controle · @psidanielacoelho · YouTube + Kwai Shop + TikTok</p>
+
+<div class="grid">
+  <div class="card">
+    <h3>📡 Status dos Sistemas</h3>
+    <div class="status-row"><span class="dot green"></span>Canal PT @psidanielacoelho <span class="badge ok">ATIVO</span></div>
+    <div class="status-row"><span class="dot green"></span>Edge TTS (Microsoft) <span class="badge ok">GRÁTIS</span></div>
+    <div class="status-row"><span class="dot green"></span>Pollinations FLUX <span class="badge ok">GRÁTIS</span></div>
+    <div class="status-row"><span class="dot green"></span>Groq LLaMA 3.3 70B <span class="badge ok">ATIVO</span></div>
+    <div class="status-row"><span class="dot green"></span>Kwai Shop Afiliado <span class="badge ok">NOVO</span></div>
+    <div class="status-row"><span class="dot green"></span>Competitive Radar <span class="badge ok">SEGUNDA 8H</span></div>
+    <div class="status-row"><span class="dot green"></span>Auto-Refresh Loop <span class="badge ok">QUARTA 4H</span></div>
+  </div>
+
+  <div class="card">
+    <h3>💰 Monetização Multi-Plataforma</h3>
+    <table>
+      <tr><th>Plataforma</th><th>RPM/CPM</th><th>Público</th></tr>
+      <tr><td>YouTube PT</td><td><span style="color:#22C55E">R$7</span></td><td>Brasil</td></tr>
+      <tr><td>YouTube EN</td><td><span style="color:#22C55E">$25</span></td><td>USA/UK</td></tr>
+      <tr><td>YouTube DE</td><td><span style="color:#22C55E">$18</span></td><td>Alemanha</td></tr>
+      <tr><td>YouTube FR</td><td><span style="color:#22C55E">$14</span></td><td>França</td></tr>
+      <tr><td>Kwai Shop</td><td><span style="color:#F59E0B">Comissão</span></td><td>40-50+ BR</td></tr>
+      <tr><td>TikTok Shop</td><td><span style="color:#F59E0B">Comissão</span></td><td>Jovens BR</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🧠 3 Chains (Claude+NotebookLM style)</h3>
+    <div class="status-row">Chain 1 · Autopilot Brief<span class="badge ok">knowledge_fusion.py</span></div>
+    <div class="status-row">Chain 2 · Auto Refresh Loop<span class="badge ok">auto_refresh_loop.py</span></div>
+    <div class="status-row">Chain 3 · Competitive Radar<span class="badge ok">competitive_radar.py</span></div>
+    <p style="margin-top:8px;font-size:.78rem;color:var(--muted)">
+      Todos rodam automaticamente. Competitive Radar entrega o
+      <strong>Monday Briefing</strong> — briefing dos 6 canais virais
+      toda segunda-feira às 8h UTC.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>📱 Kwai Shop Afiliado</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:8px">
+      4 produtos psicologia+saúde · Base científica PubMed · 3 formatos validados
+    </p>
+    <div class="status-row">💊 Magnésio Glicinato <span class="badge info">ansiedade</span></div>
+    <div class="status-row">🐟 Ômega-3 DHA+EPA <span class="badge info">depressão</span></div>
+    <div class="status-row">🌿 Ashwagandha KSM-66 <span class="badge info">burnout</span></div>
+    <div class="status-row">🧠 L-Teanina+Cafeína <span class="badge info">TDAH</span></div>
+    <p style="font-size:.75rem;color:var(--muted);margin-top:8px">
+      Mesmo vídeo → YouTube + Kwai + TikTok = 3× alcance
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🎬 6 Canais Virais Monitorados</h3>
+    <table>
+      <tr><th>Canal</th><th>Subs</th><th>CPM</th></tr>
+      <tr><td>Psych2Go</td><td>10.5M</td><td>$20</td></tr>
+      <tr><td>Lofi Girl</td><td>14.0M</td><td>$5</td></tr>
+      <tr><td>Power of Positivity</td><td>9.0M</td><td>$15</td></tr>
+      <tr><td>Meditative Mind</td><td>3.2M</td><td>$12</td></tr>
+      <tr><td>Jason Stephenson</td><td>2.5M</td><td>$8</td></tr>
+      <tr><td>Greenred</td><td>2.0M</td><td>$8</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🤖 LLM Router V4</h3>
+    <div class="status-row"><span class="badge ok">1</span> NVIDIA DeepSeek V4 Pro</div>
+    <div class="status-row"><span class="badge info">2</span> NVIDIA LLaMA 3.3 70B</div>
+    <div class="status-row"><span class="badge info">3</span> Groq LLaMA 3.3 (14.400/dia)</div>
+    <div class="status-row"><span class="badge warn">4</span> OpenAI gpt-4o-mini (pago)</div>
+    <p style="margin-top:8px;font-size:.78rem;color:var(--muted)">
+      Custo atual: R$0,00/dia nos 3 gratuitos
+    </p>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+  <h3>🔗 Links Rápidos</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+    <a href="https://repovazio.vercel.app/cerebro.html" class="badge info">🧠 Quantum Brain</a>
+    <a href="https://github.com/tafita81/Repovazio/actions" class="badge info">⚙️ GitHub Actions</a>
+    <a href="https://www.youtube.com/channel/UCyCkIpsVgME9yCj_oXJFheA" class="badge ok">▶️ @psidanielacoelho</a>
+    <a href="https://app.supabase.com/project/tpjvalzwkqwttvmszvie" class="badge info">🗄️ Supabase</a>
+  </div>
+</div>
+
+<div id="log">⏳ Carregando status ao vivo...</div>
+<script>
+async function fetchStatus(){
+  const log=document.getElementById('log');
+  try{
+    const r=await fetch('/api/status');
+    if(r.ok){const d=await r.json();log.textContent=JSON.stringify(d,null,2);}
+    else{log.textContent='API: '+r.status;}
+  }catch(e){log.textContent='Offline — Dashboard estático ativo
+'+new Date().toISOString();}
+}
+fetchStatus();setInterval(fetchStatus,30000);
+</script>
+</body>
+</html>
