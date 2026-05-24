@@ -1,0 +1,25 @@
+name: Global Render — 5 Idiomas × 5 Temas
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7,15,23 * * *"
+
+jobs:
+  global:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install requests edge-tts --break-system-packages
+      - name: Global Render
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/global_render.py || true
+        continue-on-error: true
