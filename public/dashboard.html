@@ -3,164 +3,220 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ψ Dashboard Completo — psicologia.doc</title>
+<title>ψ Dashboard — psicologia.doc</title>
 <style>
 :root{--bg:#06060F;--card:#0F0F1A;--p:#7C3AED;--r:#E11D48;--g:#22C55E;--y:#F59E0B;--t:#0D9488;--txt:#F1F5F9;--muted:#94A3B8}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif;line-height:1.5}
-header{padding:16px 20px;border-bottom:1px solid #1E1E33;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);z-index:10}
-.logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,#A78BFA,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.main{max-width:1100px;margin:0 auto;padding:20px}
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
-.kpi{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:14px;border-top:2px solid var(--p)}
-.kpi.g{border-top-color:var(--g)}.kpi.y{border-top-color:var(--y)}.kpi.r{border-top-color:var(--r)}.kpi.t{border-top-color:var(--t)}
-.kpi .lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.kpi .val{font-size:1.5rem;font-weight:800}
-.kpi .sub{font-size:.72rem;color:var(--muted);margin-top:2px}
-.section{margin-bottom:28px}
-.section h2{font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid #1E1E33}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.card{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:16px}
-.card .nome{font-weight:700;margin-bottom:3px;font-size:.9rem}
-.card .desc{font-size:.78rem;color:var(--muted);margin-bottom:8px}
-.card .receita{font-size:1.1rem;font-weight:700;color:var(--g)}
-.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.7rem;margin-top:6px}
-.ativo{background:#22C55E22;color:#22C55E;border:1px solid #22C55E44}
-.pendente{background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B44}
-.pipe{background:var(--card);border:1px solid #1E1E33;border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid #1E1E33;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);z-index:10}
+.logo{font-weight:800;background:linear-gradient(135deg,#A78BFA,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.kpi{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:14px;border-top:3px solid var(--p)}
+.kpi.g{border-top-color:var(--g)}.kpi.r{border-top-color:var(--r)}.kpi.y{border-top-color:var(--y)}.kpi.t{border-top-color:var(--t)}
+.kpi-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.kpi-val{font-size:1.6rem;font-weight:800}
+.kpi-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+.section{margin-bottom:24px}
+.section-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid #1E1E33}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:14px}
+.card-title{font-size:.82rem;font-weight:700;margin-bottom:4px}
+.card-desc{font-size:.75rem;color:var(--muted);margin-bottom:8px}
+.card-val{font-size:1rem;font-weight:700;color:var(--g)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.68rem;margin-top:5px}
+.ok{background:#22C55E22;color:#22C55E;border:1px solid #22C55E44}
+.pend{background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B44}
+.pipe{background:var(--card);border:1px solid #1E1E33;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.dot.ok{background:#22C55E;box-shadow:0 0 5px #22C55E66;animation:pulse 2s infinite}
-.dot.pend{background:#F59E0B}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.pipe .info .t{font-size:.85rem;font-weight:600}
-.pipe .info .s{font-size:.75rem;color:var(--muted)}
-.alertas{background:#1a0a0a;border:1px solid #E11D4844;border-radius:10px;padding:14px;margin-bottom:16px}
-.alertas h3{color:#E11D48;font-size:.85rem;margin-bottom:8px}
-.alerta-item{font-size:.8rem;color:#FCA5A5;margin-bottom:4px}
-.links{display:flex;flex-wrap:wrap;gap:8px}
-.link-btn{background:var(--p);color:white;padding:6px 12px;border-radius:8px;font-size:.78rem;text-decoration:none}
-footer{text-align:center;padding:20px;color:var(--muted);font-size:.75rem;border-top:1px solid #1E1E33}
+.dot.on{background:#22C55E;box-shadow:0 0 4px #22C55E66;animation:blink 2s infinite}
+.dot.off{background:#F59E0B}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.pipe-name{font-size:.82rem;font-weight:600}
+.pipe-sched{font-size:.72rem;color:var(--muted)}
+.alerta-box{background:#1a0808;border:1px solid #E11D4844;border-radius:10px;padding:12px;margin-bottom:16px;display:none}
+.alerta-box h3{color:#E11D48;font-size:.82rem;margin-bottom:6px}
+.alerta-item{font-size:.78rem;color:#FCA5A5;margin-bottom:3px}
+.progress-bar{background:#1E1E33;border-radius:4px;height:6px;margin-top:6px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#7C3AED,#E11D48);border-radius:4px;transition:width .8s}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.lnk{background:var(--p);color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:.78rem}
+.lnk.t{background:var(--t)}.lnk.r{background:var(--r)}.lnk.g{background:#166534}
+.pendencia{background:var(--card);border:1px solid #F59E0B44;border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+.pendencia .label{font-size:.82rem;font-weight:600;color:#F59E0B;margin-bottom:2px}
+.pendencia .sub{font-size:.72rem;color:var(--muted)}
+footer{text-align:center;padding:14px;color:var(--muted);font-size:.68rem;border-top:1px solid #1E1E33;margin-top:20px}
+.refresh{background:none;border:1px solid #1E1E33;color:var(--muted);border-radius:6px;padding:4px 10px;font-size:.72rem;cursor:pointer;margin-left:auto}
+.refresh:hover{border-color:var(--p);color:var(--p)}
 </style>
 </head>
 <body>
 <header>
   <span>ψ</span>
-  <span class="logo">psicologia.doc — Dashboard</span>
-  <span style="margin-left:auto;font-size:.75rem;color:var(--muted)" id="ts"></span>
+  <span class="logo">psicologia.doc</span>
+  <button class="refresh" onclick="load()">↻ Atualizar</button>
+  <span id="ts" style="font-size:.7rem;color:var(--muted);margin-left:8px"></span>
 </header>
-<div class="main">
+<main>
 
-  <!-- KPIs -->
-  <div class="kpi-row" id="kpis">
-    <div class="kpi p"><div class="lbl">Meta Mensal</div><div class="val">R$50K</div><div class="sub">7 fontes de receita</div></div>
-    <div class="kpi g"><div class="lbl">Assinantes WA</div><div class="val" id="k-wa">—</div><div class="sub">Meta: 1.000</div></div>
-    <div class="kpi y"><div class="lbl">Áudios Prontos</div><div class="val" id="k-aud">—</div><div class="sub">fila WhatsApp</div></div>
-    <div class="kpi r"><div class="lbl">Posts Fila IG</div><div class="val" id="k-posts">—</div><div class="sub">prontos publicar</div></div>
-    <div class="kpi t"><div class="lbl">Viral Queue</div><div class="val" id="k-viral">—</div><div class="sub">minerados gringa</div></div>
-    <div class="kpi g"><div class="lbl">Afiliados</div><div class="val" id="k-af">—</div><div class="sub">na fila</div></div>
+  <!-- KPIs Tempo Real -->
+  <div class="kpi-row" id="kpi-row">
+    <div class="kpi r"><div class="kpi-label">Vendas Hoje</div><div class="kpi-val" id="k1">…</div><div class="kpi-sub">app R$29,90</div></div>
+    <div class="kpi g"><div class="kpi-label">Receita Hoje</div><div class="kpi-val" id="k2">…</div><div class="kpi-sub">todas as fontes</div></div>
+    <div class="kpi p"><div class="kpi-label">Assinantes WA</div><div class="kpi-val" id="k3">…</div><div class="kpi-sub">recorrente R$18/mês</div></div>
+    <div class="kpi t"><div class="kpi-label">Receita Mês</div><div class="kpi-val" id="k4">…</div><div class="kpi-sub">projetada</div></div>
+    <div class="kpi y"><div class="kpi-label">Meta R$50K</div><div class="kpi-val" id="k5">…</div><div class="kpi-sub" id="k5-sub">…</div></div>
+  </div>
+
+  <!-- Progress Meta -->
+  <div style="background:var(--card);border-radius:10px;padding:14px;margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:6px">
+      <span>Progresso Meta R$50.000/mês</span>
+      <span id="pct-text">calculando...</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
   </div>
 
   <!-- Alertas IRIS -->
-  <div class="alertas" id="alertas-box" style="display:none">
+  <div class="alerta-box" id="alertas">
     <h3>⚠️ Alertas IRIS</h3>
     <div id="alertas-list"></div>
   </div>
 
   <!-- 7 Fontes de Receita -->
   <div class="section">
-    <h2>7 Fontes de Receita</h2>
-    <div class="grid">
-      <div class="card"><div class="nome">📱 WhatsApp Assinatura</div><div class="desc">R$216/ano · Hotmart recorrente · áudio diário 19h30</div><div class="receita">R$0 → R$18K/mês</div><span class="badge pendente">Aguarda Hotmart</span></div>
-      <div class="card"><div class="nome">🧠 Modo Psicologia App</div><div class="desc">R$29,90 único · web app rituals+missões+diário</div><div class="receita">5-20 vendas/dia</div><span class="badge pendente">Aguarda Kirvano</span></div>
-      <div class="card"><div class="nome">📺 YouTube PT-BR</div><div class="desc">@psidanielacoelho · RPM R$7</div><div class="receita">100K views = R$700</div><span class="badge ativo">Ativo</span></div>
-      <div class="card"><div class="nome">🇺🇸 YouTube EN</div><div class="desc">Canal inglês · RPM $25</div><div class="receita">Meta: setup pendente</div><span class="badge pendente">Setup pendente</span></div>
-      <div class="card"><div class="nome">🛍️ Kwai+TikTok Shop</div><div class="desc">Magnésio, Ashwagandha, Ômega-3 · 15-25%</div><div class="receita">Comissão por venda</div><span class="badge ativo">Ativo</span></div>
-      <div class="card"><div class="nome">📚 Amazon Associados</div><div class="desc">Livros psicologia · 4-10%</div><div class="receita">R$50-500/mês</div><span class="badge ativo">Ativo</span></div>
-      <div class="card"><div class="nome">🎓 Hotmart Afiliado</div><div class="desc">Cursos psicologia · 30-70%</div><div class="receita">Meta: 5 vendas/dia</div><span class="badge pendente">Em setup</span></div>
+    <div class="section-title">7 Fontes de Receita</div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">📱 WhatsApp Assinatura</div><div class="card-desc">R$216/ano · Hotmart recorrente · áudio 19h30</div><div class="card-val">R$0 → R$18K/mês</div><span class="badge pend">⚡ Hotmart pendente</span></div>
+      <div class="card"><div class="card-title">🧠 Modo Psicologia App</div><div class="card-desc">R$29,90 único · rituais + missões + diário</div><div class="card-val">5–20 vendas/dia</div><span class="badge pend">⚡ Kirvano pendente</span></div>
+      <div class="card"><div class="card-title">📺 YouTube PT-BR</div><div class="card-desc">@psidanielacoelho · RPM R$7</div><div class="card-val">100K views = R$700</div><span class="badge ok">✅ Ativo</span></div>
+      <div class="card"><div class="card-title">🇺🇸 YouTube EN</div><div class="card-desc">Canal inglês · RPM $25</div><div class="card-val">Setup pendente</div><span class="badge pend">Em configuração</span></div>
+      <div class="card"><div class="card-title">🛍️ Kwai+TikTok Shop</div><div class="card-desc">Magnésio, Ashwagandha, Ômega-3 · 15-25%</div><div class="card-val">Por comissão</div><span class="badge ok">✅ Ativo</span></div>
+      <div class="card"><div class="card-title">📚 Amazon KDP</div><div class="card-desc">Livros psicologia auto-gen · royalty 70%</div><div class="card-val">R$9,90/livro</div><span class="badge ok">✅ Ativo</span></div>
+      <div class="card"><div class="card-title">🎓 Hotmart Afiliado</div><div class="card-desc">Cursos psicologia · 30-70% comissão</div><div class="card-val">R$50–500/venda</div><span class="badge pend">Em setup</span></div>
     </div>
   </div>
 
-  <!-- Funil Integrado -->
+  <!-- Funil -->
   <div class="section">
-    <h2>Funil Completo (3 Transcripts)</h2>
-    <div style="background:var(--card);border-radius:10px;padding:16px;font-size:.85rem;line-height:2">
-      🎨 <strong>Reel dark Pollinations</strong> → CTA "Comenta SONO" (9h/12h/18h)<br>
-      💬 <strong>DM automático</strong> → link R$29,90 app (impulso, sem pensar)<br>
-      🛒 <strong>Compra app</strong> → email upsell dia 3 → R$216/ano WhatsApp<br>
-      📱 <strong>WhatsApp grupo</strong> → áudio diário Daniela → fidelização<br>
-      🔗 <strong>Afiliados</strong> dentro do áudio (magnésio, livros) → renda extra<br>
-      📺 <strong>YouTube SEO</strong> → topo de funil → mais seguidores → mais vendas
+    <div class="section-title">Funil Completo (3 Transcripts)</div>
+    <div style="background:var(--card);border-radius:10px;padding:16px;font-size:.82rem;line-height:2.2">
+      🎨 <b>Reel dark</b> Pollinations → CTA "Comenta SONO" (9h/12h/18h)<br>
+      💬 <b>DM ManyChat auto</b> → link R$29,90 app<br>
+      🛒 <b>Compra app</b> → webhook Hotmart → /api/hotmart-webhook → Supabase<br>
+      📧 <b>Email dia 0/3/7/14</b> → upsell R$216/ano WhatsApp<br>
+      📱 <b>WhatsApp grupo</b> → áudio diário Daniela → fidelização<br>
+      🔗 <b>Afiliados</b> dentro do áudio → renda extra recorrente<br>
+      📺 <b>YouTube SEO</b> → topo de funil orgânico
     </div>
   </div>
 
   <!-- Pipelines -->
   <div class="section">
-    <h2>Pipelines Ativos (16 GitHub Actions)</h2>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">daniela-iris</div><div class="s">9h UTC — IRIS+minerador+5dias+funil (novo!)</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">quadrinhos-dark</div><div class="s">9h+12h+18h UTC — carrosséis dark 3x/dia</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">funil-completo</div><div class="s">8h+22:30 UTC — WhatsApp+IG+SEO+Afiliados</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">master-orchestrator</div><div class="s">6h+14h+22h UTC — orquestra tudo</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">narrativa-engine</div><div class="s">3x/dia — 5 nichos validados</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">gemini-mega-pipeline</div><div class="s">3x/dia — Imagen3+Veo3</div></div></div>
-    <div class="pipe"><div class="dot ok"></div><div class="info"><div class="t">canal-dark + kwai-affiliate + competitive-radar</div><div class="s">schedules variados</div></div></div>
+    <div class="section-title">20 Pipelines Ativos</div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">daniela-iris</div><div class="pipe-sched">9h UTC — IRIS briefing + minerador viral + 5 dias + funil</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">funil-diario</div><div class="pipe-sched">12h+15h+21h UTC — 3x/dia minerador+quadrinhos+reels+monitor</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">receita-monitor</div><div class="pipe-sched">:30 todo hora — vendas + assinantes + alertas meta</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">weekly-report</div><div class="pipe-sched">Segunda 11h UTC — KPIs + A/B test + projeção</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">quadrinhos-dark</div><div class="pipe-sched">9h+12h+18h UTC — carrosséis dark 3x/dia</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">whatsapp-daily</div><div class="pipe-sched">22:30 UTC — áudio psicologia 19h30 BRT</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">kdp-psicologia</div><div class="pipe-sched">Quarta 10h UTC — livros Amazon KDP</div></div></div>
+    <div class="pipe"><div class="dot on"></div><div><div class="pipe-name">master-orchestrator + brain-auto-expand + competitive-radar</div><div class="pipe-sched">schedules variados</div></div></div>
   </div>
 
-  <!-- Links -->
+  <!-- APIs Vercel -->
   <div class="section">
-    <h2>Links Rápidos</h2>
-    <div class="links">
-      <a href="/app" class="link-btn">🧠 App Psicologia</a>
-      <a href="/app-vendas" class="link-btn">💰 Venda App R$29,90</a>
-      <a href="/psicologia-para-dormir" class="link-btn">📱 WhatsApp R$216</a>
-      <a href="/cerebro" class="link-btn">🧠 Quantum Brain</a>
-      <a href="https://github.com/tafita81/Repovazio/actions" target="_blank" class="link-btn">⚙️ GitHub Actions</a>
-      <a href="https://www.youtube.com/@psidanielacoelho" target="_blank" class="link-btn">📺 Canal YouTube</a>
+    <div class="section-title">APIs Vercel (sem limite)</div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">🔗 /api/hotmart-webhook</div><div class="card-desc">Compra Hotmart → Supabase → upsell email</div><span class="badge ok">✅ Deployed</span></div>
+      <div class="card"><div class="card-title">💬 /api/manychat-webhook</div><div class="card-desc">Comentário SONO → DM automático → R$29,90</div><span class="badge ok">✅ Deployed</span></div>
+      <div class="card"><div class="card-title">📊 /api/receita</div><div class="card-desc">Endpoint receita tempo real (JSON)</div><span class="badge ok">✅ Deployed</span></div>
     </div>
   </div>
 
   <!-- Pendências -->
   <div class="section">
-    <h2>Pendências Manuais Bloqueantes</h2>
-    <div class="pipe"><div class="dot pend"></div><div class="info"><div class="t">Hotmart: criar produto R$29,90 (único) + R$216/ano (recorrente)</div><div class="s">hotmart.com → Produtos → Novo → Comunidade</div></div></div>
-    <div class="pipe"><div class="dot pend"></div><div class="info"><div class="t">WhatsApp: criar grupo exclusivo + copiar link para Supabase</div><div class="s">produto_whatsapp tabela → campo link_grupo</div></div></div>
-    <div class="pipe"><div class="dot pend"></div><div class="info"><div class="t">ManyChat: configurar auto-resposta "SONO" → link R$29,90</div><div class="s">manychat.com → Keywords → SONO → DM automático</div></div></div>
-    <div class="pipe"><div class="dot pend"></div><div class="info"><div class="t">YouTube OAuth refresh token para upload automático</div><div class="s">GitHub Secrets → YOUTUBE_REFRESH_TOKEN</div></div></div>
+    <div class="section-title">⚡ Pendências Manuais (sem elas R$ não entra)</div>
+    <div class="pendencia">
+      <div>
+        <div class="label">1. Hotmart — criar produtos</div>
+        <div class="sub">hotmart.com → Produtos → Novo → R$29,90 (único) + R$216/ano (recorrente)</div>
+      </div>
+    </div>
+    <div class="pendencia">
+      <div>
+        <div class="label">2. WhatsApp — criar grupo + copiar link</div>
+        <div class="sub">Supabase → produto_whatsapp → campo link_grupo</div>
+      </div>
+    </div>
+    <div class="pendencia">
+      <div>
+        <div class="label">3. ManyChat — configurar keyword "SONO"</div>
+        <div class="sub">manychat.com → Keywords → "SONO" → DM automático → link R$29,90</div>
+      </div>
+    </div>
+    <div class="pendencia">
+      <div>
+        <div class="label">4. Hotmart webhook URL</div>
+        <div class="sub">hotmart.com → Configurações → Webhooks → https://repovazio.vercel.app/api/hotmart-webhook</div>
+      </div>
+    </div>
+    <div class="pendencia">
+      <div>
+        <div class="label">5. YouTube OAuth — YOUTUBE_REFRESH_TOKEN</div>
+        <div class="sub">github.com/tafita81/Repovazio/settings/secrets → YOUTUBE_REFRESH_TOKEN</div>
+      </div>
+    </div>
+    <div class="pendencia">
+      <div>
+        <div class="label">6. Supabase EF Cleanup — SUPABASE_ACCESS_TOKEN</div>
+        <div class="sub">app.supabase.com → Account → Access Tokens → adicionar no GitHub Secrets</div>
+      </div>
+    </div>
   </div>
-</div>
-<footer>ψ Daniela Coelho · @psidanielacoelho · 7 receitas · 16 pipelines · R$50K/mês meta</footer>
+
+  <!-- Links -->
+  <div class="links">
+    <a href="/app-vendas" class="lnk">🧠 App R$29,90</a>
+    <a href="/psicologia-para-dormir" class="lnk r">🌙 WA R$216</a>
+    <a href="/qg" class="lnk t">⚙️ QG Completo</a>
+    <a href="/cerebro" class="lnk g">🧠 Quantum Brain</a>
+    <a href="https://github.com/tafita81/Repovazio/actions" class="lnk" target="_blank">⚙️ Actions</a>
+    <a href="https://www.youtube.com/@psidanielacoelho" class="lnk" target="_blank">▶️ Canal</a>
+  </div>
+
+</main>
+<footer>ψ Daniela Coelho · @psidanielacoelho · 7 fontes · 20 pipelines · 3 APIs Vercel · meta R$50K/mês</footer>
+
 <script>
 document.getElementById('ts').textContent = new Date().toLocaleString('pt-BR');
-const SB  = "https://tpjvalzwkqwttvmszvie.supabase.co/rest/v1";
-const KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3OTQxNzcsImV4cCI6MjA2MDM3MDE3N30.G1JNPbrdLKCFgfSMGz4d1KF4G5JcLQK7PZpz2Y4DZOM";
-const H   = {"apikey":KEY,"Authorization":"Bearer "+KEY};
+const fmt = v => isNaN(v) ? '—' : 'R$'+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
 async function load(){
   try{
-    const [wa,aud,posts,viral,af,iris] = await Promise.all([
-      fetch(`${SB}/produto_whatsapp?select=assinantes&limit=1`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB}/whatsapp_psicologia_queue?select=id&status=eq.ready`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB}/social_posts?select=id&status=eq.ready`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB}/viral_queue?select=id&status=eq.pending`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB}/kwai_products?select=id&status=eq.pending`,{headers:H}).then(r=>r.json()),
-      fetch(`${SB}/iris_briefings?select=briefing&order=criado_em.desc&limit=1`,{headers:H}).then(r=>r.json()),
-    ]);
-    document.getElementById('k-wa').textContent    = wa[0]?.assinantes??0;
-    document.getElementById('k-aud').textContent   = aud?.length??0;
-    document.getElementById('k-posts').textContent = posts?.length??0;
-    document.getElementById('k-viral').textContent = viral?.length??0;
-    document.getElementById('k-af').textContent    = af?.length??0;
-    if(iris?.length && iris[0]?.briefing){
-      const alertas = (iris[0].briefing.match(/⚠️|🔴/g)||[]).length;
-      if(alertas>0){
-        document.getElementById('alertas-box').style.display='block';
-        document.getElementById('alertas-list').innerHTML=
-          iris[0].briefing.split('
-').filter(l=>l.includes('⚠️')||l.includes('🔴'))
-          .map(l=>`<div class="alerta-item">${l}</div>`).join('');
-      }
+    const r = await fetch('/api/receita');
+    const d = await r.json();
+    document.getElementById('k1').textContent = d.vendas_hoje ?? '0';
+    document.getElementById('k2').textContent = fmt(d.receita_hoje);
+    document.getElementById('k3').textContent = d.assinantes_wa ?? '0';
+    document.getElementById('k4').textContent = fmt(d.total_mes);
+    document.getElementById('k5').textContent = (d.pct_meta ?? 0)+'%';
+    document.getElementById('k5-sub').textContent = 'de R$50.000';
+    document.getElementById('pct-text').textContent = (d.pct_meta ?? 0)+'% atingido';
+    document.getElementById('progress').style.width = Math.min(d.pct_meta ?? 0, 100)+'%';
+    // Alertas
+    const alertas = [];
+    if(!d.vendas_hoje) alertas.push('⚠️  Sem vendas hoje — verificar ManyChat e funil');
+    if(!d.assinantes_wa) alertas.push('🔴 0 assinantes WA — configurar Hotmart recorrente');
+    if(alertas.length){
+      document.getElementById('alertas').style.display='block';
+      document.getElementById('alertas-list').innerHTML = alertas.map(a=>`<div class="alerta-item">${a}</div>`).join('');
     }
-  }catch(e){console.warn(e);}
+    document.getElementById('ts').textContent = new Date().toLocaleString('pt-BR');
+  }catch(e){ console.warn('API receita:', e); }
 }
 load();
+setInterval(load, 60000); // atualizar todo minuto
 </script>
 </body>
 </html>
