@@ -1,0 +1,42 @@
+name: YouTube Live 24/7 — Psicologia Stream
+
+on:
+  workflow_dispatch:
+    inputs:
+      duracao_horas:
+        description: "Quantas horas rodar (max 6h no Actions free)"
+        default: "5"
+  schedule:
+    - cron: "0 8 * * *"    # 8h UTC = 5h BRT diário
+    - cron: "0 14 * * *"   # 14h UTC = 11h BRT
+    - cron: "0 20 * * *"   # 20h UTC = 17h BRT
+
+jobs:
+  live-stream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+
+      - name: Gerar frame overlay Daniela
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python3 scripts/youtube_live_24_7.py --gerar-frame || true
+        continue-on-error: true
+
+      - name: Stream YouTube Live 24/7
+        if: env.YOUTUBE_STREAM_KEY != ''
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+        run: |
+          HORAS=${{ github.event.inputs.duracao_horas || '5' }}
+          SECONDS_TOTAL=$((HORAS * 3600))
+          echo "Iniciando stream por ${HORAS}h (${SECONDS_TOTAL}s)"
+          timeout $SECONDS_TOTAL python3 scripts/youtube_live_24_7.py || true
+        continue-on-error: true
