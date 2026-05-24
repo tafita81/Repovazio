@@ -1,0 +1,21 @@
+name: Live Universal — Auto Idioma
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 7,13,19 * * *"
+jobs:
+  live-universal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests edge-tts --break-system-packages
+      - run: sudo apt-get install -y ffmpeg
+      - name: Live Universal
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/live_universal.py || true
+        continue-on-error: true
