@@ -1,0 +1,32 @@
+name: 🤖 Autonomous Job Hunter — Diário
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: pip install reportlab PyNaCl
+
+      - name: Run Autonomous Hunter
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: python3 .github/scripts/autonomous_hunter.py
+
+      - name: Save state (seen jobs)
+        if: always()
+        run: |
+          git config user.name "Job Hunter Bot"
+          git config user.email "tafita81@gmail.com"
+          git add .github/scripts/seen_jobs.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore: update job state [skip ci]"
+          git push 2>/dev/null || true
