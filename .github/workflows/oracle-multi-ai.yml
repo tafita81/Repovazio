@@ -1,0 +1,24 @@
+name: Oracle Multi AI — Análise Profunda
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * *"
+jobs:
+  oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Multi AI Oracle + Smolagents
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          NVIDIA_API_KEY:       ${{ secrets.NVIDIA_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 scripts/multi_ai_oracle.py || true
+          python3 scripts/smolagents_orchestrator.py || true
+        continue-on-error: true
