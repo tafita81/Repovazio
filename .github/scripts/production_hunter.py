@@ -166,6 +166,7 @@ SR_COMPANIES = [
 
 # ═══ EMAIL TARGETS (25 empresas confirmadas) ══════════════════════════════════
 EMAIL_TARGETS = [
+    # ── Confirmados anteriores ────────────────────────────────────────────────
     {"c":"Edvantis","r":"Senior Analytics Engineer (Power BI)","to":"recruiting@edvantis.com","sector":"consulting"},
     {"c":"Wire IT","r":"Power BI Developer","to":"info@wireit.pt","sector":"consulting"},
     {"c":"Data Meaning","r":"Power BI Developer / BI Consultant","to":"info@datameaning.com","sector":"consulting"},
@@ -191,7 +192,6 @@ EMAIL_TARGETS = [
     {"c":"NearSource Technologies","r":"Senior DA SQL Power BI Looker","to":"careers@nearsource.com","sector":"consulting"},
     {"c":"e.l.f. Beauty","r":"Power BI Developer","to":"careers@elfbeauty.com","sector":"retail"},
     {"c":"Trilogy Federal","r":"Senior SQL Server Power BI Developer","to":"jobs@trilogyfederal.com","sector":"government"},
-    # Novas a cada semana:
     {"c":"Toptal","r":"Senior Data Analyst / Power BI Developer","to":"talent@toptal.com","sector":"network"},
     {"c":"Andela","r":"Senior Analytics Engineer","to":"work@andela.com","sector":"network"},
     {"c":"Turing","r":"Senior Data Analyst Remote","to":"hire@turing.com","sector":"network"},
@@ -202,6 +202,36 @@ EMAIL_TARGETS = [
     {"c":"Lemon.io","r":"Senior Power BI Developer","to":"hey@lemon.io","sector":"network"},
     {"c":"Gun.io","r":"Senior Data Analyst","to":"work@gun.io","sector":"network"},
     {"c":"Toggl Hire","r":"Senior Analytics Engineer","to":"careers@toggl.com","sector":"saas"},
+    # ── Novos alvos semana 2 ──────────────────────────────────────────────────
+    {"c":"Improvado","r":"Senior Data Analyst","to":"jobs@improvado.io","sector":"marketing-analytics"},
+    {"c":"Funnel.io","r":"Senior BI Developer","to":"careers@funnel.io","sector":"marketing-analytics"},
+    {"c":"Supermetrics","r":"Senior Analytics Engineer","to":"jobs@supermetrics.com","sector":"marketing-analytics"},
+    {"c":"Stacked Marketer","r":"Data Analyst","to":"careers@stackedmarketer.com","sector":"media"},
+    {"c":"Adjust","r":"Senior Data Analyst","to":"jobs@adjust.com","sector":"mobile-analytics"},
+    {"c":"AppsFlyer","r":"Senior Data Analyst","to":"careers@appsflyer.com","sector":"mobile-analytics"},
+    {"c":"Branch","r":"Senior Data Analyst","to":"careers@branch.io","sector":"mobile-analytics"},
+    {"c":"Singular","r":"BI Analyst","to":"jobs@singular.net","sector":"mobile-analytics"},
+    {"c":"Kochava","r":"Senior Data Analyst","to":"careers@kochava.com","sector":"mobile-analytics"},
+    {"c":"Northbeam","r":"Senior Data Analyst","to":"jobs@northbeam.io","sector":"marketing-analytics"},
+    {"c":"Triple Whale","r":"Data Analyst","to":"careers@triplewhale.com","sector":"ecommerce-analytics"},
+    {"c":"Daasity","r":"Senior BI Developer","to":"jobs@daasity.com","sector":"ecommerce-analytics"},
+    {"c":"Littledata","r":"Data Analyst","to":"hello@littledata.io","sector":"ecommerce-analytics"},
+    {"c":"Polar Analytics","r":"Senior Data Analyst","to":"jobs@polar-analytics.com","sector":"ecommerce-analytics"},
+    {"c":"Conjura","r":"Senior Data Analyst","to":"hello@conjura.com","sector":"ecommerce-analytics"},
+    {"c":"Pachyderm","r":"Senior Analytics Engineer","to":"careers@pachyderm.com","sector":"mlops"},
+    {"c":"Weights & Biases","r":"Senior Data Analyst","to":"jobs@wandb.com","sector":"mlops"},
+    {"c":"Comet ML","r":"Analytics Engineer","to":"careers@comet.ml","sector":"mlops"},
+    {"c":"Evidently AI","r":"Senior Data Analyst","to":"jobs@evidentlyai.com","sector":"mlops"},
+    {"c":"WhyLabs","r":"Data Analyst","to":"careers@whylabs.ai","sector":"mlops"},
+    {"c":"Arize AI","r":"Senior Analytics Engineer","to":"jobs@arize.com","sector":"mlops"},
+    {"c":"Monte Carlo","r":"Senior Data Analyst","to":"jobs@montecarlodata.com","sector":"data-quality"},
+    {"c":"Acceldata","r":"Senior Analytics Engineer","to":"careers@acceldata.io","sector":"data-quality"},
+    {"c":"Soda Data","r":"Data Analyst","to":"jobs@soda.io","sector":"data-quality"},
+    {"c":"Great Expectations","r":"Senior Data Analyst","to":"jobs@greatexpectations.io","sector":"data-quality"},
+    {"c":"Select Star","r":"Analytics Engineer","to":"careers@selectstar.com","sector":"data-catalog"},
+    {"c":"Atlan","r":"Senior Data Analyst","to":"careers@atlan.com","sector":"data-catalog"},
+    {"c":"DataHub Project","r":"Analytics Engineer","to":"careers@acryl.io","sector":"data-catalog"},
+    {"c":"Stemma","r":"Senior Data Analyst","to":"hello@stemma.ai","sector":"data-catalog"},
 ]
 
 KEYWORDS = ["data analyst","power bi","business intelligence","bi developer","analytics engineer","bi analyst","reporting analyst","data visualization","analytics engineer"]
