@@ -1,0 +1,23 @@
+name: Brain Orchestrator — 6 APIs Reais
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 6,14,22 * * *"
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Orquestrar Brain — 6 APIs
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+        run: python3 scripts/brain_orchestrator.py || true
+        continue-on-error: true
