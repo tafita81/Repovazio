@@ -1,0 +1,31 @@
+name: KDP Psicologia — Livros Amazon (Semanal)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * 3"   # Toda Quarta 10h UTC = 7h BRT
+
+jobs:
+  kdp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+
+      - name: "KDP — Gerar livro psicologia para Amazon"
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/kdp_psicologia.py || true
+        continue-on-error: true
+
+      - name: "Thumbnail — Dark YouTube thumbnails"
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/thumbnail_dark_gen.py || true
+        continue-on-error: true
