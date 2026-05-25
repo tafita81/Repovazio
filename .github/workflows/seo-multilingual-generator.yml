@@ -1,0 +1,22 @@
+name: SEO Multilingual — PT+EN+ES Descriptions
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 11 * * 2,5"
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: SEO Multilingual Generator
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NVIDIA_API_KEY:       ${{ secrets.NVIDIA_API_KEY }}
+        run: python3 scripts/seo_multilingual_generator.py || true
+        continue-on-error: true
