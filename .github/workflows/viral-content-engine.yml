@@ -1,0 +1,26 @@
+name: Viral Content Engine — 3x ao dia
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9,15,21 * * *"   # 6h, 12h, 18h BRT
+
+jobs:
+  viral-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Gerar títulos virais + pinned comments + SEO
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 scripts/viral_content_engine.py || true
+          python3 scripts/seo_global_stream.py || true
+          python3 scripts/global_schedule.py || true
+        continue-on-error: true
