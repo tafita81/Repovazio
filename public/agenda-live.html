@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>📺 Agenda Live 24H — @psidanielacoelho</title>
+<style>
+:root{--bg:#06060F;--card:#0F0F1A;--p:#7C3AED;--r:#E11D48;--g:#22C55E;--y:#F59E0B;--t:#0D9488;--txt:#F1F5F9;--muted:#94A3B8;--sono:#1e3a5f;--foco:#1a3a1a;--psico:#2a0a2a;--cura:#1a2a1a;--prime:#3a0a0a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif}
+header{padding:14px 20px;border-bottom:1px solid #1E1E33;display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);z-index:10}
+.logo{font-weight:800;background:linear-gradient(135deg,#A78BFA,#E11D48);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.live-badge{display:flex;align-items:center;gap:6px;background:#E11D4822;border:1px solid #E11D4444;padding:4px 10px;border-radius:99px;font-size:.72rem;margin-left:auto}
+.dot{width:8px;height:8px;border-radius:50%;background:#E11D48;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+main{max-width:900px;margin:0 auto;padding:16px}
+h2{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:20px 0 10px;padding-bottom:4px;border-bottom:1px solid #1E1E33}
+.timeline{position:relative;margin-bottom:24px}
+.bloco{display:grid;grid-template-columns:80px 1fr;gap:0;margin-bottom:2px;border-radius:10px;overflow:hidden}
+.hora{padding:12px 10px;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;min-height:70px}
+.hora .h{font-size:1rem}
+.hora .hfim{font-size:.65rem;color:rgba(255,255,255,.6)}
+.conteudo{padding:12px 16px;display:flex;flex-direction:column;justify-content:center}
+.conteudo .titulo{font-size:.85rem;font-weight:700;margin-bottom:3px}
+.conteudo .desc{font-size:.72rem;opacity:.75;line-height:1.4}
+.conteudo .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tag{padding:2px 7px;border-radius:99px;font-size:.65rem;background:rgba(255,255,255,.1)}
+/* cores por bloco */
+.sono{background:var(--sono)}.sono .hora{background:#0d1f35;color:#60a5fa}
+.foco{background:var(--foco)}.foco .hora{background:#0d1f0d;color:#4ade80}
+.psico{background:var(--psico)}.psico .hora{background:#1a051a;color:#c084fc}
+.cura{background:var(--cura)}.cura .hora{background:#0d1a0d;color:#2dd4bf}
+.prime{background:var(--prime)}.prime .hora{background:#1f0505;color:#f87171}
+.ansio{background:#1a1a2e}.ansio .hora{background:#0d0d1a;color:#818cf8}
+.atual{border:2px solid #22C55E;box-shadow:0 0 15px #22C55E22}
+.hz-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:.65rem;font-weight:700;margin-left:6px;vertical-align:middle}
+.card-case{background:var(--card);border:1px solid #1E1E33;border-radius:10px;padding:14px;margin-bottom:10px}
+.card-case .nome{font-size:.85rem;font-weight:700;color:var(--y);margin-bottom:4px}
+.card-case .desc{font-size:.75rem;color:var(--muted);line-height:1.5}
+.card-case .crescimento{font-size:.82rem;font-weight:700;color:var(--g);margin-top:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+footer{text-align:center;padding:14px;color:var(--muted);font-size:.68rem;border-top:1px solid #1E1E33;margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+  <span>📺</span>
+  <span class="logo">Live 24H — @psidanielacoelho</span>
+  <div class="live-badge"><div class="dot"></div><span>AO VIVO</span></div>
+</header>
+<main>
+
+  <!-- AGENDA 24H -->
+  <h2>⏰ Agenda 24H (Horário BRT)</h2>
+  <div class="timeline">
+
+    <div class="bloco sono" id="b22">
+      <div class="hora"><div class="h">22h</div><div class="hfim">até 06h</div></div>
+      <div class="conteudo">
+        <div class="titulo">🌙 Sono Profundo 528Hz <span class="hz-badge" style="background:#1e3a5f;color:#60a5fa">528 Hz</span></div>
+        <div class="desc">Regeneração celular · Cortisol e sono explicados · Walker/Berkeley research · Narração ASMR Daniela</div>
+        <div class="tags"><span class="tag">8 horas</span><span class="tag">528hz sono</span><span class="tag">insônia</span><span class="tag">relaxamento profundo</span></div>
+      </div>
+    </div>
+
+    <div class="bloco foco" id="b6">
+      <div class="hora"><div class="h">06h</div><div class="hfim">até 09h</div></div>
+      <div class="conteudo">
+        <div class="titulo">☀️ Despertar Ativo 40Hz <span class="hz-badge" style="background:#1a3a1a;color:#4ade80">40 Hz</span></div>
+        <div class="desc">Ondas Gamma · Foco matinal · Neurociência do despertar · Motivação baseada em ciência</div>
+        <div class="tags"><span class="tag">40hz foco</span><span class="tag">gamma waves</span><span class="tag">despertar</span></div>
+      </div>
+    </div>
+
+    <div class="bloco psico" id="b9">
+      <div class="hora"><div class="h">09h</div><div class="hfim">até 12h</div></div>
+      <div class="conteudo">
+        <div class="titulo">😶 Psicologia Dark — Narcisismo & Apego</div>
+        <div class="desc">Narcisista encoberto · Gaslighting · Teoria do apego · Harvard e UCLA research · CTA "Comenta SONO"</div>
+        <div class="tags"><span class="tag">narcisismo</span><span class="tag">apego ansioso</span><span class="tag">gaslighting</span><span class="tag">psicologia</span></div>
+      </div>
+    </div>
+
+    <div class="bloco foco" id="b12">
+      <div class="hora"><div class="h">12h</div><div class="hfim">até 15h</div></div>
+      <div class="conteudo">
+        <div class="titulo">🧠 Foco e Produtividade 40Hz <span class="hz-badge" style="background:#1a3a1a;color:#4ade80">40 Hz</span></div>
+        <div class="desc">Binaural beats para trabalho · Burnout científico · Ondas gamma para deep work</div>
+        <div class="tags"><span class="tag">study music</span><span class="tag">foco trabalho</span><span class="tag">burnout</span><span class="tag">produtividade</span></div>
+      </div>
+    </div>
+
+    <div class="bloco ansio" id="b15">
+      <div class="hora"><div class="h">15h</div><div class="hfim">até 18h</div></div>
+      <div class="conteudo">
+        <div class="titulo">💜 Ansiedade Zero 432Hz <span class="hz-badge" style="background:#1a1a2e;color:#818cf8">432 Hz</span></div>
+        <div class="desc">Regulação sistema nervoso · Teoria Polivagal Dr. Porges · Trauma e ansiedade · Cura profunda</div>
+        <div class="tags"><span class="tag">432hz ansiedade</span><span class="tag">sistema nervoso</span><span class="tag">trauma</span><span class="tag">cura</span></div>
+      </div>
+    </div>
+
+    <div class="bloco prime" id="b18">
+      <div class="hora"><div class="h">18h</div><div class="hfim">até 21h</div></div>
+      <div class="conteudo">
+        <div class="titulo">🔥 PRIME TIME — Psicologia Dark ao Vivo</div>
+        <div class="desc">Horário de maior audiência · Narcisismo · Burnout · Trauma · CTA máximo → "Comenta SONO"</div>
+        <div class="tags"><span class="tag">prime time</span><span class="tag">psicologia</span><span class="tag">narcisismo</span><span class="tag">ao vivo</span></div>
+      </div>
+    </div>
+
+    <div class="bloco cura" id="b21">
+      <div class="hora"><div class="h">21h</div><div class="hfim">até 22h</div></div>
+      <div class="conteudo">
+        <div class="titulo">🌿 Cura Emocional 174Hz <span class="hz-badge" style="background:#1a2a1a;color:#2dd4bf">174 Hz</span></div>
+        <div class="desc">Alívio do trauma · van der Kolk research · Cura emocional profunda · Preparo para o sono</div>
+        <div class="tags"><span class="tag">174hz cura</span><span class="tag">trauma</span><span class="tag">emocional</span><span class="tag">relaxamento</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FREQUÊNCIAS MAPEADAS -->
+  <h2>🎵 Frequências (do Cérebro — Trilhas Spotify)</h2>
+  <div class="grid2">
+    <div class="card-case"><div class="nome">528Hz — Sono Profundo</div><div class="desc">Regeneração celular · Frequência do amor · REM otimizado · Walker/Berkeley</div><div class="crescimento">22h-06h BRT | 8h/dia</div></div>
+    <div class="card-case"><div class="nome">432Hz — Ansiedade Zero</div><div class="desc">Regulação sistema nervoso · Teoria Polivagal · Cortisol reduzido</div><div class="crescimento">15h-18h BRT | 3h/dia</div></div>
+    <div class="card-case"><div class="nome">40Hz — Foco Total</div><div class="desc">Ondas Gamma · Produtividade · Deep work · MIT research +25% foco</div><div class="crescimento">06h-09h e 12h-15h BRT</div></div>
+    <div class="card-case"><div class="nome">174Hz — Cura Emocional</div><div class="desc">Alívio da dor emocional · Trauma · van der Kolk · Preparo para sono</div><div class="crescimento">21h-22h BRT | 1h/dia</div></div>
+    <div class="card-case"><div class="nome">396Hz — Apego Seguro</div><div class="desc">Liberação medo · Ainsworth · Teoria do apego seguro</div><div class="crescimento">Trilha Spotify — Em upload</div></div>
+  </div>
+
+  <!-- CASES REAIS -->
+  <h2>📈 Cases Reais de Crescimento Rápido</h2>
+  <div class="grid2">
+    <div class="card-case">
+      <div class="nome">Meditative Mind — 3.2M subs</div>
+      <div class="desc">Lives 24/7 de mantras e frequências · Keyword "528hz sleep" · RPM $8-20</div>
+      <div class="crescimento">0→500K em 18 meses com sleep music</div>
+    </div>
+    <div class="card-case">
+      <div class="nome">Jason Stephenson — 3M subs</div>
+      <div class="desc">Vídeos 8h sono + live noturna · "sleep anxiety meditation" keyword</div>
+      <div class="crescimento">1M em 8 meses · Títulos começam com Hz</div>
+    </div>
+    <div class="card-case">
+      <div class="nome">Greenred Productions — 2M subs</div>
+      <div class="desc">Binaural beats animados · Estudantes ficam horas ligados · RPM $6-15</div>
+      <div class="crescimento">Retenção altíssima = boost algoritmo</div>
+    </div>
+    <div class="card-case">
+      <div class="nome">Solfeggio Channels — 1M em 6 meses</div>
+      <div class="desc">Lives 24/7 sem conteúdo novo · Algoritmo prioriza lives longas · Busca em tempo real</div>
+      <div class="crescimento">Aparecem no Google quando pesquisam "528hz"</div>
+    </div>
+  </div>
+
+  <h2>💰 Potencial de Receita — Lives 24/7</h2>
+  <div style="background:var(--card);border-radius:10px;padding:16px;font-size:.82rem;line-height:2.2">
+    <strong>Lives têm RPM 2-4x maior que vídeos gravados</strong><br>
+    528Hz sono: RPM estimado R$14-28 (wellness + psychology keywords)<br>
+    1.000 espectadores simultâneos × 8h × RPM R$14 = R$112/noite apenas no bloco sono<br>
+    Google indexa lives em tempo real → aparecer em "528hz sono" = tráfego grátis<br>
+    <strong>YouTube prioriza lives longas na aba "Ao Vivo" → descoberta orgânica massiva</strong>
+  </div>
+
+</main>
+<footer>ψ @psidanielacoelho · Live 24H · 528Hz+432Hz+40Hz+174Hz+Psicologia Dark</footer>
+<script>
+// Marcar bloco atual
+const h = new Date().getHours() - 3; // BRT aproximado
+const blocos = {22:'b22',6:'b6',9:'b9',12:'b12',15:'b15',18:'b18',21:'b21'};
+const chaves = [22,21,18,15,12,9,6];
+for(const k of chaves){if((h>=22||h<6)?k===22:(h>=k)){const el=document.getElementById(blocos[k]);if(el){el.classList.add('atual');el.scrollIntoView({behavior:'smooth',block:'center'});break;}}}
+</script>
+</body>
+</html>
