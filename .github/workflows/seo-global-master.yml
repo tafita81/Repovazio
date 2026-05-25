@@ -1,0 +1,25 @@
+name: SEO Global Master — 25 Idiomas (a cada 2h)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"   # A cada 2h
+
+jobs:
+  seo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages -q
+
+      - name: SEO 25 idiomas via YouTube API
+        env:
+          YT_CLIENT_ID:        ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET:    ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN:    ${{ secrets.YT_REFRESH_TOKEN }}
+          SUPABASE_URL:        ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/seo_global_master.py || true
