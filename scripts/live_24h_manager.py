@@ -105,7 +105,7 @@ def stream_colorido(bloco_nome, duracao=60):
         f"x=(w-text_w)/2:y=120:fontfile={FONT_B},"
         f"drawtext=text='{b['sub']}':fontsize=26:fontcolor=0x{c1}CC:"
         f"x=(w-text_w)/2:y=228:fontfile={FONT_L},"
-        f"drawtext=text='AO VIVO {hora} BRT @psidanielacoelho':"
+        f"drawtext=text='AO VIVO {hora} BRT @psidanicoelho':"
         f"fontsize=16:fontcolor=0x{c1}88:x=(w-text_w)/2:y=268:fontfile={FONT_L}"
     )
     subprocess.run(
