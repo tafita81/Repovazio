@@ -1,0 +1,85 @@
+name: Live Global 24H — 12 Idiomas Paralelos
+
+on:
+  workflow_dispatch:
+    inputs:
+      lang:
+        description: "Idioma (PT/EN/ES/DE/JP/FR/ALL)"
+        default: "PT"
+  schedule:
+    - cron: "0 1  * * *"   # 22h BRT — SONO 528Hz (noite toda)
+    - cron: "0 9  * * *"   # 06h BRT — FOCO 40Hz
+    - cron: "0 12 * * *"   # 09h BRT — PSICOLOGIA DARK
+    - cron: "0 21 * * *"   # 18h BRT — PRIME TIME
+
+jobs:
+  # PT-BR — Canal principal @psidanielacoelho
+  live-pt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages && sudo apt-get install -y ffmpeg
+      - name: "🇧🇷 Live PT-BR — 528Hz/Psicologia/432Hz"
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          LANG_CODE:          PT
+        run: timeout 17000 python3 scripts/live_global_24h.py || true
+        continue-on-error: true
+
+  # EN — Psychology Frequencies ($28 RPM)
+  live-en:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    if: ${{ secrets.YOUTUBE_STREAM_KEY_EN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages && sudo apt-get install -y ffmpeg
+      - name: "🇺🇸 Live EN — 528Hz/Dark Psychology"
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY_EN }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          LANG_CODE:          EN
+        run: timeout 17000 python3 scripts/live_global_24h.py || true
+        continue-on-error: true
+
+  # ES — Psicología Frecuencias
+  live-es:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    if: ${{ secrets.YOUTUBE_STREAM_KEY_ES != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages && sudo apt-get install -y ffmpeg
+      - name: "🇪🇸 Live ES — 528Hz/Psicología"
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY_ES }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          LANG_CODE:          ES
+        run: timeout 17000 python3 scripts/live_global_24h.py || true
+        continue-on-error: true
+
+  # DE+JP+FR — Europa e Ásia (alta RPM)
+  live-de:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    if: ${{ secrets.YOUTUBE_STREAM_KEY_DE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages && sudo apt-get install -y ffmpeg
+      - name: "🇩🇪 Live DE — Psychologie Frequenzen"
+        env:
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY_DE }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
+          LANG_CODE:          DE
+        run: timeout 17000 python3 scripts/live_global_24h.py || true
+        continue-on-error: true
