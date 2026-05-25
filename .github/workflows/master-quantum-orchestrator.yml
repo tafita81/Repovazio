@@ -1,0 +1,25 @@
+name: Master Quantum Orchestrator — Cérebro Central
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
+jobs:
+  quantum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Master Quantum Orchestrator
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          NVIDIA_API_KEY:       ${{ secrets.NVIDIA_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 scripts/master_quantum_orchestrator.py || true
+          python3 scripts/cerebro_crescimento_infinito.py || true
+          python3 scripts/infinite_idea_engine.py || true
+        continue-on-error: true
