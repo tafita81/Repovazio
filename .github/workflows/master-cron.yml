@@ -1,0 +1,43 @@
+name: Master Cron — Todos os Sistemas (Agenda Diária Completa)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Madrugada
+    - cron: "0 3 * * *"    # 0h BRT — Master Quantum Orchestrator
+    - cron: "0 4 * * *"    # 1h BRT — Smolagents + Oracle Multi AI
+    - cron: "0 5 * * *"    # 2h BRT — World Income + Research Monitor
+    - cron: "0 6 * * *"    # 3h BRT — Firecrawl + Brain Expander
+    # Manhã
+    - cron: "0 8 * * *"    # 5h BRT — Viral Engine + Imagens
+    - cron: "0 9 * * *"    # 6h BRT — IRIS Briefing (daniela-iris)
+    - cron: "0 10 * * *"   # 7h BRT — Gen Viral Images
+    - cron: "0 11 * * *"   # 8h BRT — Quadrinhos Dark (1/3)
+    # Tarde
+    - cron: "0 12 * * *"   # 9h BRT — Quote Pod + Newsletter
+    - cron: "0 13 * * *"   # 10h BRT — Podcast + Pod Engine
+    - cron: "0 14 * * *"   # 11h BRT — Afiliados Kwai + TikTok
+    - cron: "0 15 * * *"   # 12h BRT — Quadrinhos Dark (2/3) + Funil
+    # Noite
+    - cron: "0 18 * * *"   # 15h BRT — KDP + Thumbnails
+    - cron: "0 20 * * *"   # 17h BRT — Redbubble + Gumroad
+    - cron: "0 21 * * *"   # 18h BRT — Quadrinhos Dark (3/3) + Funil
+    - cron: "30 22 * * *"  # 19h30 BRT — WhatsApp áudio diário
+    - cron: "0 23 * * *"   # 20h BRT — Monitor Receita
+    # Semanais
+    - cron: "0 11 * * 1"   # Segunda — Weekly Report + A/B
+    - cron: "0 9 * * 2,4"  # Ter/Qui — Reddit Videos
+    - cron: "0 7 * * 2,5"  # Ter/Sex — Trilhas Binaural
+    - cron: "0 12 * * 5"   # Sexta — Newsletter EN
+    - cron: "0 10 * * 3"   # Quarta — KDP Livros + Thumbnails
+
+jobs:
+  master-dispatch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Log schedule
+        run: |
+          echo "Master Cron rodando: $(date '+%d/%m/%Y %H:%M BRT')"
+          echo "Sistema: psicologia.doc | Canal: UCyCkIpsVgME9yCj_oXJFheA"
+          echo "Meta: R$50.000/mes | 14 fontes de receita | 130+ pipelines"
