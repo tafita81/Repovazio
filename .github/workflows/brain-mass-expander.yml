@@ -1,0 +1,21 @@
+name: Brain Mass Expander — 40K APIs Target
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 * * * *"
+jobs:
+  brain-expand:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages
+      - name: Brain Mass Expander
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          HF_TOKEN:             ${{ secrets.HF_TOKEN }}
+        run: python3 scripts/brain_mass_expander.py || true
+        continue-on-error: true
