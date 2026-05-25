@@ -1,0 +1,27 @@
+name: SEO Live Global — 12 Idiomas (a cada 3h)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */3 * * *"   # A cada 3h — atualiza SEO da live
+
+jobs:
+  seo-global:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests --break-system-packages -q
+
+      - name: Aplicar SEO em 12 idiomas via YouTube API
+        env:
+          YT_CLIENT_ID:     ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          GROQ_API_KEY:     ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:     ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/seo_youtube_live_global.py || true
+        continue-on-error: true
