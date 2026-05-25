@@ -1,0 +1,27 @@
+name: Gen Sleep 8h — Áudio Sono Binaural
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * 4"
+jobs:
+  sleep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests edge-tts --break-system-packages
+      - run: sudo apt-get install -y ffmpeg
+      - name: Gen Sleep 8h + Focus Binaural
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          python3 scripts/gen_sleep_8h.py || true
+          python3 scripts/gen_focus_binaural.py || true
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sleep-audio-8h
+          path: output/*.mp3
+          retention-days: 7
