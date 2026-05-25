@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
 """
-live_24h_manager.py — PRETO MATEMÁTICO ABSOLUTO (Y=0, U=128, V=128)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-TÉCNICA DEFINITIVA para zero brilho:
-  geq=0:128:128 → gera Y=0 U=128 V=128 em cada pixel
-  Isso é preto MATEMÁTICO em espaço de cor YUV.
-  NENHUM codec consegue adicionar brilho nisso.
-  NENHUM pixel diferente de zero luminância.
-  
-  No AMOLED: pixel Y=0 = pixel DESLIGADO = consumo zero = brilho zero.
-  No LCD:    pixel Y=0 = backlight mínimo possível do display.
+live_24h_manager.py — Anti-travamento: 480p / bitrate adaptativo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PERFIS DE QUALIDADE:
+  SONO (22h-06h):  360p  · 300kbps  · tela PRETA (zero brilho)
+  OUTROS blocos:   480p  · 800kbps  · visual colorido
 
-  DURANTE SONO (22h-06h BRT):
-  → ZERO texto na tela
-  → ZERO elementos visuais
-  → ZERO brilho
-  → APENAS áudio binaural 528Hz/538Hz nos fones
+POR QUE NÃO TRAVA:
+  360p  = resolução mínima aceita pelo YouTube Live
+  480p  = leve, funciona em 3G/4G fraco
+  bufsize pequeno = FFmpeg não acumula frames atrasados
+  reconnect = retenta automaticamente se cair
+  thread_queue_size = evita overflow de buffer em internet lenta
 """
 import os, time, subprocess, pathlib, sys
 from datetime import datetime, timezone, timedelta
@@ -52,81 +48,106 @@ def bloco_atual():
             if ini <= h < fim: return b
     return "prime_time"
 
-def stream_preto_zero(hz, hz2, duracao=60):
+# ── PRETO ABSOLUTO 360p — zero travamento, zero brilho ──────────────────
+def stream_preto_360p(hz, hz2, duracao=60):
     """
-    PRETO MATEMÁTICO ABSOLUTO:
-    - nullsrc gera frames sem conteúdo
-    - geq=0:128:128 força Y=0 U=128 V=128 em cada pixel
-    - Y=0 = luminância ZERO = pixel completamente apagado no AMOLED
-    - Sem texto, sem elemento, sem nada na tela
+    360p (640x360) · 30kbps vídeo · binaural 128kbps áudio
+    Y=0 U=128 V=128 em cada pixel → preto matemático absoluto.
+    bufsize=60k → libera frames rapidinho mesmo em 3G fraco.
+    thread_queue_size=512 → não trava se internet hesitar.
+    reconnect_streamed=1 → retenta RTMP automaticamente.
     """
     for rtmp in [RTMP_PRI, RTMP_BCK]:
         cmd = [
             "ffmpeg","-y",
-            # Fonte de vídeo: pixels gerados matematicamente com Y=0
+            # Opções de reconexão automática
+            "-reconnect","1",
+            "-reconnect_streamed","1",
+            "-reconnect_delay_max","5",
+            # Fonte de vídeo: preto matemático 640x360
             "-f","lavfi",
-            "-i","nullsrc=size=1280x720:rate=30",
-            # Áudio: binaural real (hz=esq, hz2=dir)
+            "-i","nullsrc=size=640x360:rate=15",   # 15fps (metade) = menos CPU
+            # Fonte de áudio: binaural
             "-f","lavfi","-i",f"sine=frequency={hz}:sample_rate=44100",
             "-f","lavfi","-i",f"sine=frequency={hz2}:sample_rate=44100",
-            # Filtro de vídeo: força preto matemático Y=0 U=128 V=128
+            # Processar: preto puro + merge binaural stereo
             "-filter_complex",
             "geq=0:128:128[v];[1:a][2:a]join=inputs=2:channel_layout=stereo,volume=0.22[a]",
             "-map","[v]","-map","[a]",
-            # Codec: qualidade mínima, bitrate mínimo, ainda image
+            # Vídeo: 360p, 30kbps, ultrafast, preto puro
             "-c:v","libx264",
             "-preset","ultrafast",
             "-tune","stillimage",
             "-crf","51",
-            "-b:v","50k","-maxrate","50k","-bufsize","100k",
+            "-b:v","30k","-maxrate","30k","-bufsize","60k",
             "-pix_fmt","yuv420p",
-            "-color_range","tv",      # limited range: preto = nível 16
-            "-r","30","-g","60",
-            "-c:a","aac","-b:a","192k","-ar","44100",
+            "-r","15","-g","30",             # 15fps, GOP=30
+            "-thread_queue_size","512",      # buffer interno
+            # Áudio: 128kbps stereo
+            "-c:a","aac","-b:a","128k","-ar","44100","-ac","2",
             "-t",str(duracao),"-f","flv",rtmp
         ]
         try:
             r = subprocess.run(cmd, capture_output=True, timeout=duracao+30)
             if r.returncode == 0: return True
         except Exception as e:
-            print(f"  erro: {e}")
+            print(f"  RTMP erro: {e}")
     return False
 
-def stream_visual(bloco_nome, duracao=60):
+# ── VISUAL COLORIDO 480p — leve, funciona em 4G ─────────────────────────
+def gerar_frame_480p(bloco_nome):
     b = BLOCOS[bloco_nome]
-    hz = b["hz"]; hz2 = b["hz2"]
     out = str(TMP / f"f_{bloco_nome}.jpg")
     hora = datetime.now().strftime("%H:%M")
+    # 854x480 (480p)
     vf = (
+        f"scale=854:480,"
         f"drawbox=w=iw:h=ih:color=0x{b['bg']}:t=fill,"
-        f"drawbox=x=0:y=0:w=iw:h=6:color=0x{b['c1']}:t=fill,"
-        f"drawbox=x=0:y=714:w=iw:h=6:color=0x{b['c1']}:t=fill,"
-        f"drawtext=text='{b['label']}':fontsize=120:fontcolor=0x{b['c1']}:"
-        f"x=(w-text_w)/2:y=210:fontfile={FONT_B},"
-        f"drawtext=text='{b['sub']}':fontsize=30:fontcolor=0x{b['c1']}CC:"
-        f"x=(w-text_w)/2:y=358:fontfile={FONT_L},"
-        f"drawbox=x=160:y=415:w=960:h=2:color=0x{b['c2']}:t=fill,"
+        f"drawbox=x=0:y=0:w=iw:h=4:color=0x{b['c1']}:t=fill,"
+        f"drawbox=x=0:y=476:w=iw:h=4:color=0x{b['c1']}:t=fill,"
+        f"drawtext=text='{b['label']}':fontsize=80:fontcolor=0x{b['c1']}:"
+        f"x=(w-text_w)/2:y=140:fontfile={FONT_B},"
+        f"drawtext=text='{b['sub']}':fontsize=22:fontcolor=0x{b['c1']}CC:"
+        f"x=(w-text_w)/2:y=238:fontfile={FONT_L},"
         f"drawtext=text='AO VIVO {hora} BRT @psidanielacoelho':"
-        f"fontsize=20:fontcolor=0x{b['c2']}:x=(w-text_w)/2:y=435:fontfile={FONT_L}"
+        f"fontsize=15:fontcolor=0x{b['c2']}:x=(w-text_w)/2:y=278:fontfile={FONT_L}"
     )
-    subprocess.run(["ffmpeg","-y","-f","lavfi","-i","color=size=1280x720:rate=1",
-                    "-vf",vf,"-frames:v","1","-q:v","2",out],
-                   capture_output=True, timeout=20)
+    subprocess.run(
+        ["ffmpeg","-y","-f","lavfi","-i","color=size=854x480:rate=1",
+         "-vf",vf,"-frames:v","1","-q:v","2",out],
+        capture_output=True, timeout=20
+    )
+    return out
+
+def stream_visual_480p(bloco_nome, duracao=60):
+    b   = BLOCOS[bloco_nome]
+    hz  = b["hz"]; hz2 = b["hz2"]
+    out = gerar_frame_480p(bloco_nome)
+
     if hz > 0:
         audio = ["-f","lavfi","-i",f"sine=frequency={hz}:sample_rate=44100",
                  "-f","lavfi","-i",f"sine=frequency={hz2}:sample_rate=44100",
                  "-filter_complex","[1:a][2:a]join=inputs=2:channel_layout=stereo,volume=0.22[a]",
-                 "-map","0:v","-map","[a]","-c:a","aac","-b:a","192k","-ar","44100"]
+                 "-map","0:v","-map","[a]","-c:a","aac","-b:a","128k","-ar","44100"]
     else:
         audio = ["-f","lavfi","-i","sine=frequency=60:sample_rate=44100",
                  "-filter_complex","[1:a]volume=0.04[a]",
-                 "-map","0:v","-map","[a]","-c:a","aac","-b:a","128k","-ar","44100"]
+                 "-map","0:v","-map","[a]","-c:a","aac","-b:a","64k","-ar","44100"]
+
     for rtmp in [RTMP_PRI, RTMP_BCK]:
-        cmd = (["ffmpeg","-y","-re","-loop","1","-i",out]
-               + audio
-               + ["-c:v","libx264","-preset","ultrafast","-tune","zerolatency",
-                  "-b:v","3000k","-maxrate","3000k","-bufsize","6000k",
-                  "-pix_fmt","yuv420p","-r","30","-t",str(duracao),"-f","flv",rtmp])
+        cmd = (
+            ["ffmpeg","-y",
+             "-reconnect","1","-reconnect_streamed","1","-reconnect_delay_max","5",
+             "-re","-loop","1","-i",out]
+            + audio
+            + [
+                "-c:v","libx264","-preset","ultrafast","-tune","zerolatency",
+                "-b:v","800k","-maxrate","800k","-bufsize","1600k",
+                "-pix_fmt","yuv420p","-r","24","-g","48",
+                "-thread_queue_size","512",
+                "-t",str(duracao),"-f","flv",rtmp
+            ]
+        )
         try:
             r = subprocess.run(cmd, capture_output=True, timeout=duracao+30)
             if r.returncode == 0: return True
@@ -136,21 +157,25 @@ def stream_visual(bloco_nome, duracao=60):
 def run():
     if not STREAM_KEY:
         print("ERRO: YOUTUBE_STREAM_KEY nao configurado"); sys.exit(1)
-    print("=== LIVE 24H — PRETO MATEMÁTICO ABSOLUTO ===")
-    print("  SONO (22-06h): geq=0:128:128 → Y=0 em cada pixel → brilho ZERO")
-    print("  ZERO texto na tela durante sono — apenas áudio binaural")
+    print("=== LIVE 24H — Anti-travamento: 360p/480p adaptativo ===")
+    print("  SONO  22-06h: 360p·30kbps·15fps — preto ABSOLUTO, não trava")
+    print("  OUTROS blocos: 480p·800kbps·24fps — colorido, fluido")
     print()
+
     while True:
         bloco = bloco_atual()
         b     = BLOCOS[bloco]
         h_brt = hora_brt()
+
         if b.get("preta"):
             hz = b["hz"]; hz2 = b["hz2"]
-            print(f"  {h_brt:02d}h [PRETO ZERO] {hz}Hz/{hz2}Hz binaural — tela 100% apagada")
-            stream_preto_zero(hz, hz2, 60)
+            print(f"  {h_brt:02d}h [PRETO 360p·30k] {hz}Hz/{hz2}Hz binaural")
+            ok = stream_preto_360p(hz, hz2, 60)
         else:
-            print(f"  {h_brt:02d}h [{bloco}] {b.get('label','')} — {b.get('sub','')[:25]}")
-            stream_visual(bloco, 60)
+            print(f"  {h_brt:02d}h [COR 480p·800k] {b.get('label','')} — {b.get('sub','')[:25]}")
+            ok = stream_visual_480p(bloco, 60)
+
+        if not ok: print("  Stream falhou — tentando próxima iteração")
         time.sleep(2)
 
 if __name__=="__main__": run()
