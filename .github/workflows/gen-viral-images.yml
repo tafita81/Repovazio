@@ -1,0 +1,23 @@
+name: Gen Viral Images — Pollinations FLUX
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * *"
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: pip install requests pillow --break-system-packages
+      - name: Gen Viral Images + Bannerbear Thumbnails
+        env:
+          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python3 scripts/gen_viral_images.py || true
+          python3 scripts/bannerbear_thumbnails.py || true
+        continue-on-error: true
