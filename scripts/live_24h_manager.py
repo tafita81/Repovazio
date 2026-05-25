@@ -1,153 +1,106 @@
 #!/usr/bin/env python3
 """
-live_24h_manager.py — CORRIGIDO v2
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-VISUAL CORRETO POR BLOCO:
+live_24h_manager.py — Visual profissional via FFmpeg puro (sem Pollinations à noite)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REFERÊNCIA VISUAL DOS CANAIS QUE MAIS MONETIZAM:
 
-  22h-06h SONO 528Hz:
-    → Natureza noturna (lua, estrelas, floresta escura, mar)
-    → SEM personagem anime — NUNCA à noite
-    → Texto minimalista: "528Hz ✦ Sono Profundo"
-    → Onda binaural animada sutil
-    → Silêncio + 528Hz puro (como Meditative Mind, Jason Stephenson)
+  Meditative Mind 3.2M:   fundo preto + texto branco + Hz grande + nenhuma figura
+  Jason Stephenson 3M:    imagem natureza + texto sobreposto + nenhuma figura
+  Greenred 2M:            gradiente animado + onda senoidal + Hz grande + nenhuma figura
+  Solfeggio Top (1M/6m):  fundo escuro + círculo animado + Hz + nenhuma figura
 
-  06h-09h FOCO 40Hz:
-    → Natureza diurna (amanhecer, sol, floresta verde)
-    → SEM personagem à noite
-    → Texto: "40Hz ✦ Foco Total"
-
-  09h-12h PSICOLOGIA (prime tarde):
-    → Daniela Coelho aparece aqui — fundo dark roxo/preto
-    → Tema: narcisismo, apego, gaslighting
-
-  12h-15h FOCO 40Hz:
-    → Workspace moderno, luz suave, verde
-    → Texto: "40Hz ✦ Produtividade"
-
-  15h-18h ANSIEDADE 432Hz:
-    → Lavanda, natureza calma, azul suave
-    → Texto: "432Hz ✦ Ansiedade Zero"
-
-  18h-21h PRIME TIME PSICOLOGIA:
-    → Daniela Coelho com gradiente roxo-vermelho
-    → CTA máximo: "Comenta SONO"
-
-  21h-22h CURA 174Hz:
-    → Floresta, luz dourada, paz
-    → Texto: "174Hz ✦ Cura Emocional"
-
-REFERÊNCIAS DE VISUAL (canais que deram certo):
-  - Meditative Mind 3.2M: fundo preto + lua + texto branco simples
-  - Jason Stephenson 3M: floresta noturna + ondas suaves
-  - Greenred 2M: background gradiente + onda animada + número Hz grande
+REGRA FINAL: NENHUMA FIGURA HUMANA/ANIME em blocos de frequência
+Daniela aparece APENAS em conteúdo de psicologia dark (09h-12h e 18h-21h BRT)
 """
-import os, time, subprocess, pathlib, requests
+import os, time, subprocess, pathlib, sys
 from datetime import datetime, timezone, timedelta
-import urllib3; urllib3.disable_warnings()
 
 STREAM_KEY = os.getenv("YOUTUBE_STREAM_KEY","")
 GROQ_KEY   = os.getenv("GROQ_API_KEY","")
 RTMP_PRI   = f"rtmp://a.rtmp.youtube.com/live2/{STREAM_KEY}"
 RTMP_BCK   = f"rtmp://b.rtmp.youtube.com/live2/{STREAM_KEY}?backup=1"
-TMP        = pathlib.Path("/tmp/live_fix"); TMP.mkdir(exist_ok=True)
+TMP        = pathlib.Path("/tmp/livefinal"); TMP.mkdir(exist_ok=True)
 
-# ── PROMPTS VISUAIS CORRETOS ──────────────────────────────────────────────
-VISUAIS = {
+# Configuração visual de cada bloco — VIA FFMPEG PURO (sem Pollinations)
+BLOCOS = {
     "sono_528": {
-        # NUNCA anime à noite — natureza escura + lua
-        "prompt": (
-            "serene moonlit forest at night, dark blue sky, stars reflection on calm lake, "
-            "mist over water, sleeping nature, deep peace, cinematic photography, "
-            "8k ultra detailed ### text, watermark, people, anime, cartoon, bright"
-        ),
-        "cor_fundo": "000814",
-        "cor_texto": "88CCFF",
-        "hz_label": "528 Hz",
-        "sublabel": "Sono Profundo ✦ Regeneração Celular",
+        "hz": 528,
+        "hz2": 538,           # diferença binaural
+        "titulo": "528 Hz",
+        "subtitulo": "Sono Profundo · Regeneração Celular",
+        "descricao": "Sono Reparador · Walker/Berkeley",
+        "bg": "0x03050F",     # azul-escuro quase preto
+        "cor_hz": "0x4A90D9", # azul suave
+        "cor_sub": "0x2D5A8E",
         "usa_daniela": False,
     },
     "foco_40": {
-        # Amanhecer, natureza vibrante
-        "prompt": (
-            "golden sunrise over mountain valley, morning light rays through forest, "
-            "fresh green nature, crisp morning air, energizing atmosphere, "
-            "cinematic landscape photography, 8k ### text, watermark, anime, night"
-        ),
-        "cor_fundo": "0A1A0A",
-        "cor_texto": "88FF88",
-        "hz_label": "40 Hz",
-        "sublabel": "Foco Total ✦ Ondas Gamma",
+        "hz": 40,
+        "hz2": 50,
+        "titulo": "40 Hz",
+        "subtitulo": "Foco Total · Ondas Gamma",
+        "descricao": "Produtividade · MIT Research",
+        "bg": "0x020F02",
+        "cor_hz": "0x4AD94A",
+        "cor_sub": "0x2D8E2D",
         "usa_daniela": False,
     },
     "psicologia": {
-        # Daniela aparece SÓ aqui — fundo dark psicologia
-        "prompt": (
-            "masterpiece, kawaii chibi anime researcher woman, dark psychology, "
-            "dramatic purple red gradient background, spotlight, dramatic shadows, "
-            "no text ### text, watermark, nsfw, bright background"
-        ),
-        "cor_fundo": "0D000D",
-        "cor_texto": "C084FC",
-        "hz_label": "",
-        "sublabel": "Psicologia Dark ✦ Daniela Coelho",
-        "usa_daniela": True,
+        "hz": 0,
+        "titulo": "Psicologia Dark",
+        "subtitulo": "Narcisismo · Apego · Trauma",
+        "descricao": "Harvard · UCLA · Berkeley Research",
+        "bg": "0x0D000D",
+        "cor_hz": "0xC084FC",
+        "cor_sub": "0x7C3AED",
+        "usa_daniela": True,   # Daniela aparece aqui
     },
     "foco_trabalho": {
-        # Workspace moderno, produtividade
-        "prompt": (
-            "minimal modern workspace, soft morning light, clean desk, plant, "
-            "productivity atmosphere, calm focus, warm lighting, "
-            "cinematic interior photography ### text, watermark, anime, people"
-        ),
-        "cor_fundo": "0A0A1A",
-        "cor_texto": "88AAFF",
-        "hz_label": "40 Hz",
-        "sublabel": "Produtividade ✦ Deep Work",
+        "hz": 40,
+        "hz2": 50,
+        "titulo": "40 Hz",
+        "subtitulo": "Deep Work · Produtividade",
+        "descricao": "Estudo e Trabalho · Gamma Waves",
+        "bg": "0x020814",
+        "cor_hz": "0x60A5FA",
+        "cor_sub": "0x3B82F6",
         "usa_daniela": False,
     },
     "ansiedade_432": {
-        # Lavanda, natureza calma
-        "prompt": (
-            "peaceful lavender field at golden hour, soft purple tones, "
-            "calm healing atmosphere, gentle breeze, serenity, "
-            "cinematic nature photography ### text, watermark, anime, night, dark"
-        ),
-        "cor_fundo": "0D0D1F",
-        "cor_texto": "A78BFA",
-        "hz_label": "432 Hz",
-        "sublabel": "Ansiedade Zero ✦ Sistema Nervoso",
+        "hz": 432,
+        "hz2": 442,
+        "titulo": "432 Hz",
+        "subtitulo": "Ansiedade Zero · Sistema Nervoso",
+        "descricao": "Regulação · Dr. Porges Research",
+        "bg": "0x080014",
+        "cor_hz": "0xA78BFA",
+        "cor_sub": "0x7C3AED",
         "usa_daniela": False,
     },
     "prime_time": {
-        # Daniela no prime time
-        "prompt": (
-            "masterpiece, kawaii chibi anime researcher woman, dark dramatic psychology, "
-            "deep purple crimson gradient, cinematic shadows, intense atmosphere, "
-            "no text ### text, watermark, nsfw"
-        ),
-        "cor_fundo": "0F0005",
-        "cor_texto": "F87171",
-        "hz_label": "",
-        "sublabel": "Psicologia Dark ✦ Prime Time",
-        "usa_daniela": True,
+        "hz": 0,
+        "titulo": "Psicologia Dark",
+        "subtitulo": "Daniela Coelho · Ao Vivo Agora",
+        "descricao": "Comportamento Humano · Pesquisa",
+        "bg": "0x0F0005",
+        "cor_hz": "0xF87171",
+        "cor_sub": "0xE11D48",
+        "usa_daniela": True,   # Daniela aqui também
     },
     "cura_174": {
-        # Floresta cura, luz dourada
-        "prompt": (
-            "magical healing forest, golden sunlight rays through ancient trees, "
-            "green moss, peace and restoration, ethereal atmosphere, "
-            "cinematic nature photography ### text, watermark, anime, night"
-        ),
-        "cor_fundo": "050F05",
-        "cor_texto": "86EFAC",
-        "hz_label": "174 Hz",
-        "sublabel": "Cura Emocional ✦ Alívio do Trauma",
+        "hz": 174,
+        "hz2": 184,
+        "titulo": "174 Hz",
+        "subtitulo": "Cura Emocional · Alívio do Trauma",
+        "descricao": "van der Kolk Research · Healing",
+        "bg": "0x030F03",
+        "cor_hz": "0x86EFAC",
+        "cor_sub": "0x22C55E",
         "usa_daniela": False,
     },
 }
 
-AGENDA_24H = [
-    # (hora_inicio_brt, hora_fim_brt, bloco)
+AGENDA = [
     (22, 6,  "sono_528"),
     (6,  9,  "foco_40"),
     (9,  12, "psicologia"),
@@ -162,90 +115,116 @@ def hora_brt():
 
 def bloco_atual():
     h = hora_brt()
-    for ini, fim, bloco in AGENDA_24H:
+    for ini, fim, b in AGENDA:
         if ini > fim:
-            if h >= ini or h < fim: return bloco
+            if h >= ini or h < fim: return b
         else:
-            if ini <= h < fim: return bloco
+            if ini <= h < fim: return b
     return "prime_time"
 
-def pollinations_frame(bloco, idx):
-    v = VISUAIS[bloco]
-    seed = 7001 + idx * 53
-    url = (f"https://image.pollinations.ai/prompt/{requests.utils.quote(v['prompt'])}"
-           f"?seed={seed}&width=1280&height=720&nologo=true")
-    try:
-        r = requests.get(url, timeout=35, verify=False)
-        if r.status_code == 200 and len(r.content) > 8000:
-            p = TMP / f"frame_{bloco}_{idx}.jpg"
-            p.write_bytes(r.content)
-            return str(p)
-    except: pass
-    return None
+def gerar_frame_ffmpeg(bloco_nome, idx):
+    """Gera frame profissional via FFmpeg puro — sem Pollinations, sem anime"""
+    b = BLOCOS[bloco_nome]
+    out = str(TMP / f"frame_{bloco_nome}_{idx%5}.jpg")
 
-def criar_frame_ffmpeg(bloco, idx):
-    """Frame via FFmpeg com texto Hz — fallback sempre limpo"""
-    v = VISUAIS[bloco]
-    out = str(TMP / f"ff_{bloco}_{idx}.jpg")
-    bg  = v["cor_fundo"]
-    tc  = v["cor_texto"]
-    hz  = v.get("hz_label","")
-    sub = v.get("sublabel","")
+    hora_str = datetime.now().strftime("%H:%M")
+    bg = b["bg"]
+    cor_hz = b["cor_hz"]
+    cor_sub = b["cor_sub"]
 
-    vf_parts = [f"drawbox=w=iw:h=ih:color=0x{bg}:t=fill"]
-
-    if hz:
-        vf_parts.append(
-            f"drawtext=text='{hz}':fontsize=96:fontcolor=0x{tc}:x=(w-text_w)/2:y=240"
-            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    if b["hz"] > 0:
+        # Frame frequência: Hz grande centralizado + subtítulo + hora
+        vf = (
+            f"drawbox=w=iw:h=ih:color={bg}:t=fill,"
+            # Linha decorativa topo
+            f"drawbox=x=120:y=100:w=iw-240:h=3:color={cor_sub}AA:t=fill,"
+            # Hz grande
+            f"drawtext=text='{b['titulo']}':fontsize=130:fontcolor={cor_hz}:x=(w-text_w)/2:y=220"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf,"
+            # Subtítulo
+            f"drawtext=text='{b['subtitulo']}':fontsize=38:fontcolor={cor_sub}:x=(w-text_w)/2:y=380"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,"
+            # Descrição
+            f"drawtext=text='{b['descricao']}':fontsize=26:fontcolor={cor_sub}88:x=(w-text_w)/2:y=435"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,"
+            # Linha decorativa meio
+            f"drawbox=x=280:y=500:w=iw-560:h=1:color={cor_sub}55:t=fill,"
+            # Hora e canal
+            f"drawtext=text='AO VIVO · {hora_str} BRT · @psidanielacoelho':fontsize=22"
+            f":fontcolor={cor_sub}66:x=(w-text_w)/2:y=540"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,"
+            # Linha decorativa baixo
+            f"drawbox=x=120:y=617:w=iw-240:h=3:color={cor_sub}AA:t=fill"
         )
-    if sub:
-        vf_parts.append(
-            f"drawtext=text='{sub}':fontsize=32:fontcolor=0x{tc}AA:x=(w-text_w)/2:y=370"
+    else:
+        # Frame psicologia: texto dark dramático
+        vf = (
+            f"drawbox=w=iw:h=ih:color={bg}:t=fill,"
+            f"drawbox=x=0:y=0:w=iw:h=4:color={cor_sub}:t=fill,"
+            f"drawbox=x=0:y=716:w=iw:h=4:color={cor_sub}:t=fill,"
+            f"drawtext=text='ψ':fontsize=80:fontcolor={cor_hz}33:x=80:y=50"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf,"
+            f"drawtext=text='{b['titulo']}':fontsize=72:fontcolor={cor_hz}:x=(w-text_w)/2:y=240"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf,"
+            f"drawtext=text='{b['subtitulo']}':fontsize=36:fontcolor={cor_sub}:x=(w-text_w)/2:y=340"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,"
+            f"drawtext=text='{b['descricao']}':fontsize=26:fontcolor={cor_sub}88:x=(w-text_w)/2:y=400"
+            f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf,"
+            f"drawbox=x=200:y=460:w=iw-400:h=1:color={cor_sub}44:t=fill,"
+            f"drawtext=text='Comenta SONO · @psidanielacoelho · AO VIVO':fontsize=24"
+            f":fontcolor={cor_sub}88:x=(w-text_w)/2:y=490"
             f":fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
         )
 
-    vf = ",".join(vf_parts)
-    cmd = ["ffmpeg","-y","-f","lavfi","-i","color=size=1280x720:rate=1",
-           "-vf",vf,"-frames:v","1","-q:v","2",out]
-    r = subprocess.run(cmd, capture_output=True, timeout=15)
+    cmd = [
+        "ffmpeg","-y","-f","lavfi",
+        "-i","color=size=1280x720:rate=1",
+        "-vf", vf,
+        "-frames:v","1","-q:v","2", out
+    ]
+    r = subprocess.run(cmd, capture_output=True, timeout=20)
     return out if r.returncode == 0 else None
 
-def gerar_binaural(hz, out):
-    if hz <= 0 or pathlib.Path(out).exists(): return True
-    freq2 = hz + 10
-    cmd = ["ffmpeg","-y","-f","lavfi",
-           "-i",f"sine=frequency={hz}:duration=600",
-           "-f","lavfi","-i",f"sine=frequency={freq2}:duration=600",
-           "-filter_complex","[0:a][1:a]amerge,volume=0.25[out]",
-           "-map","[out]","-ar","44100","-b:a","128k",out]
+def gerar_binaural(hz, hz2, out):
+    if hz <= 0 or pathlib.Path(out).exists(): return pathlib.Path(out).exists()
+    cmd = [
+        "ffmpeg","-y","-f","lavfi",
+        f"-i","sine=frequency={hz}:duration=600",
+        "-f","lavfi",
+        f"-i","sine=frequency={hz2}:duration=600",
+        "-filter_complex","[0:a][1:a]amerge=inputs=2,volume=0.28[out]",
+        "-map","[out]","-ar","44100","-b:a","128k", out
+    ]
     r = subprocess.run(cmd, capture_output=True, timeout=60)
     return r.returncode == 0
 
-HZ_MAP = {
-    "sono_528": 528, "foco_40": 40, "foco_trabalho": 40,
-    "ansiedade_432": 432, "cura_174": 174,
-    "psicologia": 0, "prime_time": 0,
-}
+def stream_frame(frame, bloco_nome, duracao=60):
+    b = BLOCOS[bloco_nome]
+    hz = b.get("hz", 0)
+    hz2 = b.get("hz2", hz+10)
 
-def stream_frame(frame, hz, duracao=60):
-    audio_args = []
     if hz > 0:
-        tone = str(TMP / f"tone_{hz}.mp3")
-        gerar_binaural(hz, tone)
+        tone = str(TMP / f"tone_{hz}_{hz2}.mp3")
+        gerar_binaural(hz, hz2, tone)
         if pathlib.Path(tone).exists():
-            audio_args = ["-stream_loop","-1","-i",tone,
-                          "-c:a","aac","-b:a","128k","-ar","44100"]
-    if not audio_args:
-        audio_args = ["-f","lavfi","-i","anullsrc=r=44100:cl=stereo",
-                      "-c:a","aac","-b:a","128k","-ar","44100"]
+            audio = ["-stream_loop","-1","-i",tone,
+                     "-c:a","aac","-b:a","128k","-ar","44100"]
+        else:
+            audio = ["-f","lavfi","-i","anullsrc=r=44100:cl=stereo",
+                     "-c:a","aac","-b:a","128k","-ar","44100"]
+    else:
+        audio = ["-f","lavfi","-i","anullsrc=r=44100:cl=stereo",
+                 "-c:a","aac","-b:a","128k","-ar","44100"]
+
     for rtmp in [RTMP_PRI, RTMP_BCK]:
-        cmd = (["ffmpeg","-y","-re","-loop","1","-i",frame]
-               + audio_args
-               + ["-c:v","libx264","-preset","ultrafast","-tune","zerolatency",
-                  "-b:v","3000k","-maxrate","3000k","-bufsize","6000k",
-                  "-pix_fmt","yuv420p","-r","30",
-                  "-t",str(duracao),"-f","flv",rtmp])
+        cmd = (
+            ["ffmpeg","-y","-re","-loop","1","-i",frame]
+            + audio
+            + ["-c:v","libx264","-preset","ultrafast","-tune","zerolatency",
+               "-b:v","3000k","-maxrate","3000k","-bufsize","6000k",
+               "-pix_fmt","yuv420p","-r","30",
+               "-t",str(duracao),"-f","flv",rtmp]
+        )
         try:
             result = subprocess.run(cmd, capture_output=True, timeout=duracao+30)
             if result.returncode == 0: return True
@@ -253,32 +232,32 @@ def stream_frame(frame, hz, duracao=60):
     return False
 
 def run():
-    import sys
     if not STREAM_KEY:
-        print("ERRO: YOUTUBE_STREAM_KEY não configurado")
-        sys.exit(1)
-    print("=== LIVE 24H v2 — Visual Correto por Bloco ===")
-    print("  22-06h: NATUREZA NOTURNA (sem anime) + 528Hz sono")
-    print("  06-09h: AMANHECER + 40Hz foco")
-    print("  09-12h: DANIELA dark + psicologia")
-    print("  12-15h: WORKSPACE + 40Hz produtividade")
-    print("  15-18h: LAVANDA + 432Hz ansiedade")
-    print("  18-21h: DANIELA prime time + CTA SONO")
-    print("  21-22h: FLORESTA + 174Hz cura")
+        print("ERRO: YOUTUBE_STREAM_KEY nao configurado"); sys.exit(1)
+
+    print("=== LIVE 24H — Visual Profissional (sem figura nos blocos de frequência) ===")
+    print("  SONO 528Hz:   fundo escuro + 528 Hz grande (nenhuma figura)")
+    print("  FOCO 40Hz:    fundo verde-escuro + 40 Hz grande (nenhuma figura)")
+    print("  ANSIEDADE:    fundo roxo + 432 Hz grande (nenhuma figura)")
+    print("  PSICOLOGIA:   texto dark dramatico (Daniela aparece aqui)")
     print()
+
     idx = 0
     while True:
         bloco = bloco_atual()
-        hz    = HZ_MAP.get(bloco, 0)
-        v     = VISUAIS[bloco]
+        b = BLOCOS[bloco]
         h_brt = hora_brt()
-        print(f"  {h_brt:02d}h BRT [{bloco}] {'Daniela' if v['usa_daniela'] else 'Natureza'} {f'{hz}Hz' if hz else ''}")
-        # Gerar frame via Pollinations primeiro, fallback FFmpeg
-        frame = pollinations_frame(bloco, idx)
-        if not frame:
-            frame = criar_frame_ffmpeg(bloco, idx)
+        hz = b.get("hz",0)
+
+        print(f"  {h_brt:02d}h [{bloco}] {'✦' if hz==0 else f'{hz}Hz'} — {b['subtitulo'][:40]}")
+
+        frame = gerar_frame_ffmpeg(bloco, idx)
         if frame:
-            stream_frame(frame, hz, 60)
+            stream_frame(frame, bloco, 60)
+        else:
+            print("  Erro no frame — aguardando")
+            time.sleep(5)
+
         idx += 1
         time.sleep(2)
 
