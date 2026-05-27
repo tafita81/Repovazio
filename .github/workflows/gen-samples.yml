@@ -1,0 +1,25 @@
+name: "🎧 Gera Samples de Áudio para Validação"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install edge-tts requests --break-system-packages -q
+      - name: "Gerar samples PT/EN/ES/JA"
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/gen_audio_samples.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: audio-samples
+          path: /tmp/samples/sample_*.mp3
+          retention-days: 7
