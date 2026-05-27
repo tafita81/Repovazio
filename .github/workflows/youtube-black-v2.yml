@@ -1,8 +1,10 @@
-name: "🖤 Psicologia para Dormir — Tela PRETA TOTAL @psidanicoelho"
+name: "🖤 Psicologia para Dormir — 7 Técnicas + Cognição Quântica @psidanicoelho"
 
-# Horário: 22h-08h BRT  (01-08 UTC)
-# INOVAÇÃO: tela 100% preta + psicologia + binaurais
-# Watch time médio: 6-8h por viewer dormindo
+# v2: 4 atos hipnóticos + cognição quântica Busemeyer/Pothos + DMN Raichle
+# Diferenciais vs Sleep Cove / Sleep Magic / Smarter While You Sleep:
+#   - única que cita pesquisa quântica real (ninguém faz)
+#   - formato 7 técnicas numeradas (viral) + indução hipnótica progressiva
+#   - 9 idiomas com voz consistente Daniela Coelho
 
 on:
   workflow_dispatch:
@@ -20,11 +22,11 @@ jobs:
       - run: |
           sudo apt-get install -y ffmpeg > /dev/null 2>&1
           pip install requests edge-tts --break-system-packages -q
-      - name: "🖤 Tela Preta PT — Sono + Binaurais"
+      - name: "🖤 PT — 4 atos + quântica"
         env:
           LANG_CODE:          PT
           YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
           GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
         run: |
-          timeout 21600 python3 scripts/live_black_screen.py || true
+          timeout 21600 python3 scripts/live_black_screen_v2.py || true
         continue-on-error: true
