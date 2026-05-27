@@ -1,0 +1,28 @@
+name: "🧠 Coqui XTTS v2 — Clone Phil Chenevert CC0"
+on: {workflow_dispatch: {}}
+
+jobs:
+  clone:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      
+      - name: Cache modelo XTTS v2 (~1.8GB)
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/tts
+          key: xtts-v2-model-v1
+      
+      - name: Install deps
+        run: |
+          sudo apt-get install -y ffmpeg > /dev/null 2>&1
+          pip install --break-system-packages -q "coqui-tts==0.24.2" requests soundfile
+      
+      - name: "Clonar voz Phil Chenevert + gerar PT/EN/ES/JA"
+        env:
+          COQUI_TOS_AGREED: "1"
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python3 scripts/coqui_clone.py
