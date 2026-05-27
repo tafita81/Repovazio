@@ -325,6 +325,47 @@ def send_email_app(server, company, role, to_email, platform, cv_bytes):
     server.sendmail(GMAIL,[to_email],msg.as_string())
 
 # ─── APPLY VIA PLAYWRIGHT (para links de apply) ───────────────────────────────
+def company_to_gh_slug(company_name):
+    """Converte nome de empresa para slug do Greenhouse"""
+    import re
+    slug = company_name.lower()
+    slug = re.sub(r'[^a-z0-9\s]', '', slug)
+    slug = slug.strip().replace(' ', '-')
+    slug = re.sub(r'-+', '-', slug)
+    return slug
+
+def find_gh_board(company_name):
+    """Tenta encontrar o board Greenhouse da empresa"""
+    slug = company_to_gh_slug(company_name)
+    variants = [slug, slug.replace('-',''), slug.split('-')[0],
+                slug.replace('-inc','').replace('-com','').replace('-io','')]
+    for v in variants:
+        if not v: continue
+        try:
+            url = f"https://boards-api.greenhouse.io/v1/boards/{v}/jobs"
+            req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=4) as r:
+                data = json.loads(r.read())
+            if data.get("jobs"):
+                return v, data["jobs"]
+        except: pass
+    return None, []
+
+def find_lever_board(company_name):
+    """Tenta encontrar o board Lever da empresa"""
+    slug = company_to_gh_slug(company_name)
+    for v in [slug, slug.replace('-',''), slug.split('-')[0]]:
+        if not v: continue
+        try:
+            url = f"https://api.lever.co/v0/postings/{v}?mode=json"
+            req = urllib.request.Request(url, headers={"User-Agent":"Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=4) as r:
+                jobs = json.loads(r.read())
+            if jobs:
+                return v, jobs
+        except: pass
+    return None, []
+
 def apply_via_playwright(page, job, cv_path):
     apply_url = job.get("apply_url","") or job.get("url","")
     if not apply_url: return "no_url"
