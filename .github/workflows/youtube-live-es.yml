@@ -1,33 +1,31 @@
-name: YouTube Live ES — Dormir y Sanar
+name: "YouTube Live ES — Psicologia 24h @psidanicoelho"
 
 on:
   workflow_dispatch:
     inputs:
       horas:
-        description: "Horas"
+        description: "Duracao horas (max 6)"
         default: "6"
   schedule:
-    # LATAM | CPM: $5-15
     - cron: "0 2,8,14,20 * * *"
 
 jobs:
-  live-es:
+  live:
     runs-on: ubuntu-latest
-    timeout-minutes: 375
+    timeout-minutes: 370
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
       - run: |
           sudo apt-get install -y ffmpeg > /dev/null 2>&1
-          pip install requests --break-system-packages
-      - name: Live ES 24/7
+          pip install requests pillow --break-system-packages -q
+      - name: Live ES 24h
         env:
-          LANG_CODE:              ES
-          YOUTUBE_STREAM_KEY_ES: ${{ secrets.YOUTUBE_STREAM_KEY_ES }}
-          YOUTUBE_STREAM_KEY:     ${{ secrets.YOUTUBE_STREAM_KEY }}
-          GROQ_API_KEY:           ${{ secrets.GROQ_API_KEY }}
+          LANG_CODE:          ES
+          YOUTUBE_STREAM_KEY: ${{ secrets.YOUTUBE_STREAM_KEY }}
+          GROQ_API_KEY:       ${{ secrets.GROQ_API_KEY }}
         run: |
-          HORAS="${{ inputs.horas }}"
-          timeout $((${HORAS:-6} * 3600)) python3 scripts/live_universal.py || true
+          H="${{ inputs.horas || '6' }}"
+          timeout $((H * 3600)) python3 scripts/live_universal.py || true
         continue-on-error: true
