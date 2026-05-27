@@ -1,0 +1,37 @@
+name: 🎯 Upwork Agent — AI Proposals (Every 3h)
+on:
+  schedule:
+    - cron: "30 */3 * * *"
+  workflow_dispatch:
+jobs:
+  upwork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          pip install playwright
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
+
+      - name: Run Upwork Agent
+        env:
+          UPWORK_EMAIL: ${{ secrets.UPWORK_EMAIL }}
+          UPWORK_PASSWORD: ${{ secrets.UPWORK_PASSWORD }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: python3 .github/scripts/upwork_agent.py
+
+      - name: Save Upwork cookies
+        if: always()
+        run: |
+          git config user.name "Upwork Agent"
+          git config user.email "tafita81@gmail.com"
+          git add .github/upwork_cookies.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore: update upwork session [skip ci]"
+          git push 2>/dev/null || true
