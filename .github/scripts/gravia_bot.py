@@ -126,17 +126,17 @@ def place_order(token_id,side,price,usdc):
         return{"PAPER":True,"token":str(token_id)[:12],"side":side,"price":round(price,4)}
     try:
         from py_clob_client.client import ClobClient
-        from py_clob_client.clob_types import OrderArgs,OrderType
+        from py_clob_client.clob_types import OrderArgs,ApiCreds
         from py_clob_client.constants import POLYGON
-        c=ClobClient(host="https://clob.polymarket.com",key=os.environ.get("POLY_PRIVATE_KEY",""),
-            chain_id=POLYGON,creds={"key":os.environ.get("POLY_API_KEY",""),
-                "secret":os.environ.get("POLY_SECRET",""),"passphrase":os.environ.get("POLY_PASSPHRASE","")})
-        from py_clob_client.clob_types import PartialCreateOrderOptions
-        s=c.create_order(OrderArgs(token_id=token_id,price=price,size=round(usdc/price,2),side=side))
-        resp=c.post_order(s)
+        pk=os.environ.get("POLY_PRIVATE_KEY","")
+        c=ClobClient(host="https://clob.polymarket.com",key=pk,chain_id=POLYGON)
+        creds=c.derive_api_key()
+        c2=ClobClient(host="https://clob.polymarket.com",key=pk,chain_id=POLYGON,creds=creds)
+        s=c2.create_order(OrderArgs(token_id=token_id,price=price,size=round(usdc/price,2),side=side))
+        resp=c2.post_order(s)
         return{"LIVE":True,"order_id":resp.get("orderID","?"),"status":resp.get("status","?")}
     except Exception as e:
-        return{"LIVE":True,"err":str(e)[:80]}
+        return{"LIVE":True,"err":str(e)[:120]}
 
 def main():
     T0,tsrc=ntp()
