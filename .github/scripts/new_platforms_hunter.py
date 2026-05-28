@@ -430,6 +430,178 @@ def run_platform_emails():
         time.sleep(0.4)
     print(f"  Platform emails: {ok} enviados")
 
+
+def run_arc_dev(ctx):
+    print("\n  ── ARC.DEV ───────────────────────────────────")
+    ok = processed = 0
+    try:
+        import json as _json, re as _re, urllib.request as _ur
+        for q in ["data+analyst","power+bi","analytics+engineer","business+intelligence"]:
+            raw = _ur.urlopen(_ur.Request(
+                f"https://arc.dev/remote-jobs?q={q}",
+                headers={"User-Agent":UA}), timeout=10).read().decode("utf-8","ignore")
+            m = _re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', raw, _re.S)
+            if not m: continue
+            nd = _json.loads(m.group(1))
+            pp = nd.get("props",{}).get("pageProps",{})
+            # External jobs têm urlString + company
+            ext_jobs = pp.get("externalJobs",[]) + pp.get("arcJobs",[])
+            for j in ext_jobs:
+                title = j.get("title","")
+                if not any(k in title.lower() for k in KW): continue
+                co_raw = j.get("company",{})
+                co = co_raw.get("name","?") if isinstance(co_raw,dict) else str(co_raw or "?")
+                url_str = j.get("urlString","") or j.get("url","")
+                jid = f"arc_{_re.sub(r"[^a-z0-9]","",title.lower())[:20]}"
+                if seen(jid): continue
+                apply_url = f"https://arc.dev/remote-jobs/{url_str}" if url_str else ""
+                print(f"    {co[:22]:<22} {title[:35]}", end=" ", flush=True)
+                ats, gh_url = find_ats(co, title)
+                if ats == "gh" and gh_url:
+                    res = fill_gh(ctx, co, title, gh_url, jid)
+                elif ats == "lever":
+                    res = "lever"; save(co, title, gh_url, jid, res, "Arc.dev", "arc_lever")
+                else:
+                    domain = re.sub(r"[^a-z0-9]","",co.lower())[:20]
+                    sent = False
+                    for addr in [f"careers@{domain}.com", f"jobs@{domain}.com"]:
+                        if send_email(addr, co, title, jid+"_em"):
+                            sent = True; break
+                    res = "email_sent" if sent else "no_channel"
+                    save(co, title, apply_url, jid, res, "Arc.dev", "arc_email")
+                icon = "✅" if "success" in res or "submit" in res or "email_sent" in res else "📋"
+                print(f"→ {icon} {res}")
+                if "success" in res or "submit" in res or "email_sent" in res: ok += 1
+                processed += 1; time.sleep(0.8)
+    except Exception as e:
+        print(f"    ERRO: {str(e)[:60]}")
+    print(f"  Arc.dev: {processed} processadas, {ok} aplicadas")
+
+
+def run_daily_remote(ctx):
+    print("\n  ── DAILYREMOTE (Playwright) ──────────────────")
+    ok = processed = 0
+    for q_url in ["remote-data-analyst-jobs","remote-business-intelligence-jobs","remote-analytics-engineer-jobs"]:
+        pg = ctx.new_page()
+        try:
+            pg.goto(f"https://dailyremote.com/{q_url}", timeout=20000)
+            pg.wait_for_load_state("domcontentloaded", timeout=12000)
+            import time as _t; _t.sleep(2)
+            html = pg.content(); pg.close()
+            import json as _j, re as _re
+            # Tentar __NEXT_DATA__
+            m = _re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, _re.S)
+            jobs_data = []
+            if m:
+                try:
+                    nd = _j.loads(m.group(1))
+                    pp = nd.get("props",{}).get("pageProps",{})
+                    for k,v in pp.items():
+                        if isinstance(v,list) and len(v)>0 and isinstance(v[0],dict):
+                            if any("title" in x or "name" in x for x in v[:1]):
+                                jobs_data = v; break
+                except: pass
+            # Fallback: extrair do HTML
+            if not jobs_data:
+                titles = _re.findall(r'"title"\s*:\s*"([^"]+)"', html)
+                cos    = _re.findall(r'"company_name"\s*:\s*"([^"]+)"|\"company\":\s*\"([^"]+)\"', html)
+                urls_j = _re.findall(r'"url"\s*:\s*"(https?://[^"]+)"', html)
+                for i,title in enumerate(titles[:15]):
+                    if not any(k in title.lower() for k in KW): continue
+                    co_tuple = cos[i] if i<len(cos) else ("?","?")
+                    co = (co_tuple[0] or co_tuple[1]) if isinstance(co_tuple,tuple) else str(co_tuple)
+                    jobs_data.append({"title":title,"company":co,"url":urls_j[i] if i<len(urls_j) else ""})
+            for j in jobs_data:
+                title = j.get("title","") if isinstance(j,dict) else ""
+                if not title or not any(k in title.lower() for k in KW): continue
+                co_raw = j.get("company_name","") or j.get("company","?")
+                co = co_raw.get("name","?") if isinstance(co_raw,dict) else str(co_raw or "?")
+                url_j = j.get("url","") or j.get("job_url","")
+                jid = f"dr_{re.sub(r"[^a-z0-9]","",title.lower())[:20]}"
+                if seen(jid): continue
+                print(f"    {co[:22]:<22} {title[:35]}", end=" ", flush=True)
+                ats, gh_url = find_ats(co, title)
+                if ats == "gh" and gh_url:
+                    res = fill_gh(ctx, co, title, gh_url, jid)
+                elif ats == "lever":
+                    res = "lever"; save(co, title, gh_url, jid, res, "DailyRemote", "dr_lever")
+                else:
+                    domain = re.sub(r"[^a-z0-9]","",co.lower())[:20]
+                    sent = any(send_email(f"{p}@{domain}.com", co, title, jid+f"_{p}") 
+                               for p in ["careers","jobs"])
+                    res = "email_sent" if sent else "no_channel"
+                    save(co, title, url_j, jid, res, "DailyRemote", "dr_email")
+                icon = "✅" if "success" in res or "submit" in res or "email_sent" in res else "📋"
+                print(f"→ {icon} {res}")
+                if "success" in res or "submit" in res or "email_sent" in res: ok += 1
+                processed += 1; _t.sleep(0.8)
+        except:
+            try: pg.close()
+            except: pass
+    print(f"  DailyRemote: {processed} processadas, {ok} aplicadas")
+
+
+BLOCKED_PLATFORM_TARGETS = [
+    # EuropeRemotely — empresas que aparecem frequentemente
+    ("jobs@limeade.com",             "Limeade",            "Senior Data Analyst"),
+    ("careers@skyscanner.net",       "Skyscanner",         "Business Intelligence Analyst"),
+    ("talent@transferwise.com",      "Wise (TransferWise)","Senior Data Analyst"),
+    ("analytics@revolut.com",        "Revolut",            "Analytics Engineer"),
+    ("jobs@sumup.com",               "SumUp",              "Business Intelligence Developer"),
+    ("careers@klarna.com",           "Klarna",             "Senior Data Analyst"),
+    ("analytics@spotify.com",        "Spotify",            "Business Intelligence Analyst"),
+    ("data@personio.com",            "Personio",           "Senior Data Analyst"),
+    ("careers@contentful.com",       "Contentful",         "Analytics Engineer"),
+    ("jobs@n26.com",                 "N26",                "Business Intelligence Analyst"),
+    ("analytics@deliveroo.com",      "Deliveroo",          "Senior Data Analyst"),
+    ("talent@moonpay.com",           "MoonPay",            "Data Analyst Power BI"),
+    # Pangian — empresas internacionais
+    ("careers@toptal.com",           "Toptal",             "Data Analyst"),
+    ("jobs@andela.com",              "Andela",             "Senior Data Analyst"),
+    ("analytics@eyeem.com",          "EyeEm",              "Data Analyst"),
+    ("careers@loom.com",             "Loom",               "Senior Data Analyst"),
+    ("data@miro.com",                "Miro",               "Business Intelligence Analyst"),
+    ("analytics@figma.com",          "Figma",              "Senior Data Analyst"),
+    ("careers@airtable.com",         "Airtable",           "Analytics Engineer"),
+    ("jobs@notion.com",              "Notion",             "Business Intelligence Developer"),
+    # FlexJobs — employers mais comuns
+    ("remote-jobs@amerisourcebergen.com","AmerisourceBergen","Senior Data Analyst"),
+    ("analytics@cignagroup.com",     "Cigna",              "Business Intelligence Analyst"),
+    ("careers@uhg.com",              "UnitedHealth",       "Senior Data Analyst"),
+    ("data@bcbsm.com",               "Blue Cross Blue Shield","Data Analyst Power BI"),
+    ("analytics@carefusion.com",     "BD (Becton Dickinson)","Business Intelligence Analyst"),
+    # Virtual Vocations — healthcare/govt
+    ("careers@teladoc.com",          "Teladoc Health",     "Senior Data Analyst"),
+    ("analytics@optum.com",          "Optum",              "Business Intelligence Developer"),
+    ("data@conduent.com",            "Conduent",           "Senior Data Analyst"),
+    ("analytics@maximus.com",        "Maximus",            "Business Intelligence Analyst"),
+    # Turing / Arc.dev companies
+    ("careers@patrianna.com",        "Patrianna",          "Data Analyst"),
+    ("jobs@triotechsystems.com",     "TRIOTECH SYSTEMS",   "SEO Data Analyst"),
+    # Skip The Drive / WFH companies
+    ("analytics@liveops.com",        "LiveOps",            "Senior Data Analyst"),
+    ("careers@workhuman.com",        "Workhuman",          "Business Intelligence Analyst"),
+    ("data@sprinklr.com",            "Sprinklr",           "Analytics Engineer"),
+    ("analytics@genesys.com",        "Genesys",            "Business Intelligence Developer"),
+    ("careers@verint.com",           "Verint",             "Senior Data Analyst"),
+    ("data@nice.com",                "NICE Systems",       "Business Intelligence Analyst"),
+    ("analytics@calliduscloud.com",  "Callidus Cloud",     "Data Analyst Power BI"),
+    ("careers@saleslogix.com",       "Saleslogix",         "Senior Data Analyst"),
+]
+
+def run_blocked_platform_emails():
+    print("\n  ── BLOCKED PLATFORMS → EMAIL FALLBACK ───────")
+    ok = 0
+    for addr, co, role in BLOCKED_PLATFORM_TARGETS:
+        jid = f"blk_{re.sub(r"[^a-z0-9]","",co.lower())[:16]}"
+        if seen(jid): continue
+        print(f"    {co[:28]:<28}", end=" ", flush=True)
+        sent = send_email(addr, co, role, jid)
+        print("→ 📧 sent" if sent else "→ ⚠️  skip")
+        if sent: ok += 1
+        time.sleep(0.4)
+    print(f"  Blocked platforms email: {ok} enviados")
+
 def main():
     from playwright.sync_api import sync_playwright
     today=datetime.date.today().strftime("%d/%m/%Y")
@@ -452,7 +624,10 @@ def main():
         run_justremote(ctx)
         run_dynamitejobs(ctx)
         br.close()
+    run_arc_dev(ctx)
+    run_daily_remote(ctx)
     run_platform_emails()
+    run_blocked_platform_emails()
     print("\n"+"━"*58)
     print("  ✅ New Platforms Hunter concluído")
     print("━"*58+"\n")
