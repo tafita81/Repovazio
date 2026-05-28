@@ -1,0 +1,53 @@
+name: 🎲 Dice Autonomous Test
+on:
+  workflow_dispatch:
+jobs:
+  dice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup
+        run: |
+          pip install playwright reportlab --break-system-packages -q
+          python -m playwright install chromium
+          python -m playwright install-deps chromium
+      - name: CV
+        run: |
+          python3 -c "
+          import os; cv='.github/assets/rafael_cv.pdf'
+          os.makedirs('.github/assets',exist_ok=True)
+          if os.path.exists(cv) and os.path.getsize(cv)>5000: print('CV OK'); exit()
+          from reportlab.lib.pagesizes import letter
+          from reportlab.platypus import SimpleDocTemplate,Paragraph
+          from reportlab.lib.styles import ParagraphStyle
+          from reportlab.lib.colors import HexColor
+          from reportlab.lib.enums import TA_CENTER
+          from reportlab.lib.units import inch
+          doc=SimpleDocTemplate(cv,pagesize=letter,topMargin=0.4*inch,bottomMargin=0.4*inch,leftMargin=0.55*inch,rightMargin=0.55*inch)
+          s=lambda **k:ParagraphStyle('x',**k)
+          NAVY=HexColor('#1F3864'); GRAY=HexColor('#374151')
+          doc.build([
+            Paragraph('RAFAEL RODRIGUES',s(fontSize=22,textColor=NAVY,fontName='Helvetica-Bold',alignment=TA_CENTER,spaceAfter=4)),
+            Paragraph('Senior Data Analyst · Power BI PL-300 · Tableau · 15+ years',s(fontSize=10,textColor=GRAY,alignment=TA_CENTER,spaceAfter=4)),
+            Paragraph('+5522992418257 · Rafa_roberto2004@yahoo.com.br · linkedin.com/in/rafael-r-a3946a15',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER)),
+          ])
+          print(f'CV: {os.path.getsize(cv):,}')
+          "
+      - name: "🎲 Dice Autonomous v2"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
+          DICE_PASSWORD: ${{ secrets.DICE_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 .github/scripts/dice_autonomous_v2.py
+      - name: Commit
+        run: |
+          git config user.name "Dice Hunter"
+          git config user.email "tafita81@gmail.com"
+          git add -A 2>/dev/null||true
+          git diff --cached --quiet||git commit -m "chore: dice test [skip ci]"
+          git push 2>/dev/null||true
