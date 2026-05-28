@@ -481,74 +481,58 @@ def run_dice_email(ctx):
 
 # ── RemoteOK via Playwright real ─────────────────────────────────────────────
 def run_remoteok(ctx):
-    print("\n  ── REMOTE OK (Playwright) ────────────────────")
+    print("\n  ── REMOTE OK (API) ───────────────────────────")
     ok = processed = 0
-    try:
-        raw = urllib.request.urlopen(urllib.request.Request(
-            "https://remoteok.com/api?tag=analytics", headers={"User-Agent": UA, "Accept": "application/json"}),
-            timeout=10).read().decode("utf-8", errors="ignore")
-        jobs = json.loads(raw)[1:]
-        for j in jobs:
-            if not isinstance(j, dict): continue
-            if not any(k in j.get("position", "").lower() for k in KW): continue
-            jid = "rok3_" + str(j.get("id", ""))
-            if seen(jid): continue
-            co   = j.get("company", "?")
-            role = j.get("position", "?")
-            rok_url = j.get("url", "")
-            print(f"    {co[:22]:<22} {role[:30]}", end=" ", flush=True)
-            # Tentar board GH/Lever direto primeiro
-            ats_type, apply_url = find_company_ats(co, role)
-            if ats_type == "gh":
-                res = fill_gh(ctx, co, role, apply_url, jid)
-            elif ats_type == "lever":
-                res = fill_lever(ctx, co, role, apply_url, jid)
-            else:
-                # Playwright visita remoteok page e extrai apply link real
-                pg = ctx.new_page()
-                try:
-                    pg.goto(rok_url, timeout=12000)
-                    pg.wait_for_load_state("domcontentloaded", timeout=8000)
-                    time.sleep(1.5)
-                    # Clicar no Apply button e capturar o URL que ele abre
-                    real_url = ""
-                    for sel in ["a.button.action-apply", "a[href*='http']:not([href*='remoteok'])"]:
-                        try:
-                            el = pg.locator(sel).first
-                            if el.is_visible(timeout=800):
-                                href = el.get_attribute("href") or ""
-                                if href and "remoteok" not in href and len(href) > 15:
-                                    real_url = href; break
-                        except: pass
-                    pg.close()
-                except:
-                    try: pg.close()
-                    except: pass
-                if real_url:
-                    ats2 = detect_ats(real_url)
-                    if ats2 == "gh": res = fill_gh(ctx, co, role, real_url, jid)
-                    elif ats2 == "lever": res = fill_lever(ctx, co, role, real_url, jid)
-                    else:
-                        sent = company_email_fallback(co, role, jid + "_em")
-                        res = "email_sent" if sent else "no_apply"
-                else:
-                    sent = company_email_fallback(co, role, jid + "_em")
-                    res = "email_sent" if sent else "no_apply"
-            icon = "✅" if "success" in res or "submit" in res or "email_sent" in res else "📋"
-            print("→ " + icon + " " + res)
-            save(co, role, rok_url, jid, res, "RemoteOK", "rok_unified")
-            if "success" in res or "submit" in res or "email_sent" in res: ok += 1
-            processed += 1; time.sleep(1)
-    except Exception as e:
-        print("    ERRO: " + str(e)[:60])
+    all_jobs = []
+    for tag in ["analytics", "analyst", "data"]:
+        try:
+            raw = urllib.request.urlopen(urllib.request.Request(
+                "https://remoteok.com/api?tag=" + tag,
+                headers={"User-Agent": UA, "Accept": "application/json"}),
+                timeout=8).read().decode("utf-8", errors="ignore")
+            all_jobs.extend(json.loads(raw)[1:])
+        except: pass
+        time.sleep(0.3)
+    # Dedup
+    seen_ids = set()
+    jobs = []
+    for j in all_jobs:
+        if not isinstance(j, dict): continue
+        jid_raw = str(j.get("id", ""))
+        if jid_raw and jid_raw not in seen_ids:
+            seen_ids.add(jid_raw); jobs.append(j)
+    for j in jobs:
+        if not any(k in j.get("position", "").lower() for k in KW): continue
+        jid = "rok4_" + str(j.get("id", ""))
+        if seen(jid): continue
+        co   = j.get("company", "?")
+        role = j.get("position", "?")
+        print(f"    {co[:22]:<22} {role[:32]}", end=" ", flush=True)
+        ats_type, apply_url = find_company_ats(co, role)
+        if ats_type == "gh":
+            res = fill_gh(ctx, co, role, apply_url, jid)
+        elif ats_type == "lever":
+            res = fill_lever(ctx, co, role, apply_url, jid)
+        else:
+            domain = re.sub(r"[^a-z0-9]", "", co.lower())[:20]
+            sent = False
+            for addr in ["jobs@" + domain + ".com", "careers@" + domain + ".com"]:
+                if send_email(addr, co, role, jid + "_em"):
+                    sent = True; break
+            res = "email_sent" if sent else "no_apply"
+        icon = "✅" if "success" in res or "submit" in res or "email_sent" in res else "📋"
+        print("→ " + icon + " " + res)
+        save(co, role, j.get("url", ""), jid, res, "RemoteOK", "rok_api")
+        if "success" in res or "submit" in res or "email_sent" in res: ok += 1
+        processed += 1; time.sleep(0.8)
     print(f"  RemoteOK: {processed} processadas, {ok} aplicadas")
 
-# ── Indeed via Playwright ────────────────────────────────────────────────────
+
 def run_indeed(ctx):
     print("\n  ── INDEED (Playwright) ───────────────────────")
     ok = processed = 0
-    for q in ["power bi", "data analyst", "analytics engineer"]:
-        for cc in ["us", "ca", "gb"]:
+    for q in ["power bi developer", "senior data analyst", "analytics engineer", "business intelligence", "bi analyst", "tableau developer"]:
+        for cc in ["us", "ca", "gb", "au", "de"]:
             try:
                 xml = urllib.request.urlopen(urllib.request.Request(
                     "https://" + cc + ".indeed.com/rss?q=" + urllib.parse.quote(q) +
@@ -620,7 +604,7 @@ def run_indeed(ctx):
 def run_jobright(ctx):
     print("\n  ── JOBRIGHT (Playwright) ─────────────────────")
     ok = processed = 0
-    for q in ["power bi", "data analyst", "analytics engineer"]:
+    for q in ["power bi developer", "senior data analyst", "analytics engineer", "business intelligence", "bi analyst", "tableau developer"]:
         pg = ctx.new_page()
         try:
             pg.goto("https://jobright.ai/jobs?keyword=" + urllib.parse.quote(q) + "&type=Remote",
