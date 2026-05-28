@@ -99,7 +99,7 @@ def supa_upsert(cache_key, value):
                             headers={"apikey": SUPA_KEY, "Authorization": "Bearer " + SUPA_KEY, "Content-Type": "application/json", "Prefer": "return=representation"},
                             data=json.dumps({"value": value}), timeout=20)
         if up.status_code in (200,204) and up.text not in ("[]",""): return
-        requests.post("%s/rest/v1/ia_cache" % SUPA_URL, headers=h, data=json.dumps({"cache_key": cache_key, "value": value}), timeout=20)
+        requests.post("%s/rest/v1/ia_cache" % SUPA_URL, headers=h, data=json.dumps({"cache_key": cache_key, "value": value, "expires_at": "2099-01-01T00:00:00Z"}), timeout=20)
     except Exception as e:
         print("   (supabase upsert nao critico: %s)" % e)
 
