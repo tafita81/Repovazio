@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { learnFromMetrics, generateNextTopics } from "@/lib/learning";
 
 export const dynamic = 'force-dynamic';
