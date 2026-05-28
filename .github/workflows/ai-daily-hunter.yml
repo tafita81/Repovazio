@@ -25,42 +25,39 @@ jobs:
           os.makedirs('.github/assets',exist_ok=True)
           if os.path.exists(cv) and os.path.getsize(cv)>5000: print('CV OK'); exit()
           from reportlab.lib.pagesizes import letter
-          from reportlab.platypus import SimpleDocTemplate, Paragraph, HRFlowable, Spacer
+          from reportlab.platypus import SimpleDocTemplate,Paragraph,HRFlowable,Spacer
           from reportlab.lib.styles import ParagraphStyle
           from reportlab.lib.colors import HexColor
-          from reportlab.lib.enums import TA_CENTER, TA_LEFT
+          from reportlab.lib.enums import TA_CENTER
           from reportlab.lib.units import inch
-          NAVY=HexColor('#1F3864'); PURPLE=HexColor('#5B21B6'); GRAY=HexColor('#374151')
           doc=SimpleDocTemplate(cv,pagesize=letter,topMargin=0.4*inch,bottomMargin=0.4*inch,leftMargin=0.55*inch,rightMargin=0.55*inch)
-          s=lambda **k: ParagraphStyle('x',**k)
-          story=[
+          NAVY=HexColor('#1F3864'); PURPLE=HexColor('#5B21B6'); GRAY=HexColor('#374151')
+          s=lambda **k:ParagraphStyle('x',**k)
+          doc.build([
             Paragraph('AVAILABLE IMMEDIATELY · OPEN TO REMOTE WORLDWIDE',s(fontSize=8.5,textColor=HexColor('#fff'),backColor=NAVY,alignment=TA_CENTER,fontName='Helvetica-Bold',spaceAfter=10,leading=14)),
             Paragraph('RAFAEL RODRIGUES',s(fontSize=24,textColor=NAVY,fontName='Helvetica-Bold',alignment=TA_CENTER,spaceAfter=3)),
             Paragraph('Senior Data Analyst  ·  Power BI Developer  ·  Analytics Engineer',s(fontSize=11,textColor=PURPLE,alignment=TA_CENTER,spaceAfter=3)),
             Paragraph('+55 22 99241-8257  ·  Rafa_roberto2004@yahoo.com.br  ·  linkedin.com/in/rafael-r-a3946a15',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=8)),
             HRFlowable(width='100%',thickness=2,color=NAVY,spaceAfter=8),
-            Paragraph('<b>Microsoft PL-300 Power BI Data Analyst</b>  ·  <b>Tableau Desktop Specialist</b>  ·  <b>MBA IBMEC</b>  ·  <b>Six Sigma Green Belt</b>',s(fontSize=9,textColor=NAVY,alignment=TA_CENTER,spaceAfter=6)),
-            Paragraph('Power BI (DAX · Power Query · RLS · Tabular Editor · Deployment Pipelines)  ·  Tableau  ·  Looker (LookML)  ·  SQL/T-SQL  ·  Python',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=3)),
-            Paragraph('Azure Synapse · ADF · Databricks  ·  GCP BigQuery  ·  Snowflake  ·  AWS Redshift/Athena  ·  dbt  ·  Apache Airflow',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=10)),
+            Paragraph('<b>Microsoft PL-300</b>  ·  <b>Tableau Desktop Specialist</b>  ·  <b>MBA IBMEC</b>  ·  <b>Six Sigma Green Belt</b>  ·  15+ years',s(fontSize=9,textColor=NAVY,alignment=TA_CENTER,spaceAfter=6)),
+            Paragraph('Power BI (DAX · PQuery · RLS · Tabular Editor)  ·  Tableau  ·  Looker (LookML)  ·  SQL/T-SQL  ·  Python  ·  Azure Synapse  ·  BigQuery  ·  Snowflake  ·  Databricks  ·  dbt  ·  Airflow',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=4)),
+            Paragraph('USD 9M+ savings  ·  200+ business users  ·  500M+ records/month  ·  70% latency reduction  ·  83% automation efficiency',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=10)),
             HRFlowable(width='100%',thickness=1,color=HexColor('#CBD5E1'),spaceAfter=8),
-            Paragraph('<b>KEY ACHIEVEMENTS</b>',s(fontSize=9,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=4)),
-            Paragraph('USD 9M+ operational savings  ·  70% report latency reduction  ·  200+ business users  ·  500M+ records/month  ·  83% automation efficiency',s(fontSize=8.5,textColor=GRAY,spaceAfter=10,leading=13)),
-            HRFlowable(width='100%',thickness=1,color=HexColor('#CBD5E1'),spaceAfter=8),
-            Paragraph('<b>EXPERIENCE</b>',s(fontSize=9,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=5)),
-            Paragraph('<b>Dataex</b>  ·  Senior Data Analyst  ·  2022–Present',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
-            Paragraph('Enterprise BI platform — Power BI + Tableau + Looker for 200+ users. BigQuery, Snowflake, Databricks. 60% load time reduction.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
-            Paragraph('<b>Keyrus</b>  ·  Senior BI Consultant  ·  2019–2022',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
-            Paragraph('Global BI consultancy — Azure Synapse, SAP Analytics Cloud, Salesforce. 70% query optimisation. 10+ enterprise clients across 4 continents.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
-            Paragraph('<b>The Coca-Cola Company</b>  ·  Senior Data Analyst  ·  2018–2019',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
-            Paragraph('30+ executive KPIs on Google BigQuery. 83% automation efficiency gain. Advanced Tableau dashboards for C-suite.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
-            Paragraph('<b>TIM / Oi Telecom</b>  ·  Senior Analyst Strategic BI  ·  2007–2017',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
-            Paragraph('500M+ subscriber records/month in near-realtime. USD 9M+ operational savings. Oracle DWH, SAS, MicroStrategy. 500+ report consumers.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=3)),
-          ]
-          doc.build(story)
+            Paragraph('<b>Dataex</b> (2022–Present)  ·  Senior Data Analyst — Power BI+Tableau+Looker 200+ users | BigQuery, Snowflake, Databricks',s(fontSize=8.5,textColor=GRAY,spaceAfter=4)),
+            Paragraph('<b>Keyrus</b> (2019–2022)  ·  Senior BI Consultant — Azure Synapse, SAP Analytics Cloud | 70% query optimization | 10+ enterprise clients',s(fontSize=8.5,textColor=GRAY,spaceAfter=4)),
+            Paragraph('<b>Coca-Cola</b> (2018–2019)  ·  Senior Data Analyst — BigQuery, 30+ KPIs, 83% automation efficiency gain',s(fontSize=8.5,textColor=GRAY,spaceAfter=4)),
+            Paragraph('<b>TIM/OI Telecom</b> (2007–2017)  ·  Senior Analyst Strategic BI — 500M+ records/month, USD 9M+ savings, 500+ consumers',s(fontSize=8.5,textColor=GRAY,spaceAfter=3)),
+          ])
           print(f'CV: {os.path.getsize(cv):,} bytes')
           "
 
-      - name: "🤖 AI Global Hunter"
+      - name: "🌍 Canada + Europe Jobs Discovery"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: python3 .github/scripts/canada_europe_patch.py
+
+      - name: "🤖 AI Global Hunter (US + Worldwide)"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
