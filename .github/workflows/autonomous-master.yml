@@ -41,18 +41,23 @@ jobs:
             Paragraph('Senior Data Analyst · Power BI PL-300 · Tableau · Analytics Engineer',s(fontSize=10,textColor=GRAY,alignment=1,spaceAfter=3)),
             Paragraph('+5522992418257 · Rafa_roberto2004@yahoo.com.br · linkedin.com/in/rafael-r-a3946a15',s(fontSize=8.5,textColor=GRAY,alignment=1,spaceAfter=8)),
             Paragraph('KEY ACHIEVEMENTS',s(fontSize=10,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=4)),
-            Paragraph('• USD 9M+ operational savings via BI automation (TIM/OI)',s(fontSize=9,textColor=GRAY,spaceAfter=2)),
-            Paragraph('• 70% query latency reduction — Azure Synapse optimization (Keyrus)',s(fontSize=9,textColor=GRAY,spaceAfter=2)),
-            Paragraph('• 200+ business users served with self-service Power BI (Dataex)',s(fontSize=9,textColor=GRAY,spaceAfter=8)),
-            Paragraph('TECHNICAL SKILLS',s(fontSize=10,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=4)),
-            Paragraph('Power BI (DAX, PQuery, RLS, Tabular Editor) · Tableau · Looker · SQL · Python · Azure Synapse · BigQuery · Snowflake · Databricks · dbt · Airflow',s(fontSize=9,textColor=GRAY,spaceAfter=8)),
-            Paragraph('EXPERIENCE',s(fontSize=10,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=4)),
-            Paragraph('Dataex (2022–present) · Keyrus (2019–2022) · Coca-Cola (2018–2019) · TIM/OI (2007–2017)',s(fontSize=9,textColor=GRAY)),
+            Paragraph('USD 9M+ savings · 70% latency reduction · 200+ users · PL-300 · Tableau Specialist · MBA IBMEC',s(fontSize=9,textColor=GRAY,spaceAfter=8)),
+            Paragraph('STACK: Power BI · Tableau · SQL · Python · Azure Synapse · BigQuery · Snowflake · Databricks · dbt',s(fontSize=9,textColor=GRAY)),
           ])
           print(f'CV: {os.path.getsize(cv):,}')
           "
 
-      - name: "🌍 Autonomous Hunt — All Platforms"
+      - name: "🏢 Greenhouse — 80+ boards"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
+          DICE_PASSWORD: ${{ secrets.DICE_PASSWORD }}
+        run: python3 .github/scripts/ai_adaptive_hunter_v7.py
+
+      - name: "🔧 Platform Fixer — Dice/ROK/Jobright/Indeed/LinkedIn/Wellfound/ZipRecruiter"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -60,7 +65,15 @@ jobs:
           DICE_PASSWORD: ${{ secrets.DICE_PASSWORD }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python3 .github/scripts/master_hunter_v3.py
+        run: python3 .github/scripts/platform_fixer.py
+
+      - name: "🇧🇷 Gupy Brasil"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
+          DICE_PASSWORD: ${{ secrets.DICE_PASSWORD }}
+        run: python3 .github/scripts/brasil_hunter.py
 
       - name: Commit
         run: |
