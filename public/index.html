@@ -2,334 +2,800 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ψ psicologia.doc — Hub Principal V41</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800;900&family=DM+Mono:wght@400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>psicologia.doc — Ecossistema Completo de Conteúdo Comportamental</title>
+<meta name="description" content="Plataforma autônoma de pesquisa em comportamento humano: live 24/7 em 12 idiomas, blog SEO, audiobooks, livros, quizzes, comunidade. Harvard, Yale, Princeton, Berkeley.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Georgia&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#06060F;--s1:#0E0E1A;--s2:#12121F;
-  --acc:#7C3AED;--crim:#E11D48;--gold:#F59E0B;--teal:#0D9488;--grn:#10B981;--mist:#C4B5FD;
-  --t1:#E2E8F0;--t2:#94A3B8;--t3:#475569;--bd:rgba(255,255,255,.07)
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--t1);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(ellipse 70% 50% at 10% 20%,rgba(124,58,237,.09),transparent),
-    radial-gradient(ellipse 50% 40% at 90% 80%,rgba(225,29,72,.06),transparent)}
-
-/* ── HEADER FIXO ── */
-.hdr{position:sticky;top:0;z-index:200;background:rgba(6,6,15,.97);backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--bd);padding:0 28px;height:60px;display:flex;align-items:center;gap:16px}
-.logo{font-size:26px;font-weight:900;color:var(--mist);font-family:serif;letter-spacing:-1px}
-.logo-txt{font-size:15px;font-weight:800;color:var(--t1)}
-.logo-txt span{color:var(--mist)}
-.dot-live{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.5)}}
-.hdr-stats{display:flex;gap:12px;margin-left:auto;align-items:center}
-.hstat{font-size:10px;color:var(--t3);font-family:"DM Mono",monospace;text-align:center}
-.hstat strong{display:block;font-size:16px;font-weight:800;color:var(--t1)}
-.hdr-sep{width:1px;height:24px;background:var(--bd)}
-
-/* ── HERO ── */
-.hero{position:relative;z-index:1;text-align:center;padding:48px 24px 40px;border-bottom:1px solid var(--bd)}
-.hero-psi{font-size:80px;font-weight:900;color:var(--mist);font-family:serif;opacity:.12;
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;user-select:none}
-.hero h1{font-size:clamp(32px,5vw,56px);font-weight:900;letter-spacing:-2.5px;color:#F0F4FF;line-height:1.05;position:relative}
-.hero h1 em{font-style:normal;color:var(--mist)}
-.hero p{font-size:14px;color:var(--t2);margin-top:10px;position:relative;max-width:560px;margin-left:auto;margin-right:auto}
-.hero-kpis{display:flex;justify-content:center;gap:28px;margin-top:20px;flex-wrap:wrap;position:relative}
-.kpi{text-align:center}
-.kpi-n{font-size:28px;font-weight:800}
-.kpi-l{font-size:9px;color:var(--t3);font-family:"DM Mono",monospace;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
-
-/* ── ALERTA ── */
-.alert-crit{background:rgba(225,29,72,.07);border:1px solid rgba(225,29,72,.2);border-radius:12px;
-  padding:12px 20px;margin:20px 24px;font-size:12px;color:#FCA5A5;line-height:1.7;position:relative;z-index:1}
-.alert-crit strong{color:#fff}
-
-/* ── WRAPPER ── */
-.wrap{max-width:1400px;margin:0 auto;padding:28px 24px 80px;position:relative;z-index:1}
-
-/* ── SECTION ── */
-.sec{margin-bottom:40px}
-.sec-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.sec-label{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--t3);font-family:"DM Mono",monospace;white-space:nowrap}
-.sec-line{flex:1;height:1px;background:var(--bd)}
-
-/* ── GRIDS ── */
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* ── CARDS ── */
-.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;
-  text-decoration:none;color:inherit;display:block;transition:.2s;position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;inset:0;opacity:0;transition:.2s;background:linear-gradient(135deg,rgba(124,58,237,.06),transparent)}
-.card:hover{border-color:rgba(124,58,237,.4);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
-.card:hover::before{opacity:1}
-.card.r:hover{border-color:rgba(225,29,72,.4)}.card.r::before{background:linear-gradient(135deg,rgba(225,29,72,.06),transparent)}
-.card.g:hover{border-color:rgba(245,158,11,.4)}.card.g::before{background:linear-gradient(135deg,rgba(245,158,11,.06),transparent)}
-.card.t:hover{border-color:rgba(13,148,136,.4)}.card.t::before{background:linear-gradient(135deg,rgba(13,148,136,.06),transparent)}
-.card.grn:hover{border-color:rgba(16,185,129,.4)}.card.grn::before{background:linear-gradient(135deg,rgba(16,185,129,.06),transparent)}
-.card-icon{font-size:22px;margin-bottom:9px;display:block}
-.card-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px}
-.card-desc{font-size:11px;color:var(--t2);line-height:1.5}
-.card-badge{position:absolute;top:11px;right:11px;font-size:8px;font-family:"DM Mono",monospace;padding:2px 7px;border-radius:10px}
-.b-live{background:rgba(16,185,129,.15);color:var(--grn);border:1px solid rgba(16,185,129,.3)}
-.b-new{background:rgba(124,58,237,.2);color:var(--mist);border:1px solid rgba(124,58,237,.3)}
-.b-hot{background:rgba(225,29,72,.15);color:var(--crim);border:1px solid rgba(225,29,72,.3)}
-.b-gold{background:rgba(245,158,11,.15);color:var(--gold);border:1px solid rgba(245,158,11,.3)}
-.mini-links{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.mini{font-size:8px;font-family:"DM Mono",monospace;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:4px;padding:2px 6px;color:var(--t3)}
-
-/* CARD DESTAQUE */
-.card-main{background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(225,29,72,.1));border:1px solid rgba(124,58,237,.35);border-radius:16px;padding:20px}
-
-@media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
-@media(max-width:500px){.g4,.g3,.g2{grid-template-columns:1fr}}
+  :root {
+    --bg: #06060F;
+    --bg-card: #0E0E1A;
+    --bg-elev: #15152A;
+    --purple: #7C3AED;
+    --purple-deep: #5B21B6;
+    --red: #E11D48;
+    --amber: #F59E0B;
+    --teal: #0D9488;
+    --text: #F4F4F5;
+    --text-dim: #A1A1AA;
+    --border: #27272A;
+  }
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  h1,h2,h3,h4 { font-family: Georgia, serif; line-height: 1.2; font-weight: 400; }
+  code, .mono { font-family: 'DM Mono', monospace; }
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 4rem 1.5rem; background: radial-gradient(circle at 50% 30%, rgba(124, 58, 237, 0.15), transparent 60%); position: relative; }
+  .hero .psi { font-size: 5rem; color: var(--purple); margin-bottom: 0.5rem; }
+  .hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); margin-bottom: 1rem; }
+  .hero .tagline { font-size: 1.25rem; color: var(--text-dim); max-width: 750px; margin-bottom: 3rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; width: 100%; margin-top: 2rem; }
+  .stat { text-align: center; }
+  .stat .n { font-family: Georgia; font-size: 2.5rem; color: var(--amber); display: block; }
+  .stat .l { font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .scroll-down { position: absolute; bottom: 2rem; color: var(--text-dim); font-size: 0.85rem; }
+  section { padding: 5rem 1.5rem; max-width: 1280px; margin: 0 auto; }
+  .section-label { color: var(--purple); font-family: 'DM Mono'; font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .section-title { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1rem; }
+  .section-lead { color: var(--text-dim); font-size: 1.1rem; max-width: 750px; margin-bottom: 3rem; }
+  .grid { display: grid; gap: 1.5rem; }
+  .grid-2 { grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); }
+  .grid-3 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .grid-4 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; transition: border-color 0.2s; }
+  .card:hover { border-color: var(--purple); }
+  .card-title { font-family: Georgia; font-size: 1.25rem; margin-bottom: 0.5rem; }
+  .card-meta { font-family: 'DM Mono'; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .card-desc { color: var(--text-dim); font-size: 0.95rem; }
+  .card-price { font-family: Georgia; font-size: 1.5rem; color: var(--amber); margin-top: 0.75rem; }
+  .badge { display: inline-block; background: var(--bg-elev); color: var(--text-dim); padding: 0.2rem 0.6rem; border-radius: 4px; font-family: 'DM Mono'; font-size: 0.7rem; margin-right: 0.4rem; margin-bottom: 0.4rem; }
+  .badge-purple { background: rgba(124, 58, 237, 0.2); color: #C4B5FD; }
+  .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--amber); }
+  .badge-red { background: rgba(225, 29, 72, 0.15); color: #FCA5A5; }
+  .badge-teal { background: rgba(13, 148, 136, 0.15); color: #5EEAD4; }
+  .badge-live { background: var(--red); color: white; padding: 0.25rem 0.6rem; border-radius: 4px; font-family: 'DM Mono'; font-size: 0.7rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .pillars { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 2rem; }
+  .pillar-tag { padding: 0.6rem 1.2rem; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 999px; font-size: 0.9rem; font-family: 'DM Mono'; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { font-family: 'DM Mono'; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
+  tbody tr:hover { background: var(--bg-elev); }
+  .stat-tile { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; text-align: center; }
+  .stat-tile .n { font-family: Georgia; font-size: 2rem; color: var(--amber); display: block; line-height: 1; margin-bottom: 0.5rem; }
+  .stat-tile .l { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .pipeline { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; }
+  .pipeline-step { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: start; }
+  .pipeline-num { background: var(--purple); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono'; font-weight: 600; flex-shrink: 0; }
+  .pipeline-text strong { color: var(--text); display: block; margin-bottom: 0.25rem; }
+  .pipeline-text { color: var(--text-dim); }
+  .crisis { background: linear-gradient(135deg, rgba(225, 29, 72, 0.1), rgba(124, 58, 237, 0.08)); border: 1px solid var(--red); border-radius: 8px; padding: 2rem; }
+  .crisis h3 { color: #FCA5A5; }
+  .crisis .channels { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+  .crisis .channel strong { display: block; font-family: Georgia; color: white; font-size: 1.1rem; }
+  footer { padding: 3rem 1.5rem; text-align: center; color: var(--text-dim); border-top: 1px solid var(--border); font-size: 0.85rem; }
+  footer a { color: var(--purple); text-decoration: none; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+  .channel-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  @media (max-width: 768px) { .channel-hero { grid-template-columns: 1fr; } .hero .psi { font-size: 3rem; } }
+  ul.clean { list-style: none; padding: 0; }
+  ul.clean li { padding: 0.6rem 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  ul.clean li:last-child { border-bottom: none; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+  .price-tier { padding: 0.5rem 0; }
+  .price-tier-label { font-family: 'DM Mono'; font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; }
+  .channel-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; position: relative; }
+  .channel-card .flag { font-size: 2.5rem; margin-bottom: 0.5rem; display: block; }
+  .channel-card .lang { font-family: 'DM Mono'; font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.15em; }
+  .channel-card .name { font-family: Georgia; font-size: 1.1rem; margin: 0.5rem 0 0.25rem; min-height: 2.6rem; }
+  .channel-card .handle { font-family: 'DM Mono'; font-size: 0.75rem; color: var(--purple); margin-bottom: 1rem; word-break: break-all; }
+  .channel-card .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .channel-card .metric-n { font-family: Georgia; font-size: 1.3rem; color: var(--amber); }
+  .channel-card .metric-l { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--amber); padding: 0.2rem 0.6rem; border-radius: 4px; font-family: 'DM Mono'; font-size: 0.65rem; }
+  .status-active { background: rgba(13, 148, 136, 0.15); color: #5EEAD4; padding: 0.2rem 0.6rem; border-radius: 4px; font-family: 'DM Mono'; font-size: 0.65rem; }
+  .live-banner { background: linear-gradient(135deg, rgba(225, 29, 72, 0.15), rgba(124, 58, 237, 0.1)); border: 1px solid var(--red); border-radius: 8px; padding: 2rem; margin-bottom: 3rem; }
+  .live-banner h3 { color: white; font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .live-banner p { color: var(--text-dim); }
+  .live-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .live-stats .stat-mini { text-align: center; }
+  .live-stats .n { font-family: Georgia; color: white; font-size: 1.75rem; display: block; }
+  .live-stats .l { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .note { background: var(--bg-elev); border-left: 3px solid var(--amber); padding: 1rem 1.5rem; border-radius: 4px; color: var(--text-dim); margin: 2rem 0; font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
-<header class="hdr">
-  <span class="logo">ψ</span>
-  <span class="logo-txt">psicologia<em>.doc</em></span>
-  <span class="dot-live" title="Pipeline ativo 24/7"></span>
-  <span style="font-size:10px;color:var(--t3);font-family:'DM Mono',monospace" id="live-ts">ao vivo</span>
-  <div class="hdr-sep"></div>
-  <div class="hdr-stats">
-    <div class="hstat"><strong id="h-fila" style="color:var(--mist)">-</strong>na fila</div>
-    <div class="hstat"><strong id="h-mp4" style="color:var(--crim)">16</strong>prontos</div>
-    <div class="hstat"><strong style="color:var(--gold)">47</strong>thumbs</div>
-    <div class="hstat"><strong style="color:var(--teal)" id="h-crons">50</strong>crons</div>
+<header class="hero">
+  <div class="psi">ψ</div>
+  <h1>psicologia.doc</h1>
+  <p class="tagline">Pesquisa em comportamento humano de Harvard, Yale, Princeton, Berkeley — comunicada ao público leigo. Plataforma autônoma multilíngue com live 24/7 em 12 idiomas, blog SEO, audiobooks, livros, quizzes e comunidade. Zero IA paga.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="n">12</span><span class="l">Idiomas / Países</span></div>
+    <div class="stat"><span class="n">11</span><span class="l">Blog Posts Premium</span></div>
+    <div class="stat"><span class="n">54</span><span class="l">SEO Keywords</span></div>
+    <div class="stat"><span class="n">349K</span><span class="l">Visits/Mês Potencial</span></div>
+    <div class="stat"><span class="n">15</span><span class="l">Produtos Digitais</span></div>
+    <div class="stat"><span class="n">37K</span><span class="l">APIs Brain</span></div>
   </div>
-  <div class="hdr-sep"></div>
-  <span style="font-size:9px;color:var(--t3);font-family:'DM Mono',monospace">@psidanielacoelho</span>
+  <p class="scroll-down">↓ explore o ecossistema completo</p>
 </header>
 
-<!-- ── HERO ── -->
-<div class="hero">
-  <div class="hero-psi">ψ</div>
-  <h1>ψ psicologia<em>.doc</em></h1>
-  <p>Pipeline autônomo 24/7 · Brand kit completo · 16 vídeos prontos para publicar · $0/mês em IAs</p>
-  <div class="hero-kpis">
-    <div class="kpi"><div class="kpi-n" id="kq" style="color:var(--mist)">467</div><div class="kpi-l">na fila LLM</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--crim)">16</div><div class="kpi-l">MP4 prontos</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--gold)">47</div><div class="kpi-l">thumbnails</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--teal)">50</div><div class="kpi-l">crons ativos</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--grn)">24</div><div class="kpi-l">páginas live</div></div>
-    <div class="kpi"><div class="kpi-n" style="color:var(--mist)">30</div><div class="kpi-l">hooks virais</div></div>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 01. CANAL OFICIAL + LIVE 24/7 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="canal">
+  <p class="section-label">01 — Canal Oficial Ativo</p>
+  <h2 class="section-title">@psidanicoelho · ψ · Live 24/7</h2>
+  <p class="section-lead">Canal principal em PT-BR com livestream contínua + biblioteca de 15 vídeos publicados. Fase 1 de lançamento (0→1K inscritos). YouTube Partner Program threshold: 1K subs + 4K watch hours.</p>
+
+  <div class="live-banner">
+    <span class="badge-live">● AO VIVO 24/7</span>
+    <h3 style="margin-top: 1rem;">🔴 528Hz SONO | Ansiedade e Narcisismo | Psicologia AO VIVO</h3>
+    <p>Trilha sonora 528Hz contínua com sobreposições de research em formato de podcast. Black Screen v3 — economia de banda + retenção máxima de audiência overnight.</p>
+    <div class="live-stats">
+      <div class="stat-mini"><span class="n">15</span><span class="l">Vídeos publicados</span></div>
+      <div class="stat-mini"><span class="n">0</span><span class="l">Inscritos atuais</span></div>
+      <div class="stat-mini"><span class="n">1.000</span><span class="l">Meta Fase 1</span></div>
+      <div class="stat-mini"><span class="n">4.000h</span><span class="l">Watch hours alvo</span></div>
+    </div>
+    <p style="margin-top: 1.5rem; font-size: 0.85rem;">Último snapshot: 11/mai/2026 · Fonte: token_ativado_aguardando_quota_renovar</p>
   </div>
-</div>
 
-<!-- ── ALERTA ── -->
-<div class="alert-crit">
-  <strong>🔴 Ações críticas para crescimento imediato:</strong>
-  1. <a href="/publicar.html" style="color:var(--gold);font-weight:700">Publicar 16 vídeos</a> → GitHub Actions → youtube-publisher.yml →
-  2. Deletar ~62 orphan EFs (Supabase Dashboard) →
-  3. <a href="/growth.html" style="color:var(--gold)">Google Discovery Ads R$250/mês</a>: apego ansioso + gaslighting →
-  4. <a href="/brand.html" style="color:var(--gold)">Upload banner</a> YouTube Studio →
-  5. OAuth Meta+TikTok (SETUP.md)
-</div>
+  <div class="channel-hero">
+    <div>
+      <div class="card">
+        <h3 class="card-title">Canal Oficial</h3>
+        <p class="card-meta">YouTube · status: active</p>
+        <ul class="clean">
+          <li><strong>Nome</strong><span>Psi Daniela Coelho</span></li>
+          <li><strong>Handle</strong><span><a href="https://youtube.com/@psidanicoelho" style="color: var(--purple); text-decoration: none;">@psidanicoelho</a></span></li>
+          <li><strong>Email</strong><span class="mono" style="font-size: 0.8rem;">tafita81@gmail.com</span></li>
+          <li><strong>Channel ID</strong><span class="mono" style="font-size: 0.75rem;">UCSH63tBfY6wEIdkC4u4zKdg</span></li>
+          <li><strong>Idioma padrão</strong><span>pt-BR</span></li>
+          <li><strong>Símbolo</strong><span style="font-family: Georgia; font-size: 1.5rem;">ψ</span></li>
+        </ul>
+        <p class="card-desc" style="margin-top: 1rem;">"Psicologia para quem quer se entender melhor. Conteúdo educacional sobre relacionamentos, trauma, ansiedade e autoconhecimento."</p>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-family: Georgia; font-size: 1.5rem; margin-bottom: 1rem;">Roadmap de 5 fases</h3>
+      <div class="pipeline">
+        <div class="pipeline-step"><div class="pipeline-num">1</div><div class="pipeline-text"><strong>Lançamento Agressivo (30 dias)</strong>1k subs · 1k watch hours · YPP req #1 · ← FASE ATUAL</div></div>
+        <div class="pipeline-step"><div class="pipeline-num">2</div><div class="pipeline-text"><strong>Crescimento (60 dias)</strong>10k subs · 4k watch hours · MONETIZA</div></div>
+        <div class="pipeline-step"><div class="pipeline-num">3</div><div class="pipeline-text"><strong>Otimização (90 dias)</strong>50k subs · AdSense $300-800/mês</div></div>
+        <div class="pipeline-step"><div class="pipeline-num">4</div><div class="pipeline-text"><strong>Escala Internacional (180d)</strong>250k subs · auto-dubbing PT→EN/ES · $2-5K/mês</div></div>
+        <div class="pipeline-step"><div class="pipeline-num">5</div><div class="pipeline-text"><strong>Empire (365 dias)</strong>1M subs · $10k+/mês potencial</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<div class="wrap">
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 02. IMPÉRIO MULTILÍNGUE 24/7 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="imperio">
+  <p class="section-label">02 — Império Multilíngue YouTube</p>
+  <h2 class="section-title">12 canais · 12 idiomas · 4.404M de população alcançável</h2>
+  <p class="section-lead">Replicação do canal mãe em 12 idiomas com livestream 24/7 dedicada por país. Cada canal otimizado para o CPM regional, idioma local e título 528Hz. Volume agregado de busca por "528Hz" em todos os idiomas: <strong>84M buscas/mês</strong>.</p>
 
-  <!-- 🚀 PUBLICAÇÃO IMEDIATA -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">🚀 Publicação — Ação Imediata</div><div class="sec-line"></div></div>
-    <div class="g3">
-      <a class="card r card-main" href="/publicar.html"><span class="card-badge b-hot">16 PRONTOS</span>
-        <span class="card-icon">🚀</span>
-        <div class="card-title">Publicar Vídeos Agora</div>
-        <div class="card-desc">16 MP4s com SEO 93–99 aguardando publicação. Viral score até 7.31% CTR. Canal UCyCkIpsVgME9yCj_oXJFheA</div></a>
-      <a class="card g" href="/videos-prontos.html"><span class="card-badge b-live">AUTO</span>
-        <span class="card-icon">🎬</span>
-        <div class="card-title">Galeria de Vídeos</div>
-        <div class="card-desc">Todos os MP4 gerados · preview HTML5 · download · status publicação. Atualiza a cada 1h.</div></a>
-      <a class="card t" href="/calendario.html">
-        <span class="card-icon">📅</span>
-        <div class="card-title">Calendário</div>
-        <div class="card-desc">Horários pico BR · Ter/Qui 19h30 · schedule 4 semanas · 5 plataformas</div></a>
+  <div class="note">
+    <strong>Status:</strong> 11 dos 12 canais com <span class="status-pending">pending_creation</span> — credenciais OAuth pendentes. Canal PT-BR (Daniela Coelho) com <span class="status-active">active</span>. Token YouTube principal expirou — necessária reativação de OAuth para retomar coleta de stats em tempo real.
+  </div>
+
+  <div class="grid grid-3">
+    <div class="channel-card">
+      <span class="flag">🇺🇸</span>
+      <span class="lang">EN · USA / UK / AU / CA</span>
+      <div class="name">Psychology Frequencies</div>
+      <div class="handle">@psychologyfrequencies</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$28</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">450M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">22M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇧🇷</span>
+      <span class="lang">PT · Brasil</span>
+      <div class="name">Daniela Coelho</div>
+      <div class="handle">@psidanicoelho</div>
+      <span class="status-active">active</span> <span class="badge-live" style="margin-left: 0.5rem;">● LIVE</span>
+      <div class="metrics">
+        <div><div class="metric-n">$7</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">215M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">6M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">15</div><div class="metric-l">Vídeos</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇪🇸</span>
+      <span class="lang">ES · México / España</span>
+      <div class="name">Psicología Frecuencias</div>
+      <div class="handle">@psicologiafrecuencias</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$9</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">500M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">9M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇩🇪</span>
+      <span class="lang">DE · Deutschland</span>
+      <div class="name">Psychologie Frequenzen</div>
+      <div class="handle">@psychologiefrequenzen</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$18</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">84M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">4M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇫🇷</span>
+      <span class="lang">FR · France</span>
+      <div class="name">Psychologie Fréquences</div>
+      <div class="handle">@psychologiefrequences</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$14</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">68M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">3M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇮🇹</span>
+      <span class="lang">IT · Italia</span>
+      <div class="name">Psicologia Frequenze</div>
+      <div class="handle">@psicologiafrequenze</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$12</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">60M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">2M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇯🇵</span>
+      <span class="lang">JA · Japan</span>
+      <div class="name">サイコロジー周波数</div>
+      <div class="handle">@psychfreqjp</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$15</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">125M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">5M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇰🇷</span>
+      <span class="lang">KO · Korea</span>
+      <div class="name">심리학 주파수</div>
+      <div class="handle">@psychfreqkr</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$12</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">52M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">3M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇸🇦</span>
+      <span class="lang">AR · Arabia / MENA</span>
+      <div class="name">تردد علم النفس</div>
+      <div class="handle">@psychfreqar</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$6</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">450M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">4M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇮🇳</span>
+      <span class="lang">HI · India</span>
+      <div class="name">मनोविज्ञान आवृत्ति</div>
+      <div class="handle">@psychfreqhi</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$4</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">1.4B</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">15M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇷🇺</span>
+      <span class="lang">RU · Russia / CIS</span>
+      <div class="name">Психология Частот</div>
+      <div class="handle">@psychfreqru</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$5</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">200M</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">3M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
+    </div>
+
+    <div class="channel-card">
+      <span class="flag">🇨🇳</span>
+      <span class="lang">ZH · China / Taiwan</span>
+      <div class="name">心理学频率</div>
+      <div class="handle">@psychfreqzh</div>
+      <span class="status-pending">pending_creation</span>
+      <div class="metrics">
+        <div><div class="metric-n">$10</div><div class="metric-l">CPM USD</div></div>
+        <div><div class="metric-n">1.4B</div><div class="metric-l">População</div></div>
+        <div><div class="metric-n">8M</div><div class="metric-l">528Hz/mês</div></div>
+        <div><div class="metric-n">★★★★</div><div class="metric-l">Prioridade</div></div>
+      </div>
     </div>
   </div>
 
-  <!-- 🧠 PIPELINE & CONTROLE -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">🧠 Pipeline & Controle Central</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card" href="/comando.html"><span class="card-badge b-live">LIVE</span>
-        <span class="card-icon">🧠</span>
-        <div class="card-title">Cérebro Autônomo</div>
-        <div class="card-desc">Pipeline principal · gate quântico · ações críticas · orquestrador V41</div></a>
-      <a class="card" href="/monitor.html"><span class="card-badge b-live">REAL-TIME</span>
-        <span class="card-icon">📊</span>
-        <div class="card-title">Monitor</div>
-        <div class="card-desc">Status em tempo real · flow do pipeline · log de atividade · 50 crons</div></a>
-      <a class="card" href="/producao.html">
-        <span class="card-icon">⚙️</span>
-        <div class="card-title">Produção</div>
-        <div class="card-desc">Status render · TTS · geração de scripts · fila LLM · qualidade</div></a>
-      <a class="card" href="/qg.html">
-        <span class="card-icon">🎯</span>
-        <div class="card-title">Quartel General</div>
-        <div class="card-desc">QG V41 · todas as operações numa tela · métricas · cadeia LLM</div></a>
+  <hr style="margin: 3rem 0;">
+
+  <h3 style="font-family: Georgia; font-size: 1.5rem; margin-bottom: 1rem;">Receita potencial agregada (worst case por canal)</h3>
+  <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Estimativa baseada em apenas 0.05% de penetração da busca mensal "528Hz" × CPM × 10 min de watch médio. Não inclui produtos digitais, affiliate, sponsorships ou shorts fund.</p>
+  <table>
+    <thead><tr><th>Idioma</th><th>Buscas 528Hz/mês</th><th>0.05% penetração</th><th>CPM</th><th>Receita estimada/mês (USD)</th></tr></thead>
+    <tbody>
+      <tr><td>🇺🇸 EN</td><td>22M</td><td>11.000 views</td><td>$28</td><td><strong style="color: var(--amber);">$ 308</strong></td></tr>
+      <tr><td>🇮🇳 HI</td><td>15M</td><td>7.500 views</td><td>$4</td><td>$ 30</td></tr>
+      <tr><td>🇪🇸 ES</td><td>9M</td><td>4.500 views</td><td>$9</td><td>$ 41</td></tr>
+      <tr><td>🇨🇳 ZH</td><td>8M</td><td>4.000 views</td><td>$10</td><td>$ 40</td></tr>
+      <tr><td>🇧🇷 PT</td><td>6M</td><td>3.000 views</td><td>$7</td><td>$ 21</td></tr>
+      <tr><td>🇯🇵 JA</td><td>5M</td><td>2.500 views</td><td>$15</td><td>$ 38</td></tr>
+      <tr><td>🇩🇪 DE</td><td>4M</td><td>2.000 views</td><td>$18</td><td>$ 36</td></tr>
+      <tr><td>🇸🇦 AR</td><td>4M</td><td>2.000 views</td><td>$6</td><td>$ 12</td></tr>
+      <tr><td>🇫🇷 FR</td><td>3M</td><td>1.500 views</td><td>$14</td><td>$ 21</td></tr>
+      <tr><td>🇰🇷 KO</td><td>3M</td><td>1.500 views</td><td>$12</td><td>$ 18</td></tr>
+      <tr><td>🇷🇺 RU</td><td>3M</td><td>1.500 views</td><td>$5</td><td>$ 8</td></tr>
+      <tr><td>🇮🇹 IT</td><td>2M</td><td>1.000 views</td><td>$12</td><td>$ 12</td></tr>
+      <tr style="background: var(--bg-elev);"><td colspan="4"><strong>TOTAL agregado worst case (apenas AdSense)</strong></td><td><strong style="color: var(--amber); font-size: 1.1rem;">$ 585/mês</strong></td></tr>
+      <tr style="background: var(--bg-elev);"><td colspan="4"><strong>Realista (0.5% penetração)</strong></td><td><strong style="color: var(--amber); font-size: 1.1rem;">$ 5.850/mês</strong></td></tr>
+      <tr style="background: var(--bg-elev);"><td colspan="4"><strong>Otimista (2% + produtos + affiliate)</strong></td><td><strong style="color: var(--amber); font-size: 1.1rem;">$ 35.000/mês</strong></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 03. SÉRIES NARRATIVAS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="series">
+  <p class="section-label">03 — Séries Narrativas</p>
+  <h2 class="section-title">10 séries · 245 episódios meta · cross-platform</h2>
+  <p class="section-lead">Conteúdo serializado distribuído em YouTube, Instagram, TikTok, Pinterest e WhatsApp. Cada série tem hook pattern, paleta de cor e hashtags próprias. Duração padrão 20 min (1.200s).</p>
+
+  <table>
+    <thead><tr><th>Série</th><th>Episódios meta</th><th>Distribuição</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Sombras da Família</strong></td><td>30</td><td>YT · IG · TT · Pinterest · WhatsApp</td></tr>
+      <tr><td><strong>Pessoas Perigosas</strong></td><td>30</td><td>YT · IG · TT · Pinterest · WhatsApp</td></tr>
+      <tr><td><strong>Decifre a Mente</strong></td><td>30</td><td>YT · IG · TT · Pinterest</td></tr>
+      <tr><td><strong>Amor e Sombra</strong></td><td>25</td><td>YT · IG · TT · Pinterest</td></tr>
+      <tr><td><strong>Comportamentos Invisíveis</strong></td><td>25</td><td>YT · IG · TT</td></tr>
+      <tr><td><strong>Sombras Interiores</strong></td><td>25</td><td>YT · IG · TT</td></tr>
+      <tr><td><strong>Kit Emergencial Emocional</strong></td><td>20</td><td>YT · IG · TT · Pinterest · WhatsApp</td></tr>
+      <tr><td><strong>Exaustão Invisível</strong></td><td>20</td><td>YT · IG · TT</td></tr>
+      <tr><td><strong>Libertação Mental</strong></td><td>20</td><td>YT · IG · TT</td></tr>
+      <tr><td><strong>Trauma Invisível</strong></td><td>20</td><td>YT · IG · TT</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 04. BENCHMARK -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="benchmark">
+  <p class="section-label">04 — Benchmark Concorrência</p>
+  <h2 class="section-title">5 top canais pesquisados como referência</h2>
+  <p class="section-lead">Análise de canais top com volume de subs e estratégia de conteúdo. Estes são os referenciais que guiam decisões de format, frequência e estilo.</p>
+
+  <table>
+    <thead><tr><th>Canal</th><th>Categoria</th><th>Seguidores</th></tr></thead>
+    <tbody>
+      <tr><td><strong>psicologiaviral</strong></td><td>Psicologia internacional</td><td><span style="color: var(--amber);">8.000.000</span></td></tr>
+      <tr><td><strong>Me Poupe</strong></td><td>Finanças + psicologia BR</td><td>5.200.000</td></tr>
+      <tr><td><strong>Psicologia Na Prática</strong></td><td>Psicologia BR</td><td>4.500.000</td></tr>
+      <tr><td><strong>dr.alexandre.coimbra</strong></td><td>Psicologia BR</td><td>2.300.000</td></tr>
+      <tr><td><strong>Psychology Today</strong></td><td>Psicologia internacional</td><td>1.200.000</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 05. PERSONA -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="persona">
+  <p class="section-label">05 — Persona Pública</p>
+  <h2 class="section-title">Pesquisadora de Comportamento Humano</h2>
+  <p class="section-lead">A voz oficial do projeto é uma pesquisadora não-clínica. Conteúdo educacional baseado em evidência, nunca diagnóstico. 15 personagens narrativos rotacionados nos episódios.</p>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3 class="card-title">Identidade Editorial</h3>
+      <p class="card-meta">Diretrizes permanentes</p>
+      <p class="card-desc">Pesquisadora de comportamento humano. Comunica achados de Harvard, Yale, UC Berkeley, Princeton, Indiana, UCLA, Oregon e Purdue para o público leigo. Tom contemplativo, preciso, sem termos clínicos.</p>
+      <div class="tag-row" style="margin-top: 1rem;">
+        <span class="badge badge-purple">Tom contemplativo</span>
+        <span class="badge badge-purple">Evidence-based</span>
+        <span class="badge badge-purple">Não-diagnóstico</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">15 Personagens Narrativos</h3>
+      <p class="card-meta">Universo dramatúrgico</p>
+      <p class="card-desc">Lucas (26, protagonista), Sara (28), Dra. Ana (42, especialista), Marcos (34, antagonista), Julia (29, apoio), Pedro (cético), Clara (criança-self), Renata (autoridade-vilã), Gui (parceiro romântico), Maya (sábia anciã), Theo (adolescente), Bia (profissional ansiosa), Rafa (vilão charmoso), Vó (avó), e a apresentadora.</p>
     </div>
   </div>
+</section>
 
-  <!-- 🎨 BRAND KIT -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">🎨 Brand Kit & Visual Identity</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card" href="/brand.html"><span class="card-badge b-new">V1</span>
-        <span class="card-icon">🎨</span>
-        <div class="card-title">Brand Kit Completo</div>
-        <div class="card-desc">YouTube banner 2560×1440 · 4 thumbnails · 5 avatars · bios PT/EN/ES · paleta · regras</div>
-        <div class="mini-links"><span class="mini">banner</span><span class="mini">avatars</span><span class="mini">bios</span><span class="mini">cores</span></div></a>
-      <a class="card r" href="/thumbnail-gen.html">
-        <span class="card-icon">⚡</span>
-        <div class="card-title">Gerador de Thumbnails</div>
-        <div class="card-desc">5 estilos · editor ao vivo · download SVG/PNG 1280×720. Viral, Trauma, Gold, Apego</div></a>
-      <a class="card" href="/galeria-thumbnails.html"><span class="card-badge b-live">47</span>
-        <span class="card-icon">🖼️</span>
-        <div class="card-title">Galeria Thumbnails</div>
-        <div class="card-desc">47 thumbnails auto-gerados · filtro por tipo · download individual</div></a>
-      <a class="card t" href="/insta-templates.html">
-        <span class="card-icon">📸</span>
-        <div class="card-title">Templates Instagram</div>
-        <div class="card-desc">Post 1:1 · Reels 9:16 · Stories · 6 temas · editável ao vivo · download</div></a>
-    </div>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 06. BLOG SEO -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="blog">
+  <p class="section-label">06 — Blog SEO</p>
+  <h2 class="section-title">11 posts pillar premium + 43 em produção</h2>
+  <p class="section-lead">54 palavras-chave mapeadas com framework de engenharia reversa do top-3 do Google. Cada post cita pesquisador real (Bancroft, Malkin/Harvard, Carnes, Czeisler/Harvard, Kahneman/Princeton). 19K palavras produzidas. Volume total: 349K visitas/mês quando ranquear.</p>
+
+  <div class="pillars">
+    <span class="pillar-tag">🌙 Sono</span>
+    <span class="pillar-tag">👁 Narcisismo</span>
+    <span class="pillar-tag">🧠 Dark Psychology</span>
+    <span class="pillar-tag">🎭 Manipulação</span>
+    <span class="pillar-tag">💰 Psicologia do Dinheiro</span>
   </div>
 
-  <!-- 📈 SEO & CRESCIMENTO -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">📈 SEO, Viral & Crescimento</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card grn" href="/growth.html">
-        <span class="card-icon">📈</span>
-        <div class="card-title">Growth Tracker</div>
-        <div class="card-desc">Meta 1K subs · roadmap AdSense · fases 0→1K→10K→100K · R$250/mês ads</div></a>
-      <a class="card g" href="/seo-dashboard.html">
-        <span class="card-icon">🔍</span>
-        <div class="card-title">SEO Dashboard</div>
-        <div class="card-desc">Keywords PT/EN/ES · scores · checklist · projeção R$46K/mês</div></a>
-      <a class="card r" href="/viral.html">
-        <span class="card-icon">🔥</span>
-        <div class="card-title">Painel Viral</div>
-        <div class="card-desc">Ranking CTR · 30 hooks virais (score 95+) · 16 viral scores calculados</div></a>
-      <a class="card t" href="/setup-canal.html">
-        <span class="card-icon">📺</span>
-        <div class="card-title">Setup do Canal</div>
-        <div class="card-desc">Checklist completo YouTube Studio · Instagram · TikTok · todos os textos prontos</div></a>
+  <div class="grid grid-2">
+    <div class="card"><h3 class="card-title">How to Fall Asleep Fast: 7 Science-Backed Methods</h3><p class="card-meta">EN · Sono · 49.5K buscas/mês · 3200 palavras</p><p class="card-desc">Método Militar (Bud Winter, US Navy 1981), 4-7-8 (Andrew Weil), Polyvagal (Porges), Cognitive Shuffle (Beaudoin), Cooling Protocol (Van Someren).</p></div>
+    <div class="card"><h3 class="card-title">15 Emotional Abuse Signs Most People Miss</h3><p class="card-meta">EN · Manipulação · 27.1K buscas/mês · 3000 palavras</p><p class="card-desc">Framework de 28 anos de Lundy Bancroft, Patricia Evans, Jennifer Freyd (Oregon, DARVO). Plano de saída em 4 fases.</p></div>
+    <div class="card"><h3 class="card-title">Trauma Bonding: The 7 Stages</h3><p class="card-meta">EN · Dark Psychology · 22.2K buscas/mês · 3100 palavras</p><p class="card-desc">7 estágios de Patrick Carnes (1997). Neuroquímica: Skinner, Porges, Festinger. Timeline 1-2-5 de recovery.</p></div>
+    <div class="card"><h3 class="card-title">Como Lidar Com Narcisista: Pedra Cinza + Limites</h3><p class="card-meta">PT · Narcisismo · 4.4K buscas/mês · 3000 palavras</p><p class="card-desc">Método Pedra Cinza (Skylar 2012). Limites com consequência (Henry Cloud). DARVO (Freyd). Recovery 1-2-5 anos.</p></div>
+    <div class="card"><h3 class="card-title">Pessoas Tóxicas: 10 Sinais nas Primeiras 3 Semanas</h3><p class="card-meta">PT · Manipulação · 4.4K buscas/mês · 2900 palavras</p><p class="card-desc">Detecção precoce baseada em Karpman (1968), Northrup, Hassan. 10 sinais cronológicos.</p></div>
+    <div class="card"><h3 class="card-title">Como Dormir Rápido: 7 Métodos Científicos</h3><p class="card-meta">PT · Sono · 6.6K buscas/mês · 2700 palavras</p><p class="card-desc">Método Militar, 4-7-8, Embaralhamento Cognitivo, Intenção Paradoxal (Frankl), Resfriamento (Van Someren), Magnésio.</p></div>
+    <div class="card"><h3 class="card-title">Melatonina Dose Ideal: 0,3mg vs 5mg</h3><p class="card-meta">PT · Sono · 5.4K buscas/mês · 2700 palavras</p><p class="card-desc">Czeisler (Harvard) e Wurtman (MIT 2001). Quando NÃO tomar. Interações.</p></div>
+    <div class="card"><h3 class="card-title">Narcisista Encoberto: 7 Sinais Que Provam</h3><p class="card-meta">PT · Narcisismo · 3.6K buscas/mês · 1800 palavras</p><p class="card-desc">Pesquisa Craig Malkin (Harvard). Subtipo vulnerável vs grandioso. 7 sinais comportamentais.</p></div>
+    <div class="card"><h3 class="card-title">Covert Narcissist Signs (EN)</h3><p class="card-meta">EN · Narcisismo · 14.8K buscas/mês</p><p class="card-desc">Vulnerable narcissism (Pincus & Lukowitsky 2010). Framework Malkin.</p></div>
+    <div class="card"><h3 class="card-title">Loss Aversion: Why You Sell Winners</h3><p class="card-meta">EN · Money Psychology · 5.4K buscas/mês</p><p class="card-desc">Prospect theory (Kahneman & Tversky 1979). Ratio 2.25x. Endowment effect (Thaler).</p></div>
+    <div class="card"><h3 class="card-title">Manipulação Psicológica: 10 Técnicas</h3><p class="card-meta">PT · Dark Psychology · 2.9K buscas/mês</p><p class="card-desc">Love bombing, gaslighting, triangulação, DARVO, silent treatment, hoovering, future faking.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 07. FUNNELS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="funnels">
+  <p class="section-label">07 — Funnels de Vendas</p>
+  <h2 class="section-title">5 funis × 5 etapas · até R$ 158 ou $48 por comprador</h2>
+  <p class="section-lead">Cada funil: frontend (R$7-9 ou $5) → order bump → upsell 1 → upsell 2 → downsell. Conversão progressiva otimizada para tráfego frio do canal.</p>
+
+  <div class="grid grid-2">
+    <div class="card">
+      <h3 class="card-title">🇧🇷 Detector Narcisismo</h3>
+      <p class="card-meta">PT · narcisismo · até R$ 158</p>
+      <p class="card-desc">"Descubra em 7 minutos se você está em um relacionamento com um narcisista encoberto."</p>
+      <div style="margin-top: 1rem;">
+        <div class="price-tier"><span class="price-tier-label">FRONTEND</span> 5 Sinais — <strong>R$ 7</strong></div>
+        <div class="price-tier"><span class="price-tier-label">ORDER BUMP</span> Audiobook 28min — <strong>R$ 17</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 1</span> Livro Completo — <strong>R$ 27</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 2</span> Dark Psychology — <strong>R$ 67</strong></div>
+        <div class="price-tier"><span class="price-tier-label">DOWNSELL</span> Protocolo Sono — <strong>R$ 47</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">🇧🇷 Protocolo do Sono</h3>
+      <p class="card-meta">PT · sono · até R$ 158</p>
+      <p class="card-desc">"O método de 7 minutos que faz você dormir mesmo com a mente acelerada."</p>
+      <div style="margin-top: 1rem;">
+        <div class="price-tier"><span class="price-tier-label">FRONTEND</span> 4-7-8 mini — <strong>R$ 9</strong></div>
+        <div class="price-tier"><span class="price-tier-label">ORDER BUMP</span> Auto-hipnose 15min — <strong>R$ 19</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 1</span> Protocolo 30 dias — <strong>R$ 47</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 2</span> Dark Psychology — <strong>R$ 67</strong></div>
+        <div class="price-tier"><span class="price-tier-label">DOWNSELL</span> Narcisista Encoberto — <strong>R$ 27</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">🇧🇷 Dark Psychology</h3>
+      <p class="card-meta">PT · dark psychology · até R$ 158</p>
+      <p class="card-desc">"As 10 técnicas de manipulação psicológica que estão sendo usadas contra você."</p>
+      <div style="margin-top: 1rem;">
+        <div class="price-tier"><span class="price-tier-label">FRONTEND</span> 3 Técnicas — <strong>R$ 7</strong></div>
+        <div class="price-tier"><span class="price-tier-label">ORDER BUMP</span> Checklist 50 sinais — <strong>R$ 17</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 1</span> Livro 10 Técnicas — <strong>R$ 67</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 2</span> Protocolo Sono — <strong>R$ 47</strong></div>
+        <div class="price-tier"><span class="price-tier-label">DOWNSELL</span> Narcisista — <strong>R$ 27</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">🇺🇸 Covert Narcissist Decoder</h3>
+      <p class="card-meta">EN · narcissism · up to $48</p>
+      <p class="card-desc">"Discover in 7 Minutes if You Are in a Relationship with a Covert Narcissist."</p>
+      <div style="margin-top: 1rem;">
+        <div class="price-tier"><span class="price-tier-label">FRONTEND</span> 5 Signs — <strong>$5</strong></div>
+        <div class="price-tier"><span class="price-tier-label">ORDER BUMP</span> Audiobook 28min — <strong>$7</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 1</span> Complete Book — <strong>$9</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 2</span> Money Psychology — <strong>$17</strong></div>
+        <div class="price-tier"><span class="price-tier-label">DOWNSELL</span> Book 22% off — <strong>$7</strong></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">🇺🇸 Money Psychology</h3>
+      <p class="card-meta">EN · money · up to $51</p>
+      <p class="card-desc">"The 7 Hidden Biases That Are Costing You Hundreds of Thousands of Dollars."</p>
+      <div style="margin-top: 1rem;">
+        <div class="price-tier"><span class="price-tier-label">FRONTEND</span> 3 Biases — <strong>$5</strong></div>
+        <div class="price-tier"><span class="price-tier-label">ORDER BUMP</span> Override Worksheet — <strong>$9</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 1</span> Complete Book — <strong>$17</strong></div>
+        <div class="price-tier"><span class="price-tier-label">UPSELL 2</span> Covert Narcissist — <strong>$9</strong></div>
+        <div class="price-tier"><span class="price-tier-label">DOWNSELL</span> Money 35% off — <strong>$11</strong></div>
+      </div>
     </div>
   </div>
+</section>
 
-  <!-- 📚 CONTEÚDO -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">📚 Conteúdo & Séries</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card" href="/series.html">
-        <span class="card-icon">📚</span>
-        <div class="card-title">20 Séries · 200 Eps</div>
-        <div class="card-desc">Catálogo completo de conteúdo planejado · episódios por série</div></a>
-      <a class="card r" href="/galeria-quantica.html">
-        <span class="card-icon">🌌</span>
-        <div class="card-title">Galeria Quântica</div>
-        <div class="card-desc">Vídeos aprovados pelo gate quântico · qualidade validada</div></a>
-      <a class="card" href="/videos-analise.html">
-        <span class="card-icon">🔬</span>
-        <div class="card-title">Análise de Vídeos</div>
-        <div class="card-desc">Auditoria · scores · métricas por vídeo · análise de qualidade</div></a>
-      <a class="card t" href="/estrategia.html">
-        <span class="card-icon">🗺️</span>
-        <div class="card-title">Estratégia V41</div>
-        <div class="card-desc">Roadmap completo · fases de crescimento · monetização · metas</div></a>
-    </div>
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 08. PRODUTOS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="produtos">
+  <p class="section-label">08 — Catálogo de Produtos</p>
+  <h2 class="section-title">15 produtos digitais + 8 Gumroad + 8 livros KDP</h2>
+  <p class="section-lead">PDFs principais, mini-ebooks, audiobooks, workbooks. PT-BR + EN + ES. Plataformas: Gumroad, Hotmart, Amazon KDP.</p>
+
+  <h3 style="margin-bottom: 1rem; font-family: Georgia; font-size: 1.5rem;">PDFs Principais</h3>
+  <div class="grid grid-3" style="margin-bottom: 3rem;">
+    <div class="card"><h4 class="card-title">Os 7 Sinais Ocultos do Narcisista Encoberto</h4><p class="card-meta">PT · PDF · Gumroad</p><p class="card-price">R$ 27</p></div>
+    <div class="card"><h4 class="card-title">Manual Completo de Dark Psychology</h4><p class="card-meta">PT · PDF · Hotmart</p><p class="card-price">R$ 67</p></div>
+    <div class="card"><h4 class="card-title">O Protocolo do Sono Profundo</h4><p class="card-meta">PT · PDF · Berkeley + Stanford</p><p class="card-price">R$ 47</p></div>
+    <div class="card"><h4 class="card-title">7 Hidden Signs of a Covert Narcissist</h4><p class="card-meta">EN · PDF · Harvard-Backed</p><p class="card-price">$ 9</p></div>
+    <div class="card"><h4 class="card-title">Money Psychology Decoded</h4><p class="card-meta">EN · PDF · Gumroad</p><p class="card-price">$ 17</p></div>
   </div>
 
-  <!-- 🔗 DISTRIBUIÇÃO & ADMIN -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">🔗 Distribuição & Admin</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card" href="/conectores.html">
-        <span class="card-icon">🔗</span>
-        <div class="card-title">OAuth / Conectores</div>
-        <div class="card-desc">Meta · TikTok · Pinterest · YouTube · configurar tokens OAuth</div></a>
-      <a class="card" href="/daniela.html">
-        <span class="card-icon">👤</span>
-        <div class="card-title">Perfil Daniela</div>
-        <div class="card-desc">Bio oficial · @psidanielacoelho · redes sociais · links de todas as plataformas</div></a>
-      <a class="card" href="/admin.html">
-        <span class="card-icon">⚙️</span>
-        <div class="card-title">Admin</div>
-        <div class="card-desc">Configurações · ambiente · secrets · Supabase · Vercel</div></a>
-      <a class="card t" href="/estado-v37.html">
-        <span class="card-icon">📋</span>
-        <div class="card-title">Estado V37</div>
-        <div class="card-desc">Estado base do projeto · histórico · reference do build V37</div></a>
+  <h3 style="margin-bottom: 1rem; font-family: Georgia; font-size: 1.5rem;">Gumroad Premium (PT + EN + ES)</h3>
+  <table style="margin-bottom: 3rem;">
+    <thead><tr><th>Produto</th><th>Mercados</th><th>R$</th><th>USD</th></tr></thead>
+    <tbody>
+      <tr><td>Workbook Narcisismo Encoberto</td><td>USA·UK·AU·BR</td><td>R$ 97</td><td>$ 19</td></tr>
+      <tr><td>Guia Cura Apego Ansioso</td><td>USA·UK·BR</td><td>R$ 87</td><td>$ 17</td></tr>
+      <tr><td>Protocolo Sono 528Hz</td><td>USA·UK·AU·BR·MX</td><td>R$ 59</td><td>$ 12</td></tr>
+      <tr><td>Kit Regulação Emocional</td><td>USA·UK·AU·CA·BR</td><td>R$ 137</td><td>$ 27</td></tr>
+      <tr><td>Masterclass Fronteiras Emocionais</td><td>USA·UK·AU·CA</td><td>R$ 237</td><td>$ 47</td></tr>
+      <tr><td>Coach Entrevistas IA Vitalício</td><td>BR·USA</td><td>R$ 997</td><td>$ 197</td></tr>
+      <tr><td>Pack 150+ Prompts Power BI</td><td>BR·USA·PT</td><td>R$ 97</td><td>$ 19</td></tr>
+      <tr><td>Protocolo Foco TDAH 40Hz</td><td>USA·UK·AU·BR</td><td>R$ 77</td><td>$ 15</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-bottom: 1rem; font-family: Georgia; font-size: 1.5rem;">Amazon KDP — 8 livros prontos</h3>
+  <table>
+    <thead><tr><th>Título</th><th>Idioma</th><th>Mercado</th></tr></thead>
+    <tbody>
+      <tr><td>Covert Narcissism: The Hidden Threat in Relationships</td><td>EN</td><td>USA</td></tr>
+      <tr><td>Anxious Attachment: A Science-Based Recovery Guide</td><td>EN</td><td>USA</td></tr>
+      <tr><td>528Hz Sleep Protocol: Psychology of Deep Rest</td><td>EN</td><td>USA</td></tr>
+      <tr><td>Narcisismo Encoberto: Reconhecer e Se Libertar</td><td>PT</td><td>BR</td></tr>
+      <tr><td>Apego Ansioso: Guia de Cura Baseado em Ciência</td><td>PT</td><td>BR</td></tr>
+      <tr><td>TDAH e Foco: Protocolo 40Hz + Psicologia</td><td>PT</td><td>BR</td></tr>
+      <tr><td>Gaslighting: Reconocer y Recuperar tu Realidad</td><td>ES</td><td>MX</td></tr>
+      <tr><td>Apego Ansioso: Guía de Sanación Basada en Ciencia</td><td>ES</td><td>ES</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 09. QUIZZES + NURTURE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="quizzes">
+  <p class="section-label">09 — Quizzes & Nurture</p>
+  <h2 class="section-title">3 quizzes (20 perguntas, 12 resultados) + 8 sequências (64 mensagens)</h2>
+  <p class="section-lead">Lead magnets que segmentam até 12 perfis específicos. Cada resultado dispara sequência de 7 dias (email + WhatsApp) com CTA para o funil correspondente.</p>
+
+  <div class="grid grid-3">
+    <div class="card"><h3 class="card-title">🇧🇷 Qual tipo de manipulador?</h3><p class="card-meta">PT · 7 perguntas · 2 min</p><p class="card-desc">Resultados: Narcisista Encoberto, Gaslighter, Triádico Obscuro, Silenciador.</p></div>
+    <div class="card"><h3 class="card-title">🇧🇷 Por que você não dorme bem?</h3><p class="card-meta">PT · 6 perguntas · 2 min</p><p class="card-desc">Diagnóstico em 90s: onset, manutenção, qualidade ou cronotipo.</p></div>
+    <div class="card"><h3 class="card-title">🇺🇸 What Type of Manipulator?</h3><p class="card-meta">EN · 7 questions · 2 min</p><p class="card-desc">Same 4-result segmentation: Covert Narc, Gaslighter, Dark Triad, Silencer.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 10. AFFILIATE -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="affiliate">
+  <p class="section-label">10 — Programas Affiliate</p>
+  <h2 class="section-title">8 programas (BR + US) · 22 produtos cadastrados</h2>
+  <p class="section-lead">Monetização paralela. 5 programas com comissão recorrente: Hims, Headspace, Calm, Talkspace, Apoia.se.</p>
+
+  <table>
+    <thead><tr><th>Programa</th><th>Network</th><th>Região</th><th>Comissão</th><th>Recorrente</th></tr></thead>
+    <tbody>
+      <tr><td>Hotmart Brasil</td><td>hotmart_br</td><td>BR</td><td>30%</td><td>—</td></tr>
+      <tr><td>Amazon Associates Brasil</td><td>amazon_br</td><td>BR</td><td>5%</td><td>—</td></tr>
+      <tr><td>Amazon Associates US</td><td>amazon_us</td><td>US</td><td>4%</td><td>—</td></tr>
+      <tr><td>Hims (mental health/sleep)</td><td>awin</td><td>US</td><td>30%</td><td><span class="badge badge-amber">recorrente</span></td></tr>
+      <tr><td>Talkspace (therapy)</td><td>awin</td><td>US</td><td>50%</td><td>—</td></tr>
+      <tr><td>Headspace (meditation)</td><td>sharesale</td><td>US</td><td>25%</td><td><span class="badge badge-amber">recorrente</span></td></tr>
+      <tr><td>Calm (sleep meditation)</td><td>sharesale</td><td>US</td><td>30%</td><td><span class="badge badge-amber">recorrente</span></td></tr>
+      <tr><td>Apoia.se (memberships)</td><td>direct</td><td>BR</td><td>plataforma</td><td><span class="badge badge-amber">recorrente</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 11. VOICE STACK -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="voice">
+  <p class="section-label">11 — Stack TTS Multilíngue</p>
+  <h2 class="section-title">6 vozes · 4 engines · 100% gratuito (V36)</h2>
+  <p class="section-lead">Regra V36: zero IA paga. ElevenLabs / OpenAI / Kling / Claude API bloqueados. APIs permitidas: Groq, DeepSeek, Gemini, Nvidia. Resultado: $0/mês para até 150 vídeos/mês.</p>
+
+  <table>
+    <thead><tr><th>Idioma</th><th>Voz</th><th>Engine</th><th>Licença</th></tr></thead>
+    <tbody>
+      <tr><td>🇧🇷 PT</td><td>Lins (F)</td><td>XTTS-v2 local</td><td>Coqui Public Model</td></tr>
+      <tr><td>🇺🇸 EN</td><td>am_michael (M)</td><td>Kokoro-82M</td><td>Apache 2.0</td></tr>
+      <tr><td>🇪🇸 ES</td><td>Sharvard (F)</td><td>Piper TTS</td><td>MIT</td></tr>
+      <tr><td>🇫🇷 FR</td><td>Tom (M)</td><td>Piper TTS</td><td>MIT</td></tr>
+      <tr><td>🇩🇪 DE</td><td>Thorsten Emotional (M, 8 emoções)</td><td>Piper TTS</td><td>MIT</td></tr>
+      <tr><td>🇮🇹 IT</td><td>Paola (F)</td><td>Piper TTS</td><td>MIT</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 12. HOOKS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="hooks">
+  <p class="section-label">12 — Biblioteca de Hooks</p>
+  <h2 class="section-title">30 hooks virais · 12 fórmulas com referência</h2>
+  <p class="section-lead">Acervo curado com base em vídeos virais reais (Easy Actually, GENIAL ES). Cada hook tem score 0-100.</p>
+
+  <div class="grid grid-2">
+    <div class="card"><p class="card-meta">narcisismo · revelação · 98</p><p style="font-family: Georgia; font-size: 1.1rem;">"Existe um tipo de abuso que não deixa marca visível — e é o mais difícil de reconhecer."</p></div>
+    <div class="card"><p class="card-meta">trauma · revelação · 98</p><p style="font-family: Georgia; font-size: 1.1rem;">"A maioria das pessoas não sabe que tem trauma. Elas chamam isso de personalidade."</p></div>
+    <div class="card"><p class="card-meta">trauma · provocação · 97</p><p style="font-family: Georgia; font-size: 1.1rem;">"Você nunca se recuperou — você apenas aprendeu a funcionar com a dor."</p></div>
+    <div class="card"><p class="card-meta">apego_ansioso · 97</p><p style="font-family: Georgia; font-size: 1.1rem;">"Você checa o celular esperando uma mensagem que vai confirmar que tudo está bem — isso tem um nome."</p></div>
+    <div class="card"><p class="card-meta">narcisismo · 97</p><p style="font-family: Georgia; font-size: 1.1rem;">"Há pessoas que saem de relacionamentos e levam cicatrizes que médico nenhum consegue identificar."</p></div>
+    <div class="card"><p class="card-meta">dinheiro · 96</p><p style="font-family: Georgia; font-size: 1.1rem;">"Por que pessoas esforçadas e inteligentes continuam sem dinheiro — a resposta é psicológica."</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 13. BRAIN -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="brain">
+  <p class="section-label">13 — Cérebro Autônomo</p>
+  <h2 class="section-title">37.431 APIs no quantum brain</h2>
+  <p class="section-lead">Estoque vivo de fontes, contextos e padrões consultáveis. Alimentado por 14 GitHub Actions horárias. Meta: 40K APIs.</p>
+
+  <div class="grid grid-4">
+    <div class="stat-tile"><span class="n">37.431</span><span class="l">APIs cadastradas</span></div>
+    <div class="stat-tile"><span class="n">11.805</span><span class="l">Logs de aprendizado</span></div>
+    <div class="stat-tile"><span class="n">4.748</span><span class="l">Eternal brain history</span></div>
+    <div class="stat-tile"><span class="n">3.481</span><span class="l">Brain learnings</span></div>
+    <div class="stat-tile"><span class="n">2.213</span><span class="l">Quality evaluations</span></div>
+    <div class="stat-tile"><span class="n">1.915</span><span class="l">Brain memory</span></div>
+    <div class="stat-tile"><span class="n">1.770</span><span class="l">LLM request queue</span></div>
+    <div class="stat-tile"><span class="n">774</span><span class="l">IA cache</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 14. CONTEÚDO -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="conteudo">
+  <p class="section-label">14 — Inventário de Conteúdo</p>
+  <h2 class="section-title">Banco vivo de roteiros, episódios e thumbnails</h2>
+  <div class="grid grid-4">
+    <div class="stat-tile"><span class="n">720</span><span class="l">Episódios séries</span></div>
+    <div class="stat-tile"><span class="n">1.200</span><span class="l">Script parts</span></div>
+    <div class="stat-tile"><span class="n">400</span><span class="l">Vídeos planejados</span></div>
+    <div class="stat-tile"><span class="n">330</span><span class="l">Shorts content</span></div>
+    <div class="stat-tile"><span class="n">248</span><span class="l">Thumbnails</span></div>
+    <div class="stat-tile"><span class="n">244</span><span class="l">Long-form blocks</span></div>
+    <div class="stat-tile"><span class="n">155</span><span class="l">Pub. calendar</span></div>
+    <div class="stat-tile"><span class="n">125</span><span class="l">Image bank</span></div>
+    <div class="stat-tile"><span class="n">82</span><span class="l">PDF chapters</span></div>
+    <div class="stat-tile"><span class="n">60</span><span class="l">Refs científicas</span></div>
+    <div class="stat-tile"><span class="n">52</span><span class="l">Plano anual</span></div>
+    <div class="stat-tile"><span class="n">25</span><span class="l">Séries narrativas</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 15. RECEITA -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="receita">
+  <p class="section-label">15 — Projeção de Receita</p>
+  <h2 class="section-title">R$ 2.200/mês → R$ 210.000/mês em 12 meses</h2>
+  <p class="section-lead">Projeção baseada em 9 streams: AdSense, Shorts Fund, Hotmart, Gumroad/Kiwify, Amazon, Apoia.se, Memberships YT, ClickBank, Sponsorship.</p>
+
+  <table>
+    <thead><tr><th>Mês</th><th>Vídeos</th><th>Views (K)</th><th>Receita</th><th>Milestone</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>30</td><td>150</td><td>R$ 2.200</td><td>1k subs alvo</td></tr>
+      <tr><td>2</td><td>60</td><td>450</td><td>R$ 8.600</td><td>Monetização próxima</td></tr>
+      <tr><td>3</td><td>100</td><td>900</td><td>R$ 18.200</td><td>YT monetizado + curso R$97</td></tr>
+      <tr><td>4</td><td>140</td><td>1.500</td><td>R$ 30.000</td><td>4k watch hours + curso R$297</td></tr>
+      <tr><td>5</td><td>180</td><td>2.200</td><td>R$ 43.900</td><td>WhatsApp premium R$47/mês</td></tr>
+      <tr><td>6</td><td>220</td><td>3.000</td><td><strong style="color: var(--amber);">R$ 61.000</strong></td><td>Patrocínio apps</td></tr>
+      <tr><td>7</td><td>260</td><td>3.800</td><td>R$ 75.000</td><td>Consultoria + mentoria</td></tr>
+      <tr><td>8</td><td>300</td><td>4.800</td><td>R$ 94.500</td><td>Curso R$997</td></tr>
+      <tr><td>9</td><td>350</td><td>6.000</td><td>R$ 118.000</td><td>100K subs + patrocínio tier 2</td></tr>
+      <tr><td>10</td><td>400</td><td>7.500</td><td>R$ 145.000</td><td>E-book + workshop</td></tr>
+      <tr><td>11</td><td>450</td><td>9.000</td><td>R$ 172.000</td><td>500 vídeos · máquina completa</td></tr>
+      <tr><td>12</td><td>500</td><td>11.000</td><td><strong style="color: var(--amber);">R$ 210.000</strong></td><td>Universo completo</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- 16. COMUNIDADES + REGRAS + CRISIS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="comunidades">
+  <p class="section-label">16 — Comunidades WhatsApp</p>
+  <h2 class="section-title">8 grupos temáticos de apoio</h2>
+  <div class="grid grid-4">
+    <div class="card"><h4 class="card-title">🧠 Psicologia.doc — Geral</h4></div>
+    <div class="card"><h4 class="card-title">💔 Trauma & Cura</h4></div>
+    <div class="card"><h4 class="card-title">🚩 Narcisismo & Tóxicos</h4></div>
+    <div class="card"><h4 class="card-title">💜 Apego e Relacionamentos</h4></div>
+    <div class="card"><h4 class="card-title">😰 Ansiedade & Pânico</h4></div>
+    <div class="card"><h4 class="card-title">🌙 Depressão — Espaço Seguro</h4></div>
+    <div class="card"><h4 class="card-title">💸 Psicologia do Dinheiro</h4></div>
+    <div class="card"><h4 class="card-title">🎭 Inteligência Emocional</h4></div>
+  </div>
+</section>
+
+<section id="crisis">
+  <div class="crisis">
+    <p class="section-label" style="color: #FCA5A5;">Recursos de crise</p>
+    <h3 style="font-family: Georgia; font-size: 1.75rem; margin-bottom: 1rem;">Você não está sozinho(a)</h3>
+    <p style="color: var(--text-dim);">Se você ou alguém que conhece está em sofrimento intenso, pensamentos de não querer mais viver, ou em situação de violência, há ajuda gratuita 24 horas.</p>
+    <h4 style="font-family: Georgia; margin: 1.5rem 0 0.5rem; color: white;">🇧🇷 Brasil</h4>
+    <div class="channels">
+      <div class="channel"><strong>CVV</strong>188 · 24h · gratuito</div>
+      <div class="channel"><strong>Disque 180</strong>Violência contra mulher</div>
+      <div class="channel"><strong>CAPS</strong>Centro Atenção Psicossocial</div>
+      <div class="channel"><strong>190</strong>Risco imediato</div>
+    </div>
+    <h4 style="font-family: Georgia; margin: 1.5rem 0 0.5rem; color: white;">🇺🇸 United States</h4>
+    <div class="channels">
+      <div class="channel"><strong>988</strong>Suicide & Crisis · 24h</div>
+      <div class="channel"><strong>1-800-799-7233</strong>National DV Hotline</div>
+      <div class="channel"><strong>Text 741741</strong>Crisis Text Line</div>
+      <div class="channel"><strong>1-844-762-8483</strong>StrongHearts Native</div>
     </div>
   </div>
+</section>
 
-  <!-- LEGADO (preservado do index anterior) -->
-  <div class="sec">
-    <div class="sec-hdr"><div class="sec-label">⚙️ Páginas Legadas (Preservadas)</div><div class="sec-line"></div></div>
-    <div class="g4">
-      <a class="card" href="/cerebro.html">
-        <span class="card-icon">🧩</span>
-        <div class="card-title">Cérebro (legado)</div>
-        <div class="card-desc">Versão anterior do cérebro autônomo</div></a>
-      <a class="card" href="/galeria.html">
-        <span class="card-icon">🖼️</span>
-        <div class="card-title">Galeria (legado)</div>
-        <div class="card-desc">Galeria original de vídeos</div></a>
-      <a class="card" href="/canal-oficial.html">
-        <span class="card-icon">📺</span>
-        <div class="card-title">Canal Oficial</div>
-        <div class="card-desc">Página do canal @psidanielacoelho</div></a>
-      <a class="card" href="/mapa.html">
-        <span class="card-icon">🗺️</span>
-        <div class="card-title">Mapa do Projeto</div>
-        <div class="card-desc">Visão geral do mapa do sistema</div></a>
-      <a class="card" href="/setup-tokens.html">
-        <span class="card-icon">🔑</span>
-        <div class="card-title">Setup Tokens</div>
-        <div class="card-desc">Configuração de tokens e credenciais</div></a>
-      <a class="card" href="/v2.html">
-        <span class="card-icon">📦</span>
-        <div class="card-title">V2 Pipeline</div>
-        <div class="card-desc">Documentação do pipeline V2</div></a>
-    </div>
-  </div>
+<footer>
+  <p style="margin-bottom: 0.5rem;"><span style="font-family: Georgia; font-size: 1.5rem; color: var(--purple);">ψ</span> <strong>psicologia.doc</strong></p>
+  <p>Pesquisa de Harvard, Yale, Berkeley, Princeton, Indiana, UCLA, Oregon, Purdue. Comunicada para público leigo.</p>
+  <p style="margin-top: 1rem;">Não é aconselhamento médico ou psicológico. Conteúdo educacional baseado em evidência peer-reviewed.</p>
+  <p style="margin-top: 1rem; font-size: 0.75rem;" class="mono">Versão 38 · Maio 2026 · Build autônomo · 12 idiomas planejados</p>
+</footer>
 
-</div>
-
-<!-- FOOTER -->
-<div style="text-align:center;padding:32px;border-top:1px solid var(--bd);position:relative;z-index:1">
-  <span style="font-size:11px;color:var(--t3);font-family:'DM Mono',monospace">
-    ψ psicologia.doc V41 · repovazio.vercel.app · @psidanielacoelho · Canal UCyCkIpsVgME9yCj_oXJFheA
-  </span>
-</div>
-
-<script>
-const SB_URL='https://tpjvalzwkqwttvmszvie.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY3MDkxNjUsImV4cCI6MjA1MjI4NTE2NX0.Sn3xzLw6DtGi2y0yyg_HCObPz7YxBObM3RrKs8ylsaA';
-async function loadStats(){
-  try{
-    const r=await fetch(`${SB_URL}/rest/v1/content_pipeline?select=status&limit=2000`,
-      {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
-    const d=await r.json();
-    const cnt={};d.forEach(x=>cnt[x.status]=(cnt[x.status]||0)+1);
-    const fila=cnt['pending_generation']||0;
-    const mp4=cnt['pending_credentials']||0;
-    document.getElementById('kq').textContent=fila.toLocaleString('pt-BR');
-    document.getElementById('h-fila').textContent=fila.toLocaleString('pt-BR');
-    document.getElementById('h-mp4').textContent=mp4;
-    document.getElementById('live-ts').textContent='ao vivo · '+new Date().toLocaleTimeString('pt-BR');
-  }catch(e){document.getElementById('live-ts').textContent='pipeline ativo';}
-}
-loadStats();setInterval(loadStats,60000);
-</script>
 </body>
 </html>
