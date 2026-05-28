@@ -421,7 +421,10 @@ def main():
     print(f"  Profile: ~01024e421f4dda8440")
     print(f"{'='*65}\n")
 
-    if not UPWORK_USER or not UPWORK_PASS:
+    # Verificar cookies salvos (prioridade)
+    UPWORK_COOKIES_B64 = os.environ.get("UPWORK_COOKIES","")
+    
+    if not UPWORK_COOKIES_B64 and (not UPWORK_USER or not UPWORK_PASS):
         print("❌ UPWORK_EMAIL e UPWORK_PASSWORD não configurados.")
         print("   Adicione como GitHub Secrets: UPWORK_EMAIL e UPWORK_PASSWORD")
         return
@@ -462,7 +465,57 @@ def main():
             except Exception as e:
                 print(f"⚠️ Cookies do secret: {e}")
 
-        # Carregar cookies salvos (se existir)
+        # Carregar cookies do GitHub Secret (UPWORK_COOKIES)
+        UPWORK_COOKIES_B64 = os.environ.get("UPWORK_COOKIES","")
+        if UPWORK_COOKIES_B64:
+            try:
+                cookies_data = json.loads(base64.b64decode(UPWORK_COOKIES_B64).decode())
+                ctx.add_cookies(cookies_data)
+                print("✅ Cookies carregados do GitHub Secret\n")
+                # Verificar se sessão ainda é válida
+                test_page = ctx.new_page()
+                test_page.goto("https://www.upwork.com/nx/find-work/", timeout=20000)
+                test_page.wait_for_load_state("domcontentloaded", timeout=12000)
+                time.sleep(3)
+                if "login" not in test_page.url.lower() and "account-security" not in test_page.url.lower():
+                    print("✅ Sessão Upwork válida!\n")
+                    test_page.close()
+                    # Ir direto para busca de vagas
+                    print("── BUSCANDO VAGAS ────────────────────────────────────────────")
+                    search_page = ctx.new_page()
+                    jobs = search_jobs_upwork(search_page)
+                    new_jobs = [j for j in jobs if not is_proposed(j["id"])]
+                    print(f"  Total: {len(jobs)} | Novas: {len(new_jobs)}\n")
+                    search_page.close()
+                    if not new_jobs:
+                        print("✅ Sem vagas novas.")
+                        browser.close()
+                        return
+                    print("── SUBMETENDO PROPOSTAS ──────────────────────────────────────")
+                    for i, job in enumerate(new_jobs[:15], 1):
+                        work_page = ctx.new_page()
+                        print(f"  [{i:2}/{min(len(new_jobs),15)}] {job[chr(99)+chr(108)+chr(105)+chr(101)+chr(110)+chr(116)][:20]:<22} {job[chr(116)+chr(105)+chr(116)+chr(108)+chr(101)][:40]}")
+                        desc = get_job_description(work_page, job["url"]) if job.get("url") else ""
+                        proposal = generate_proposal(job["title"], desc, job["client"], job.get("budget",""))
+                        result = submit_proposal(work_page, job, proposal)
+                        icon = "✅" if result=="success" else "⚠️"
+                        print(f"    {icon} {result}")
+                        mark_proposed(job["id"], job["title"], job["client"], job.get("url",""), result, proposal[:200])
+                        proposals.append({"client":job["client"],"title":job["title"],"budget":job.get("budget",""),"status":result,"proposal":proposal[:100]})
+                        work_page.close()
+                        time.sleep(3)
+                    browser.close()
+                    ok = sum(1 for p in proposals if p["status"]=="success")
+                    print(f"\n{'='*65}\n  ✅ {ok}/{len(proposals)} propostas\n{'='*65}")
+                    if proposals: send_report(proposals)
+                    return
+                else:
+                    print("⚠️  Cookies expirados — fazendo novo login\n")
+                test_page.close()
+            except Exception as e:
+                print(f"⚠️  Erro nos cookies: {e}\n")
+
+        # Carregar cookies do arquivo local (se existir)
         cookies_loaded = False
         if os.path.exists(COOKIES_FILE):
             try:
