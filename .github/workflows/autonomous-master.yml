@@ -76,6 +76,14 @@ jobs:
           DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
         run: python3 .github/scripts/gh_expanded_apply.py
 
+      - name: "💼 LinkedIn Easy Apply (li_at token)"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 .github/scripts/linkedin_easy_apply.py
+
       - name: "🇧🇷 Gupy Brasil"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
