@@ -131,7 +131,8 @@ def place_order(token_id,side,price,usdc):
         c=ClobClient(host="https://clob.polymarket.com",key=os.environ.get("POLY_PRIVATE_KEY",""),
             chain_id=POLYGON,creds={"key":os.environ.get("POLY_API_KEY",""),
                 "secret":os.environ.get("POLY_SECRET",""),"passphrase":os.environ.get("POLY_PASSPHRASE","")})
-        s=c.create_order(OrderArgs(token_id=token_id,price=price,size=round(usdc/price,2),side=side,order_type=OrderType.GTC))
+        from py_clob_client.clob_types import PartialCreateOrderOptions
+        s=c.create_order(OrderArgs(token_id=token_id,price=price,size=round(usdc/price,2),side=side))
         resp=c.post_order(s)
         return{"LIVE":True,"order_id":resp.get("orderID","?"),"status":resp.get("status","?")}
     except Exception as e:
