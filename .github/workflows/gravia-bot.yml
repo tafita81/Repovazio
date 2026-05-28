@@ -12,9 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: pip install requests py-clob-client --quiet
+
       - name: Run AI Latency Arb Bot
         env:
-          GROQ_API_KEY:   ${{ secrets.GROQ_API_KEY }}
-          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY:        ${{ secrets.GROQ_API_KEY }}
+          NVIDIA_API_KEY:      ${{ secrets.NVIDIA_API_KEY }}
+          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
+          POLY_API_KEY:        ${{ secrets.POLY_API_KEY }}
+          POLY_SECRET:         ${{ secrets.POLY_SECRET }}
+          POLY_PASSPHRASE:     ${{ secrets.POLY_PASSPHRASE }}
+          POLY_PRIVATE_KEY:    ${{ secrets.POLY_PRIVATE_KEY }}
+          POLY_TRADING_LIVE:   ${{ secrets.POLY_TRADING_LIVE }}
         run: python3 .github/scripts/gravia_bot.py
