@@ -16,15 +16,19 @@ jobs:
           python-version: "3.11"
       - name: Deps
         run: pip install requests pynacl --break-system-packages -q
-      - name: Provisionar stream keys
+      - name: Provisionar stream keys + broadcasts
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
           GH_REPO: ${{ github.repository }}
+          CREATE_BROADCAST: "1"
+          TARGET_LANGS: "PT,EN,ES,DE,FR,IT,JA,KO,AR,ZH,RU,HI"
           YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
           YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          TARGET_LANGS: "PT,EN,ES,DE,FR,IT,JA,KO,AR,ZH,RU,HI"
           YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
           YOUTUBE_REFRESH_TOKEN_EN: ${{ secrets.YOUTUBE_REFRESH_TOKEN_EN }}
           YOUTUBE_REFRESH_TOKEN_ES: ${{ secrets.YOUTUBE_REFRESH_TOKEN_ES }}
