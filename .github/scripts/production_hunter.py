@@ -165,73 +165,70 @@ SR_COMPANIES = [
 ]
 
 # ═══ EMAIL TARGETS (25 empresas confirmadas) ══════════════════════════════════
+# ═══ EMAILS BOUNCE CONFIRMADOS (remover permanentemente) ═══════════════════
+BOUNCE_BLACKLIST = {
+    "careers@elfbeauty.com",          # 550 - usa Lever: jobs.lever.co/elfbeauty
+    "jobs@trilogyfederal.com",         # 550 - address not found
+    "recruiting@preply.com",           # 550 - usa Greenhouse: preply
+    "recruiting@lexipol.com",          # 550 - address not found
+    "people@rockencantech.com.br",     # 550 - address not found
+    "jobs@imagineworldwide.org",       # 550 - address not found
+    "talent@moniepoint.com",           # Group doesn't exist
+    "analytics.talent@gxo.com",        # 550 - address not found
+    "careers@ciklum.com",              # 550 - address not found
+    "jobs@smartworking.io",            # 550 - address not found
+    "hello@stemma.ai",                 # Domain not found
+    "careers@selectstar.com",          # 550 - address not found
+    "jobs@greatexpectations.io",       # 550 - address not found
+    "jobs@soda.io",                    # 550 - address not found
+    "careers@acceldata.io",            # 550 - address not found
+    "jobs@montecarlodata.com",         # 550 - address not found
+    "jobs@evidentlyai.com",            # 550 - address not found
+    "jobs@polar-analytics.com",        # 550 - address not found
+    "hello@littledata.io",             # 550 - address not found
+    "careers@nearsource.com",          # Temporary → permanent failure
+    "careers@precisioneffect.com",     # Temporary → permanent failure
+    "careers@pachyderm.com",           # Temporary failure
+}
+
 EMAIL_TARGETS = [
-    # ── Confirmados anteriores ────────────────────────────────────────────────
+    # ── VERIFICADOS — não tiveram bounce ──────────────────────────────────────
     {"c":"Edvantis","r":"Senior Analytics Engineer (Power BI)","to":"recruiting@edvantis.com","sector":"consulting"},
     {"c":"Wire IT","r":"Power BI Developer","to":"info@wireit.pt","sector":"consulting"},
     {"c":"Data Meaning","r":"Power BI Developer / BI Consultant","to":"info@datameaning.com","sector":"consulting"},
     {"c":"Proxify","r":"Senior Power BI Developer","to":"talent@proxify.io","sector":"network"},
-    {"c":"Smart Working","r":"Senior Power BI Developer","to":"jobs@smartworking.io","sector":"network"},
-    {"c":"Ciklum","r":"Senior BI Analyst","to":"careers@ciklum.com","sector":"consulting"},
     {"c":"Sorcero","r":"Senior Data Analyst","to":"careers@sorcero.com","sector":"tech"},
     {"c":"Loenbro","r":"BI Engineer","to":"hr@loenbro.com","sector":"construction"},
-    {"c":"GXO Logistics","r":"Senior Analyst DA & BI","to":"analytics.talent@gxo.com","sector":"logistics"},
-    {"c":"PRECISIONeffect","r":"Senior Data Analyst (Power BI)","to":"careers@precisioneffect.com","sector":"healthcare"},
     {"c":"Corsearch","r":"Senior Data Analyst","to":"careers@corsearch.com","sector":"tech"},
     {"c":"Airalo","r":"Senior Data Analyst Growth","to":"people@airalo.com","sector":"telecom"},
-    {"c":"Moniepoint","r":"Senior Data Analyst","to":"talent@moniepoint.com","sector":"fintech"},
     {"c":"Keyrus Global","r":"Senior Power BI Consultant","to":"talent@keyrus.com","sector":"consulting"},
-    {"c":"Imagine Worldwide","r":"Senior BI & Data Analyst","to":"jobs@imagineworldwide.org","sector":"ngo"},
     {"c":"Digital Data Foundation","r":"Power BI Developer","to":"careers@digitaldatafoundation.com","sector":"consulting"},
     {"c":"Alpha Omega","r":"Azure Power BI Developer","to":"careers@alphaomega.com","sector":"government"},
     {"c":"Exsilio Solutions","r":"Power BI Developer","to":"hr@exsilio.com","sector":"microsoft-partner"},
-    {"c":"Rock Encantech","r":"Senior Data Analyst","to":"people@rockencantech.com.br","sector":"tech-br"},
-    {"c":"Lexipol","r":"Senior Reporting Analyst GTM","to":"recruiting@lexipol.com","sector":"saas"},
-    {"c":"Preply","r":"Senior Data Analyst London","to":"recruiting@preply.com","sector":"edtech"},
     {"c":"Upvanta","r":"Data Visualization Expert Power BI","to":"rekrutacja@upvanta.com","sector":"consulting"},
-    {"c":"NearSource Technologies","r":"Senior DA SQL Power BI Looker","to":"careers@nearsource.com","sector":"consulting"},
-    {"c":"e.l.f. Beauty","r":"Power BI Developer","to":"careers@elfbeauty.com","sector":"retail"},
-    {"c":"Trilogy Federal","r":"Senior SQL Server Power BI Developer","to":"jobs@trilogyfederal.com","sector":"government"},
+    # ── Redes de freelancers (emails confirmados)  ───────────────────────────
     {"c":"Toptal","r":"Senior Data Analyst / Power BI Developer","to":"talent@toptal.com","sector":"network"},
     {"c":"Andela","r":"Senior Analytics Engineer","to":"work@andela.com","sector":"network"},
     {"c":"Turing","r":"Senior Data Analyst Remote","to":"hire@turing.com","sector":"network"},
     {"c":"Arc.dev","r":"Senior Power BI Developer","to":"talent@arc.dev","sector":"network"},
     {"c":"Crossover","r":"Senior Data Analyst","to":"apply@crossover.com","sector":"network"},
-    {"c":"Pangian","r":"Senior Data Analyst Remote","to":"hello@pangian.com","sector":"network"},
-    {"c":"X-Team","r":"Senior Data Analyst","to":"join@x-team.com","sector":"network"},
     {"c":"Lemon.io","r":"Senior Power BI Developer","to":"hey@lemon.io","sector":"network"},
     {"c":"Gun.io","r":"Senior Data Analyst","to":"work@gun.io","sector":"network"},
     {"c":"Toggl Hire","r":"Senior Analytics Engineer","to":"careers@toggl.com","sector":"saas"},
-    # ── Novos alvos semana 2 ──────────────────────────────────────────────────
+    {"c":"X-Team","r":"Senior Data Analyst","to":"join@x-team.com","sector":"network"},
+    {"c":"Pangian","r":"Senior Data Analyst Remote","to":"hello@pangian.com","sector":"network"},
+    # ── Marketing Analytics  ─────────────────────────────────────────────────
     {"c":"Improvado","r":"Senior Data Analyst","to":"jobs@improvado.io","sector":"marketing-analytics"},
     {"c":"Funnel.io","r":"Senior BI Developer","to":"careers@funnel.io","sector":"marketing-analytics"},
     {"c":"Supermetrics","r":"Senior Analytics Engineer","to":"jobs@supermetrics.com","sector":"marketing-analytics"},
-    {"c":"Stacked Marketer","r":"Data Analyst","to":"careers@stackedmarketer.com","sector":"media"},
     {"c":"Adjust","r":"Senior Data Analyst","to":"jobs@adjust.com","sector":"mobile-analytics"},
     {"c":"AppsFlyer","r":"Senior Data Analyst","to":"careers@appsflyer.com","sector":"mobile-analytics"},
-    {"c":"Branch","r":"Senior Data Analyst","to":"careers@branch.io","sector":"mobile-analytics"},
-    {"c":"Singular","r":"BI Analyst","to":"jobs@singular.net","sector":"mobile-analytics"},
-    {"c":"Kochava","r":"Senior Data Analyst","to":"careers@kochava.com","sector":"mobile-analytics"},
-    {"c":"Northbeam","r":"Senior Data Analyst","to":"jobs@northbeam.io","sector":"marketing-analytics"},
     {"c":"Triple Whale","r":"Data Analyst","to":"careers@triplewhale.com","sector":"ecommerce-analytics"},
-    {"c":"Daasity","r":"Senior BI Developer","to":"jobs@daasity.com","sector":"ecommerce-analytics"},
-    {"c":"Littledata","r":"Data Analyst","to":"hello@littledata.io","sector":"ecommerce-analytics"},
-    {"c":"Polar Analytics","r":"Senior Data Analyst","to":"jobs@polar-analytics.com","sector":"ecommerce-analytics"},
-    {"c":"Conjura","r":"Senior Data Analyst","to":"hello@conjura.com","sector":"ecommerce-analytics"},
-    {"c":"Pachyderm","r":"Senior Analytics Engineer","to":"careers@pachyderm.com","sector":"mlops"},
-    {"c":"Weights & Biases","r":"Senior Data Analyst","to":"jobs@wandb.com","sector":"mlops"},
-    {"c":"Comet ML","r":"Analytics Engineer","to":"careers@comet.ml","sector":"mlops"},
-    {"c":"Evidently AI","r":"Senior Data Analyst","to":"jobs@evidentlyai.com","sector":"mlops"},
+    {"c":"Northbeam","r":"Senior Data Analyst","to":"jobs@northbeam.io","sector":"marketing-analytics"},
+    # ── Data Quality / Catalog ───────────────────────────────────────────────
+    {"c":"Atlan","r":"Senior Data Analyst","to":"careers@atlan.com","sector":"data-catalog"},
     {"c":"WhyLabs","r":"Data Analyst","to":"careers@whylabs.ai","sector":"mlops"},
     {"c":"Arize AI","r":"Senior Analytics Engineer","to":"jobs@arize.com","sector":"mlops"},
-    {"c":"Monte Carlo","r":"Senior Data Analyst","to":"jobs@montecarlodata.com","sector":"data-quality"},
-    {"c":"Acceldata","r":"Senior Analytics Engineer","to":"careers@acceldata.io","sector":"data-quality"},
-    {"c":"Soda Data","r":"Data Analyst","to":"jobs@soda.io","sector":"data-quality"},
-    {"c":"Great Expectations","r":"Senior Data Analyst","to":"jobs@greatexpectations.io","sector":"data-quality"},
-    {"c":"Select Star","r":"Analytics Engineer","to":"careers@selectstar.com","sector":"data-catalog"},
-    {"c":"Atlan","r":"Senior Data Analyst","to":"careers@atlan.com","sector":"data-catalog"},
-    {"c":"DataHub Project","r":"Analytics Engineer","to":"careers@acryl.io","sector":"data-catalog"},
-    {"c":"Stemma","r":"Senior Data Analyst","to":"hello@stemma.ai","sector":"data-catalog"},
 ]
 
 KEYWORDS = ["data analyst","power bi","business intelligence","bi developer","analytics engineer","bi analyst","reporting analyst","data visualization","analytics engineer"]
@@ -428,6 +425,10 @@ def email_html(company, role):
 </div>
 <div style="background:#fff;padding:24px;border:1px solid #E5E7EB;border-top:none;border-radius:0 0 8px 8px;">
 {paras}{IMPACT}{SIG}</div></body></html>"""
+
+def email_is_valid(to_email):
+    """Verifica se email não está na blacklist de bounces"""
+    return to_email.lower() not in {e.lower() for e in BOUNCE_BLACKLIST}
 
 def run_emails(server, cv_bytes):
     wk = get_week_key()
