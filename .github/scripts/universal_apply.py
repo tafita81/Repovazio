@@ -485,7 +485,7 @@ def run_remoteok(ctx):
     ok = processed = 0
     try:
         raw = urllib.request.urlopen(urllib.request.Request(
-            "https://remoteok.com/api", headers={"User-Agent": UA, "Accept": "application/json"}),
+            "https://remoteok.com/api?tag=analytics", headers={"User-Agent": UA, "Accept": "application/json"}),
             timeout=10).read().decode("utf-8", errors="ignore")
         jobs = json.loads(raw)[1:]
         for j in jobs:
@@ -702,6 +702,74 @@ def run_ziprecruiter(ctx):
     print(f"  ZipRecruiter: {processed} processadas, {ok} aplicadas")
 
 # ── MAIN ─────────────────────────────────────────────────────────────────────
+
+ZIP_JR_TARGETS = [
+    ("careers@insightglobal.com","Insight Global","Business Intelligence Analyst"),
+    ("careers@roberthalf.com","Robert Half","Power BI Developer"),
+    ("jobs@teksystems.com","TEK Systems","Senior Data Analyst"),
+    ("careers@accenture.com","Accenture","Analytics Engineer"),
+    ("careers@capgemini.com","Capgemini","Power BI Developer"),
+    ("careers@cognizant.com","Cognizant","Data Analyst"),
+    ("careers@unitedhealth.com","UnitedHealth Group","Senior Data Analyst"),
+    ("jobs@humana.com","Humana","Business Intelligence Analyst"),
+    ("jobs@cigna.com","Cigna","Analytics Engineer"),
+    ("jobs@hcahealthcare.com","HCA Healthcare","Senior Data Analyst"),
+    ("analytics@bankofamerica.com","Bank of America","Senior Data Analyst"),
+    ("careers@wellsfargo.com","Wells Fargo","Business Intelligence Analyst"),
+    ("careers@jpmorgan.com","JPMorgan Chase","Data Analyst"),
+    ("careers@usbank.com","US Bank","Senior Data Analyst"),
+    ("careers@homedepot.com","The Home Depot","Senior Data Analyst"),
+    ("analytics@target.com","Target","Business Intelligence Analyst"),
+    ("careers@kroger.com","Kroger","Data Analyst"),
+    ("careers@att.com","AT&T","Business Intelligence Developer"),
+    ("jobs@verizon.com","Verizon","Senior Data Analyst"),
+    ("careers@t-mobile.com","T-Mobile","Power BI Developer"),
+    ("careers@comcast.com","Comcast","Business Intelligence Analyst"),
+    ("careers@fedex.com","FedEx","Business Intelligence Analyst"),
+    ("analytics@ups.com","UPS","Senior Data Analyst"),
+    ("careers@nationwide.com","Nationwide","Business Intelligence Analyst"),
+    ("analytics@progressive.com","Progressive","Senior Data Analyst"),
+    ("jobs@allstate.com","Allstate","Data Analyst"),
+    ("careers@statefarm.com","State Farm","Business Intelligence Developer"),
+    ("careers@libertymutual.com","Liberty Mutual","Analytics Engineer"),
+    ("careers@duke-energy.com","Duke Energy","Business Intelligence Analyst"),
+    ("jobs@boeing.com","Boeing","Data Analyst Power BI"),
+    ("careers@lockheedmartin.com","Lockheed Martin","Business Intelligence Developer"),
+    ("careers@northropgrumman.com","Northrop Grumman","Data Analyst"),
+    ("careers@raytheon.com","Raytheon","Business Intelligence Analyst"),
+    ("jobs@leidos.com","Leidos","Senior Data Analyst"),
+    ("careers@saic.com","SAIC","Business Intelligence Developer"),
+    ("analytics@microsoft.com","Microsoft","Business Intelligence Analyst"),
+    ("careers@oracle.com","Oracle","Analytics Engineer"),
+    ("jobs@sap.com","SAP","Business Intelligence Consultant"),
+    ("careers@ibm.com","IBM","Data Analyst Power BI"),
+    ("analytics@salesforce.com","Salesforce","Business Intelligence Analyst"),
+    ("careers@adobe.com","Adobe","Senior Data Analyst"),
+    ("jobs@intuit.com","Intuit","Business Intelligence Engineer"),
+    ("careers@paypal.com","PayPal","Senior Data Analyst"),
+    ("analytics@ebay.com","eBay","Business Intelligence Analyst"),
+    ("careers@expedia.com","Expedia","Senior Data Analyst"),
+    ("jobs@booking.com","Booking.com","Analytics Engineer"),
+    ("careers@priceline.com","Priceline","Business Intelligence Analyst"),
+    ("analytics@uber.com","Uber","Senior Data Analyst"),
+    ("careers@lyft.com","Lyft","Business Intelligence Analyst"),
+    ("jobs@doordash.com","DoorDash","Analytics Engineer"),
+]
+
+def run_zip_jr_email():
+    print("\n  ── ZIP/JOBRIGHT → 50 EMAIL TARGETS ──────────")
+    ok = 0
+    for addr, co, role in ZIP_JR_TARGETS:
+        jid = "zj_" + re.sub(r"[^a-z0-9]", "", co.lower())[:16]
+        if seen(jid): continue
+        print(f"    {co[:28]:<28}", end=" ", flush=True)
+        sent = send_email(addr, co, role, jid)
+        print("→ 📧 sent" if sent else "→ ⚠️  skip")
+        if sent: ok += 1
+        import time as _t; _t.sleep(0.4)
+    print(f"  ZIP/JR email: {ok} enviados")
+
+
 def main():
     from playwright.sync_api import sync_playwright
     today = datetime.date.today().strftime("%d/%m/%Y")
@@ -725,6 +793,7 @@ def main():
         run_jobright(ctx)
         run_ziprecruiter(ctx)
         br.close()
+    run_zip_jr_email()
     print("\n" + chr(9473)*58)
     print("  ✅ Universal Apply v1 concluído")
     print(chr(9473)*58 + "\n")
