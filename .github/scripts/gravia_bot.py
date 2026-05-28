@@ -75,11 +75,6 @@ POLY_MARKETS = {
 
 def get_poly_odds():
     """Retorna odds REAIS do Polymarket via Gamma API (bestBid/bestAsk)"""
-    KEYWORDS = {
-        "OKC":    ["oklahoma","thunder"],
-        "KNICKS": ["knicks","new york knicks"],
-        "SPURS":  ["spurs","san antonio"],
-    }
     try:
         r=requests.get("https://gamma-api.polymarket.com/markets?active=true&closed=false&_limit=20",timeout=8)
         d=r.json() if isinstance(r.json(),list) else []
@@ -87,9 +82,8 @@ def get_poly_odds():
         for m in d:
             q=(m.get("question") or "").lower()
             team_match = None
-            for team, kws in KEYWORDS.items():
-                if any(kw in q for kw in kws):
-                    team_match = team; break
+            for t, kws in {"OKC":["oklahoma","thunder"],"KNICKS":["knicks"],"SPURS":["spurs","san antonio"]}.items():
+                if any(kw in q for kw in kws): team_match = t; break
             if not team_match: continue
             team = team_match
             if True:
