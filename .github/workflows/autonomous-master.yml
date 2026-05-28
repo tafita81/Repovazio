@@ -76,6 +76,15 @@ jobs:
           DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
         run: python3 .github/scripts/gh_expanded_apply.py
 
+      - name: "🎲 Dice Easy Apply (session token)"
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          DICE_ACCESS_TOKEN: ${{ secrets.DICE_ACCESS_TOKEN }}
+          DICE_REFRESH_TOKEN: ${{ secrets.DICE_REFRESH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 .github/scripts/dice_easy_apply.py
+
       - name: "💼 LinkedIn Easy Apply (li_at token)"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
