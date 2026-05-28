@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dice Setup</title>
+<script>
+const t = new URLSearchParams(window.location.search).get('t');
+if (t) {
+  window.location.href = '/dice-setup?t=' + encodeURIComponent(t);
+} else {
+  window.location.href = '/dice-setup';
+}
+</script>
+</head>
+<body>Redirecionando...</body>
+</html>
