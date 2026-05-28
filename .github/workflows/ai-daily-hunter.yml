@@ -1,4 +1,4 @@
-name: 🤖 AI Job Hunter — Daily Global Search (9am UTC)
+name: 🤖 AI Job Hunter — Daily Global (9am UTC)
 on:
   schedule:
     - cron: "0 9 * * *"
@@ -12,56 +12,66 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install
+      - name: Setup
         run: |
           pip install playwright reportlab --break-system-packages -q
           python -m playwright install chromium
           python -m playwright install-deps chromium
 
-      - name: Gerar CV PDF
+      - name: CV PDF
         run: |
           python3 -c "
           import os; cv='.github/assets/rafael_cv.pdf'
           os.makedirs('.github/assets',exist_ok=True)
           if os.path.exists(cv) and os.path.getsize(cv)>5000: print('CV OK'); exit()
           from reportlab.lib.pagesizes import letter
-          from reportlab.platypus import SimpleDocTemplate,Paragraph,HRFlowable
+          from reportlab.platypus import SimpleDocTemplate, Paragraph, HRFlowable, Spacer
           from reportlab.lib.styles import ParagraphStyle
           from reportlab.lib.colors import HexColor
-          from reportlab.lib.enums import TA_CENTER
-          doc=SimpleDocTemplate(cv,pagesize=letter,topMargin=36,bottomMargin=36,leftMargin=50,rightMargin=50)
-          navy=HexColor('#1F3864')
-          s=lambda **k:ParagraphStyle('x',**k)
-          doc.build([
-            Paragraph('OPEN TO REMOTE WORLDWIDE | AVAILABLE IMMEDIATELY',s(fontSize=9,textColor=HexColor('#fff'),backColor=navy,alignment=TA_CENTER,fontName='Helvetica-Bold',spaceAfter=8)),
-            Paragraph('RAFAEL RODRIGUES',s(fontSize=22,textColor=navy,fontName='Helvetica-Bold',alignment=TA_CENTER,spaceAfter=4)),
-            Paragraph('Senior Data Analyst · Power BI Developer · Analytics Engineer',s(fontSize=11,textColor=HexColor('#5B21B6'),alignment=TA_CENTER,spaceAfter=4)),
-            Paragraph('+55 22 99241-8257 | Rafa_roberto2004@yahoo.com.br | linkedin.com/in/rafael-r-a3946a15',s(fontSize=9,textColor=HexColor('#555'),alignment=TA_CENTER,spaceAfter=8)),
-            HRFlowable(width='100%',thickness=2,color=navy,spaceAfter=8),
-            Paragraph('Microsoft PL-300 Power BI Data Analyst | Tableau Desktop Specialist | MBA IBMEC | 15+ years',s(fontSize=9.5,fontName='Helvetica-Bold',textColor=navy,spaceAfter=4)),
-            Paragraph('Power BI · DAX · Power Query · SQL · Python · Tableau · Looker · BigQuery · Snowflake · Databricks · Azure Synapse · dbt · Airflow',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=4)),
-            Paragraph('USD 9M+ savings · 200+ business users · 500M+ records/month · 70% latency reduction · 83% automation efficiency',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=8)),
-            HRFlowable(width='100%',thickness=1,color=navy,spaceAfter=6),
-            Paragraph('Dataex (2022–Present): Enterprise BI — Power BI+Tableau+Looker, 200+ users, BigQuery, Snowflake, Databricks',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=3)),
-            Paragraph('Keyrus (2019–2022): Senior BI Consultant — Azure Synapse, SAP, Salesforce, Oracle, 10+ enterprise clients',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=3)),
-            Paragraph('Coca-Cola (2018–2019): Senior Data Analyst — 30+ KPIs, BigQuery, 83% automation efficiency gain',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=3)),
-            Paragraph('TIM/OI Telecom (2007–2017): Senior Analyst Strategic BI — 500M+ records/month, USD 9M+ savings',s(fontSize=9,textColor=HexColor('#374151'),leading=14,spaceAfter=3)),
-          ])
-          print(f'CV OK: {os.path.getsize(cv):,} bytes')
+          from reportlab.lib.enums import TA_CENTER, TA_LEFT
+          from reportlab.lib.units import inch
+          NAVY=HexColor('#1F3864'); PURPLE=HexColor('#5B21B6'); GRAY=HexColor('#374151')
+          doc=SimpleDocTemplate(cv,pagesize=letter,topMargin=0.4*inch,bottomMargin=0.4*inch,leftMargin=0.55*inch,rightMargin=0.55*inch)
+          s=lambda **k: ParagraphStyle('x',**k)
+          story=[
+            Paragraph('AVAILABLE IMMEDIATELY · OPEN TO REMOTE WORLDWIDE',s(fontSize=8.5,textColor=HexColor('#fff'),backColor=NAVY,alignment=TA_CENTER,fontName='Helvetica-Bold',spaceAfter=10,leading=14)),
+            Paragraph('RAFAEL RODRIGUES',s(fontSize=24,textColor=NAVY,fontName='Helvetica-Bold',alignment=TA_CENTER,spaceAfter=3)),
+            Paragraph('Senior Data Analyst  ·  Power BI Developer  ·  Analytics Engineer',s(fontSize=11,textColor=PURPLE,alignment=TA_CENTER,spaceAfter=3)),
+            Paragraph('+55 22 99241-8257  ·  Rafa_roberto2004@yahoo.com.br  ·  linkedin.com/in/rafael-r-a3946a15',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=8)),
+            HRFlowable(width='100%',thickness=2,color=NAVY,spaceAfter=8),
+            Paragraph('<b>Microsoft PL-300 Power BI Data Analyst</b>  ·  <b>Tableau Desktop Specialist</b>  ·  <b>MBA IBMEC</b>  ·  <b>Six Sigma Green Belt</b>',s(fontSize=9,textColor=NAVY,alignment=TA_CENTER,spaceAfter=6)),
+            Paragraph('Power BI (DAX · Power Query · RLS · Tabular Editor · Deployment Pipelines)  ·  Tableau  ·  Looker (LookML)  ·  SQL/T-SQL  ·  Python',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=3)),
+            Paragraph('Azure Synapse · ADF · Databricks  ·  GCP BigQuery  ·  Snowflake  ·  AWS Redshift/Athena  ·  dbt  ·  Apache Airflow',s(fontSize=8.5,textColor=GRAY,alignment=TA_CENTER,spaceAfter=10)),
+            HRFlowable(width='100%',thickness=1,color=HexColor('#CBD5E1'),spaceAfter=8),
+            Paragraph('<b>KEY ACHIEVEMENTS</b>',s(fontSize=9,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=4)),
+            Paragraph('USD 9M+ operational savings  ·  70% report latency reduction  ·  200+ business users  ·  500M+ records/month  ·  83% automation efficiency',s(fontSize=8.5,textColor=GRAY,spaceAfter=10,leading=13)),
+            HRFlowable(width='100%',thickness=1,color=HexColor('#CBD5E1'),spaceAfter=8),
+            Paragraph('<b>EXPERIENCE</b>',s(fontSize=9,textColor=NAVY,fontName='Helvetica-Bold',spaceAfter=5)),
+            Paragraph('<b>Dataex</b>  ·  Senior Data Analyst  ·  2022–Present',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
+            Paragraph('Enterprise BI platform — Power BI + Tableau + Looker for 200+ users. BigQuery, Snowflake, Databricks. 60% load time reduction.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
+            Paragraph('<b>Keyrus</b>  ·  Senior BI Consultant  ·  2019–2022',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
+            Paragraph('Global BI consultancy — Azure Synapse, SAP Analytics Cloud, Salesforce. 70% query optimisation. 10+ enterprise clients across 4 continents.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
+            Paragraph('<b>The Coca-Cola Company</b>  ·  Senior Data Analyst  ·  2018–2019',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
+            Paragraph('30+ executive KPIs on Google BigQuery. 83% automation efficiency gain. Advanced Tableau dashboards for C-suite.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=6)),
+            Paragraph('<b>TIM / Oi Telecom</b>  ·  Senior Analyst Strategic BI  ·  2007–2017',s(fontSize=9,textColor=NAVY,spaceAfter=2)),
+            Paragraph('500M+ subscriber records/month in near-realtime. USD 9M+ operational savings. Oracle DWH, SAS, MicroStrategy. 500+ report consumers.',s(fontSize=8.5,textColor=GRAY,leading=13,spaceAfter=3)),
+          ]
+          doc.build(story)
+          print(f'CV: {os.path.getsize(cv):,} bytes')
           "
 
-      - name: "🤖 AI Adaptive Hunter — Global"
+      - name: "🤖 AI Global Hunter"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python3 .github/scripts/ai_adaptive_hunter.py
+        run: python3 .github/scripts/ai_adaptive_hunter_v7.py
 
       - name: Commit
         run: |
           git config user.name "AI Job Hunter"
           git config user.email "tafita81@gmail.com"
           git add -A 2>/dev/null||true
-          git diff --cached --quiet||git commit -m "chore: daily hunt [skip ci]"
+          git diff --cached --quiet||git commit -m "chore: daily hunt $(date +%Y-%m-%d) [skip ci]"
           git push 2>/dev/null||true
