@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { NextResponse } from 'next/server';
 
 // Endpoint interno chamado pelo hotmart-webhook após cada venda
