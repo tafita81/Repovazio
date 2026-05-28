@@ -67,6 +67,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: python3 .github/scripts/platform_fixer.py
 
+
+      - name: "🏢 GH Expanded — Stripe/Brex/WPP/Oscar/Discord/Reddit/Roblox..."
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DICE_EMAIL: ${{ secrets.DICE_EMAIL }}
+        run: python3 .github/scripts/gh_expanded_apply.py
+
       - name: "🇧🇷 Gupy Brasil"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
