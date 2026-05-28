@@ -262,8 +262,8 @@ def run_linkedin(ctx):
                 f"?keywords={urllib.parse.quote(q)}&location=United+States&f_WT=2&start=0&count=20",
                 {"Accept":"text/html"})
             ids=re.findall(r'data-entity-urn="[^"]*jobPosting:(\d+)"',raw)
-            titles=re.findall(r'class="base-search-card__title"[^>]*>\s*([^<]+)\s*<',raw)
-            companies=re.findall(r'class="base-search-card__subtitle"[^>]*>\s*([^<]+)\s*<',raw)
+            titles=[x.strip() for x in re.findall(r'base-search-card__title"[^>]*>([^<]{5,80})<',raw)]
+            companies=[x.strip() for x in re.findall(r'hidden-nested-link[^>]+>([^<]{2,60})</a>',raw)]
             for i,lid in enumerate(ids[:15]):
                 jid=f"li2_{lid}"
                 if seen(jid): continue
