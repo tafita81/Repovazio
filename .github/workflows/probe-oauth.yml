@@ -1,0 +1,39 @@
+name: "Probe OAuth (YT vs YOUTUBE)"
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Deps
+        run: pip install requests --break-system-packages -q
+      - name: Probe
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: |
+          python3 - <<'PYEOF'
+          import os, requests
+          pairs = [
+            ("YOUTUBE", os.getenv("YOUTUBE_CLIENT_ID",""), os.getenv("YOUTUBE_CLIENT_SECRET",""), os.getenv("YOUTUBE_REFRESH_TOKEN","")),
+            ("YT", os.getenv("YT_CLIENT_ID",""), os.getenv("YT_CLIENT_SECRET",""), os.getenv("YT_REFRESH_TOKEN","")),
+          ]
+          for label, cid, csec, rt in pairs:
+              if not (cid and csec and rt):
+                  print("PROBE %s: MISSING (cid=%s csec=%s rt=%s)" % (label, bool(cid), bool(csec), bool(rt)))
+                  continue
+              r = requests.post("https://oauth2.googleapis.com/token", timeout=30, data={"client_id":cid,"client_secret":csec,"refresh_token":rt,"grant_type":"refresh_token"})
+              print("PROBE %s refresh: HTTP %d %s" % (label, r.status_code, r.text[:120].replace(chr(10)," ")))
+              if r.status_code == 200:
+                  at = r.json()["access_token"]
+                  c = requests.get("https://www.googleapis.com/youtube/v3/channels?part=id,snippet&mine=true", headers={"Authorization":"Bearer "+at}, timeout=30)
+                  print("PROBE %s channels.mine: HTTP %d %s" % (label, c.status_code, c.text[:240].replace(chr(10)," ")))
+          PYEOF
