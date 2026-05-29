@@ -1,0 +1,23 @@
+name: "CI: py_compile (valida scripts Python)"
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/**.py"
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: py_compile todos os scripts
+        run: |
+          set -e
+          for f in scripts/*.py; do
+            echo "Compilando $f"
+            python3 -m py_compile "$f"
+          done
+          echo "RESULTADO_CI: OK todos os scripts compilam"
