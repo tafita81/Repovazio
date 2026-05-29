@@ -92,8 +92,7 @@ def log_supabase(resultados):
         timeout=10)
 
 def run(modo="status"):
-    print(f"
-{'='*60}")
+    print(f"\n{'='*60}")
     print(f"QUANTUM BRAIN MASTER ENGINE — {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"Modo: {modo} | Sistemas: {len(SISTEMAS)}")
     print("="*60)
@@ -130,8 +129,7 @@ Dashboard: repovazio.vercel.app/cerebro.html")
         
         log_supabase(resultados)
         ok = sum(1 for r in resultados if r["status"] == "ok")
-        print(f"
-{'='*60}")
+        print(f"\n{'='*60}")
         print(f"RESULTADO: {ok}/{len(resultados)} sistemas executados com sucesso")
         
     elif modo == "gerar_video":
