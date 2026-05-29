@@ -67,8 +67,7 @@ def run():
     for kw in KEYWORDS_MONITOR[:3]:
         noticias = buscar_noticias_trending(kw, "pt")
         if noticias:
-            print(f"
-  TRENDING: '{kw}' ({len(noticias)} noticias)")
+            print(f"\n  TRENDING: '{kw}' ({len(noticias)} noticias)")
             conceito = gerar_video_trending(kw, noticias)
             if conceito:
                 print(f"  URGENTE: {conceito.get('titulo','')[:60]}")
