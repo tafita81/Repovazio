@@ -43,7 +43,7 @@ def discover_apis_groq(categoria):
               f"that are useful for psychology content creation. "
               f"For each: name, base endpoint URL, auth_type (none/apiKey/OAuth/Bearer). "
               f"JSON only, array: "
-              f"[{{"name":"X","endpoint":"https://","auth_type":"apiKey"}}]")
+              f'[{{"name":"X","endpoint":"https://","auth_type":"apiKey"}}]')
     try:
         r = requests.post("https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization":f"Bearer {GK}","Content-Type":"application/json"},
