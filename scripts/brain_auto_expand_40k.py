@@ -13,7 +13,7 @@ def sbh():
     return {"apikey":SB_KEY,"Authorization":f"Bearer {SB_KEY}","Content-Type":"application/json"}
 
 def get_count():
-    r = requests.get(f"{SB_URL}/rest/v1/api_brain?select=count","headers=sbh(),timeout=10)
+    r = requests.get(f"{SB_URL}/rest/v1/api_brain?select=count", headers=sbh(), timeout=10)
     return int(r.headers.get("Content-Range","0/0").split("/")[-1]) if r.status_code==200 else 0
 
 # Categorias HuggingFace para expandir
