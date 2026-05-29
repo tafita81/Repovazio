@@ -61,7 +61,7 @@ def discover_apis_groq(categoria):
 def discover_apis_gemini(categoria):
     if not GEM: return []
     prompt = (f"List 5 real APIs for: {categoria} psychology content. "
-              f"JSON array: [{{"name":"X","endpoint":"https://","auth_type":"none"}}]")
+              f'JSON array: [{{"name":"X","endpoint":"https://","auth_type":"none"}}]')
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEM}"
         r = requests.post(url,
