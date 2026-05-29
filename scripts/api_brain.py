@@ -226,7 +226,7 @@ class Brain:
                 ok = r.status_code < 400
                 if ok: results["ok"].append(name)
                 else:  results["fail"].append(name)
-                if verbose: print(f"  {"✅" if ok else "❌"} {name}: {r.status_code} ({latency}ms)")
+                if verbose: print(f"  {'✅' if ok else '❌'} {name}: {r.status_code} ({latency}ms)")
             except Exception as e:
                 results["fail"].append(name)
                 if verbose: print(f"  ❌ {name}: {e}")
