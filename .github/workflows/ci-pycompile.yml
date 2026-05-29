@@ -7,17 +7,20 @@ on:
 jobs:
   compile:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: py_compile todos os scripts
+      - name: py_compile todos os scripts (nao-para)
         run: |
-          set -e
+          fail=0
           for f in scripts/*.py; do
-            echo "Compilando $f"
-            python3 -m py_compile "$f"
+            if ! python3 -m py_compile "$f" 2>/tmp/err; then
+              echo "FALHOU: $f :: $(tail -1 /tmp/err)"
+              fail=1
+            fi
           done
-          echo "RESULTADO_CI: OK todos os scripts compilam"
+          echo "---"
+          if [ "$fail" = "0" ]; then echo "RESULTADO_CI: OK todos compilam"; else echo "RESULTADO_CI: HOUVE FALHAS (ver acima)"; exit 1; fi
