@@ -59,6 +59,6 @@ def calcular_proximos_primes():
     print("  CRON JOBS RECOMENDADOS (UTC):")
     utcs_prime = sorted(set(j["utc"] for j in janelas))
     horas_str = ",".join(str(h) for h in utcs_prime[:8])
-    print(f"  - cron: "0 {horas_str} * * *"")
+    print(f'  - cron: "0 {horas_str} * * *"')
 
 if __name__=="__main__": calcular_proximos_primes()
