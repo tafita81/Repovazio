@@ -18,7 +18,7 @@ jobs:
           fail=0
           for f in scripts/*.py; do
             if ! python3 -m py_compile "$f" 2>/tmp/err; then
-              echo "FALHOU: $f :: $(tail -1 /tmp/err)"
+              echo "FALHOU: $f"; cat /tmp/err
               fail=1
             fi
           done
