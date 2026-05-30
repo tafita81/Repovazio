@@ -32,19 +32,18 @@ const RL:Record<string,{until:number;err:string;n:number}>={};function avail(m:s
 // CHAIN 2026: Nvidia DeepSeek V4 Pro DEFAULT -> Nvidia diversified -> Groq fast backup -> OpenAI last resort
 // All Nvidia models share same NVIDIA_API_KEY. 100% FREE forever.
 const CHAIN=[
-  // 1. DEFAULT: DeepSeek V4 Pro (1.6T MoE, 128k ctx, smartest free model)
-  'nvidia:deepseek-ai/deepseek-v4-pro',
-  // 2. Qwen 3.5 397B MoE (top tier reasoning)
-  'nvidia:qwen/qwen3.5-397b-a17b',
-  // 3. Meta Llama 4 Maverick (latest 2026)
-  'nvidia:meta/llama-4-maverick-17b-128e-instruct',
-  // 4. Llama 3.3 70B Nvidia (solid backup)
-  'nvidia:meta/llama-3.3-70b-instruct',
-  // 5. Groq Llama 3.3 70B (250ms ultra-fast emergency)
+  // 1. FAST default: Groq Llama 3.3 70B (~250ms, smart, free)
   'groq:llama-3.3-70b-versatile',
-  // 6. Groq Llama 4 Scout (alternative)
+  // 2. Groq Llama 4 Scout (fast + multimodal/vision)
   'groq:meta-llama/llama-4-scout-17b-16e-instruct',
-  // (OpenAI REMOVIDO -- 100% gratis, zero fallback pago)
+  // 3. Nvidia Llama 3.3 70B
+  'nvidia:meta/llama-3.3-70b-instruct',
+  // 4. Nvidia Llama 4 Maverick
+  'nvidia:meta/llama-4-maverick-17b-128e-instruct',
+  // 5. Nvidia Qwen 3.5 397B (heavy reasoning)
+  'nvidia:qwen/qwen3.5-397b-a17b',
+  // 6. Nvidia DeepSeek V4 Pro (smartest, last resort - slow)
+  'nvidia:deepseek-ai/deepseek-v4-pro',
 ];
 function chain(pref:string){return[pref,...CHAIN.filter(m=>m!==pref)];}
 let _S:Record<string,string>|null=null;
