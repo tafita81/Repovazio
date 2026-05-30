@@ -19,7 +19,7 @@ jobs:
           #   PAGO:            elevenlabs_trilhas (gasta credito ElevenLabs)
           #   ACAO EXTERNA:    newsletter_engine (emails), reddit_video_engine (posts), redbubble_batch_engine (produtos), hotmart_affiliate_engine (afiliado)
           #   CORRUPCAO MULTILINHA (regenerar depois): seo_global_master, seo_youtube_live_global
-          SKIP="elevenlabs_trilhas newsletter_engine reddit_video_engine redbubble_batch_engine hotmart_affiliate_engine seo_global_master seo_youtube_live_global"
+          SKIP="newsletter_engine reddit_video_engine redbubble_batch_engine hotmart_affiliate_engine seo_global_master seo_youtube_live_global"
           fail=0
           for f in scripts/*.py; do
             base=$(basename "$f" .py)
