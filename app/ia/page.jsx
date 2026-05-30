@@ -742,7 +742,7 @@ export default function Chat(){
     try{
       const res=await fetch('/api/ia-chat',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({messages:newMsgs,stream:true,image:fileData,session_id:sessionId,mcpCredentials:connectors,skills,useQwen}),signal:abortRef.current.signal});
-      if(!res.ok||!res.body){const d=await res.json().catch(()=>({reply:'Erro'}));const fm=[...newMsgs,{role:'assistant',content:d.reply}];setMsgs(fm);saveSession(fm);setLoading(false);return;}
+      if(!res.ok||!res.body||!(res.headers.get('content-type')||'').includes('event-stream')){const d=await res.json().catch(()=>({reply:'Erro de conexao'}));const fm=[...newMsgs,{role:'assistant',content:d.reply||'(sem resposta)'}];setMsgs(fm);saveSession(fm);setStreaming('');setToolStatus('');setLoading(false);return;}
       const reader=res.body.getReader();const dec=new TextDecoder();
       while(true){const{done,value}=await reader.read();if(done)break;
         for(const line of dec.decode(value).split('\n')){
