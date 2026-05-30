@@ -284,7 +284,7 @@ Deno.serve(async(req:Request)=>{
       }catch(e:any){return new Response(JSON.stringify({reply:'ERRO OAuth: '+e.message}),{headers});}
     }
     // DEFAULT changed: Nvidia DeepSeek V4 Pro instead of Groq
-    let modelStr=body.model||'groq:llama-3.3-70b-versatile';
+    let modelStr=body.model||'groq:llama-3.3-70b-versatile';if(!body.model){try{const _hr=await fetch(`${SBU}/rest/v1/model_health?status=eq.up&enabled=eq.true&order=rank.asc,latency_ms.asc&limit=1&select=model`,{headers:{apikey:SBK,Authorization:`Bearer ${SBK}`}});if(_hr.ok){const _ha=await _hr.json();if(_ha[0]&&_ha[0].model)modelStr=_ha[0].model;}}catch(_e){}}
     const userMsgs=Array.isArray(body.messages)?body.messages:[];const _att=body.image;if(_att&&typeof _att==='string'&&userMsgs.length){const _i=userMsgs.length-1;const _l=userMsgs[_i];if(_l&&_l.role==='user'){const _t=typeof _l.content==='string'?_l.content:'';if(_att.startsWith('data:image/')){userMsgs[_i]={role:'user',content:[{type:'text',text:_t||'Descreva e analise esta imagem em detalhe.'},{type:'image_url',image_url:{url:_att}}]};modelStr='groq:meta-llama/llama-4-scout-17b-16e-instruct';}else{userMsgs[_i]={..._l,content:_t+'\n\n[CONTEUDO DO ARQUIVO ANEXADO]:\n'+_att.substring(0,24000)};}}}
     const modelDisplay=
       modelStr.startsWith('nvidia:')?`Nvidia/${modelStr.replace('nvidia:','')}`:
